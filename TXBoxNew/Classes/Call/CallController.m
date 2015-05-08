@@ -21,8 +21,11 @@
     CallingController *calling;
     ABNewPersonViewController *newPerson;
     MsgDatas *msgdata;
+    UIWebView *webView;
 }
 
+- (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
+@property (weak,nonatomic) UIAlertController *alertc;
 @property (strong,nonatomic) NSIndexPath *selectedIndexPath;        //被选中
 @end
 
@@ -70,6 +73,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showAddperson:) name:kShowAddContacts object:nil];
     }
 
+    
 }
 
 //跳转到add联系人
@@ -234,4 +238,27 @@
     
 }
 
+//呼转方法
+
+
+- (IBAction)callAnotherPelple:(UIBarButtonItem *)sender
+{
+    //获取拇机号码，第一次进入程序保存
+    NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
+    NSString *phoneNumber = [def valueForKey:@"muji_bind_number"];
+    
+    NSMutableString *str=[[NSMutableString alloc] initWithFormat:@"**21*tel://%@#",phoneNumber];
+    
+    // 提示：不要将webView添加到self.view，如果添加会遮挡原有的视图
+    // 懒加载
+    if (webView == nil) {
+        webView = [[UIWebView alloc] init];
+    }
+    
+    NSURL *url = [NSURL URLWithString:str];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    
+    [webView loadRequest:request];
+    VCLog(@"anotherNumber:%@",str);
+}
 @end

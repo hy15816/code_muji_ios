@@ -219,7 +219,13 @@
                         </connections>
                     </tableView>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" title="电话" id="4mF-qa-tmX"/>
+                    <navigationItem key="navigationItem" title="电话" id="4mF-qa-tmX">
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="nLK-z2-NlP">
+                            <connections>
+                                <action selector="callAnotherPelple:" destination="cT9-kj-hTp" id="m0Q-zL-9n7"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8EI-NY-ova" userLabel="First Responder" sceneMemberID="firstResponder"/>

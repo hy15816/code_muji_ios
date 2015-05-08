@@ -30,6 +30,9 @@
     
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallingBtnClick object:self userInfo:dict]];
     
+    //关闭键盘
+    
+    
 }
 #pragma mark 编辑
 - (IBAction)editBtn:(UIButton *)sender

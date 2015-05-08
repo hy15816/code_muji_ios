@@ -17,7 +17,7 @@
 #import "MsgDetailController.h"
 #import "MsgDatas.h"
 
-@interface ContactersController ()<UISearchBarDelegate,UISearchResultsUpdating,BATableViewDelegate,ABNewPersonViewControllerDelegate>
+@interface ContactersController ()<UISearchBarDelegate,UISearchResultsUpdating,BATableViewDelegate,ABNewPersonViewControllerDelegate,UISearchControllerDelegate>
 {
     NSMutableDictionary *sectionDic;    //sections数据
     NSMutableDictionary *phoneDic;      //同一个人的手机号码dic，
@@ -29,6 +29,7 @@
 
 @property (strong,nonatomic) UISearchBar *conSearchBar;    //搜索框
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
+@property (strong,nonatomic) UITableViewController *searchVC;
 @property (strong,nonatomic) NSMutableArray *searchsArray;          //搜索后的结果数组
 @property (retain,nonatomic) NSArray *dataList;                     //存放数据模型数组
 @property (strong,nonatomic) NSIndexPath *selectedIndexPath;        //被选中
@@ -82,9 +83,6 @@
     //通知显示tabBar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
     
-    
-    
-    
 }
 
 // 创建tableView
@@ -97,19 +95,22 @@
 -(void) initSearchController
 {
     //需要初始化一下UISearchController:
+    //SearchResaultsController *sear = [[SearchResaultsController alloc] init];
     
-    _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+    self.searchVC = // 创建出搜索使用的表示图控制器
+    self.searchVC = [[UITableViewController alloc] initWithStyle:UITableViewStylePlain];
+    self.searchVC.tableView.dataSource = self;
+    self.searchVC.tableView.delegate = self;
+    
+    _searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchVC];
     
     _searchController.searchResultsUpdater = self;
-    
-    _searchController.dimsBackgroundDuringPresentation = YES;//搜索时背景遮罩
-    
-    _searchController.hidesNavigationBarDuringPresentation = YES;//搜索时隐藏导航栏
-    
-    _searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
-    
+    _searchController.delegate = self;
+    //_searchController.hidesNavigationBarDuringPresentation = YES;//搜索时隐藏导航栏
+    _searchController.searchBar.frame = CGRectMake(0, 64, DEVICE_WIDTH, 44.0);
     self.contactTableView.tableView.tableHeaderView = self.searchController.searchBar;
-    [self.view addSubview:self.searchController.view];
+    self.definesPresentationContext = YES;
+    
 }
 
 
@@ -357,6 +358,7 @@
         //把searchArray根据每行显示
         Records *record = self.searchsArray[indexPath.row];
         cell.nameLabel.text = record.personName;
+        cell.numberLabel.text = record.personTel;
     }
     else{
         //原生表
@@ -412,6 +414,23 @@
     [tableView beginUpdates];
     [tableView endUpdates];
     
+    if (self.searchController.active) {
+        VCLog(@"select:%ld",(long)indexPath.row);
+        Records *record = self.searchsArray[indexPath.row];
+        VCLog(@"name:%@ number:%@",record.personName,record.personTel);
+        
+        
+        //[self.searchVC dismissViewControllerAnimated:YES completion:^(){VCLog(@"dismiss");}];
+        
+        //NSIndexPath *isPath = [NSIndexPath indexPathForRow:0 inSection:5];
+        //跳转到选中行
+        //[self.contactTableView.tableView scrollToRowAtIndexPath:isPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+        [self.searchController.searchBar resignFirstResponder];
+        
+    }
+    
+    
+    
 }
 
 //设置cell高度
@@ -443,11 +462,13 @@
     //VCLog(@"arrayM-0:%@",[[arrayM objectAtIndex:0] valueForKey:@"personTel"]);
 }
 
+
 #pragma mark -- searchController 协议方法
 
 //返回搜索结果
 -(void) updateSearchResultsForSearchController:(UISearchController *)searchController
 {
+    
     NSString *searchString = [self.searchController.searchBar text];
     
     //NSPredicate *preicate = [NSPredicate predicateWithFormat:@"(SELF.personName CONTAINS[c] %@) OR (SELF.personTel contains [c] %@)", searchString];
@@ -461,8 +482,9 @@
     self.searchsArray= [NSMutableArray arrayWithArray:[_dataList filteredArrayUsingPredicate:preicate]];
     VCLog(@"searchArray :%@",self.searchsArray);
     VCLog(@"preicate :%@",preicate);
-    //刷新表格
     
+    //刷新表格
+    [self.searchVC.tableView reloadData];
     [self.contactTableView reloadData];
 }
 

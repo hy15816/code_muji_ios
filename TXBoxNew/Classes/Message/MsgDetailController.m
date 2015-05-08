@@ -88,10 +88,9 @@
     [view addSubview:self.arearLabel];
     
     self.contactsInfoBtn.customView = view;
-    self.view.backgroundColor = [UIColor whiteColor];
     
     _tableview = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT-45)];
-    //_tableview.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _tableview.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableview.delegate = self;
     _tableview.dataSource = self;
     [self.view addSubview:_tableview];
@@ -107,9 +106,7 @@
 
 -(void) getResouce
 {
-    self.tableview.allowsSelection = NO;
-    self.tableview.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chat_bg_default.jpg"]];
-    
+    //self.tableview.allowsSelection = NO;
     array = [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"messages" ofType:@"plist"]];
     
     allMsgFrame = [NSMutableArray array];
@@ -231,7 +228,7 @@
     self.textView.minNumberOfLines = 1;
     self.textView.maxNumberOfLines = 6;
     //self.textView.returnKeyType = UIReturnKeyGo; //go
-    self.textView.font = [UIFont systemFontOfSize:15.0f];
+    self.textView.font = [UIFont systemFontOfSize:14.0f];
     self.textView.internalTextView.scrollIndicatorInsets = UIEdgeInsetsMake(5, 0, 5, 0);
     self.textView.backgroundColor = [UIColor whiteColor];
     self.textView.placeholder = @"短信";
