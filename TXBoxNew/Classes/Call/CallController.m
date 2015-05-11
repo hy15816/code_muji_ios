@@ -8,13 +8,13 @@
 
 #import "CallController.h"
 #import "TXSqliteOperate.h"
-#import "CallDetailController.h"
 #import "CallingController.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import "NSString+helper.h"
 #import "MsgDatas.h"
+#import "PopViewController.h"
 
-@interface CallController ()<UITextFieldDelegate,ABNewPersonViewControllerDelegate>
+@interface CallController ()<UITextFieldDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate>
 {
     NSMutableArray *CallRecords;
     TXSqliteOperate *sqlite;
@@ -41,8 +41,6 @@
     
     sqlite = [[TXSqliteOperate alloc] init];
 
-    //CallRecords = [NSMutableArray arrayWithObjects:@"zs",@"ls",@"ww", nil];
-    //self.CallRecords = [sqlite searchInfoFrom:CALL_RECORDS_TABLE_NAME];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -54,7 +52,7 @@
     //查询
     NSMutableArray *array = [sqlite searchInfoFrom:CALL_RECORDS_TABLE_NAME];
     //排序
-    CallRecords = [[array reverseObjectEnumerator] allObjects];
+    CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
     [self.tableView reloadData];
 }
 - (void)viewDidLoad {
@@ -74,6 +72,8 @@
     }
 
     
+    //
+   
 }
 
 //跳转到add联系人
@@ -128,16 +128,6 @@
     cell.callBeginTime.text = aRecord.callBeginTime;
     cell.hisHome.text = aRecord.hisHome;
     cell.hisOperator.text = aRecord.hisOperator;
-    /*
-    cell.hisName.text = [CallRecords objectAtIndex:indexPath.row];;
-    cell.hisNumber.text = [NSString stringWithFormat:@"1381380000%ld",(long)indexPath.row];
-    cell.callDirection.image = [self imageForRating:1];
-    cell.callLength.text = @"05:40";
-    cell.callBeginTime.text = @"2015/4/21 9:30";
-    cell.hisHome.text = @"sz";
-    cell.hisOperator.text = @"移动";
-    */
-    
     
     
     return cell;
@@ -224,6 +214,7 @@
     [tableView endUpdates];
 }
 
+//跳转前，把选中行的值传过去
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     
@@ -239,7 +230,6 @@
 }
 
 //呼转方法
-
 
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender
 {
@@ -260,5 +250,90 @@
     
     [webView loadRequest:request];
     VCLog(@"anotherNumber:%@",str);
+    
+    //
+    
+    UIView *v =[[UIView alloc] initWithFrame:self.view.window.bounds];
+    v.backgroundColor = [UIColor grayColor];
+    v.alpha = .5;
+    [self.view.window addSubview:v];
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /////////////////////////////////////////////////////////////////////////////////////////
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"请配置邮箱和拇机号码" delegate:self cancelButtonTitle:@"以后再说" otherButtonTitles:@"确定", nil];
+    alert.delegate = self;
+    alert.alertViewStyle =UIAlertViewStyleLoginAndPasswordInput;
+    
+    
+    UITextField *temail = [alert textFieldAtIndex:0];
+    temail.placeholder = @"请输入正确的邮箱地址";
+    temail.frame = CGRectMake(100, 50, alert.frame.size.width, 30);
+    temail.keyboardType = UIKeyboardTypeEmailAddress;
+    
+    UITextField *tmuji = [alert textFieldAtIndex:1];
+    tmuji.secureTextEntry = NO;
+    tmuji.placeholder = @"请输入正确的拇机号码12";
+    tmuji.keyboardType = UIKeyboardTypeNumberPad;
+    
+    NSString* text = temail.text;
+    NSLog(@"INPUT:%@", text);
+    if (alert.alertViewStyle == UIAlertViewStyleLoginAndPasswordInput) {
+        // 对于两个输入框的
+        NSString* text2 = tmuji.text;
+        NSLog(@"INPUT2:%@", text2);
+    }
+    
+    //[alert show];
 }
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 1) {
+        //获取输入的文本
+        NSString *string =  [alertView textFieldAtIndex:0].text;
+        NSString *string2 = [alertView textFieldAtIndex:1].text;
+        
+        VCLog(@"--%@ --%@",string,string2);
+        //判断是否符合要求
+        
+        //是，保存
+        
+        //否，重新填写
+        if (string.length<=0 || string2.length <=0) {
+            return;
+        }
+        
+        
+    }
+}
+- (void)dismissWithClickedButtonIndex:(NSInteger)buttonIndex animated:(BOOL)animated;
+{
+    
+}
+
+-(void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    
+}
+
 @end

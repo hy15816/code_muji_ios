@@ -282,7 +282,7 @@
     [UIView beginAnimations:@"" context:@""];
     [UIView setAnimationDuration:.9];
     calling.view.alpha = 1.f;
-    
+    //获取notification传值
     calling.nameLabel.text = [[notification userInfo] objectForKey:@"hisName"];
     calling.numberLabel.text = [[notification userInfo] objectForKey:@"hisNumber"];
     
@@ -311,7 +311,7 @@
     [super viewWillDisappear:animated];
     
     //移除通知
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:ktextChangeNotify object:nil];
+    //[[NSNotificationCenter defaultCenter] removeObserver:self name:ktextChangeNotify object:nil];
     
 }
 

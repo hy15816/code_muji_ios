@@ -20,7 +20,7 @@
 - (IBAction)msgBtn:(UIButton *)sender
 {
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
-    
+    VCLog(@"msg");
 }
 #pragma mark 拨打电话
 - (IBAction)callBtn:(UIButton *)sender

@@ -52,6 +52,7 @@
     }
 }
 
+//获取连接(打电话)状态
 -(void) getConnectState
 {
     

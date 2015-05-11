@@ -48,11 +48,11 @@
     
     VCLog(@"datailDatas:%@",self.datailDatas);
     
-    // Do any additional setup after loading the view.
+    // 显示左边按钮
     UIView *view = [[UIView alloc] init];
     view.userInteractionEnabled = YES;
     
-    self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, -20, 100, 20)];
+    self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, -20, 150, 20)];
     self.nameLabel.font = [UIFont systemFontOfSize:18];
     self.nameLabel.text = self.datailDatas.hisName;
     self.nameLabel.textColor = [UIColor whiteColor];
@@ -76,10 +76,7 @@
     [self.tableview addGestureRecognizer:swipe];
     [self.view addGestureRecognizer:swipe];
 
-    //15-05-08,HuangYong,edit
-    //readme.md edit
-    
-    //add a people
+    //返回按钮
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(arearBtnClick:)];
     tap.numberOfTapsRequired = 1;
     [view addGestureRecognizer:tap];
@@ -106,7 +103,7 @@
 
 -(void) getResouce
 {
-    //self.tableview.allowsSelection = NO;
+    self.tableview.allowsSelection = NO;
     array = [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"messages" ofType:@"plist"]];
     
     allMsgFrame = [NSMutableArray array];
@@ -215,42 +212,34 @@
 {
     self.inputView = [[UIView alloc] init];
     self.inputView.backgroundColor = RGBACOLOR(240, 240, 240, 1);
-    self.inputView.frame = CGRectMake(0, DEVICE_HEIGHT-45, DEVICE_WIDTH, 45);
-    self.inputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+    self.inputView.frame = CGRectMake(0, DEVICE_HEIGHT-40, DEVICE_WIDTH, 40);
+    //self.inputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
     
-    self.textView = [[HPGrowingTextView alloc] initWithFrame:CGRectMake(5, 4, 240, 40)];
-    self.textView.backgroundColor = [UIColor clearColor];
-    //textView.frame = CGRectMake(10, 5, DEVICE_WIDTH*.6f, 30);
-    self.textView.contentInset = UIEdgeInsetsMake(0, 5, 0, 5);
-    self.textView.isScrollable = NO;
+    self.textView = [[HPGrowingTextView alloc] initWithFrame:CGRectMake(5, 4, DEVICE_WIDTH*.8f, 40)];
     self.textView.delegate = self;
-    self.textView.textColor = [UIColor blackColor];
     self.textView.minNumberOfLines = 1;
-    self.textView.maxNumberOfLines = 6;
-    //self.textView.returnKeyType = UIReturnKeyGo; //go
+    self.textView.maxNumberOfLines = 6;//最大伸缩行数
     self.textView.font = [UIFont systemFontOfSize:14.0f];
-    self.textView.internalTextView.scrollIndicatorInsets = UIEdgeInsetsMake(5, 0, 5, 0);
-    self.textView.backgroundColor = [UIColor whiteColor];
     self.textView.placeholder = @"短信";
-    self.textView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     
+    //textView的背景
     UIImage *rawEntryBackground = [UIImage imageNamed:@"msg_textView_bg"];
     UIImage *entryBackground = [rawEntryBackground stretchableImageWithLeftCapWidth:13 topCapHeight:22];
     UIImageView *entryImageView = [[UIImageView alloc] initWithImage:entryBackground];
-    entryImageView.frame = CGRectMake(5, 0, 248, 40);
+    entryImageView.frame = CGRectMake(5, 0, DEVICE_WIDTH*.8f, 40);
     entryImageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    
+    //inputView的bgImg
     UIImage *rawBackground = [UIImage imageNamed:@"msg_inputView_bg"];
     UIImage *background = [rawBackground stretchableImageWithLeftCapWidth:13 topCapHeight:22];
     UIImageView *imageView = [[UIImageView alloc] initWithImage:background];
     imageView.frame = CGRectMake(0, 0, self.inputView.frame.size.width, self.inputView.frame.size.height);
     imageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     
-    self.sendMsgBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.sendMsgBtn.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
+    self.sendMsgBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    self.sendMsgBtn.frame = CGRectMake(DEVICE_WIDTH-50, 0, 30, 40);
     [self.sendMsgBtn setTitle:@"发送" forState:UIControlStateNormal];
     [self.sendMsgBtn addTarget:self action:@selector(sendMsgBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-    self.sendMsgBtn.frame = CGRectMake(self.inputView.frame.size.width-50, 5, 30, 50);
+    
     
     [self.view addSubview:self.inputView];
     [self.inputView addSubview:imageView];
@@ -282,7 +271,7 @@
 //返回上一层界面
 -(void)arearBtnClick:(UIGestureRecognizer *)recognizer
 {
-    VCLog(@"back");
+    //VCLog(@"back");
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
@@ -360,6 +349,14 @@
         [self.tableview reloadData];
         //关闭键盘
         //[self.textView resignFirstResponder];
+        
+        //保存数据
+        NSError *error;
+        NSString *path = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Message" ofType:@"plist"] encoding:NSUTF8StringEncoding error:&error];
+        [self.textView.text writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:&error];
+        
+        
+        
     }
     self.textView.text = nil;
     

@@ -309,7 +309,7 @@
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zLZ-Hs-pGR">
                                             <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
@@ -1046,7 +1046,7 @@
             </objects>
             <point key="canvasLocation" x="1524" y="4975"/>
         </scene>
-        <!--设置-->
+        <!--设备-->
         <scene sceneID="DQw-dl-KPS">
             <objects>
                 <tableViewController id="Spj-TT-Z3J" customClass="BLEDevicesController" sceneMemberID="viewController">
@@ -1055,73 +1055,42 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="detailDisclosureButton" indentationWidth="10" reuseIdentifier="BLEDevice" id="61z-l7-6AA" customClass="BLEDeviceCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="BLEDevice" id="61z-l7-6AA" customClass="BLEDeviceCell">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="61z-l7-6AA" id="UTx-Ss-iPO">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pfK-iU-Ehs">
-                                            <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="查找设备" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fIk-ou-CIW">
+                                            <rect key="frame" x="13" y="11" width="70" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.59999999999999964" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tU6-06-WNH">
-                                            <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.69999999999999973" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="未连接" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yBb-TA-X30">
+                                            <rect key="frame" x="488" y="11" width="51" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="bottomMargin" secondItem="tU6-06-WNH" secondAttribute="bottom" constant="3" id="2CT-ZS-cFP"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="tU6-06-WNH" secondAttribute="trailing" constant="13" id="D6s-Zr-Fdv">
-                                            <variation key="widthClass=compact" constant="40"/>
-                                        </constraint>
-                                        <constraint firstItem="tU6-06-WNH" firstAttribute="top" secondItem="UTx-Ss-iPO" secondAttribute="topMargin" constant="3" id="FkJ-Fa-INH"/>
-                                        <constraint firstItem="pfK-iU-Ehs" firstAttribute="top" secondItem="UTx-Ss-iPO" secondAttribute="topMargin" id="Fs0-6i-wa6">
-                                            <variation key="widthClass=compact" constant="3"/>
-                                        </constraint>
-                                        <constraint firstAttribute="trailingMargin" secondItem="tU6-06-WNH" secondAttribute="trailing" constant="13" id="PwU-g7-Pmb"/>
-                                        <constraint firstItem="pfK-iU-Ehs" firstAttribute="leading" secondItem="UTx-Ss-iPO" secondAttribute="leadingMargin" constant="12" id="bzm-PA-XfZ"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="pfK-iU-Ehs" secondAttribute="bottom" constant="5" id="lfF-h5-krm">
-                                            <variation key="widthClass=compact" constant="3"/>
-                                        </constraint>
+                                        <constraint firstItem="yBb-TA-X30" firstAttribute="leading" secondItem="fIk-ou-CIW" secondAttribute="trailing" constant="255" id="7Na-bQ-wlT"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="yBb-TA-X30" secondAttribute="bottom" constant="3" id="Gj2-HR-VQt"/>
+                                        <constraint firstItem="fIk-ou-CIW" firstAttribute="leading" secondItem="UTx-Ss-iPO" secondAttribute="leadingMargin" constant="5" id="KVP-5f-45v"/>
+                                        <constraint firstItem="yBb-TA-X30" firstAttribute="top" secondItem="UTx-Ss-iPO" secondAttribute="topMargin" constant="3" id="c6K-fe-fpq"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="fIk-ou-CIW" secondAttribute="bottom" constant="3" id="f94-3z-rQG"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="yBb-TA-X30" secondAttribute="trailing" constant="20" id="fwQ-Ny-s7m"/>
+                                        <constraint firstItem="fIk-ou-CIW" firstAttribute="top" secondItem="UTx-Ss-iPO" secondAttribute="topMargin" constant="3" id="sqv-L4-tK9"/>
                                     </constraints>
                                     <variation key="default">
-                                        <mask key="subviews">
-                                            <exclude reference="pfK-iU-Ehs"/>
-                                            <exclude reference="tU6-06-WNH"/>
-                                        </mask>
                                         <mask key="constraints">
-                                            <exclude reference="Fs0-6i-wa6"/>
-                                            <exclude reference="bzm-PA-XfZ"/>
-                                            <exclude reference="lfF-h5-krm"/>
-                                            <exclude reference="2CT-ZS-cFP"/>
-                                            <exclude reference="D6s-Zr-Fdv"/>
-                                            <exclude reference="FkJ-Fa-INH"/>
-                                            <exclude reference="PwU-g7-Pmb"/>
-                                        </mask>
-                                    </variation>
-                                    <variation key="widthClass=compact">
-                                        <mask key="subviews">
-                                            <include reference="pfK-iU-Ehs"/>
-                                            <include reference="tU6-06-WNH"/>
-                                        </mask>
-                                        <mask key="constraints">
-                                            <include reference="Fs0-6i-wa6"/>
-                                            <include reference="bzm-PA-XfZ"/>
-                                            <include reference="lfF-h5-krm"/>
-                                            <include reference="2CT-ZS-cFP"/>
-                                            <exclude reference="D6s-Zr-Fdv"/>
-                                            <include reference="FkJ-Fa-INH"/>
-                                            <include reference="PwU-g7-Pmb"/>
+                                            <exclude reference="7Na-bQ-wlT"/>
                                         </mask>
                                     </variation>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <outlet property="isConnection" destination="tU6-06-WNH" id="Y0T-AK-1eA"/>
-                                    <outlet property="nameLabel" destination="pfK-iU-Ehs" id="rGG-Hb-LnV"/>
+                                    <outlet property="isConnection" destination="yBb-TA-X30" id="LR9-o5-sIp"/>
+                                    <outlet property="nameLabel" destination="fIk-ou-CIW" id="bRN-D0-1X3"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -1130,11 +1099,11 @@
                             <outlet property="delegate" destination="Spj-TT-Z3J" id="cdR-zp-g2i"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="设置" id="ikU-Wn-Lx0"/>
+                    <navigationItem key="navigationItem" title="设备" id="ikU-Wn-Lx0"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IfH-SZ-zTf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2481" y="4950"/>
+            <point key="canvasLocation" x="2478" y="4975"/>
         </scene>
         <!--msg-->
         <scene sceneID="hmW-AP-IYC">

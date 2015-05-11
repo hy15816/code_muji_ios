@@ -15,7 +15,7 @@
 #define kKeyboardAndTabViewHide @"keyboardAndTabBarHide"//自定键盘、callBtn,tabbar隐藏
 #define kHideCusotomTabBar @"hideCustomTabBar"//隐藏自定tabbar
 #define kShowCusotomTabBar @"showCustomTabBar"//显示自定tabbar
-#define kShowAddContacts @"showAddContacts" //显示add联系人
+#define kShowAddContacts @"showAddContacts" //显示add联系人界面
 #define kShowValueToMsgDetail @"showValue"
 
 //4.键盘高宽

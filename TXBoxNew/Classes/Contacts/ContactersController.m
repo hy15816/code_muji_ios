@@ -27,21 +27,16 @@
     MsgDatas *msgdata;
 }
 
-@property (strong,nonatomic) UISearchBar *conSearchBar;    //搜索框
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
 @property (strong,nonatomic) UITableViewController *searchVC;
 @property (strong,nonatomic) NSMutableArray *searchsArray;          //搜索后的结果数组
 @property (retain,nonatomic) NSArray *dataList;                     //存放数据模型数组
 @property (strong,nonatomic) NSIndexPath *selectedIndexPath;        //被选中
-
-@property (nonatomic, strong) BATableView *contactTableView;
-
+@property (nonatomic, strong) BATableView *contactTableView;        //tableview
 
 @end
 
 @implementation ContactersController
-
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -55,12 +50,6 @@
     
     //分割线为none
     [self.contactTableView.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
-    
-    //指定其协议
-    self.conSearchBar.placeholder = @"搜索";
-    //self.tableView.tableHeaderView = self.conSearchBar;
-    //self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];//设置索引的背景颜色
-    self.conSearchBar.delegate = self;
     
     self.selectedIndexPath = nil;
     
@@ -91,25 +80,42 @@
     self.contactTableView.delegate = self;
     [self.view addSubview:self.contactTableView];
 }
-
+//searchController
 -(void) initSearchController
 {
     //需要初始化一下UISearchController:
-    //SearchResaultsController *sear = [[SearchResaultsController alloc] init];
-    
     self.searchVC = // 创建出搜索使用的表示图控制器
     self.searchVC = [[UITableViewController alloc] initWithStyle:UITableViewStylePlain];
     self.searchVC.tableView.dataSource = self;
     self.searchVC.tableView.delegate = self;
     
-    _searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchVC];
-    
-    _searchController.searchResultsUpdater = self;
-    _searchController.delegate = self;
-    //_searchController.hidesNavigationBarDuringPresentation = YES;//搜索时隐藏导航栏
-    _searchController.searchBar.frame = CGRectMake(0, 64, DEVICE_WIDTH, 44.0);
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchVC];
+    self.searchController.searchResultsUpdater = self;
+    self.searchController.delegate = self;
+    self.searchController.searchBar.frame = CGRectMake(0, 64, DEVICE_WIDTH, 44.0);
     self.contactTableView.tableView.tableHeaderView = self.searchController.searchBar;
     self.definesPresentationContext = YES;
+    [self changedSearchBarCancel];
+    
+}
+
+//将SearchBar上"Cancel"按钮改为”取消“
+-(void)changedSearchBarCancel
+{
+    
+    UIButton *cancelButton;
+    UIView *topView = self.searchController.searchBar.subviews[0];
+    for (UIView *subView in topView.subviews) {
+        
+        if ([subView isKindOfClass:NSClassFromString(@"UINavigationButton")]) {
+            cancelButton = (UIButton *)subView;
+            //设置文本和颜色
+            [cancelButton setTitle:@"取消" forState:UIControlStateNormal];
+            [cancelButton setTitleColor:RGBACOLOR(0, 103, 255, 1) forState:UIControlStateNormal];//蓝色
+            cancelButton.titleLabel.font = [UIFont fontWithName:@"Heiti SC" size:15];
+
+        }
+    }
     
 }
 
@@ -359,6 +365,7 @@
         Records *record = self.searchsArray[indexPath.row];
         cell.nameLabel.text = record.personName;
         cell.numberLabel.text = record.personTel;
+        [cell.msgsBtn addTarget:self action:@selector(msgsBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     else{
         //原生表
@@ -395,7 +402,7 @@
     msgDetail.datailDatas =msgdata;
     [self.navigationController pushViewController:msgDetail animated:YES];
     
-    VCLog(@"msgsclick");
+    //VCLog(@"msgsclick");
 }
 
 //点击单元格
@@ -415,21 +422,11 @@
     [tableView endUpdates];
     
     if (self.searchController.active) {
-        VCLog(@"select:%ld",(long)indexPath.row);
-        Records *record = self.searchsArray[indexPath.row];
-        VCLog(@"name:%@ number:%@",record.personName,record.personTel);
-        
-        
-        //[self.searchVC dismissViewControllerAnimated:YES completion:^(){VCLog(@"dismiss");}];
-        
-        //NSIndexPath *isPath = [NSIndexPath indexPathForRow:0 inSection:5];
-        //跳转到选中行
-        //[self.contactTableView.tableView scrollToRowAtIndexPath:isPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+        //关闭键盘
         [self.searchController.searchBar resignFirstResponder];
         
     }
-    
-    
+   
     
 }
 
