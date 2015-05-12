@@ -12,9 +12,9 @@
 #import <AddressBookUI/AddressBookUI.h>
 #import "NSString+helper.h"
 #import "MsgDatas.h"
-#import "PopViewController.h"
+#import "PopView.h"
 
-@interface CallController ()<UITextFieldDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate>
+@interface CallController ()<UITextFieldDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate,PopViewDelegate>
 {
     NSMutableArray *CallRecords;
     TXSqliteOperate *sqlite;
@@ -22,6 +22,10 @@
     ABNewPersonViewController *newPerson;
     MsgDatas *msgdata;
     UIWebView *webView;
+    UIView *shadeView;  //遮罩层
+    PopView *popview;   //提示框
+    UIAlertView *_alertView; //提示框
+    NSUserDefaults *defaults;
 }
 
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
@@ -64,7 +68,7 @@
     
     //
     msgdata = [[MsgDatas alloc] init];
-    
+    defaults = [NSUserDefaults standardUserDefaults];
     //通知
     if([self respondsToSelector:@selector(showAddperson:)]) {
         
@@ -72,8 +76,10 @@
     }
 
     
-    //
-   
+    //创建提醒对话框
+    _alertView = [[UIAlertView alloc] initWithTitle:nil message:@"请输入正确的邮箱和拇机号码" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    _alertView.delegate = self;
+    [_alertView textFieldAtIndex:0];//获取输入框，在UIAlertViewStyle -> input模式
 }
 
 //跳转到add联系人
@@ -230,109 +236,134 @@
 }
 
 //呼转方法
-
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender
 {
-    //获取拇机号码，第一次进入程序保存
-    NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
-    NSString *phoneNumber = [def valueForKey:@"muji_bind_number"];
+    //获取拇机,email号码,
+    NSString *phoneNumber = [defaults valueForKey:muji_bind_number];
+    NSString *emailNumber = [defaults valueForKey:email_number];
     
-    NSMutableString *str=[[NSMutableString alloc] initWithFormat:@"**21*tel://%@#",phoneNumber];
-    
-    // 提示：不要将webView添加到self.view，如果添加会遮挡原有的视图
-    // 懒加载
-    if (webView == nil) {
-        webView = [[UIWebView alloc] init];
+    //已有number和email
+    if (phoneNumber.length>0 && emailNumber.length>0 ) {
+        //获取呼转状态
+        [self getCallDivert];
+    }else
+    {   //没有则弹框提示
+        [self addShadeAndAlertView];
     }
-    
-    NSURL *url = [NSURL URLWithString:str];
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    
-    [webView loadRequest:request];
-    VCLog(@"anotherNumber:%@",str);
-    
-    //
-    
-    UIView *v =[[UIView alloc] initWithFrame:self.view.window.bounds];
-    v.backgroundColor = [UIColor grayColor];
-    v.alpha = .5;
-    [self.view.window addSubview:v];
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /////////////////////////////////////////////////////////////////////////////////////////
-    
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"请配置邮箱和拇机号码" delegate:self cancelButtonTitle:@"以后再说" otherButtonTitles:@"确定", nil];
-    alert.delegate = self;
-    alert.alertViewStyle =UIAlertViewStyleLoginAndPasswordInput;
-    
-    
-    UITextField *temail = [alert textFieldAtIndex:0];
-    temail.placeholder = @"请输入正确的邮箱地址";
-    temail.frame = CGRectMake(100, 50, alert.frame.size.width, 30);
-    temail.keyboardType = UIKeyboardTypeEmailAddress;
-    
-    UITextField *tmuji = [alert textFieldAtIndex:1];
-    tmuji.secureTextEntry = NO;
-    tmuji.placeholder = @"请输入正确的拇机号码12";
-    tmuji.keyboardType = UIKeyboardTypeNumberPad;
-    
-    NSString* text = temail.text;
-    NSLog(@"INPUT:%@", text);
-    if (alert.alertViewStyle == UIAlertViewStyleLoginAndPasswordInput) {
-        // 对于两个输入框的
-        NSString* text2 = tmuji.text;
-        NSLog(@"INPUT2:%@", text2);
-    }
-    
-    //[alert show];
+
 }
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+
+-(void)getCallDivert
 {
-    if (buttonIndex == 1) {
-        //获取输入的文本
-        NSString *string =  [alertView textFieldAtIndex:0].text;
-        NSString *string2 = [alertView textFieldAtIndex:1].text;
+    NSString *number = [defaults valueForKey:muji_bind_number];
+    if ([[defaults valueForKey:call_divert] intValue]) {
+        //已呼转,弹框提示，到拇机123456789321的呼转取消？
         
-        VCLog(@"--%@ --%@",string,string2);
-        //判断是否符合要求
+        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"到拇机%@的呼转取消?",number] delegate:self cancelButtonTitle:@"否" otherButtonTitles:@"是", nil];
+        aliert.delegate = self;
+        aliert.tag =100;
+        [aliert show];
         
-        //是，保存
+    }else{
+        //未呼转,弹框提示，手机呼转到拇机123456789321？
+        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"手机呼转到拇机%@?",number] delegate:self cancelButtonTitle:@"否" otherButtonTitles:@"是", nil];
+        aliert.delegate = self;
+        aliert.tag =101;
+        [aliert show];
+    }
+
+}
+
+#pragma mark -- 弹出框
+-(void)addShadeAndAlertView
+{
+    //透明层
+    shadeView =[[UIView alloc] initWithFrame:self.view.window.bounds];
+    shadeView.backgroundColor = [UIColor grayColor];//self.view.window.bounds
+    shadeView.alpha = .5;
+    
+    //pop
+    popview = [[PopView alloc] initWithFrame:CGRectMake((DEVICE_WIDTH-200)/2, (DEVICE_HEIGHT-170)/2-50, 200, 170)];
+    popview.delegate = self;
+    [popview initWithTitle:@"呼叫转移需要拇机号码等配置信息，请填写" firstMsg:@"邮箱" secondMsg:@"拇机号码" cancelButtonTitle:@"取消" otherButtonTitles:@"确定"];
+    
+    [self.view.window addSubview:shadeView];
+    [self.view.window addSubview:popview];
+}
+
+
+#pragma mark-- pop delegate
+-(void)resaultsButtonClick:(UIButton *)button firstField:(UITextField *)ffield secondField:(UITextField *)sfield
+{
+    //获取输入的text
+    NSString *email =ffield.text;
+    NSString *number = [sfield.text trimOfString];
+    //取消
+    if (button.tag == 0) {
         
-        //否，重新填写
-        if (string.length<=0 || string2.length <=0) {
-            return;
+        [shadeView removeFromSuperview];
+        [popview removeFromSuperview];
+    }
+    //sure按钮
+    if (button.tag == 1) {
+        if (email.length<=0 || number.length<=0 || ![email isValidateEmail:email] || ![number isValidateMobile:number]) {
+            [_alertView show];
+        }else
+        {
+            //保存数据
+            [defaults setValue:email forKey:email_number];
+            [defaults setValue:number forKey:muji_bind_number];
+            
+            VCLog(@"save-->email:%@,number:%@",email,number);
+            [shadeView removeFromSuperview];
+            [popview removeFromSuperview];
+            
+            [self getCallDivert];
         }
-        
-        
     }
-}
-- (void)dismissWithClickedButtonIndex:(NSInteger)buttonIndex animated:(BOOL)animated;
-{
+    
     
 }
 
--(void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
+#pragma mark -- AlertView Delegate
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+    NSMutableString *str;
+    /****/
+    if (alertView.tag == 100) {
+        if (buttonIndex == 1) {
+            //取消呼转
+            str = [[NSMutableString alloc] initWithFormat:@"**21*tel://%@#",[defaults valueForKey:muji_bind_number]];
+            
+            //设置状态为0
+            [defaults setValue:@"0" forKey:call_divert];
+        }
+    }
+    
+    
+    /****/
+    if (alertView.tag == 101) {
+        if (buttonIndex == 1) {
+            //设置呼转,
+            str = [[NSMutableString alloc] initWithFormat:@"**21*tel://%@#",[defaults valueForKey:muji_bind_number]];
+            //设置状态为1
+            [defaults setValue:@"1" forKey:call_divert];
+
+        }
+    }
+    if (str.length>0) {
+        // 呼叫
+        // 不要将webView添加到self.view，如果添加会遮挡原有的视图
+        if (webView == nil) {
+            webView = [[UIWebView alloc] init];
+        }
+        
+        NSURL *url = [NSURL URLWithString:str];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        
+        [webView loadRequest:request];
+        VCLog(@"anotherNumber:%@",str);
+    }
     
 }
 

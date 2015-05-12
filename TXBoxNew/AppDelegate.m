@@ -27,7 +27,7 @@
     [self changeNavigationBarStyle];
     
     usDefaults = [NSUserDefaults standardUserDefaults];
-    
+    [usDefaults setValue:@"0" forKey:call_divert];//呼转状态
     //提示绑定拇机号码
     if (![[usDefaults valueForKey:@"isSetting"] intValue]) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"是否绑定拇机号码？" delegate:self cancelButtonTitle:@"以后再说" otherButtonTitles:@"确定", nil];

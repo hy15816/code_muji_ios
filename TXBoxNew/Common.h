@@ -71,6 +71,9 @@
 //导航栏高度 默认44
 #define NaviBarHeight self.navigationController.navigationBar.frame.size.height
 
-
-
+//邮箱和拇机号码
+#define email_number @"e_mail_number"
+#define muji_bind_number @"muji_bind_number"
+//呼转状态
+#define call_divert @"call_divert"
 

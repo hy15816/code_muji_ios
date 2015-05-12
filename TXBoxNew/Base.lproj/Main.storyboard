@@ -220,7 +220,7 @@
                     </tableView>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="电话" id="4mF-qa-tmX">
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="nLK-z2-NlP">
+                        <barButtonItem key="rightBarButtonItem" image="call_another60" id="nLK-z2-NlP">
                             <connections>
                                 <action selector="callAnotherPelple:" destination="cT9-kj-hTp" id="m0Q-zL-9n7"/>
                             </connections>
@@ -847,9 +847,41 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <sections>
+                            <tableViewSection headerTitle="配置" id="M86-kF-k54">
+                                <cells>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" id="jhl-PW-oQa">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jhl-PW-oQa" id="b2m-q4-Zmx">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="邮箱和拇机号码" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mfZ-kc-eLr">
+                                                    <rect key="frame" x="28" y="11" width="119" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" alpha="0.49999999999999961" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="13698006536" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RFz-VB-l5E">
+                                                    <rect key="frame" x="476" y="11" width="88" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottomMargin" secondItem="RFz-VB-l5E" secondAttribute="bottom" constant="3" id="NCC-v6-BuQ"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="RFz-VB-l5E" secondAttribute="trailing" constant="-5" id="O5R-oL-lxg"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="mfZ-kc-eLr" secondAttribute="bottom" constant="3" id="QNZ-0q-X5G"/>
+                                                <constraint firstItem="mfZ-kc-eLr" firstAttribute="leading" secondItem="b2m-q4-Zmx" secondAttribute="leadingMargin" constant="20" id="TcH-fU-zHC"/>
+                                                <constraint firstItem="mfZ-kc-eLr" firstAttribute="top" secondItem="b2m-q4-Zmx" secondAttribute="topMargin" constant="3" id="aWw-ir-ABN"/>
+                                                <constraint firstItem="RFz-VB-l5E" firstAttribute="top" secondItem="b2m-q4-Zmx" secondAttribute="topMargin" constant="3" id="bEC-uM-SMN"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                             <tableViewSection headerTitle="振动" id="52Q-Gf-C4Z">
                                 <cells>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="to8-B7-6lU">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" id="to8-B7-6lU">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="to8-B7-6lU" id="1CE-j7-suZ">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -858,7 +890,7 @@
                                                     <rect key="frame" x="511" y="6" width="51" height="31"/>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="来电时APP振动" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nnJ-l0-mbz">
-                                                    <rect key="frame" x="37" y="11" width="119" height="21"/>
+                                                    <rect key="frame" x="32" y="11" width="119" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -872,7 +904,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="对方接通时APP振动" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eeQ-ti-yO1">
-                                                    <rect key="frame" x="38" y="11" width="153" height="21"/>
+                                                    <rect key="frame" x="33" y="11" width="153" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -887,13 +919,13 @@
                             </tableViewSection>
                             <tableViewSection headerTitle="版本信息" id="mRq-Gp-qXo">
                                 <cells>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="Tjv-bJ-V0N">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" id="Tjv-bJ-V0N">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Tjv-bJ-V0N" id="N0K-Vz-d0s">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="APP版本" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="us6-xL-1m5">
-                                                    <rect key="frame" x="39" y="11" width="68" height="21"/>
+                                                    <rect key="frame" x="34" y="11" width="68" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -919,7 +951,7 @@
                                                     <rect key="frame" x="375" y="9" width="25" height="25"/>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="设备固件版本" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LUR-br-UaF">
-                                                    <rect key="frame" x="39" y="11" width="102" height="21"/>
+                                                    <rect key="frame" x="34" y="11" width="102" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -937,13 +969,13 @@
                             </tableViewSection>
                             <tableViewSection headerTitle="我的设备" id="7W9-Rp-Kkv">
                                 <cells>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="qD9-iR-MuA">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" id="qD9-iR-MuA">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="qD9-iR-MuA" id="AVn-D9-5bc">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="设置" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lxw-HA-5A8">
-                                                    <rect key="frame" x="41" y="11" width="34" height="21"/>
+                                                    <rect key="frame" x="36" y="11" width="34" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -972,6 +1004,7 @@
                         <outlet property="connectVibrate" destination="eeQ-ti-yO1" id="15w-o9-ICg"/>
                         <outlet property="firmwareImg" destination="IWn-13-xzM" id="jAo-sT-cmc"/>
                         <outlet property="firmwareVersion" destination="LUR-br-UaF" id="Bfc-cF-gJz"/>
+                        <outlet property="muji_number" destination="RFz-VB-l5E" id="bLe-pD-Vmw"/>
                         <outlet property="nowAppVersion" destination="Mu7-VJ-vgX" id="D9m-gr-gFS"/>
                         <outlet property="nowFirmwearVson" destination="mJp-zE-1da" id="uii-un-Qdr"/>
                         <outlet property="setting" destination="Lxw-HA-5A8" id="qdA-qH-exj"/>
@@ -1467,6 +1500,7 @@
     </scenes>
     <resources>
         <image name="actionbar_call_hub32" width="32" height="32"/>
+        <image name="call_another60" width="30" height="30"/>
         <image name="calling_bg" width="450" height="720"/>
         <image name="icon_call32" width="32" height="32"/>
         <image name="icon_call_missed" width="24" height="30"/>
