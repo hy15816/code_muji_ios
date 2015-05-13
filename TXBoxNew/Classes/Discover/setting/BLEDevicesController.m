@@ -32,8 +32,15 @@
 
 @implementation BLEDevicesController
 
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.title = NSLocalizedString(@"Device", nil);
     
     // BLE
     [self createBLECentralManager];
@@ -58,7 +65,7 @@
     [self.peripheralArray addObject:@"1"];
     [self.peripheralArray addObject:@"2"];
     
-    self.strings = [NSString stringWithFormat:@"查找设备"];
+    self.strings = [NSString stringWithFormat:NSLocalizedString(@"Search_device", nil)];
     
     
 }
@@ -76,7 +83,7 @@
         [self scanForPeripherals];
         //打开定时器
         [self.connectTimer fire];
-        self.strings = @"正在查找";
+        self.strings = NSLocalizedString(@"Searching", nil);
         
         
         //VCLog(@"000");
@@ -85,7 +92,7 @@
     {
         [self.manager stopScan];//停止扫描
         [self.activeView stopAnimating];
-        self.strings = @"查找设备";
+        self.strings = NSLocalizedString(@"Search_device", nil);
     }
 
     [self.tableView reloadData];
@@ -155,7 +162,7 @@
 // 5.2连接成功
 -(void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
 {
-    VCLog(@"连接成功 :%@",peripheral);
+    VCLog(@"connect suc :%@",peripheral);
     //[self.connectTimer invalidate];//停止计时
     
     peripheral.delegate = self;
@@ -293,7 +300,7 @@
     }else
     {
         cell.nameLabel.text = [self.peripheralArray objectAtIndex:indexPath.row];
-        cell.isConnection.text = @"未连接";
+        cell.isConnection.text = NSLocalizedString(@"Ununited", nil);
     }
     
     return cell;
@@ -310,6 +317,9 @@
         //[self.manager connectPeripheral:[self.peripheralArray objectAtIndex:indexPath.row] options:nil];
         
     }
+    
+    
+    
 }
 
 
@@ -319,7 +329,7 @@
     if (section == 0) {
         return @"";
     }
-    return @"我的设备";
+    return NSLocalizedString(@"My_device", nil);
 }
 
 //定时器
@@ -329,7 +339,7 @@
     if (self.times<=0) {
         [self.manager stopScan];//停止扫描
         [self.activeView stopAnimating];
-        self.strings = @"查找设备";
+        self.strings = NSLocalizedString(@"Search_device", nil);
         [self.switchs setOn:NO];
     }
     

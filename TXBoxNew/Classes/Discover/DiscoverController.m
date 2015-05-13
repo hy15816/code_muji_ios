@@ -9,6 +9,8 @@
 #import "DiscoverController.h"
 #import "PopView.h"
 #import "NSString+helper.h"
+#import "BLEDevicesController.h"
+#import "DiscoverCell.h"
 
 @interface DiscoverController ()<PopViewDelegate>
 {
@@ -16,6 +18,8 @@
     UIView *shadeView;
     NSUserDefaults *defaults;
     UIAlertView *_alertView;
+    NSArray *titleArray;
+    NSArray *labelArray;
 }
 @end
 
@@ -24,21 +28,32 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     [self.tableView reloadData];
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    //通知显示tabBar
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.title = NSLocalizedString(@"Discovery", nil);
     
     defaults = [NSUserDefaults standardUserDefaults];
     if ([[defaults valueForKey:muji_bind_number] length] == 0) {
-        self.muji_number.text =@"未设置";
+        self.muji_number.text =NSLocalizedString(@"UnSetting", nil);
     }
     
     //
-    _alertView = [[UIAlertView alloc] initWithTitle:nil message:@"请输入正确的邮箱和拇机号码" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    _alertView = [[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"The_Call_Forwarding_was_get_info", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"Sure", nil) otherButtonTitles:nil, nil];
     _alertView.delegate = self;
+    
+    titleArray = [NSArray arrayWithObjects:NSLocalizedString(@"Configure", nil),NSLocalizedString(@"Vibrate", nil),NSLocalizedString(@"Version", nil),NSLocalizedString(@"My_device", nil), nil];
+    labelArray = [NSArray arrayWithObjects:@[NSLocalizedString(@"Configure_E-mail_MuJi-Number", nil)],@[@"来电时APP振动",@"123156"],@[@"APP版本",@"设备版本"],@[NSLocalizedString(@"Setting", nil)], nil];
 
 }
 
@@ -62,6 +77,22 @@
     
     return 1;
 }
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    DiscoverCell *cell = [tableView dequeueReusableCellWithIdentifier:@"discoveryCell" forIndexPath:indexPath];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    cell.textlb.text = labelArray[indexPath.section][indexPath.row];
+    cell.buttons.hidden = YES;
+    if (indexPath.section == 0) {
+        cell.buttons.hidden = NO;
+        [cell.buttons setTitle:[defaults valueForKey:muji_bind_number] forState:UIControlStateNormal];
+    }
+    
+    
+    return cell;
+    
+}
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -71,8 +102,23 @@
         }
     }
     
-    
+    if (indexPath.section == 3) {
+        
+        UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        UIViewController *controller = [board instantiateViewControllerWithIdentifier:@"devicesid"];
+        
+        [self.navigationController pushViewController:controller animated:YES];
+        
+        VCLog(@"4");
+    }
 }
+//标头
+-(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    return titleArray[section];
+}
+
+
 
 #pragma mark -- 弹出框
 -(void)addShadeAndAlertView
@@ -85,7 +131,7 @@
     //pop
     popview = [[PopView alloc] initWithFrame:CGRectMake((DEVICE_WIDTH-200)/2, (DEVICE_HEIGHT-170)/2-50, 200, 170)];
     popview.delegate = self;
-    [popview initWithTitle:@"呼叫转移需要拇机号码等配置信息，请填写" firstMsg:@"邮箱" secondMsg:@"拇机号码" cancelButtonTitle:@"取消" otherButtonTitles:@"确定"];
+    [popview initWithTitle:NSLocalizedString(@"The_Call_Forwarding_was_get_info", nil) firstMsg:NSLocalizedString(@"E-mail", nil) secondMsg:NSLocalizedString(@"MuJi-Number", nil) cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:NSLocalizedString(@"Sure", nil)];
     
     [self.view.window addSubview:shadeView];
     [self.view.window addSubview:popview];
@@ -122,4 +168,12 @@
 
     
 }
+
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    VCLog(@"will disappear");
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
+}
+
 @end

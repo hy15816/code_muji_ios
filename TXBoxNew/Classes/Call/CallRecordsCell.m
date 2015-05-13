@@ -32,8 +32,7 @@
 
 - (IBAction)mesBtn:(UIButton *)sender {
     
-    ////自定键盘、callBtn,tabbar隐藏
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
+    
     
     //VCLog(@"msg");
 }

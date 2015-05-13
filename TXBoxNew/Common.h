@@ -61,7 +61,7 @@
 #define TelNumAddress @"http://virtual.paipai.com/extinfo/GetMobileProductInfo?mobile=%@&amount=10000&callname=getPhoneNumInfoExtCallback"
 
 //17.其它
-#define OtherNumber @"其它"
+#define OtherNumber NSLocalizedString(@"Other", nil)
 
 //18.状态栏高度 默认20
 #define StatusBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
@@ -76,4 +76,6 @@
 #define muji_bind_number @"muji_bind_number"
 //呼转状态
 #define call_divert @"call_divert"
+//window窗口
+#define WINDOW  [[UIApplication sharedApplication]keyWindow]
 

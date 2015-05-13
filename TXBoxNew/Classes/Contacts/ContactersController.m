@@ -40,6 +40,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.title = NSLocalizedString(@"Contacts", nil);
     
     sectionDic= [[NSMutableDictionary alloc] init];
     phoneDic=[[NSMutableDictionary alloc] init];
@@ -110,7 +111,7 @@
         if ([subView isKindOfClass:NSClassFromString(@"UINavigationButton")]) {
             cancelButton = (UIButton *)subView;
             //设置文本和颜色
-            [cancelButton setTitle:@"取消" forState:UIControlStateNormal];
+            [cancelButton setTitle:NSLocalizedString(@"Cancel", nil) forState:UIControlStateNormal];
             [cancelButton setTitleColor:RGBACOLOR(0, 103, 255, 1) forState:UIControlStateNormal];//蓝色
             cancelButton.titleLabel.font = [UIFont fontWithName:@"Heiti SC" size:15];
 
@@ -193,7 +194,7 @@
             name = [[NSString alloc] initWithFormat:@"%@",firstName];
         }else
         {
-            name = [[NSString alloc] initWithFormat:@"未知名字"];
+            name = [[NSString alloc] initWithFormat:NSLocalizedString(@"Unknow", nil)];
         }
         
         
@@ -488,7 +489,7 @@
 /*改变删除按钮的text*/
 -(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return @"删除";
+    return NSLocalizedString(@"Delete", nil);
 }
 
 // 是否可以编辑

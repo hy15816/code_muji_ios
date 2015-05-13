@@ -11,6 +11,7 @@
 #import "MsgDatas.h"
 #import "MsgDetailController.h"
 
+
 @interface MessageController ()
 
 @property (strong,nonatomic) NSMutableArray *array;
@@ -27,7 +28,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    self.title = NSLocalizedString(@"Message", nil);
     self.array = [NSMutableArray arrayWithObjects:@"1",nil];
     
 }
@@ -106,7 +107,7 @@
 
 -(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return @"删除";
+    return NSLocalizedString(@"Delete", nil);
 }
 
 

@@ -13,6 +13,8 @@
 #import "NSString+helper.h"
 #import "MsgDatas.h"
 #import "PopView.h"
+#import "MsgDetailController.h"
+#import "TXNavgationController.h"
 
 @interface CallController ()<UITextFieldDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate,PopViewDelegate>
 {
@@ -26,6 +28,7 @@
     PopView *popview;   //提示框
     UIAlertView *_alertView; //提示框
     NSUserDefaults *defaults;
+
 }
 
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
@@ -61,6 +64,7 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.title = NSLocalizedString(@"Phone", nil);
     [self loadCallRecords];
     
     self.selectedIndexPath = nil;
@@ -77,7 +81,7 @@
 
     
     //创建提醒对话框
-    _alertView = [[UIAlertView alloc] initWithTitle:nil message:@"请输入正确的邮箱和拇机号码" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    _alertView = [[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"Please_enter_the_correct_info", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"Sure", nil) otherButtonTitles:nil, nil];
     _alertView.delegate = self;
     [_alertView textFieldAtIndex:0];//获取输入框，在UIAlertViewStyle -> input模式
 }
@@ -87,7 +91,7 @@
 {
     newPerson = [[ABNewPersonViewController alloc]init];
     newPerson.newPersonViewDelegate=self;
-    newPerson.title = @"添加联系人";
+    newPerson.title = NSLocalizedString(@"Add_Ctontacts", nil);
     
     [self.navigationController pushViewController:newPerson animated:YES];
     VCLog(@"show");
@@ -135,6 +139,7 @@
     cell.hisHome.text = aRecord.hisHome;
     cell.hisOperator.text = aRecord.hisOperator;
     
+    [cell.MsgButton addTarget:self action:@selector(MsgButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     
     return cell;
 }
@@ -148,6 +153,24 @@
         case 2: return [UIImage imageNamed:@"icon_call_missed.png"];
     }
     return nil;
+}
+-(void)MsgButtonClick:(UIButton *)btn
+{
+    //自定键盘、callBtn,tabbar隐藏
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
+    
+    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
+    msgdata.hisName = aRecord.hisName;
+    msgdata.hisNumber = aRecord.hisNumber;
+    msgdata.hisHome = aRecord.hisHome;
+    
+    UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    MsgDetailController *controller = [board instantiateViewControllerWithIdentifier:@"msgDetail"];
+    controller.datailDatas = msgdata;
+    
+    [self.navigationController pushViewController:controller animated:YES];
+    
 }
 
 //单元格可编辑
@@ -195,7 +218,7 @@
 /*改变删除按钮的text*/
 -(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return @"删除";
+    return NSLocalizedString(@"Delete", nil);
 }
 
 //样式--删除
@@ -223,15 +246,18 @@
 //跳转前，把选中行的值传过去
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    
+    /*
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
     msgdata.hisName = aRecord.hisName;
     msgdata.hisNumber = aRecord.hisNumber;
     msgdata.hisHome = aRecord.hisHome;
-    
-    id view =[segue destinationViewController];
-    [view setValue:msgdata forKey:@"datailDatas"];
+    if(![segue.identifier isEqualToString:@"msgDetail"]){
+        
+        id page2 = segue.destinationViewController;
+        [page2 setValue:msgdata forKey:@"datailDatas"];
+    }
+    */
     
 }
 
@@ -259,14 +285,14 @@
     if ([[defaults valueForKey:call_divert] intValue]) {
         //已呼转,弹框提示，到拇机123456789321的呼转取消？
         
-        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"到拇机%@的呼转取消?",number] delegate:self cancelButtonTitle:@"否" otherButtonTitles:@"是", nil];
+        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Cancel_Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
         aliert.delegate = self;
         aliert.tag =100;
         [aliert show];
         
     }else{
         //未呼转,弹框提示，手机呼转到拇机123456789321？
-        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"手机呼转到拇机%@?",number] delegate:self cancelButtonTitle:@"否" otherButtonTitles:@"是", nil];
+        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
         aliert.delegate = self;
         aliert.tag =101;
         [aliert show];
@@ -285,7 +311,7 @@
     //pop
     popview = [[PopView alloc] initWithFrame:CGRectMake((DEVICE_WIDTH-200)/2, (DEVICE_HEIGHT-170)/2-50, 200, 170)];
     popview.delegate = self;
-    [popview initWithTitle:@"呼叫转移需要拇机号码等配置信息，请填写" firstMsg:@"邮箱" secondMsg:@"拇机号码" cancelButtonTitle:@"取消" otherButtonTitles:@"确定"];
+    [popview initWithTitle:NSLocalizedString(@"The_Call_Forwarding_was_get_info", nil) firstMsg:NSLocalizedString(@"E-mail", nil) secondMsg:NSLocalizedString(@"MuJi-Number", nil) cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:NSLocalizedString(@"Sure", nil)];
     
     [self.view.window addSubview:shadeView];
     [self.view.window addSubview:popview];
@@ -365,6 +391,20 @@
         VCLog(@"anotherNumber:%@",str);
     }
     
+}
+
+-(UIImage *)hjkl
+{
+    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, self.view.opaque, 0.0);
+    
+    //当前层渲染到上下文
+    [self.view.layer renderInContext:UIGraphicsGetCurrentContext()];
+    
+    //上下文形成图片
+    UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
+    //结束并删除当前基于位图的图形上下文。
+    UIGraphicsEndImageContext();
+    return img;
 }
 
 @end

@@ -29,11 +29,12 @@
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.title = NSLocalizedString(@"New_Msg", nil);
     //
     self.hisNumber.delegate =self;
     self.hisNumber.contentMode = UIViewContentModeTopLeft;
