@@ -11,8 +11,6 @@
 @implementation TXSqliteOperate
 
 
-
-
 #pragma mark --打开数据库
 -(BOOL)openDatabase
 {

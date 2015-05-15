@@ -138,11 +138,12 @@
     
     //初始化电话簿
     ABAddressBookRef myAddressBook = nil;
+    CFErrorRef *error = nil;
     
     //判断ios版本，6.0+需获取权限
     if (IOS_DEVICE_VERSION>=6.0) {
         
-        myAddressBook=ABAddressBookCreateWithOptions(NULL, NULL);
+        myAddressBook=ABAddressBookCreateWithOptions(NULL, error);
         dispatch_semaphore_t sema=dispatch_semaphore_create(0);
         ABAddressBookRequestAccessWithCompletion(myAddressBook, ^(bool greanted, CFErrorRef error){
             dispatch_semaphore_signal(sema);
@@ -154,7 +155,7 @@
     else
     {
         //6.0以下直接获取
-        CFErrorRef *error = nil;
+        
         myAddressBook = ABAddressBookCreateWithOptions(nil, error);
         //myAddressBook =ABAddressBookCreate();
     }
@@ -170,6 +171,7 @@
     CFMutableArrayRef mresults=CFArrayCreateMutableCopy(kCFAllocatorDefault,CFArrayGetCount(results),results);
     
     //将结果按照拼音排序，将结果放入mresults数组中
+        
     CFArraySortValues(mresults,
                       CFRangeMake(0, CFArrayGetCount(results)),
                       (CFComparatorFunction) ABPersonComparePeopleByName,
@@ -547,7 +549,8 @@
     CFErrorRef *error;
     
     // 1.初始化并创建通讯录对象，记得释放内存
-    ABAddressBookRef addressBook = ABAddressBookCreate();
+    //ABAddressBookRef addressBook = ABAddressBookCreate();
+    ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
     
     NSArray *array = (__bridge NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
     // 3.遍历所有的联系人并修改指定的联系人

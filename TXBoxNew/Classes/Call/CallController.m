@@ -393,18 +393,4 @@
     
 }
 
--(UIImage *)hjkl
-{
-    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, self.view.opaque, 0.0);
-    
-    //当前层渲染到上下文
-    [self.view.layer renderInContext:UIGraphicsGetCurrentContext()];
-    
-    //上下文形成图片
-    UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
-    //结束并删除当前基于位图的图形上下文。
-    UIGraphicsEndImageContext();
-    return img;
-}
-
 @end
