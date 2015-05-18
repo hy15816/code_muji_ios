@@ -6,6 +6,8 @@
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 
+
+
 #import "CallController.h"
 #import "TXSqliteOperate.h"
 #import "CallingController.h"
@@ -15,6 +17,7 @@
 #import "PopView.h"
 #import "MsgDetailController.h"
 #import "TXNavgationController.h"
+#import "ContactersController.h"
 
 @interface CallController ()<UITextFieldDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate,PopViewDelegate>
 {
@@ -28,6 +31,7 @@
     PopView *popview;   //提示框
     UIAlertView *_alertView; //提示框
     NSUserDefaults *defaults;
+    NSMutableArray *mutPhoneArray;
 
 }
 
@@ -45,14 +49,52 @@
 - (void) loadCallRecords{
     //创建data对象的数组
     CallRecords = [[NSMutableArray alloc] init];
-    
+    mutPhoneArray =[[NSMutableArray alloc] init];
     sqlite = [[TXSqliteOperate alloc] init];
 
+}
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    //获取数据
+    ContactersController *contacts = [[ContactersController alloc] init];
+    mutPhoneArray = [contacts loadContacts];
+    
+    
+    
+    VCLog(@"mutPhoneArray:%@",mutPhoneArray);
+}
+
+- (void)registerForKeyboardNotifications
+{
+    //使用NSNotificationCenter 键盘出现时
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
+    
+}
+//显示
+- (void)keyboardWasShow:(NSNotification*)aNotification
+{
+    NSDictionary* info = [aNotification userInfo];
+    /*
+    NSNumber *duration = [info objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    VCLog(@"duration:%@",duration);
+    CGRect beginRect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+     */
+    CGRect endRect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    
+    VCLog(@"·······%f",endRect.size.height);
+    [UIView beginAnimations:@"" context:nil];
+    popview.frame =  CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, DEVICE_HEIGHT-PopViewHeight-endRect.size.height, PopViewWidth, PopViewHeight);
+    [UIView setAnimationDuration:.25];
+    [UIView commitAnimations];
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    //键盘活动
+    [self registerForKeyboardNotifications];
+    
     //显示tabbar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
     
@@ -307,13 +349,14 @@
     shadeView =[[UIView alloc] initWithFrame:self.view.window.bounds];
     shadeView.backgroundColor = [UIColor grayColor];//self.view.window.bounds
     shadeView.alpha = .5;
+    [self.view.window addSubview:shadeView];
     
     //pop
-    popview = [[PopView alloc] initWithFrame:CGRectMake((DEVICE_WIDTH-200)/2, (DEVICE_HEIGHT-170)/2-50, 200, 170)];
+    popview = [[PopView alloc] initWithFrame:CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, DEVICE_HEIGHT-PopViewHeight-216, PopViewWidth, PopViewHeight)];
     popview.delegate = self;
     [popview initWithTitle:NSLocalizedString(@"The_Call_Forwarding_was_get_info", nil) firstMsg:NSLocalizedString(@"E-mail", nil) secondMsg:NSLocalizedString(@"MuJi-Number", nil) cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:NSLocalizedString(@"Sure", nil)];
     
-    [self.view.window addSubview:shadeView];
+    
     [self.view.window addSubview:popview];
 }
 
@@ -332,14 +375,34 @@
     }
     //sure按钮
     if (button.tag == 1) {
-        if (email.length<=0 || number.length<=0 || ![email isValidateEmail:email] || ![number isValidateMobile:number]) {
+        if (email.length<=0 || number.length<=0 || ![number isValidateMobile:number]) {
             [_alertView show];
         }else
         {
-            //保存数据
+            //本地保存数据
             [defaults setValue:email forKey:email_number];
             [defaults setValue:number forKey:muji_bind_number];
             
+            //上传到服务器
+            /*
+            AVUser *auser = [AVUser user];
+            auser.username = sfield.text;//号码
+            auser.password = @"";
+            auser.email = ffield.text;//邮箱
+            
+            [auser signUpInBackgroundWithBlock:^(BOOL suc,NSError *error){
+                
+                if (suc) {
+                    VCLog(@"sign suc");
+                }else{
+                    VCLog(@"reg error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
+                    UIAlertView *alert =[[UIAlertView alloc] initWithTitle:error.localizedDescription message:nil delegate:self cancelButtonTitle:@"是" otherButtonTitles:nil, nil];
+                    alert.delegate = self;
+                    [alert show];
+                }
+            }];
+            */
+             
             VCLog(@"save-->email:%@,number:%@",email,number);
             [shadeView removeFromSuperview];
             [popview removeFromSuperview];

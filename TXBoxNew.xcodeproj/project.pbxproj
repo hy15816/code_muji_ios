@@ -54,6 +54,12 @@
 		63DEA6841B009568003343A7 /* AddContacterController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6831B009568003343A7 /* AddContacterController.m */; };
 		63DEA68A1B0095F7003343A7 /* BLEDeviceCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6871B0095F7003343A7 /* BLEDeviceCell.m */; };
 		63DEA68B1B0095F7003343A7 /* BLEDevicesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6891B0095F7003343A7 /* BLEDevicesController.m */; };
+		63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FAC61B09C8B8005C7258 /* SystemConfiguration.framework */; };
+		63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */; };
+		63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FACA1B09C8D7005C7258 /* libicucore.dylib */; };
+		63E1FACD1B09C8E5005C7258 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */; };
+		63E1FACF1B09C8F2005C7258 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */; };
+		63E1FAD11B09C982005C7258 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FAD01B09C982005C7258 /* AVOSCloud.framework */; };
 		63FB5FD51ADBB58700A1A92B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB5FD41ADBB58700A1A92B /* main.m */; };
 		63FB5FD81ADBB58700A1A92B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB5FD71ADBB58700A1A92B /* AppDelegate.m */; };
 		63FB5FDE1ADBB58700A1A92B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63FB5FDC1ADBB58700A1A92B /* Main.storyboard */; };
@@ -166,6 +172,12 @@
 		63DEA6871B0095F7003343A7 /* BLEDeviceCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLEDeviceCell.m; sourceTree = "<group>"; };
 		63DEA6881B0095F7003343A7 /* BLEDevicesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLEDevicesController.h; sourceTree = "<group>"; };
 		63DEA6891B0095F7003343A7 /* BLEDevicesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLEDevicesController.m; sourceTree = "<group>"; };
+		63E1FAC61B09C8B8005C7258 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		63E1FACA1B09C8D7005C7258 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
+		63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		63E1FAD01B09C982005C7258 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		63FB5FCF1ADBB58700A1A92B /* TXBoxNew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TXBoxNew.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63FB5FD31ADBB58700A1A92B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		63FB5FD41ADBB58700A1A92B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -184,7 +196,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63E1FACF1B09C8F2005C7258 /* CoreLocation.framework in Frameworks */,
+				63E1FACD1B09C8E5005C7258 /* CoreTelephony.framework in Frameworks */,
+				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
+				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
+				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
+				63E1FAD11B09C982005C7258 /* AVOSCloud.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -446,13 +464,27 @@
 			path = setting;
 			sourceTree = "<group>";
 		};
+		63E1FAC31B09C7DF005C7258 /*  StaticLibrarys */ = {
+			isa = PBXGroup;
+			children = (
+				63E1FAD01B09C982005C7258 /* AVOSCloud.framework */,
+				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
+				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
+				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
+				63E1FAC61B09C8B8005C7258 /* SystemConfiguration.framework */,
+				632AC6431ADCF0240023FAA9 /* libsqlite3.dylib */,
+				63E1FACA1B09C8D7005C7258 /* libicucore.dylib */,
+			);
+			path = " StaticLibrarys";
+			sourceTree = "<group>";
+		};
 		63FB5FC61ADBB58700A1A92B = {
 			isa = PBXGroup;
 			children = (
-				632AC6431ADCF0240023FAA9 /* libsqlite3.dylib */,
 				63FB5FD11ADBB58700A1A92B /* TXBoxNew */,
 				63FB5FEB1ADBB58800A1A92B /* TXBoxNewTests */,
 				63FB5FD01ADBB58700A1A92B /* Products */,
+				63E1FAC31B09C7DF005C7258 /*  StaticLibrarys */,
 			);
 			sourceTree = "<group>";
 		};
@@ -802,6 +834,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
 				HEADER_SEARCH_PATHS = (
@@ -825,6 +862,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
 				HEADER_SEARCH_PATHS = (

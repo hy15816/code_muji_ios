@@ -64,7 +64,7 @@
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LIt-xP-1BU">
                                             <rect key="frame" x="18" y="58" width="32" height="33"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <state key="normal" image="icon_call32">
+                                            <state key="normal" image="icon_call">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                             <connections>
@@ -74,7 +74,7 @@
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="azS-ak-6ke">
                                             <rect key="frame" x="570" y="58" width="32" height="33"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <state key="normal" image="icon_person32">
+                                            <state key="normal" image="icon_person">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                             <connections>
@@ -99,7 +99,7 @@
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fUU-ez-0NB">
                                             <rect key="frame" x="284" y="58" width="32" height="33"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <state key="normal" image="icon_message32">
+                                            <state key="normal" image="icon_message">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                             <connections>
@@ -184,15 +184,15 @@
                                             <exclude reference="O6b-Qx-WFF"/>
                                             <exclude reference="gU6-CT-tC3"/>
                                             <exclude reference="963-cI-mMC"/>
-                                            <exclude reference="xJt-9t-TTh"/>
                                             <exclude reference="BaL-QZ-BFW"/>
                                             <exclude reference="yxy-WL-9XM"/>
                                             <exclude reference="KGK-G5-UCL"/>
                                             <exclude reference="Rn7-ky-QEv"/>
                                             <exclude reference="yXf-rj-yr8"/>
+                                            <exclude reference="xJt-9t-TTh"/>
+                                            <exclude reference="oxy-qj-aWL"/>
                                             <exclude reference="9Ji-TN-xk0"/>
                                             <exclude reference="dOg-JT-IG9"/>
-                                            <exclude reference="oxy-qj-aWL"/>
                                         </mask>
                                     </variation>
                                     <variation key="widthClass=compact">
@@ -211,10 +211,10 @@
                                             <exclude reference="Rn7-ky-QEv"/>
                                             <exclude reference="UzT-Tg-LdP"/>
                                             <include reference="yXf-rj-yr8"/>
-                                            <include reference="9Ji-TN-xk0"/>
-                                            <exclude reference="Quo-CM-wh3"/>
                                             <exclude reference="Hs5-HO-K2Q"/>
                                             <include reference="oxy-qj-aWL"/>
+                                            <include reference="9Ji-TN-xk0"/>
+                                            <exclude reference="Quo-CM-wh3"/>
                                         </mask>
                                     </variation>
                                 </tableViewCellContentView>
@@ -302,7 +302,7 @@
                                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q1Y-i5-hFI">
                                             <rect key="frame" x="318" y="48" width="284" height="23"/>
                                             <inset key="contentEdgeInsets" minX="4" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                            <state key="normal" image="icon_person32">
+                                            <state key="normal" image="icon_person">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                             <connections>
@@ -312,14 +312,14 @@
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XmP-t5-a7D">
                                             <rect key="frame" x="18" y="48" width="264" height="23"/>
                                             <inset key="contentEdgeInsets" minX="6" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                            <state key="normal" image="icon_call32">
+                                            <state key="normal" image="icon_call">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tDN-7U-j3A">
                                             <rect key="frame" x="282" y="48" width="36" height="23"/>
                                             <inset key="contentEdgeInsets" minX="4" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                            <state key="normal" image="icon_message32">
+                                            <state key="normal" image="icon_message">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                             <connections>
@@ -892,13 +892,13 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="邮箱和拇机号码" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mfZ-kc-eLr">
-                                            <rect key="frame" x="28" y="11" width="119" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <rect key="frame" x="28" y="11" width="98" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <button opaque="NO" alpha="0.49999999999999961" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jPG-Fb-xZO">
-                                            <rect key="frame" x="476" y="9" width="88" height="24"/>
+                                            <rect key="frame" x="476" y="10" width="88" height="24"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <state key="normal" title="13698006536">
                                                 <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
@@ -907,12 +907,12 @@
                                         </button>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="bottomMargin" secondItem="jPG-Fb-xZO" secondAttribute="bottom" constant="2" id="6O0-RB-Ut4"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="jPG-Fb-xZO" secondAttribute="bottom" constant="1" id="6O0-RB-Ut4"/>
                                         <constraint firstAttribute="bottomMargin" secondItem="mfZ-kc-eLr" secondAttribute="bottom" constant="3" id="QNZ-0q-X5G"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="jPG-Fb-xZO" secondAttribute="trailing" constant="-5" id="Rq7-8d-D13"/>
                                         <constraint firstItem="mfZ-kc-eLr" firstAttribute="leading" secondItem="b2m-q4-Zmx" secondAttribute="leadingMargin" constant="20" id="TcH-fU-zHC"/>
                                         <constraint firstItem="mfZ-kc-eLr" firstAttribute="top" secondItem="b2m-q4-Zmx" secondAttribute="topMargin" constant="3" id="aWw-ir-ABN"/>
-                                        <constraint firstItem="jPG-Fb-xZO" firstAttribute="top" secondItem="b2m-q4-Zmx" secondAttribute="topMargin" constant="1" id="ayb-Ih-W23"/>
+                                        <constraint firstItem="jPG-Fb-xZO" firstAttribute="top" secondItem="b2m-q4-Zmx" secondAttribute="topMargin" constant="2" id="ayb-Ih-W23"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
@@ -1420,9 +1420,9 @@
         <image name="actionbar_call_hub32" width="32" height="32"/>
         <image name="call_another60" width="30" height="30"/>
         <image name="calling_bg" width="450" height="720"/>
-        <image name="icon_call32" width="32" height="32"/>
+        <image name="icon_call" width="32" height="32"/>
         <image name="icon_call_missed" width="24" height="30"/>
-        <image name="icon_message32" width="32" height="32"/>
-        <image name="icon_person32" width="32" height="32"/>
+        <image name="icon_message" width="32" height="32"/>
+        <image name="icon_person" width="32" height="32"/>
     </resources>
 </document>

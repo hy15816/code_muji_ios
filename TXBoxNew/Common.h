@@ -79,3 +79,5 @@
 //window窗口
 #define WINDOW  [[UIApplication sharedApplication]keyWindow]
 
+#define PopViewHeight 170   //弹出框高度
+#define PopViewWidth 200    //弹出框宽度
