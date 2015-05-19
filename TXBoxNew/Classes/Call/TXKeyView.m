@@ -32,7 +32,7 @@
     
     [self endEditing:YES];
     
-    
+
 }
 
 
@@ -143,7 +143,7 @@
         self.textsearch.text = [self.textsearch.text stringByReplacingCharactersInRange:NSMakeRange(textsearch.text.length-1, 1) withString:@""];
     }
     singleton.singletonValue = self.textsearch.text;
-    //[self searchWithString:self.textsearch.text];
+    
     //2.通过通知中心发送通知
     if (self.textsearch.text.length>0) {
         [[NSNotificationCenter defaultCenter] postNotification:notification];
@@ -171,9 +171,7 @@
             
             break;
     }
-    //调用输入号码与电话薄中的号码相匹配的方法
-    //[self searchWithString:self.textsearch.text];
-   
+
     //利用单利保存呼叫的号码
     singleton.singletonValue = self.textsearch.text;
     //VCLog(@"singletonValue: %@",singleton.singletonValue);
@@ -184,13 +182,6 @@
         [[NSNotificationCenter defaultCenter] postNotification:notification];
         
     }
-    
-}
-//输入文本的改变
--(void)searchWithString:(NSString *)searchString
-{
-    
-    VCLog(@"search %@",searchString);
     
 }
 

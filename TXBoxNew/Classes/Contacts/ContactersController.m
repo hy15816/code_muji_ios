@@ -25,6 +25,7 @@
     NSArray *sortedArray;               //排序后的数组
     ABNewPersonViewController *newPerson;
     MsgDatas *msgdata;
+    
 }
 
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
@@ -368,7 +369,7 @@
         Records *record = self.searchsArray[indexPath.row];
         cell.nameLabel.text = record.personName;
         cell.numberLabel.text = record.personTel;
-        [cell.msgsBtn addTarget:self action:@selector(msgsBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        
     }
     else{
         //原生表
@@ -381,9 +382,9 @@
         cell.numberLabel.text = [[[[persons objectAtIndex:indexPath.row] objectForKey:@"personTel"] purifyString] insertStr];
         VCLog(@"name:%@,number:%@",cell.nameLabel.text,cell.numberLabel.text);
         
-        [cell.msgsBtn addTarget:self action:@selector(msgsBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        
     }
-    
+    [cell.msgsBtn addTarget:self action:@selector(msgsBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     return cell;
 }
 -(void)msgsBtnClick:(UIButton *)btn

@@ -30,18 +30,6 @@
     
 }
 
-- (IBAction)mesBtn:(UIButton *)sender {
-    
-    
-    
-    //VCLog(@"msg");
-}
-- (IBAction)personBtn:(UIButton *)sender {
-    
-    //显示add联系人界面
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowAddContacts object:self]];
-    //VCLog(@"person");
-}
 
 
 #pragma mark-创建上下分割线
