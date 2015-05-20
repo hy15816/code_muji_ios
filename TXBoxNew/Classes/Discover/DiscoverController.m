@@ -157,6 +157,10 @@
     shadeView.alpha = .5;
     [self.view.window addSubview:shadeView];
     
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(shadeViewTap:)];
+    tap.numberOfTapsRequired = 1;
+    [shadeView addGestureRecognizer:tap];
+    
     //pop
     popview = [[PopView alloc] initWithFrame:CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, DEVICE_HEIGHT-PopViewHeight-216, PopViewWidth, PopViewHeight)];
     popview.delegate = self;
@@ -165,6 +169,13 @@
     [self.view.window addSubview:popview];
 }
 
+-(void)shadeViewTap:(UIGestureRecognizer *)recongnizer
+{
+    VCLog(@"-------tap");
+    
+    [shadeView removeFromSuperview];
+    [popview removeFromSuperview];
+}
 #pragma mark -- popview Delegate
 -(void)resaultsButtonClick:(UIButton *)button firstField:(UITextField *)ffield secondField:(UITextField *)sfield
 {

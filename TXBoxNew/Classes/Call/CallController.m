@@ -21,12 +21,12 @@
 #import "CustomTabBarView.h"
 #import "Records.h"
 
-@interface CallController ()<UITextFieldDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate,PopViewDelegate>
+@interface CallController ()<UITextFieldDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate,PopViewDelegate>
 {
     NSMutableArray *CallRecords;
     TXSqliteOperate *sqlite;
     CallingController *calling;
-    ABNewPersonViewController *newPerson;
+    
     MsgDatas *msgdata;
     UIWebView *webView;
     UIView *shadeView;  //遮罩层
@@ -68,7 +68,7 @@
     //排序
     CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
     [self.tableView reloadData];
-    [self showAddperson];
+    
 }
 
 //键盘显示
@@ -108,6 +108,7 @@
     _alertView = [[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"Please_enter_the_correct_info", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"Sure", nil) otherButtonTitles:nil, nil];
     _alertView.delegate = self;
     [_alertView textFieldAtIndex:0];//获取输入框，在UIAlertViewStyle -> input模式
+    
     
 }
 
@@ -219,7 +220,7 @@
 {
     //自定键盘、callBtn,tabbar隐藏
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
-    
+    //当前选中行
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
     msgdata.hisName = aRecord.hisName;
@@ -233,13 +234,29 @@
     [self.navigationController pushViewController:controller animated:YES];
     
 }
-//跳转到添加联系人
+//
 -(void)PersonButtonClick:(UIButton *)btn
 {
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowAddContacts object:self]];
-    [self.navigationController pushViewController:newPerson animated:YES];
-    VCLog(@"show");
+    //隐藏tabbar和callBtn
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kHideTabBarAndCallBtn object:self]];
+    //当前选中行
+    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
+    VCLog(@"==================hisname:%@",aRecord.hisName);
+    if (aRecord.hisName.length==0 || [aRecord.hisName isEqualToString:@""] || aRecord.hisName ==nil) {
+        //跳转到添加联系人
+        
+        [self showAddperson];
+        
+        VCLog(@"show newPerson view");
+    }else
+    {
+        //跳转 详情->编辑
+        [self showPersonViewControllerWithName:aRecord.hisName];
+    }
+    
 }
+
 
 //设置cell高度
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -361,6 +378,11 @@
     shadeView.alpha = .5;
     [self.view.window addSubview:shadeView];
     
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(shadeViewTap:)];
+    tap.numberOfTapsRequired = 1;
+    [shadeView addGestureRecognizer:tap];
+    
+    
     //pop
     popview = [[PopView alloc] initWithFrame:CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, DEVICE_HEIGHT-PopViewHeight-216, PopViewWidth, PopViewHeight)];
     popview.delegate = self;
@@ -370,6 +392,13 @@
     [self.view.window addSubview:popview];
 }
 
+-(void)shadeViewTap:(UIGestureRecognizer *)recongnizer
+{
+    VCLog(@"-------tap");
+    
+    [shadeView removeFromSuperview];
+    [popview removeFromSuperview];
+}
 
 #pragma mark-- popview delegate
 -(void)resaultsButtonClick:(UIButton *)button firstField:(UITextField *)ffield secondField:(UITextField *)sfield
@@ -610,15 +639,56 @@
 //跳转到add联系人
 -(void)showAddperson
 {
-    newPerson = [[ABNewPersonViewController alloc]init];
+    ABNewPersonViewController *newPerson = [[ABNewPersonViewController alloc]init];
     newPerson.newPersonViewDelegate=self;
     newPerson.title = NSLocalizedString(@"Add_Ctontacts", nil);
-    
+    [self.navigationController pushViewController:newPerson animated:YES];
 }
-
+#pragma mark --new person
 -(void)newPersonViewController:(ABNewPersonViewController *)newPersonView didCompleteWithNewPerson:(ABRecordRef)person
 {
     [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+
+#pragma mark -- 跳转到编辑联系人
+//跳转到edit联系人
+-(void)showPersonViewControllerWithName:(NSString *)string{
+    CFStringRef name = (__bridge CFStringRef)string;
+    //CFErrorRef *error;
+    //  获取通讯录
+    ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL,NULL) ;//ABAddressBookCreate()
+    //  查找名字为Appleseed的联系人
+    NSArray *people = (__bridge NSArray *)ABAddressBookCopyPeopleWithName(addressBook,name);//
+    // 若找到了，显示其信息
+    if ((people != nil) && [people count])
+    {
+        ABRecordRef person = (__bridge ABRecordRef)[people objectAtIndex:0];
+        ABPersonViewController *picker = [[ABPersonViewController alloc] init];
+        picker.personViewDelegate = self;
+        picker.displayedPerson = person;
+        picker.allowsEditing = YES;//是否显示编辑按钮
+        picker.allowsActions = NO;//是否显示可以打电话发信息
+        [self.navigationController pushViewController:picker animated:YES];
+        
+    }
+    else
+    {
+        // 提示找不到联系人
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"Could not find %@",string] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
+        [alert show];
+        
+    }
+    
+    CFRelease(addressBook);
+    
+}
+
+#pragma mark --ABPersonViewControllerDelegate methods
+// Does not allow users to perform default actions such as dialing a phone number, when they select a contact property. 不允许用户执行默认行为如拨电话号码，当他们选择一个联系人。
+- (BOOL)personViewController:(ABPersonViewController *)personViewController shouldPerformDefaultActionForPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifierForValue
+{
+    return NO;
 }
 
 

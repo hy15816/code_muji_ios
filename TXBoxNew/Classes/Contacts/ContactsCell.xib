@@ -26,9 +26,6 @@
                         <state key="normal" image="icon_edit">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
-                        <connections>
-                            <action selector="editBtn:" destination="XEI-8E-ODv" eventType="touchUpInside" id="RAZ-Q7-8br"/>
-                        </connections>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EG3-eL-CW6">
                         <rect key="frame" x="18" y="48" width="38" height="23"/>
@@ -46,14 +43,11 @@
                         <state key="normal" image="icon_message">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
-                        <connections>
-                            <action selector="msgBtn:" destination="XEI-8E-ODv" eventType="touchUpInside" id="w63-eg-JGZ"/>
-                        </connections>
                     </button>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sri-W9-yG7">
                         <rect key="frame" x="340" y="13" width="42" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
@@ -83,6 +77,7 @@
                 </variation>
             </tableViewCellContentView>
             <connections>
+                <outlet property="editBtn" destination="MWK-x8-yAh" id="GNO-id-Zyo"/>
                 <outlet property="msgsBtn" destination="sWR-wA-5dr" id="ZeI-Db-y9c"/>
                 <outlet property="nameLabel" destination="3eJ-3F-yhQ" id="jtn-0m-JiI"/>
                 <outlet property="numberLabel" destination="sri-W9-yG7" id="sZ0-xb-7vn"/>

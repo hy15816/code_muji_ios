@@ -32,7 +32,6 @@
 		637005CC1AE4C1D000B8BAFD /* TXMessageProcessing.m in Sources */ = {isa = PBXBuildFile; fileRef = 637005C91AE4C1D000B8BAFD /* TXMessageProcessing.m */; };
 		637005D81AE4DE2400B8BAFD /* NSString+helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 637005D51AE4DE2400B8BAFD /* NSString+helper.m */; };
 		637005D91AE4DE2400B8BAFD /* TXGeneral+helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 637005D71AE4DE2400B8BAFD /* TXGeneral+helper.m */; };
-		63706E1D1B0B0E5C0068A75E /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63706E1C1B0B0E5C0068A75E /* AVOSCloud.framework */; };
 		637C29CE1AEB997400CD3DAF /* ContactersController.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29CD1AEB997400CD3DAF /* ContactersController.m */; };
 		637C29D51AEB9B0200CD3DAF /* BATableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29D11AEB9B0200CD3DAF /* BATableView.m */; };
 		637C29D61AEB9B0200CD3DAF /* BATableViewIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29D31AEB9B0200CD3DAF /* BATableViewIndex.m */; };
@@ -43,6 +42,8 @@
 		63D7A59F1B01AD9B004362B0 /* AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D7A59A1B01AD9B004362B0 /* AKNumericFormatter.m */; };
 		63D7A5A01B01AD9B004362B0 /* NSString+AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D7A59C1B01AD9B004362B0 /* NSString+AKNumericFormatter.m */; };
 		63D7A5A11B01AD9B004362B0 /* UITextField+AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D7A59E1B01AD9B004362B0 /* UITextField+AKNumericFormatter.m */; };
+		63D97E151B0C874100C5C33B /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D97E141B0C874100C5C33B /* AVOSCloud.framework */; };
+		63D97E181B0C8B3000C5C33B /* TXMsgData.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D97E171B0C8B3000C5C33B /* TXMsgData.m */; };
 		63DBF8AC1B0303C500041321 /* TXNavgationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DBF8AB1B0303C500041321 /* TXNavgationController.m */; };
 		63DBF8B21B0321FB00041321 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63DBF8B41B0321FB00041321 /* Localizable.strings */; };
 		63DBF8B81B033D1600041321 /* DiscoverCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DBF8B71B033D1600041321 /* DiscoverCell.m */; };
@@ -136,7 +137,6 @@
 		637005D51AE4DE2400B8BAFD /* NSString+helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+helper.m"; sourceTree = "<group>"; };
 		637005D61AE4DE2400B8BAFD /* TXGeneral+helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TXGeneral+helper.h"; sourceTree = "<group>"; };
 		637005D71AE4DE2400B8BAFD /* TXGeneral+helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TXGeneral+helper.m"; sourceTree = "<group>"; };
-		63706E1C1B0B0E5C0068A75E /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		637C29CC1AEB997400CD3DAF /* ContactersController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactersController.h; sourceTree = "<group>"; };
 		637C29CD1AEB997400CD3DAF /* ContactersController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactersController.m; sourceTree = "<group>"; };
 		637C29D01AEB9B0200CD3DAF /* BATableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BATableView.h; sourceTree = "<group>"; };
@@ -156,6 +156,9 @@
 		63D7A59C1B01AD9B004362B0 /* NSString+AKNumericFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+AKNumericFormatter.m"; sourceTree = "<group>"; };
 		63D7A59D1B01AD9B004362B0 /* UITextField+AKNumericFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+AKNumericFormatter.h"; sourceTree = "<group>"; };
 		63D7A59E1B01AD9B004362B0 /* UITextField+AKNumericFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+AKNumericFormatter.m"; sourceTree = "<group>"; };
+		63D97E141B0C874100C5C33B /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
+		63D97E161B0C8B3000C5C33B /* TXMsgData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXMsgData.h; sourceTree = "<group>"; };
+		63D97E171B0C8B3000C5C33B /* TXMsgData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXMsgData.m; sourceTree = "<group>"; };
 		63DBF8AA1B0303C500041321 /* TXNavgationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXNavgationController.h; sourceTree = "<group>"; };
 		63DBF8AB1B0303C500041321 /* TXNavgationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXNavgationController.m; sourceTree = "<group>"; };
 		63DBF8B31B0321FB00041321 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -219,7 +222,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				63706E1D1B0B0E5C0068A75E /* AVOSCloud.framework in Frameworks */,
+				63D97E151B0C874100C5C33B /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -252,6 +255,8 @@
 				632AC6361ADCE92F0023FAA9 /* TXData.m */,
 				632AC6371ADCE92F0023FAA9 /* TXSqliteOperate.h */,
 				632AC6381ADCE92F0023FAA9 /* TXSqliteOperate.m */,
+				63D97E161B0C8B3000C5C33B /* TXMsgData.h */,
+				63D97E171B0C8B3000C5C33B /* TXMsgData.m */,
 			);
 			path = Sqlite_3;
 			sourceTree = "<group>";
@@ -438,6 +443,21 @@
 			path = AKNumericFormatter;
 			sourceTree = "<group>";
 		};
+		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
+			isa = PBXGroup;
+			children = (
+				63D97E141B0C874100C5C33B /* AVOSCloud.framework */,
+				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
+				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
+				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
+				63E1FAC61B09C8B8005C7258 /* SystemConfiguration.framework */,
+				632AC6431ADCF0240023FAA9 /* libsqlite3.dylib */,
+				63E1FACA1B09C8D7005C7258 /* libicucore.dylib */,
+			);
+			name = " StaticLibrarys";
+			path = "TXBoxNew/ StaticLibrarys";
+			sourceTree = "<group>";
+		};
 		63DEA66E1B009425003343A7 /* msgDetail */ = {
 			isa = PBXGroup;
 			children = (
@@ -483,20 +503,6 @@
 			path = setting;
 			sourceTree = "<group>";
 		};
-		63E1FAC31B09C7DF005C7258 /*  StaticLibrarys */ = {
-			isa = PBXGroup;
-			children = (
-				63706E1C1B0B0E5C0068A75E /* AVOSCloud.framework */,
-				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
-				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
-				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
-				63E1FAC61B09C8B8005C7258 /* SystemConfiguration.framework */,
-				632AC6431ADCF0240023FAA9 /* libsqlite3.dylib */,
-				63E1FACA1B09C8D7005C7258 /* libicucore.dylib */,
-			);
-			path = " StaticLibrarys";
-			sourceTree = "<group>";
-		};
 		63E1FAD41B0AD5DE005C7258 /* PinYin4Objc */ = {
 			isa = PBXGroup;
 			children = (
@@ -538,7 +544,7 @@
 				63FB5FD11ADBB58700A1A92B /* TXBoxNew */,
 				63FB5FEB1ADBB58800A1A92B /* TXBoxNewTests */,
 				63FB5FD01ADBB58700A1A92B /* Products */,
-				63E1FAC31B09C7DF005C7258 /*  StaticLibrarys */,
+				63D97E131B0C86FA00C5C33B /*  StaticLibrarys */,
 			);
 			sourceTree = "<group>";
 		};
@@ -714,6 +720,7 @@
 				632AC63A1ADCE92F0023FAA9 /* TXSqliteOperate.m in Sources */,
 				63FB5FD81ADBB58700A1A92B /* AppDelegate.m in Sources */,
 				6350035F1ADFBB750051377F /* Records.m in Sources */,
+				63D97E181B0C8B3000C5C33B /* TXMsgData.m in Sources */,
 				6352995C1ADE0296006840AC /* TXTelNumSingleton.m in Sources */,
 				63D7A5951B0196A9004362B0 /* PopView.m in Sources */,
 				63E1FAE61B0AD5DE005C7258 /* PinyinFormatter.m in Sources */,
@@ -902,6 +909,10 @@
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
+					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
@@ -933,6 +944,10 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

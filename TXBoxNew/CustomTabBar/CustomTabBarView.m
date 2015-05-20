@@ -85,7 +85,8 @@
     self.callBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     self.callBtn.frame = CGRectMake(self.frame.size.width/4, 0, self.frame.size.width/2, self.frame.size.height);
     self.callBtn.hidden = YES;
-    [self.callBtn setImage:[UIImage imageNamed:@"call"] forState:UIControlStateNormal];
+    [self.callBtn setImage:[UIImage imageNamed:@"tool_bar_icon_call_normal"] forState:UIControlStateNormal];
+    [self.callBtn setImage:[UIImage imageNamed:@"tool_bar_icon_call_pressed"] forState:UIControlStateNormal];
     [self.callBtn addTarget:self action:@selector(callBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
     [self addSubview: self.callBtn];
