@@ -9,6 +9,7 @@
 #import "BLEDevicesController.h"
 #import "BLEDeviceCell.h"
 #import <CoreBluetooth/CoreBluetooth.h>
+#import "TXBLEOperation.h"
 
 #define UUID_MY @"68753A44-4D6F-1226-9C60-0050E4C00067"
 #define UUIDSTR_TEST_SERVICE @"FFE0"
@@ -16,7 +17,10 @@
 #define UUIDSTR_TEST_WRITEC @"WRITE"
 
 @interface BLEDevicesController ()<CBCentralManagerDelegate,CBPeripheralDelegate>
-
+{
+    NSUserDefaults *udefaults;
+    TXBLEOperation *bleOP;
+}
 @property (strong,nonatomic) CBCentralManager *manager;
 @property (strong,nonatomic) NSMutableArray *peripheralArray;
 @property (strong,nonatomic) CBPeripheral *peripheral;
@@ -28,6 +32,7 @@
 @property (strong,nonatomic) UISwitch *switchs;
 @property (assign,nonatomic) int times;
 @property (strong,nonatomic) NSString *strings;
+
 @end
 
 @implementation BLEDevicesController
@@ -42,6 +47,8 @@
     [super viewDidLoad];
     self.title = NSLocalizedString(@"Device", nil);
     
+    udefaults = [NSUserDefaults standardUserDefaults];
+    bleOP =[[TXBLEOperation alloc] init];
     // BLE
     [self createBLECentralManager];
     
@@ -67,7 +74,8 @@
     
     self.strings = [NSString stringWithFormat:NSLocalizedString(@"Search_device", nil)];
     
-    
+    //
+    [bleOP getMessageFromMuji:@"13322224444" msgContent:@"qw6g54erhg89e4h6sr4jsj64j4sf64h6erh46"];
 }
 
 #pragma mark -- 开关 Actions
@@ -258,6 +266,12 @@
 -(void)readChar:(NSData *)data
 {
     VCLog(@"data:%@",data);
+    
+    NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    //调用BLEOperation
+    [bleOP getMessageFromMuji:@"13322224444" msgContent:@"qw6g54erhg89e4h6sr4jsj64j4sf64h6erh46"];
+    
+    
 }
 
 //断开连接

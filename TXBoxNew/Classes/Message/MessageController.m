@@ -10,10 +10,14 @@
 #import "MessageCell.h"
 #import "MsgDatas.h"
 #import "MsgDetailController.h"
-
+#import "TXBLEOperation.h"
+#import "TXSqliteOperate.h"
+#import "TXData.h"
 
 @interface MessageController ()<UISearchResultsUpdating,UISearchControllerDelegate>
-
+{
+    TXSqliteOperate *txsqlite;
+}
 @property (strong,nonatomic) NSMutableArray *array;
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
 @property (strong,nonatomic) UITableViewController *searchVC;
@@ -28,20 +32,22 @@
 {
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
-    self.array = [NSMutableArray arrayWithObjects:@"1",nil];
+    self.array = [txsqlite searchInfoFromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
+    [self.tableView reloadData];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = NSLocalizedString(@"Message", nil);
     
-    
+    self.array = [[NSMutableArray alloc] init];
     self.searchsArray = [[NSMutableArray alloc] init];
     
     [self initSearchController];
+    
+    txsqlite = [[TXSqliteOperate alloc] init];
+    
 }
-
-
 
 //searchController
 -(void) initSearchController
@@ -134,9 +140,11 @@
     MessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"messageCells" forIndexPath:indexPath];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    cell.contactsLabel.text = [self.array objectAtIndex:indexPath.row];
-    cell.contentsLabel.text = @"contents";
-    cell.dateLabel.text = @"2015/04/21 10:59";
+    TXData *ddata = [self.array objectAtIndex:indexPath.row];
+    
+    cell.contactsLabel.text = ddata.msgSender;
+    cell.contentsLabel.text = ddata.msgContent;
+    cell.dateLabel.text = ddata.msgTime;
     // Configure the cell...
     
   
@@ -145,10 +153,11 @@
 //选中某行
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MsgDatas *data = [[MsgDatas alloc] init];
-    data.hisName = [self.array objectAtIndex:indexPath.row];
-    data.hisNumber = @"12341231234";
-    data.hisHome = @"hisHome";
+    //传值，hisName,hisNumber,hisHome
+    TXData *data = [self.array objectAtIndex:indexPath.row];
+    data.hisName = data.hisName;
+    data.hisNumber = data.msgSender;
+    data.hisHome = data.hisHome;//@"hisHome"
     
     MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
     DetailVC.datailDatas = data;

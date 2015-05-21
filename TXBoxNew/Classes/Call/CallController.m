@@ -64,7 +64,7 @@
     }
     
     //查询数据库获取通话记录
-    NSMutableArray *array = [sqlite searchInfoFrom:CALL_RECORDS_TABLE_NAME];
+    NSMutableArray *array = [sqlite searchInfoFromTable:CALL_RECORDS_TABLE_NAME];
     //排序
     CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
     [self.tableView reloadData];
@@ -286,8 +286,8 @@
     {
         //删除数据库的数据
         TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
-        [sqlite deleteContacterWithNumber:aRecord.hisNumber formTable:CALL_RECORDS_TABLE_NAME];
 
+        [sqlite deleteContacterWithNumber:aRecord.hisNumber formTable:CALL_RECORDS_TABLE_NAME msgTime:nil withSql:DELETE_CALL_RECORD_SQL];
         
         NSMutableArray *array = [ [ NSMutableArray alloc ] init ];
         [array addObject: indexPath];

@@ -19,9 +19,10 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
-    //创建数据库
+    //创建数据库-和表
     TXSqliteOperate *sqlite = [[TXSqliteOperate alloc] init];
-    [sqlite createTable:CALL_RECORDS_TABLE_NAME];
+    [sqlite createTable:CALL_RECORDS_TABLE_NAME withSql:CALL_RECORDS_CREATE_TABLE_SQL];
+    [sqlite createTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL];
     
     //修改导航栏的sytle
     [self changeNavigationBarStyle];

@@ -10,11 +10,13 @@
 #import "Message.h"
 #import "MsgFrame.h"
 #import "MsgDetailCell.h"
+#import "TXSqliteOperate.h"
 
 @interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate>
 {
     NSMutableArray  *allMsgFrame;
     NSArray *array;
+    TXSqliteOperate *txsqlite;
 }
 @property (nonatomic,strong) UILabel *nameLabel;//姓名
 @property (nonatomic,strong) UILabel *arearLabel;//号码归属地
@@ -45,7 +47,7 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    txsqlite =[[TXSqliteOperate alloc] init];
     VCLog(@"datailDatas:%@",self.datailDatas);
     
     // 显示左边按钮
@@ -54,7 +56,10 @@
     
     self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, -20, 150, 20)];
     self.nameLabel.font = [UIFont systemFontOfSize:18];
-    self.nameLabel.text = self.datailDatas.hisName;
+    if (self.datailDatas.hisName.length>0) {
+        self.nameLabel.text = self.datailDatas.hisName;
+    }
+    
     self.nameLabel.textColor = [UIColor whiteColor];
     
     self.arearLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 1, 230, 20)];
@@ -97,22 +102,33 @@
     
     [self getResouce];
     //滚动到当前信息
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:array.count-1 inSection:0];
-    [self.tableview scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    
+    if (array.count>=7) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:array.count-1 inSection:0];
+        [self.tableview scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    }
+    
 }
 
 -(void) getResouce
 {
     self.tableview.allowsSelection = NO;
-    array = [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"messages" ofType:@"plist"]];
+    //array = [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"messages" ofType:@"plist"]];
+    //查找某一次会话
+    //select msgSender = ?? or msgAccepter = ?? from message
+    //[txsqlite deleteTableWithName:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
+    //[txsqlite createTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL];
+    array =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
+    
+    VCLog(@"array:%@",array);
     
     allMsgFrame = [NSMutableArray array];
     NSString *previousTime = nil;
-    for (NSDictionary *dict in array) {
+    for (TXData *data in array) {
         
         MsgFrame *messageFrame = [[MsgFrame alloc] init];
         Message *message = [[Message alloc] init];
-        message.dict = dict;
+        message.data = data;
         messageFrame.showTime = ![previousTime isEqualToString:message.time];
         messageFrame.message = message;
         previousTime = message.time;

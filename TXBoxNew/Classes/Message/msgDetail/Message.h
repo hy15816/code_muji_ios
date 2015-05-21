@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "TXData.h"
 
 typedef enum {
     
@@ -22,6 +23,6 @@ typedef enum {
 @property (nonatomic, copy) NSString *content;
 @property (nonatomic, assign) MessageType type;
 
-@property (nonatomic, copy) NSDictionary *dict;
+@property (nonatomic, copy) TXData *data;
 
 @end

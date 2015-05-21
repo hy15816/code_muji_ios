@@ -8,11 +8,20 @@
 
 #import "TXBLEOperation.h"
 #import "TXSqliteOperate.h"
+#import "TXGeneral+helper.h"
 
 @implementation TXBLEOperation
 @synthesize manager;
 
-
+-(id)init
+{
+    if (self = [super init]) {
+        
+        _txSqlite = [[TXSqliteOperate alloc] init];
+        _data = [[TXData alloc] init];
+    }
+    return self;
+}
 
 //请求配对设备
 -(int) requestBTPair:(NSString *)str
@@ -30,87 +39,81 @@
     return 0;
 }
 
+
 -(void)getMessageFromMuji:(NSString *)hisNumber msgContent:(NSString *)content
 {
-    TXSqliteOperate *txsqlite = [[TXSqliteOperate alloc] init];
-    [txsqlite createMsgTable:hisNumber];//一个电话号码建一张表
-    
-    //保存数据
-    //txsqlite addInfo:<#(TXMsgData *)#> intoTable:<#(NSString *)#>
-    
-    
-    
-}
-/*
-#pragma mark -- 保存数据信息
--(void) saveDataWithHisNumber:(NSString *)hisNumber
-                      hisName:(NSString *)hisName
-                    startDate:(NSDate *)date
-                   timeLength:(NSString *)times
-                callDirection:(NSString *)direction
-{
+    //与BLE连接--接收到数据(短信)，
+    //获取当前时间
+    NSDate *date = [NSDate date];
     //时间格式
     NSDateFormatter *dateFormate = [[NSDateFormatter alloc] init];
-    [dateFormate setDateFormat:@"yy/MM/dd HH:mm"];
+    [dateFormate setDateFormat:@"yy/M/d HH:mm"];
     [dateFormate setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"]];//中国
-    //开始时间
-    NSString *strDate = [dateFormate stringFromDate:date];//sreDate:如1503261130
     
-    /*
-     //开始时间
-     [dateFormate setDateFormat:@"HH:mm:ss"];
-     NSString *strDate2 = [dateFormate stringFromDate:date];//sreDate2:如113059
-     
-     //结束时间
-     NSDate *endDate = [NSDate date];
-     [dateFormate setDateFormat:@"HH:mm:ss"];
-     NSString *strEndDate =[dateFormate stringFromDate:endDate];//strEndDate:如113559
-     
-     //计算之间时间
-     NSString *strCallLength = [self intervalFromLastDate:strDate2 toTheDate:strEndDate];
-     */
-    /*
-    //通话时长
-    NSString *strCallLength = times;
-    //姓名
-    NSString *strName = [[NSString alloc] init];
-    if (hisName.length>0) {
-        
-        strName  =hisName;
-    }else
-    {
-        strName = @"";
-    }
-    //姓名
-    NSString *strNunmber = [[NSString alloc] init];
-    if (hisNumber.length>0) {
-        
-        strNunmber  =hisNumber;
-    }else
-    {
-        strNunmber = @"";
-    }
+    NSString *time = [dateFormate stringFromDate:date];
     
-    //运营商
-    NSString *strOperators = [[NSString alloc] init];
-    TXGeneral_helper *general = [[TXGeneral_helper alloc] init];
-    strOperators = [general isMobileNumber:hisNumber];
     
-    //归属地
-    NSString *strAddress = [[NSString alloc] init];
-    strAddress = @"";
+    //NSString *number = hisNumber;
+    //NSString *cont = content;
     
-    //data.tel_id =singleton.telID;//不需要存id，
-    data.hisNumber = strNunmber;
-    data.callBeginTime = strDate;
-    data.hisOperator = strOperators;
-    data.hisHome = strAddress;
-    data.hisName = strName;
-    data.callDirection = direction;
-    data.callLength = strCallLength;
+    //保存收到的信息数据->本地sqlite
+    [self saveDataWithMsgSender:hisNumber msgTime:time msgContent:content msgAccepter:nil];
     
-    [txSqlite addInfo:data into:CALL_RECORDS_TABLE_NAME];
 }
-*/
+
+#pragma mark -- 保存信息数据
+-(void) saveDataWithMsgSender:(NSString *)sender
+                      msgTime:(NSString *)time
+                   msgContent:(NSString *)content
+                  msgAccepter:(NSString *)accepter
+{
+    //sender
+    NSString *msgSender = [[NSString alloc] init];// 即 hisNumber
+    if (sender.length>0) {
+        
+        msgSender  =sender;
+    }else
+    {
+        msgSender = @"";
+    }
+    
+    //time
+    NSString *msgTime = [[NSString alloc] init];
+    if (time.length>0) {
+        
+        msgTime  =time;
+    }else
+    {
+        msgTime = @"";
+    }
+    //content
+    NSString *msgContent = [[NSString alloc] init];
+    if (content.length>0) {
+        
+        msgContent  =content;
+    }else
+    {
+        msgContent = @"";
+    }
+    //accepter
+    NSString *msgAccepter = [[NSString alloc] init];
+    if (accepter.length>0) {
+        
+        msgAccepter  =accepter;
+    }else
+    {
+        msgAccepter = @"";
+    }
+    
+    //data.peopleId =;//不需要存id，
+    _data.msgSender = msgSender;
+    _data.msgTime = msgTime;
+    _data.msgContent = msgContent;
+    _data.msgAccepter = msgAccepter;
+    //添加到信息表
+    [_txSqlite addInfo:_data inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
+    
+}
+
 
 @end

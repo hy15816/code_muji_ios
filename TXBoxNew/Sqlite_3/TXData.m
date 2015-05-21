@@ -9,5 +9,5 @@
 #import "TXData.h"
 
 @implementation TXData
-@synthesize tel_id, hisName,hisNumber,callDirection,callLength,callBeginTime,hisHome,hisOperator;
+@synthesize tel_id, hisName,hisNumber,callDirection,callLength,callBeginTime,hisHome,hisOperator,msgTime,msgContent,peopleId,msgAccepter,msgSender;
 @end

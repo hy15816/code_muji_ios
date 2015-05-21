@@ -11,6 +11,7 @@
 #import "NSString+helper.h"
 #import "BLEDevicesController.h"
 #import "DiscoverCell.h"
+#import "TXBLEOperation.h"
 
 @interface DiscoverController ()<PopViewDelegate>
 {
@@ -68,9 +69,7 @@
     self.title = NSLocalizedString(@"Discovery", nil);
     
     defaults = [NSUserDefaults standardUserDefaults];
-    
-    
-    //
+     //
     _alertView = [[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"The_Call_Forwarding_was_get_info", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"Sure", nil) otherButtonTitles:nil, nil];
     _alertView.delegate = self;
     

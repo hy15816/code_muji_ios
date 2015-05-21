@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "TXData.h"
-#import "TXMsgData.h"
 #import <sqlite3.h>
 #import "Common.h"
 //#import "/usr/include/sqlite3.h"
@@ -16,7 +15,7 @@
 @interface TXSqliteOperate : NSObject
 
 {
-    NSFileManager *fileManager;
+    NSFileManager *fileManager; //文件管理器
     sqlite3 *dataBase;
     sqlite3_stmt *stmt;
     char *msg;
@@ -24,18 +23,16 @@
     NSMutableArray *array;  //单条记录信息
 }
 
-//===================通话记录=============
+//============共用===============
 -(BOOL)openDatabase;    //打开数据库
--(void)createTable:(NSString *)tableName;     //创建表
--(void)addInfo:(TXData *)tel into:(NSString *)table;//添加
--(NSMutableArray *)searchInfoFrom:(NSString *)table;//查找所有记录
--(NSMutableArray *)searchARecordWithName:(NSString *)name fromTable:(NSString *)table;//查找其中一条记录
--(void)deleteContacterWithNumber:(NSString *)hisNumber formTable:(NSString *)table;//删除
+-(void)createTable:(NSString *)tableName withSql:(NSString *)sqlSring;     //创建表
+-(void)addInfo:(TXData *)tel inTable:(NSString *)table withSql:(NSString *)sqlSring; ;//添加
 
-//====================短信===============
+//
+-(NSMutableArray *)searchInfoFromTable:(NSString *)table ;//查找记录
+-(void)deleteContacterWithNumber:(NSString *)hisNumber formTable:(NSString *)table msgTime:(NSString *)time withSql:(NSString *)sqlSring; ;//删除
 
--(void)createMsgTable:(NSString *)tableName;
--(void)addInfo:(TXMsgData *)data intoTable:(NSString *)table;
--(NSMutableArray *)searchInfoFromMsg:(NSString *)table;//查找所有记录
--(void)deleteConttentWithTime:(NSString *)beginTime formTable:(NSString *)table;//删除单条信息
+-(void)deleteTableWithName:(NSString *)table;//删除整张表
+
+-(NSMutableArray *)searchARecordWithNumber:(NSString *)hisNumber fromTable:(NSString *)table withSql:(NSString *)sqlString;//查询某一次会话
 @end

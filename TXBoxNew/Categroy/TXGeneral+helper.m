@@ -81,7 +81,7 @@
 }
 
 #pragma mark -- 判断手机号码运营商格式
-- (NSString *)isMobileNumber:(NSString *)number
++ (NSString *)isMobileNumber:(NSString *)number
 {
     //处理str
     NSString *mobileNum = [self purifyString:number];
@@ -89,26 +89,26 @@
     
     /**
      * 手机号码
-     * 移动：134[0-8],135,136,137,138,139,150,151,157,158,159,182,187,188
-     * 联通：130,131,132,152,155,156,185,186
-     * 电信：133,1349,153,180,189
+     * 移动：134,135,136,137,138,139,150,151,152,157,158,159,182,183,187,188
+     * 联通：130,131,132,155,156,185,186
+     * 电信：133,153,180,189
      */
     NSString * MOBILE = @"^1(3[0-9]|5[0-35-9]|8[025-9])\\d{8}$";
     /**
      * 中国移动：China Mobile
      * 134[0-8],135,136,137,138,139,150,151,157,158,159,182,187,188
      */
-    NSString * CM = @"^1(34[0-8]|(3[5-9]|5[017-9]|8[278])\\d)\\d{7}$";
+    NSString * CM = @"^1(34[0-8]|(3[5-9]|5[0127-9]|8[2378])\\d)\\d{7}$";
     /**
      * 中国联通：China Unicom
-     * 130,131,132,152,155,156,185,186
+     * 130,131,132,155,156,185,186
      */
-    NSString * CU = @"^1(3[0-2]|5[256]|8[56])\\d{8}$";
+    NSString * CU = @"^1(3[0-2]|5[56]|8[56])\\d{8}$";
     /**
      * 中国电信：China Telecom
-     * 133,1349,153,180,189
+     * 133,153,180,189
      */
-    NSString * CT = @"^1((33|53|8[09])[0-9]|349)\\d{7}$";
+    NSString * CT = @"^1((33|53|8[09])[0-9])\\d{7}$";
     /**
      * 大陆地区固话及小灵通
      * 区号：010,020,021,022,023,024,025,027,028,029
@@ -137,7 +137,7 @@
             str =  NSLocalizedString(@"Telecom", nil);
             VCLog(@"China Unicom");
         } else {
-            str  = OtherNumber;
+            str  = NSLocalizedString(@"Other", nil);;
             VCLog(@"Unknow");
         }
         
@@ -145,12 +145,12 @@
     }
     else
     {
-        return OtherNumber;
+        return NSLocalizedString(@"Other", nil);
     }
 }
 
 #pragma mark -- 字符串去除特殊符号等（空格，换行符，-，(，)，）
--(NSString *)purifyString:(NSString *)str
++(NSString *)purifyString:(NSString *)str
 {
     NSString *string = [[NSString alloc] init];
     if (str.length>0) {

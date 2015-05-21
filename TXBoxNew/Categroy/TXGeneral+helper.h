@@ -14,7 +14,7 @@
 - (NSString *)prettyDateWithReference:(NSDate *)reference;
 
 /*****手机号运营商*******/
-- (NSString *)isMobileNumber:(NSString *)number;
++ (NSString *)isMobileNumber:(NSString *)number;
 
 /*****手机号归属地*******/
 -(NSString *) getNumbersAddress:(NSString *)number;
@@ -23,7 +23,7 @@
 /****计算2个时间点的时间差****/
 - (NSString *)intervalFromLastDate:(NSString *)sDate toTheDate:(NSString *)endDate;
 
-
++(NSString *)purifyString:(NSString *)str;
 
 
 
