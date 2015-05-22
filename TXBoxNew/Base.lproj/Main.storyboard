@@ -179,10 +179,10 @@
                                             <exclude reference="963-cI-mMC"/>
                                             <exclude reference="BaL-QZ-BFW"/>
                                             <exclude reference="yxy-WL-9XM"/>
+                                            <exclude reference="xJt-9t-TTh"/>
                                             <exclude reference="KGK-G5-UCL"/>
                                             <exclude reference="Rn7-ky-QEv"/>
                                             <exclude reference="yXf-rj-yr8"/>
-                                            <exclude reference="xJt-9t-TTh"/>
                                             <exclude reference="oxy-qj-aWL"/>
                                             <exclude reference="9Ji-TN-xk0"/>
                                             <exclude reference="dOg-JT-IG9"/>
@@ -805,8 +805,8 @@
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xia-ZQ-vvm" id="IpG-HI-Jo4">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="短信内容短信内容短信内容短信内容短信内容短信内容短信内容短信内容短信内容短信内容短信内容短信内容" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mhz-gQ-5Qu">
-                                            <rect key="frame" x="18" y="22" width="533" height="29"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="短信内容短信内容短信内容短信内容短信内容短信内容短信内容短信内容短信内容短信内容短信内容短信内容" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mhz-gQ-5Qu">
+                                            <rect key="frame" x="18" y="35" width="541" height="16"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
@@ -826,7 +826,8 @@
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="km6-ib-v83" firstAttribute="top" secondItem="IpG-HI-Jo4" secondAttribute="topMargin" id="1bH-yw-w9Z"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="Mhz-gQ-5Qu" secondAttribute="trailing" constant="8" id="GnI-jy-uwD"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="Mhz-gQ-5Qu" secondAttribute="trailing" id="GnI-jy-uwD"/>
+                                        <constraint firstItem="Mhz-gQ-5Qu" firstAttribute="top" secondItem="pp1-0a-xYL" secondAttribute="bottom" constant="5" id="QWO-2K-DSn"/>
                                         <constraint firstItem="Mhz-gQ-5Qu" firstAttribute="bottom" secondItem="IpG-HI-Jo4" secondAttribute="bottomMargin" id="Rce-QL-yRT"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="km6-ib-v83" secondAttribute="trailing" id="bU6-YG-5Ur"/>
                                         <constraint firstItem="pp1-0a-xYL" firstAttribute="top" secondItem="IpG-HI-Jo4" secondAttribute="topMargin" id="c0j-3s-pCx"/>

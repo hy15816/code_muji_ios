@@ -20,7 +20,8 @@
     sqlite3_stmt *stmt;
     char *msg;
     NSMutableArray *mutArray;//所有信息
-    NSMutableArray *array;  //单条记录信息
+    NSMutableArray *recordsArray;  //会话中的每条信息
+    NSMutableArray *conversationArray;  //会话
 }
 
 //============共用===============
@@ -34,5 +35,10 @@
 
 -(void)deleteTableWithName:(NSString *)table;//删除整张表
 
--(NSMutableArray *)searchARecordWithNumber:(NSString *)hisNumber fromTable:(NSString *)table withSql:(NSString *)sqlString;//查询某一次会话
+-(NSMutableArray *)searchARecordWithNumber:(NSString *)hisNumber fromTable:(NSString *)table withSql:(NSString *)sqlString;//查询某一次整个会话
+
+
+-(NSMutableArray *)searchConversationFromtable:(NSString *)table hisNumber:(NSString *)number wihtSqlString:(NSString *)sqlString; //查询某一次会话的最后一条
+;
+
 @end

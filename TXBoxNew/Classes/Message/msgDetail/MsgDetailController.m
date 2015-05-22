@@ -14,10 +14,11 @@
 
 @interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate>
 {
-    NSMutableArray  *allMsgFrame;
-    NSArray *array;
     TXSqliteOperate *txsqlite;
 }
+@property (strong, nonatomic) NSMutableArray *detailArray;
+@property (strong, nonatomic) NSMutableArray *allMsgFrame;
+
 @property (nonatomic,strong) UILabel *nameLabel;//姓名
 @property (nonatomic,strong) UILabel *arearLabel;//号码归属地
 
@@ -43,11 +44,16 @@
 
 -(void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
+    self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
     
+    [self getResouce];
+    [self.tableview reloadData];
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
     txsqlite =[[TXSqliteOperate alloc] init];
+    self.detailArray = [[NSMutableArray alloc] init];
     VCLog(@"datailDatas:%@",self.datailDatas);
     
     // 显示左边按钮
@@ -100,11 +106,11 @@
     [self initInputView];
     [self initKeyBoardNotif];
     
-    [self getResouce];
+    
     //滚动到当前信息
     
-    if (array.count>=7) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:array.count-1 inSection:0];
+    if (self.detailArray.count>=7) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.detailArray.count-1 inSection:0];
         [self.tableview scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
     }
     
@@ -113,31 +119,36 @@
 -(void) getResouce
 {
     self.tableview.allowsSelection = NO;
-    //array = [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"messages" ofType:@"plist"]];
-    //查找某一次会话
-    //select msgSender = ?? or msgAccepter = ?? from message
-    //[txsqlite deleteTableWithName:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
-    //[txsqlite createTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL];
-    array =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
     
-    VCLog(@"array:%@",array);
-    
-    allMsgFrame = [NSMutableArray array];
+    self.allMsgFrame = [[NSMutableArray alloc] init];
     NSString *previousTime = nil;
-    for (TXData *data in array) {
+    TXData *abc = [[TXData alloc] init];
+    for (int i=0; i<self.detailArray.count; i++) {
         
+        abc = self.detailArray[i];
+        VCLog(@"abc:%@",abc);
+        
+        VCLog(@"%d --- %@ --- %@ -- %@ -- %@ -- %@",abc.peopleId,abc.msgSender,abc.msgTime,abc.msgContent,abc.msgAccepter,abc.msgStates);
+    }
+    
+    
+    
+    for (TXData *data in self.detailArray) {
+        VCLog(@"data:%@",data);
         MsgFrame *messageFrame = [[MsgFrame alloc] init];
         Message *message = [[Message alloc] init];
         message.data = data;
         messageFrame.showTime = ![previousTime isEqualToString:message.time];
         messageFrame.message = message;
+        //message.type = [data.msgState intValue];
         previousTime = message.time;
+       
+        [self.allMsgFrame addObject:messageFrame];
         
-        [allMsgFrame addObject:messageFrame];
     }
 }
 
-#pragma --mark 给数据源增加内容
+#pragma --mark 给数据源增加内容-刚刚发送的内容
 - (void)addMessageWithContent:(NSString *)content time:(NSString *)time{
     
     MsgFrame *mf = [[MsgFrame alloc] init];
@@ -148,7 +159,7 @@
     msg.type = MessageTypeMe;
     mf.message = msg;
     
-    [allMsgFrame addObject:mf];
+    [self.allMsgFrame addObject:mf];
 }
 
 -(void)initKeyBoardNotif{
@@ -299,7 +310,7 @@
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return allMsgFrame.count;
+    return self.allMsgFrame.count;
     //return _resultArray.count;
 }
 
@@ -308,7 +319,7 @@
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
 
-    return [allMsgFrame [indexPath.row] cellHeight];
+    return [self.allMsgFrame [indexPath.row] cellHeight];
 }
 
 //返回cell
@@ -323,8 +334,8 @@
     
     NSInteger aa = indexPath.row;
     // 设置数据
-    cell.msgFrame = allMsgFrame[aa];
-    
+    cell.msgFrame = self.allMsgFrame[aa];
+    //VCLog(@"state:%@",[array[indexPath.row] msgState]);
     return cell;
 }
 
@@ -358,26 +369,35 @@
         
         NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
         NSDate *date = [NSDate date];
-        fmt.dateFormat = @"yyyy/MM/dd HH:mm"; // @"yyyy-MM-dd HH:mm:ss"
+        fmt.dateFormat = @"yy/M/d HH:mm"; // @"yyyy-MM-dd HH:mm:ss"
         NSString *time = [fmt stringFromDate:date];
         [self addMessageWithContent:self.textView.text time:time];
         
         [self.tableview reloadData];
         //关闭键盘
-        //[self.textView resignFirstResponder];
+        [self.textView resignFirstResponder];
         
         //保存数据
-        NSError *error;
-        NSString *path = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Message" ofType:@"plist"] encoding:NSUTF8StringEncoding error:&error];
-        [self.textView.text writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:&error];
+        //NSError *error;
+        //NSString *path = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Message" ofType:@"plist"] encoding:NSUTF8StringEncoding error:&error];
+        //[self.textView.text writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:&error];
         
+        //保存到数据库
+        TXData *txdata =  [[TXData alloc] init];
+        txdata.msgSender = @"";
+        txdata.msgTime = time;
+        txdata.msgContent = self.textView.text;
+        txdata.msgAccepter = self.datailDatas.hisNumber;
+        txdata.msgStates = @"0";
         
-        
+        [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
+        self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
+        [self.tableview reloadData];
     }
     self.textView.text = nil;
     
     //滚动到当前信息
-    NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:array.count-1 inSection:0];
+    NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:self.detailArray.count-1 inSection:0];
     [self.tableview scrollToRowAtIndexPath:lastIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
     
 }

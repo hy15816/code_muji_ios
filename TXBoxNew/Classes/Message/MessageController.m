@@ -18,7 +18,7 @@
 {
     TXSqliteOperate *txsqlite;
 }
-@property (strong,nonatomic) NSMutableArray *array;
+@property (strong,nonatomic) NSMutableArray *dataArray;
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
 @property (strong,nonatomic) UITableViewController *searchVC;
 @property (strong,nonatomic) NSMutableArray *searchsArray;          //搜索后的结果数组
@@ -32,7 +32,12 @@
 {
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
-    self.array = [txsqlite searchInfoFromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
+//    [txsqlite deleteTableWithName:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
+    //这里只需查询某个会话的最后一条记录
+    //self.array = [txsqlite searchInfoFromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
+    
+    //self.array =[txsqlite searchARecordWithNumber:@"13322224444" fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
+    self.dataArray = [txsqlite searchConversationFromtable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME hisNumber:@"13322224444" wihtSqlString:SELECT_A_LAST_MESSAGE_RECORDS];
     [self.tableView reloadData];
 }
 
@@ -40,7 +45,7 @@
     [super viewDidLoad];
     self.title = NSLocalizedString(@"Message", nil);
     
-    self.array = [[NSMutableArray alloc] init];
+    self.dataArray = [[NSMutableArray alloc] init];
     self.searchsArray = [[NSMutableArray alloc] init];
     
     [self initSearchController];
@@ -131,7 +136,7 @@
     if (self.searchController.active) {
         return self.searchsArray.count;
     }
-    return self.array.count;
+    return self.dataArray.count;
 }
 
 // tableViewcell
@@ -140,9 +145,9 @@
     MessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"messageCells" forIndexPath:indexPath];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    TXData *ddata = [self.array objectAtIndex:indexPath.row];
+    TXData *ddata = [self.dataArray objectAtIndex:indexPath.row];
     
-    cell.contactsLabel.text = ddata.msgSender;
+    cell.contactsLabel.text = @"13322224444";//ddata.msgSender;
     cell.contentsLabel.text = ddata.msgContent;
     cell.dateLabel.text = ddata.msgTime;
     // Configure the cell...
@@ -154,9 +159,9 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //传值，hisName,hisNumber,hisHome
-    TXData *data = [self.array objectAtIndex:indexPath.row];
+    TXData *data = [self.dataArray objectAtIndex:indexPath.row];
     data.hisName = data.hisName;
-    data.hisNumber = data.msgSender;
+    data.hisNumber = @"13322224444";//data.msgSender;
     data.hisHome = data.hisHome;//@"hisHome"
     
     MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
@@ -186,7 +191,7 @@
         
         [ array addObject: indexPath];
         
-        [self.array removeObjectAtIndex:indexPath.row];//移除数组的元素
+        [self.dataArray removeObjectAtIndex:indexPath.row];//移除数组的元素
         
         
         [tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];

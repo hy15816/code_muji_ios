@@ -55,7 +55,7 @@
 #pragma mark --插入(添加)数据
 -(void)addInfo:(TXData *)data inTable:(NSString *)table withSql:(NSString *)sqlSring;
 {
-    VCLog(@"********%@,%@,%@,%@",data.msgSender,data.msgTime,data.msgContent,data.msgAccepter);
+    VCLog(@"******** sender:%@,T:%@,cont:%@,accp:%@,state:%@",data.msgSender,data.msgTime,data.msgContent,data.msgAccepter,data.msgStates);
     if ([self openDatabase]) {
 
         //NSString *insertSql = [NSString stringWithFormat:@"insert into tels(tel_number) values(?)"];
@@ -86,6 +86,7 @@
             sqlite3_bind_text(stmt, 2, [data.msgTime UTF8String], -1, NULL);
             sqlite3_bind_text(stmt, 3, [data.msgContent UTF8String], -1, NULL);
             sqlite3_bind_text(stmt, 4, [data.msgAccepter UTF8String], -1, NULL);
+            sqlite3_bind_text(stmt, 5, [data.msgStates UTF8String], -1, NULL);
         }
         
         
@@ -161,8 +162,6 @@
                  */
                 
                 [mutArray addObject:data];//
-                
-                
             }
         }
         
@@ -177,7 +176,7 @@
                 NSString *beginTime=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 2) encoding:NSUTF8StringEncoding];
                 NSString *content=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 3) encoding:NSUTF8StringEncoding];
                 NSString *accepter=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 4) encoding:NSUTF8StringEncoding];
-                
+                NSString *state = [NSString stringWithCString:(char *)sqlite3_column_text(stmt, 5) encoding:NSUTF8StringEncoding];
                 //VCLog(@"id = %d,date = %@",tid,date);
                 
                 TXData *data=[[TXData alloc] init];
@@ -186,6 +185,7 @@
                 data.msgTime=beginTime;
                 data.msgContent = content;
                 data.msgAccepter = accepter;
+                data.msgStates = state;
                 [mutArray addObject:data];//
                 
             }
@@ -226,7 +226,7 @@
         }
         
         
-        
+        //执行语句
         if (sqlite3_exec(dataBase, [deleteSql UTF8String], nil, nil, &msg)==SQLITE_OK) {
             VCLog(@"delete number = %@ ok",hisNumber);
         }else{
@@ -265,15 +265,15 @@
 }
 
 
-#pragma mark -- 查询某一次会话
+#pragma mark -- 查询某一次会话所有内容
 -(NSMutableArray *)searchARecordWithNumber:(NSString *)hisNumber fromTable:(NSString *)table withSql:(NSString *)sqlString
 {
-    array = [[NSMutableArray alloc] init];
+    recordsArray = [[NSMutableArray alloc] init];
     
     if ([self openDatabase]) {
         
         //修改sql语句
-        NSString *selectSql = [NSString stringWithFormat:sqlString,hisNumber,table];
+        NSString *selectSql = [NSString stringWithFormat:sqlString,table,hisNumber,hisNumber];
         
         if (sqlite3_prepare_v2(dataBase, [selectSql UTF8String], -1, &stmt, nil)==SQLITE_OK) {
             VCLog(@"select prepare ok!");
@@ -288,7 +288,7 @@
             NSString *beginTime=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 2) encoding:NSUTF8StringEncoding];
             NSString *content=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 3) encoding:NSUTF8StringEncoding];
             NSString *accepter=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 4) encoding:NSUTF8StringEncoding];
-            
+            NSString *state=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 5) encoding:NSUTF8StringEncoding];
             //VCLog(@"id = %d,date = %@",tid,date);
             
             TXData *data=[[TXData alloc] init];
@@ -297,7 +297,9 @@
             data.msgTime=beginTime;
             data.msgContent = content;
             data.msgAccepter = accepter;
-            [array addObject:data];//
+            data.msgStates = state;
+            [recordsArray addObject:data];//
+            VCLog(@"id:%d, sd:%@, st:%@, sc:%@, sa:%@, ss:%@",tid,sender,beginTime,content,accepter,state);
         }
         
         
@@ -306,15 +308,61 @@
         sqlite3_finalize(stmt);
         //关闭
         sqlite3_close(dataBase);
-        
-        VCLog(@" arrar=%@",array);
-        return array;
+        VCLog(@"msg records array :%@",recordsArray);
+        return recordsArray;
 
     }
     
     return nil;
 }
 
+#pragma mark -- 查某个会话
+-(NSMutableArray *)searchConversationFromtable:(NSString *)table hisNumber:(NSString *)number wihtSqlString:(NSString *)sqlString
+{
+    //查某个会话
+    conversationArray = [[NSMutableArray alloc] init];
+    
+    if ([self openDatabase]) {
+        
+        //修改sql语句
+        NSString *selectSql = [NSString stringWithFormat:sqlString,table,number,number];
+        
+        if (sqlite3_prepare_v2(dataBase, [selectSql UTF8String], -1, &stmt, nil)==SQLITE_OK) {
+            VCLog(@"select prepare ok!");
+        }
+        TXData *data=[[TXData alloc] init];
+        //循环遍历，sqlite3_step处理一行结果
+        while (sqlite3_step(stmt)==SQLITE_ROW) {
+            
+            int tid=sqlite3_column_int(stmt, 0);
+            
+            NSString *sender = [NSString stringWithCString:(char *)sqlite3_column_text(stmt, 1) encoding:NSUTF8StringEncoding];
+            NSString *beginTime=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 2) encoding:NSUTF8StringEncoding];
+            NSString *content=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 3) encoding:NSUTF8StringEncoding];
+            NSString *accepter=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 4) encoding:NSUTF8StringEncoding];
+            
+            //VCLog(@"id = %d,date = %@",tid,date);
+            
+            
+            data.peopleId = tid;
+            data.msgSender=sender;
+            data.msgTime=beginTime;
+            data.msgContent = content;
+            data.msgAccepter = accepter;
+        }
+        [conversationArray addObject:data];//只取最后一个
+        
+        //删除预备语句
+        sqlite3_finalize(stmt);
+        //关闭
+        sqlite3_close(dataBase);
+        VCLog(@"a conversation array :%@",conversationArray);
+        return conversationArray;
+        
+    }
+    
+    return nil;
+}
 
 
 @end

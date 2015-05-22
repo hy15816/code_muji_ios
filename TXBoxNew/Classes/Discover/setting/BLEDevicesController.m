@@ -10,6 +10,7 @@
 #import "BLEDeviceCell.h"
 #import <CoreBluetooth/CoreBluetooth.h>
 #import "TXBLEOperation.h"
+#import "TXSqliteOperate.h"
 
 #define UUID_MY @"68753A44-4D6F-1226-9C60-0050E4C00067"
 #define UUIDSTR_TEST_SERVICE @"FFE0"
@@ -20,6 +21,7 @@
 {
     NSUserDefaults *udefaults;
     TXBLEOperation *bleOP;
+    TXSqliteOperate *txsqlite;
 }
 @property (strong,nonatomic) CBCentralManager *manager;
 @property (strong,nonatomic) NSMutableArray *peripheralArray;
@@ -49,6 +51,7 @@
     
     udefaults = [NSUserDefaults standardUserDefaults];
     bleOP =[[TXBLEOperation alloc] init];
+    txsqlite = [[TXSqliteOperate alloc] init];
     // BLE
     [self createBLECentralManager];
     
@@ -74,8 +77,10 @@
     
     self.strings = [NSString stringWithFormat:NSLocalizedString(@"Search_device", nil)];
     
+    [txsqlite deleteTableWithName:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
+    [txsqlite createTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL];
     //
-    [bleOP getMessageFromMuji:@"13322224444" msgContent:@"qw6g54erhg89e4h6sr4jsj64j4sf64h6erh46"];
+    [bleOP getMessageFromMuji:@"13322224444" msgContent:@"aaaaaawgerhjgjgaaaaaaaaaagewrhehaaaaa"];
 }
 
 #pragma mark -- 开关 Actions

@@ -12,7 +12,7 @@
 typedef enum {
     
     MessageTypeMe = 0, // 自己发的
-    MessageTypeOther = 1 //别人发得
+    MessageTypeHe = 1 //别人发得
     
 } MessageType;
 
@@ -22,7 +22,6 @@ typedef enum {
 @property (nonatomic, copy) NSString *time;
 @property (nonatomic, copy) NSString *content;
 @property (nonatomic, assign) MessageType type;
-
 @property (nonatomic, copy) TXData *data;
 
 @end

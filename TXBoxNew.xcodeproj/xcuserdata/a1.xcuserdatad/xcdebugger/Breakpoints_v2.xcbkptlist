@@ -84,27 +84,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TXBoxNew/Peripheral_connect/bluetooth/TXBLEOperation.m"
-            timestampString = "453880580.194429"
+            timestampString = "453955483.215804"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "71"
-            endingLineNumber = "71"
-            landmarkName = "-saveDataWithMsgSender:msgTime:msgContent:msgAccepter:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "TXBoxNew/Peripheral_connect/bluetooth/TXBLEOperation.m"
-            timestampString = "453880583.499954"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "114"
-            endingLineNumber = "114"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
             landmarkName = "-saveDataWithMsgSender:msgTime:msgContent:msgAccepter:"
             landmarkType = "5">
          </BreakpointContent>
@@ -116,11 +100,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TXBoxNew/Sqlite_3/TXSqliteOperate.m"
-            timestampString = "453881164.329035"
+            timestampString = "453956553.604042"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "56"
-            endingLineNumber = "56"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
             landmarkName = "-addInfo:inTable:withSql:"
             landmarkType = "5">
          </BreakpointContent>
@@ -131,13 +115,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "TXBoxNew/Peripheral_connect/bluetooth/TXBLEOperation.m"
-            timestampString = "453888472.445262"
+            filePath = "TXBoxNew/Sqlite_3/TXSqliteOperate.m"
+            timestampString = "453980173.579726"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "43"
-            endingLineNumber = "43"
-            landmarkName = "-getMessageFromMuji:msgContent:"
+            startingLineNumber = "302"
+            endingLineNumber = "302"
+            landmarkName = "-searchARecordWithNumber:fromTable:withSql:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -148,12 +132,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TXBoxNew/Classes/Message/msgDetail/MsgDetailController.m"
-            timestampString = "453893851.961382"
+            timestampString = "453978184.269626"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "113"
-            endingLineNumber = "113"
-            landmarkName = "-getResouce"
+            startingLineNumber = "393"
+            endingLineNumber = "393"
+            landmarkName = "-sendMsgBtnClick:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -163,13 +147,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "TXBoxNew/Sqlite_3/TXSqliteOperate.m"
-            timestampString = "453894066.713035"
+            filePath = "TXBoxNew/Classes/Message/msgDetail/MsgDetailController.m"
+            timestampString = "453978184.269626"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "278"
-            endingLineNumber = "278"
-            landmarkName = "-searchARecordWithNumber:fromTable:withSql:"
+            startingLineNumber = "326"
+            endingLineNumber = "326"
+            landmarkName = "-tableView:cellForRowAtIndexPath:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -179,12 +163,12 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "TXBoxNew/Classes/Message/MessageController.m"
-            timestampString = "453894248.349547"
+            filePath = "TXBoxNew/Classes/Message/msgDetail/MsgDetailController.m"
+            timestampString = "453976395.410181"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "35"
-            endingLineNumber = "35"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
             landmarkName = "-viewWillAppear:"
             landmarkType = "5">
          </BreakpointContent>
@@ -195,12 +179,14 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "TXBoxNew/Common.h"
-            timestampString = "453895379.811195"
+            filePath = "TXBoxNew/Classes/Message/msgDetail/MsgDetailController.m"
+            timestampString = "453978239.470562"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "50"
-            endingLineNumber = "50">
+            startingLineNumber = "129"
+            endingLineNumber = "129"
+            landmarkName = "-getResouce"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -209,13 +195,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "TXBoxNew/Sqlite_3/TXSqliteOperate.m"
-            timestampString = "453895403.820713"
+            filePath = "TXBoxNew/Classes/Discover/DiscoverController.m"
+            timestampString = "453979373.290438"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "275"
-            endingLineNumber = "275"
-            landmarkName = "-searchARecordWithNumber:fromTable:withSql:"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
+            landmarkName = "-viewDidLoad"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

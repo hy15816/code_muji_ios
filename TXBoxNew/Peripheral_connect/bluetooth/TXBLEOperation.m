@@ -58,7 +58,14 @@
     
     //保存收到的信息数据->本地sqlite
     [self saveDataWithMsgSender:hisNumber msgTime:time msgContent:content msgAccepter:nil];
-    
+    /*
+     self	TXBLEOperation *	0x7fe85bf74700	0x00007fe85bf74700
+     hisNumber	__NSCFConstantString *	@"13322224444"	0x00000001023be340
+     content	__NSCFConstantString *	@"qw6g54erhg89e4h6sr4jsj64j4sf64h6erh46"	0x00000001023be360
+     time	__NSCFString *	@"15/5/22 10:42"	0x00007fe85d025ba0
+     date	__NSTaggedDate *	2015-05-22 02:42:17 UTC	0xe41bb0ecf094d75b
+     dateFormate	NSDateFormatter *	0x7fe85bfaa250	0x00007fe85bfaa250
+     */
 }
 
 #pragma mark -- 保存信息数据
@@ -104,12 +111,14 @@
     {
         msgAccepter = @"";
     }
+    NSString *msgState = @"1";
     
     //data.peopleId =;//不需要存id，
     _data.msgSender = msgSender;
     _data.msgTime = msgTime;
     _data.msgContent = msgContent;
     _data.msgAccepter = msgAccepter;
+    _data.msgStates = msgState;
     //添加到信息表
     [_txSqlite addInfo:_data inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
     

@@ -20,7 +20,7 @@
 
 // custom键盘高宽
 #define keyWidth DEVICE_WIDTH/3.f
-#define keyHight keyWidth/2.f
+#define keyHight keyWidth/3.f
 
 // 颜色
 #define RGBACOLOR(r,g,b,a) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:(a)/1.f]
@@ -32,31 +32,42 @@
 #define DEVICE_WIDTH ([UIScreen mainScreen].bounds.size.width)
 #define DEVICE_HEIGHT ([UIScreen mainScreen].bounds.size.height)
 
-// 字符串-数据库名
+
+
+// =================数据库==============//
 #define DB_NAME @"txbox.sqlite"
 #define SELECT_ALL_SQL @"select *from %@"
 
-// ==========通话记录表
+
+// =================通话记录表===========//
 #define CALL_RECORDS_TABLE_NAME @"CALL_RECORDS"
-#define CALL_RECORDS_CREATE_TABLE_SQL @"create table if not exists %@(tel_id integer primary key AUTOINCREMENT,hisName text,hisNumber text,callDirection text,callLength text,callBeginTime text,hisHome text,hisOperator text)" //创建通话记录表的sql语句
-#define CALL_RECORDS_ADDINFO_SQL @"insert into %@(hisName ,hisNumber ,callDirection ,callLength,callBeginTime ,hisHome ,hisOperator ) values(?,?,?,?,?,?,?)"    //添加call——records
+//创建通话记录表的sql语句
+#define CALL_RECORDS_CREATE_TABLE_SQL @"create table if not exists %@(tel_id integer primary key AUTOINCREMENT,hisName text,hisNumber text,callDirection text,callLength text,callBeginTime text,hisHome text,hisOperator text)"
+//添加call——records
+#define CALL_RECORDS_ADDINFO_SQL @"insert into %@(hisName ,hisNumber ,callDirection ,callLength,callBeginTime ,hisHome ,hisOperator ) values(?,?,?,?,?,?,?)"
+//删除一条通话记录
+#define DELETE_CALL_RECORD_SQL @"delete from %@ where hisNumber=%@"
 
-#define DELETE_CALL_RECORD_SQL @"delete from %@ where hisNumber=%@"//删除一条通话记录
 
-//===========信息表
+//===================信息表=============//
 #define MESSAGE_RECEIVE_RECORDS_TABLE_NAME @"MESSAGE_RECORDS"
-#define MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL  @"create table if not exists %@(peopleId integer primary key AUTOINCREMENT,msgSender text,msgTime text,msgContent text,msgAccepter text)" //创建d短信记录表的sql语句
-#define MESSAGE_RECORDS_ADDINFO_SQL @"insert into %@(msgSender,msgTime,msgContent,msgAccepter) values(?,?,?,?)"    //添加msg
-#define DELETE_MESSAGE_RECORD_SQL @"delete from %@ where msgSender=%@ and msgTime = %@" //删除单条短信记录
+//创建d短信记录表的sql语句
+#define MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL  @"create table if not exists %@(peopleId integer primary key AUTOINCREMENT,msgSender text,msgTime text,msgContent text,msgAccepter text,msgState text)"
+//添加msg记录
+#define MESSAGE_RECORDS_ADDINFO_SQL @"insert into %@(msgSender,msgTime,msgContent,msgAccepter,msgState) values(?,?,?,?,?)"
+//删除单条短信记录
+#define DELETE_MESSAGE_RECORD_SQL @"delete from %@ where msgSender=%@ and msgTime = %@"
+//删除整个短信会话
+#define DELETE_MESSAGE_RECORD_CONVERSATION_SQL  @"delete from %@ where hisNumber=%@ or msgAccepter = %@"
 
-#define DELETE_MESSAGE_RECORD_CONVERSATION_SQL  @"delete from %@ where hisNumber=%@ or msgAccepter = %@"    //删除整个短信会话
-
-//查询某一次会话
-#define SELECT_A_CONVERSATION_SQL @"select msgTime,msgContent,msgAccepter  from %@ where msgSender=%@"//or msgAccepter = %@
-
-
+//查询某一次整个会话
+#define SELECT_A_CONVERSATION_SQL @"select *from %@ where msgSender=%@ or msgAccepter = %@"
+//查询某一次会话的最后一条
+#define SELECT_A_LAST_MESSAGE_RECORDS @"select *from %@ where msgSender=%@ or msgAccepter=%@"
 
 
+
+//===================================//
 // 首页输入框的view
 #define InputBoxView 50.f
 

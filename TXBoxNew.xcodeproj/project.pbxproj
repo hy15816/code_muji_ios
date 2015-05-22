@@ -38,6 +38,7 @@
 		637C29D91AEB9FF200CD3DAF /* ContactsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 637C29D81AEB9FF200CD3DAF /* ContactsCell.xib */; };
 		63975E6D1AE73C040076E849 /* CustomTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63975E6C1AE73C040076E849 /* CustomTabBarView.m */; };
 		63D34AFD1AF9C6DD00C8B533 /* board.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D34AFC1AF9C6DD00C8B533 /* board.gif */; };
+		63D572101B0EC7A000223323 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5720F1B0EC7A000223323 /* AVOSCloud.framework */; };
 		63D7A5951B0196A9004362B0 /* PopView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D7A5941B0196A9004362B0 /* PopView.m */; };
 		63D7A59F1B01AD9B004362B0 /* AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D7A59A1B01AD9B004362B0 /* AKNumericFormatter.m */; };
 		63D7A5A01B01AD9B004362B0 /* NSString+AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D7A59C1B01AD9B004362B0 /* NSString+AKNumericFormatter.m */; };
@@ -46,7 +47,6 @@
 		63DBF8B21B0321FB00041321 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63DBF8B41B0321FB00041321 /* Localizable.strings */; };
 		63DBF8B81B033D1600041321 /* DiscoverCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DBF8B71B033D1600041321 /* DiscoverCell.m */; };
 		63DEA6791B0094FB003343A7 /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6711B0094FB003343A7 /* Message.m */; };
-		63DEA67A1B0094FB003343A7 /* messages.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63DEA6721B0094FB003343A7 /* messages.plist */; };
 		63DEA67B1B0094FB003343A7 /* MsgDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6741B0094FB003343A7 /* MsgDetailCell.m */; };
 		63DEA67C1B0094FB003343A7 /* MsgDetailController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6761B0094FB003343A7 /* MsgDetailController.m */; };
 		63DEA67D1B0094FB003343A7 /* MsgFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6781B0094FB003343A7 /* MsgFrame.m */; };
@@ -65,7 +65,6 @@
 		63E1FAE61B0AD5DE005C7258 /* PinyinFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E1FADE1B0AD5DE005C7258 /* PinyinFormatter.m */; };
 		63E1FAE71B0AD5DE005C7258 /* PinyinHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E1FAE01B0AD5DE005C7258 /* PinyinHelper.m */; };
 		63E1FAE81B0AD5DE005C7258 /* unicode_to_hanyu_pinyin.txt in Resources */ = {isa = PBXBuildFile; fileRef = 63E1FAE21B0AD5DE005C7258 /* unicode_to_hanyu_pinyin.txt */; };
-		63EAABD61B0DA04D008E7DEB /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63EAABD51B0DA04D008E7DEB /* AVOSCloud.framework */; };
 		63FB5FD51ADBB58700A1A92B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB5FD41ADBB58700A1A92B /* main.m */; };
 		63FB5FD81ADBB58700A1A92B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB5FD71ADBB58700A1A92B /* AppDelegate.m */; };
 		63FB5FDE1ADBB58700A1A92B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63FB5FDC1ADBB58700A1A92B /* Main.storyboard */; };
@@ -146,6 +145,7 @@
 		63975E6B1AE73C040076E849 /* CustomTabBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomTabBarView.h; sourceTree = "<group>"; };
 		63975E6C1AE73C040076E849 /* CustomTabBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomTabBarView.m; sourceTree = "<group>"; };
 		63D34AFC1AF9C6DD00C8B533 /* board.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = board.gif; sourceTree = "<group>"; };
+		63D5720F1B0EC7A000223323 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		63D7A5931B0196A9004362B0 /* PopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopView.h; sourceTree = "<group>"; };
 		63D7A5941B0196A9004362B0 /* PopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PopView.m; sourceTree = "<group>"; };
 		63D7A5981B01AD9B004362B0 /* AKNumericFormatter-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AKNumericFormatter-Prefix.pch"; sourceTree = "<group>"; };
@@ -163,7 +163,6 @@
 		63DBF8B71B033D1600041321 /* DiscoverCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoverCell.m; sourceTree = "<group>"; };
 		63DEA6701B0094FB003343A7 /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
 		63DEA6711B0094FB003343A7 /* Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Message.m; sourceTree = "<group>"; };
-		63DEA6721B0094FB003343A7 /* messages.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = messages.plist; sourceTree = "<group>"; };
 		63DEA6731B0094FB003343A7 /* MsgDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MsgDetailCell.h; sourceTree = "<group>"; };
 		63DEA6741B0094FB003343A7 /* MsgDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MsgDetailCell.m; sourceTree = "<group>"; };
 		63DEA6751B0094FB003343A7 /* MsgDetailController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MsgDetailController.h; sourceTree = "<group>"; };
@@ -195,7 +194,6 @@
 		63E1FADF1B0AD5DE005C7258 /* PinyinHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PinyinHelper.h; sourceTree = "<group>"; };
 		63E1FAE01B0AD5DE005C7258 /* PinyinHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PinyinHelper.m; sourceTree = "<group>"; };
 		63E1FAE21B0AD5DE005C7258 /* unicode_to_hanyu_pinyin.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = unicode_to_hanyu_pinyin.txt; sourceTree = "<group>"; };
-		63EAABD51B0DA04D008E7DEB /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		63FB5FCF1ADBB58700A1A92B /* TXBoxNew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TXBoxNew.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63FB5FD31ADBB58700A1A92B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		63FB5FD41ADBB58700A1A92B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -219,7 +217,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				63EAABD61B0DA04D008E7DEB /* AVOSCloud.framework in Frameworks */,
+				63D572101B0EC7A000223323 /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -441,7 +439,7 @@
 		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
 			isa = PBXGroup;
 			children = (
-				63EAABD51B0DA04D008E7DEB /* AVOSCloud.framework */,
+				63D5720F1B0EC7A000223323 /* AVOSCloud.framework */,
 				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
 				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
 				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
@@ -458,7 +456,6 @@
 			children = (
 				63DEA6701B0094FB003343A7 /* Message.h */,
 				63DEA6711B0094FB003343A7 /* Message.m */,
-				63DEA6721B0094FB003343A7 /* messages.plist */,
 				63DEA6731B0094FB003343A7 /* MsgDetailCell.h */,
 				63DEA6741B0094FB003343A7 /* MsgDetailCell.m */,
 				63DEA6751B0094FB003343A7 /* MsgDetailController.h */,
@@ -687,7 +684,6 @@
 			files = (
 				63D34AFD1AF9C6DD00C8B533 /* board.gif in Resources */,
 				63FB5FDE1ADBB58700A1A92B /* Main.storyboard in Resources */,
-				63DEA67A1B0094FB003343A7 /* messages.plist in Resources */,
 				63FB5FE31ADBB58700A1A92B /* LaunchScreen.xib in Resources */,
 				63E1FAE81B0AD5DE005C7258 /* unicode_to_hanyu_pinyin.txt in Resources */,
 				63DBF8B21B0321FB00041321 /* Localizable.strings in Resources */,
@@ -909,6 +905,8 @@
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
@@ -942,6 +940,8 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
