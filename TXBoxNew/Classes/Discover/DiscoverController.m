@@ -75,24 +75,11 @@
     
     titleArray = [NSArray arrayWithObjects:NSLocalizedString(@"Configure", nil),NSLocalizedString(@"Vibrate", nil),NSLocalizedString(@"Version", nil),NSLocalizedString(@"My_device", nil), nil];
     labelArray = [NSArray arrayWithObjects:@[NSLocalizedString(@"Configure_E-mail_MuJi-Number", nil)],@[NSLocalizedString(@"Call_in_and_app_vibrate", nil),@"123156"],@[NSLocalizedString(@"APP_Version", nil),NSLocalizedString(@"Device_version", nil)],@[NSLocalizedString(@"Setting", nil)], nil];
-
-    
-    //////////////test///////////////////
-    NSMutableArray *marray = [[NSMutableArray alloc] init];
-    TXSqliteOperate *txsql = [[TXSqliteOperate alloc] init];
-    marray =  [txsql searchARecordWithNumber:@"13322224444" fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
-    VCLog(@"marray:%@",marray);
-    TXData *da;
-    for (da in marray) {
-        VCLog(@"%d --- %@ --- %@ -- %@ -- %@ ",da.peopleId,da.msgSender,da.msgTime,da.msgContent,da.msgAccepter);
-        VCLog(@"========");
-        VCLog(@"%@",da.msgStates);
-    }
-    
-    
     
     
 }
+
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

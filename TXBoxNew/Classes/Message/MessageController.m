@@ -32,12 +32,10 @@
 {
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
-//    [txsqlite deleteTableWithName:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
-    //这里只需查询某个会话的最后一条记录
-    //self.array = [txsqlite searchInfoFromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
     
-    //self.array =[txsqlite searchARecordWithNumber:@"13322224444" fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
+    //这里只需查询某个会话的最后一条记录
     self.dataArray = [txsqlite searchConversationFromtable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME hisNumber:@"13322224444" wihtSqlString:SELECT_A_LAST_MESSAGE_RECORDS];
+    
     [self.tableView reloadData];
 }
 
@@ -51,6 +49,10 @@
     [self initSearchController];
     
     txsqlite = [[TXSqliteOperate alloc] init];
+    //获取信息的号码
+    
+    
+    
     
 }
 

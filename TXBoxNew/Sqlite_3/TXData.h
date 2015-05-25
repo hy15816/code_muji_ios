@@ -28,7 +28,7 @@
 @property (strong, nonatomic) NSString *msgTime;        //信息时间
 @property (strong, nonatomic) NSString *msgContent;     //短信内容
 @property (strong, nonatomic) NSString *msgAccepter;    //接收者
-@property (assign, nonatomic) NSString *msgStates;       //状态，发送还是接收
+@property (strong, nonatomic) NSString *msgStates;       //状态，发送还是接收
 //发短信
 
 

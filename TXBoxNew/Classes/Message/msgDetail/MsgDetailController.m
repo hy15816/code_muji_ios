@@ -45,9 +45,14 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    
+    
+    
     self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
     
     [self getResouce];
+    [self jumpToLastRow];
     [self.tableview reloadData];
 }
 - (void)viewDidLoad {
@@ -97,50 +102,40 @@
     
     self.contactsInfoBtn.customView = view;
     
-    _tableview = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT-45)];
+    _tableview = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT)];
     _tableview.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableview.delegate = self;
     _tableview.dataSource = self;
+    _tableview.allowsSelection = NO;//选中某一行cell时，不作任何显示
+    [_tableview flashScrollIndicators ];
+    
     [self.view addSubview:_tableview];
     
     [self initInputView];
     [self initKeyBoardNotif];
     
     
-    //滚动到当前信息
     
-    if (self.detailArray.count>=7) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.detailArray.count-1 inSection:0];
-        [self.tableview scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-    }
+    
+    
     
 }
 
 -(void) getResouce
 {
-    self.tableview.allowsSelection = NO;
+    
     
     self.allMsgFrame = [[NSMutableArray alloc] init];
     NSString *previousTime = nil;
-    TXData *abc = [[TXData alloc] init];
-    for (int i=0; i<self.detailArray.count; i++) {
-        
-        abc = self.detailArray[i];
-        VCLog(@"abc:%@",abc);
-        
-        VCLog(@"%d --- %@ --- %@ -- %@ -- %@ -- %@",abc.peopleId,abc.msgSender,abc.msgTime,abc.msgContent,abc.msgAccepter,abc.msgStates);
-    }
-    
-    
     
     for (TXData *data in self.detailArray) {
-        VCLog(@"data:%@",data);
+        
         MsgFrame *messageFrame = [[MsgFrame alloc] init];
         Message *message = [[Message alloc] init];
+        
         message.data = data;
         messageFrame.showTime = ![previousTime isEqualToString:message.time];
         messageFrame.message = message;
-        //message.type = [data.msgState intValue];
         previousTime = message.time;
        
         [self.allMsgFrame addObject:messageFrame];
@@ -148,14 +143,13 @@
     }
 }
 
-#pragma --mark 给数据源增加内容-刚刚发送的内容
+#pragma --mark 给数据源增加内容-自己发送的内容
 - (void)addMessageWithContent:(NSString *)content time:(NSString *)time{
     
     MsgFrame *mf = [[MsgFrame alloc] init];
     Message *msg = [[Message alloc] init];
     msg.content = content;
     msg.time = time;
-    //msg.icon = @"icon01.png";
     msg.type = MessageTypeMe;
     mf.message = msg;
     
@@ -178,7 +172,7 @@
     
     [[notif.userInfo valueForKey:UIKeyboardFrameEndUserInfoKey] getValue: &keyboardBounds];
     NSNumber *duration = [notif.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
-    NSNumber *curve = [notif.userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey];
+    //NSNumber *curve = [notif.userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey];
     
     // Need to translate the bounds to account for rotation.
     keyboardBounds = [self.view convertRect:keyboardBounds toView:nil];
@@ -190,13 +184,14 @@
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:[duration doubleValue]];
-    [UIView setAnimationCurve:[curve intValue]];
+    //[UIView setAnimationCurve:[curve intValue]];
     
     // set views with new info
     self.inputView.frame = containerFrame;
     
     CGRect rect = [notif.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    self.tableview.frame = CGRectMake(0, -rect.size.height, DEVICE_WIDTH, DEVICE_HEIGHT-45);
+    self.tableview.frame = CGRectMake(0,0 , DEVICE_WIDTH, DEVICE_HEIGHT-rect.size.height);//-rect.size.height
+    [self jumpToLastRow];
     
     // commit animations
     [UIView commitAnimations];
@@ -225,10 +220,8 @@
     [UIView setAnimationCurve:[curve intValue]];
     
     // set views with new info
-    self.tableview.frame = CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT-45);
+    self.tableview.frame = CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT);
     self.inputView.frame = containerFrame;
-    
-    
     // commit animations
     [UIView commitAnimations];
 
@@ -279,6 +272,15 @@
     
     
 }
+
+-(void)jumpToLastRow
+{
+    //滚动到当前信息
+    NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:self.detailArray.count-1 inSection:0];
+    [self.tableview scrollToRowAtIndexPath:lastIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    
+}
+
 #pragma mark -- HPGrowingTextView Delegate
 -(void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height
 {
@@ -298,7 +300,6 @@
 //返回上一层界面
 -(void)arearBtnClick:(UIGestureRecognizer *)recognizer
 {
-    //VCLog(@"back");
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
@@ -352,14 +353,13 @@
     
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallingBtnClick object:self userInfo:dict]];
     
-    
 }
 
 //导航栏左边按钮-返回
 - (IBAction)ContactsInfo:(UIBarButtonItem *)sender {
    
     [self.navigationController popToRootViewControllerAnimated:YES];
-    //[self popoverPresentationController];
+    
 }
 
 //发送信息
@@ -373,14 +373,8 @@
         NSString *time = [fmt stringFromDate:date];
         [self addMessageWithContent:self.textView.text time:time];
         
-        [self.tableview reloadData];
         //关闭键盘
         [self.textView resignFirstResponder];
-        
-        //保存数据
-        //NSError *error;
-        //NSString *path = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Message" ofType:@"plist"] encoding:NSUTF8StringEncoding error:&error];
-        //[self.textView.text writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:&error];
         
         //保存到数据库
         TXData *txdata =  [[TXData alloc] init];
@@ -391,15 +385,13 @@
         txdata.msgStates = @"0";
         
         [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
-        self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
-        [self.tableview reloadData];
+        //self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
+        
     }
     self.textView.text = nil;
     
-    //滚动到当前信息
-    NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:self.detailArray.count-1 inSection:0];
-    [self.tableview scrollToRowAtIndexPath:lastIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-    
+    [self jumpToLastRow];
+    [self.tableview reloadData];
 }
 
 -(void)viewWillDisappear:(BOOL)animated{

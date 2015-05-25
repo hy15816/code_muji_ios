@@ -20,6 +20,8 @@
 #import "TXKeyView.h"
 #import "CustomTabBarView.h"
 #import "Records.h"
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#import <CoreTelephony/CTCarrier.h>
 
 @interface CallController ()<UITextFieldDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate,PopViewDelegate>
 {
@@ -68,7 +70,7 @@
     //排序
     CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
     [self.tableView reloadData];
-    
+    VCLog(@"int max:%i",INT_MAX);
 }
 
 //键盘显示
@@ -356,14 +358,14 @@
         
         UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Cancel_Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
         aliert.delegate = self;
-        aliert.tag =100;
+        aliert.tag =1000;
         [aliert show];
         
     }else{
         //未呼转,弹框提示，手机呼转到拇机123456789321？
         UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
         aliert.delegate = self;
-        aliert.tag =101;
+        aliert.tag =1001;
         [aliert show];
     }
 
@@ -457,25 +459,47 @@
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     NSMutableString *str;
+    NSDate *date = [NSDate date];
+    NSDateFormatter *dfmt = [[NSDateFormatter alloc] init];
+    dfmt.dateFormat = @"MMddHHmmss";
+    NSString *time;
+
     /****/
-    if (alertView.tag == 100) {
+    if (alertView.tag == 1000) {
         if (buttonIndex == 1) {
             //取消呼转
-            str = [[NSMutableString alloc] initWithFormat:@"**21*tel://%@#",[defaults valueForKey:muji_bind_number]];
+            str = [self cancelCallFrowardingWithNumber: [defaults valueForKey:muji_bind_number]];
             
             //设置状态为0
             [defaults setValue:@"0" forKey:call_divert];
+            //设定呼转结束时间
+            time = [dfmt stringFromDate:date ];
+            
+            //计算时长
+            [self intervalFromStartDate:[defaults valueForKey:CallForwardStartTime] toTheEndDate:time];
+            
+            //上传
+            
+            
+            
+            
+            
+            
+            
         }
     }
     
     
     /****/
-    if (alertView.tag == 101) {
+    if (alertView.tag == 1001) {
         if (buttonIndex == 1) {
             //设置呼转,
-            str = [[NSMutableString alloc] initWithFormat:@"**21*tel://%@#",[defaults valueForKey:muji_bind_number]];
+            str = [self setCallForwardingWithNumber:[defaults valueForKey:muji_bind_number]];
             //设置状态为1
             [defaults setValue:@"1" forKey:call_divert];
+            //设定呼转开始时间
+            time = [dfmt stringFromDate:date ];
+            [defaults setValue:time forKey:CallForwardStartTime];
 
         }
     }
@@ -494,6 +518,103 @@
     }
     
 }
+//计算两个点时间差
+- (NSString *)intervalFromStartDate:(NSString *)sDate toTheEndDate:(NSString *)endDate
+{
+    NSString *string;
+    int startTime = [sDate intValue];//max 1231235959
+    int endTime = [endDate intValue];
+    
+    int duringTime = endTime - startTime;
+    
+    string = [NSString stringWithFormat:@"%d",duringTime];
+    
+    VCLog(@"string:%@",string);
+    VCLog(@"int max:%i",INT_MAX);//2147483647
+    return string;
+}
+
+//设置开通呼转短号
+-(NSMutableString *)setCallForwardingWithNumber:(NSString *)string
+{
+    
+    
+    NSMutableString *str;
+    //cmcc
+    if ([[self getCarrier] isEqualToString:China_Mobile]) {
+        str = [[NSMutableString alloc] initWithFormat:@"**21*tel://%@#",string];
+    }
+    //unicom
+    if ([[self getCarrier] isEqualToString:China_Unicom]) {
+        str = [[NSMutableString alloc] initWithFormat:@"**21*tel://%@*11#",[defaults valueForKey:muji_bind_number]];
+    }
+    //telecom
+    if ([[self getCarrier] isEqualToString:China_Telecom]) {
+        str = [[NSMutableString alloc] initWithFormat:@"*72tel://%@",[defaults valueForKey:muji_bind_number]];
+    }
+    
+    return str;
+}
+
+//设置取消呼转短号
+-(NSMutableString *)cancelCallFrowardingWithNumber:(NSString *)string
+{
+    NSMutableString *str;
+    //cmcc
+    if ([[self getCarrier] isEqualToString:China_Mobile]) {
+        str = [[NSMutableString alloc] initWithFormat:@"##21#tel://%@",string];
+    }
+    //unicom
+    if ([[self getCarrier] isEqualToString:China_Unicom]) {
+        str = [[NSMutableString alloc] initWithFormat:@"##21#tel://%@",[defaults valueForKey:muji_bind_number]];
+    }
+    //telecom
+    if ([[self getCarrier] isEqualToString:China_Telecom]) {
+        str = [[NSMutableString alloc] initWithFormat:@"*720tel://%@",[defaults valueForKey:muji_bind_number]];
+    }
+
+
+    return str;
+}
+
+- (NSString*)getCarrier
+{
+    //获取本机运营商
+    CTTelephonyNetworkInfo *tInfo = [[CTTelephonyNetworkInfo alloc] init];
+    CTCarrier *carrier = [tInfo subscriberCellularProvider];
+    NSString * mcc = [carrier mobileCountryCode];//国家码406
+    NSString * mnc = [carrier mobileNetworkCode];//网络码
+    if (mnc == nil || mnc.length <1 || [mnc isEqualToString:@"SIM Not Inserted"] ) {
+        return @"Unknown";
+    }else {
+        if ([mcc isEqualToString:@"460"]) {
+            NSInteger MNC = [mnc intValue];
+            switch (MNC) {
+                case 00:
+                case 02:
+                case 07:
+                    return China_Mobile;
+                    break;
+                case 01:
+                case 06:
+                    return China_Unicom;
+                    break;
+                case 03:
+                case 05:
+                    return China_Telecom;
+                    break;
+                case 20:
+                    return China_TieTong;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
+    return @"Unknown";
+}
+
 
 #pragma mark-- 获取通讯录联系人
 -(NSMutableArray*)loadContacts

@@ -25,13 +25,18 @@
     _message = message;
     
     // 1、计算时间的位置
+    CGFloat timeX;
     if (_showTime){
         
-        CGFloat timeY = kMargin;
+        CGFloat timeY = 0;//kMargin  与cell边框高度间隔
         CGSize timeSize = [_message.time sizeWithAttributes:@{NSFontAttributeName:kTimeFont}];
         //VCLog(@"----%@", NSStringFromCGSize(timeSize));
         
-        CGFloat timeX = (DEVICE_WIDTH - timeSize.width) / 2;
+        timeX = DEVICE_WIDTH - timeSize.width-kMargin-kEdging-kMargin;
+        if (_message.type == MessageTypeHe) {
+            timeX = kMargin+kEdging;
+        }
+        
         _timeF = CGRectMake(timeX, timeY, timeSize.width + kTimeMarginW, timeSize.height + kTimeMarginH);
     }
     
@@ -43,7 +48,7 @@
         iconX = DEVICE_WIDTH - kMargin - kIconWH;
     }
     
-    CGFloat iconY = CGRectGetMaxY(_timeF) + kMargin;
+    CGFloat iconY = CGRectGetMaxY(_timeF);
     _iconF = CGRectMake(iconX, iconY, kIconWH, kIconWH);
     
      

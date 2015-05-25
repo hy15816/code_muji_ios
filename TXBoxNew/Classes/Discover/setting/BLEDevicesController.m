@@ -17,6 +17,8 @@
 #define UUIDSTR_TEST_READC @"READ"
 #define UUIDSTR_TEST_WRITEC @"WRITE"
 
+#define kFilePath [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject]
+
 @interface BLEDevicesController ()<CBCentralManagerDelegate,CBPeripheralDelegate>
 {
     NSUserDefaults *udefaults;
@@ -77,10 +79,33 @@
     
     self.strings = [NSString stringWithFormat:NSLocalizedString(@"Search_device", nil)];
     
-    [txsqlite deleteTableWithName:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
-    [txsqlite createTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL];
     //
-    [bleOP getMessageFromMuji:@"13322224444" msgContent:@"aaaaaawgerhjgjgaaaaaaaaaagewrhehaaaaa"];
+    NSError *error;
+    NSString *sp = @"13322227777";
+    [bleOP getMessageFromMuji:sp msgContent:@"bqwedqr9oitreoiore468"];
+    //保存数据
+    //NSString *path = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *address = [kFilePath stringByAppendingPathComponent:@"Addresser.txt"];
+    NSDate *de = [NSDate date];
+    NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
+    fmt.dateFormat = @"yy/M/d HH:mm"; // @"yyyy-MM-dd HH:mm:ss"
+    NSString *time = [fmt stringFromDate:de];
+    //写入
+    //NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:sp,@"number",time,@"time", nil];
+    NSString *str = @"123456789";
+    
+    [str writeToFile:address atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    //[dict writeToFile:address atomically:YES];
+    //VCLog(@"dict:%@",dict);
+    
+    //读
+    //NSDictionary *dict2 =[NSDictionary dictionaryWithContentsOfFile:address];
+    //VCLog(@"dict2:%@",dict2);
+    
+    NSString *str2 = [NSString stringWithContentsOfFile:address encoding:NSUTF8StringEncoding error:&error];
+    
+    VCLog(@"path:%@,str2:%@",kFilePath,str2);
+    
 }
 
 #pragma mark -- 开关 Actions
