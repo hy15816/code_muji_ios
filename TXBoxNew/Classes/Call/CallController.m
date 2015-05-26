@@ -127,7 +127,7 @@
     singleton = [TXTelNumSingleton sharedInstance];
     searchResault = [[NSMutableArray alloc] init];
     
-    //[self hanziTopinyin];
+    [self hanziTopinyin];
 }
 
 
@@ -740,19 +740,81 @@
     
     HanyuPinyinOutputFormat *outputFormat =[[HanyuPinyinOutputFormat alloc] init];
     [outputFormat setToneType:ToneTypeWithoutTone];//声调
-    [outputFormat setVCharType:VCharTypeWithV];
+    [outputFormat setVCharType:VCharTypeWithV];//特殊拼音的显示格式如 ü
     [outputFormat setCaseType:CaseTypeLowercase];//大小写
     
-    NSMutableArray *arr = [[NSMutableArray alloc] initWithObjects:@"你好",@"大家好",@"李显示",@"我在", nil];
+    NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"*你是"];
     NSMutableArray *arr2 =[[NSMutableArray alloc] init];
-    for (int i=0; i<arr.count; i++) {
-        NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:arr[i] withHanyuPinyinOutputFormat:outputFormat withNSString:@""];
-        VCLog(@"outputPinyin:%@",outputPinyin);
-        [arr2 addObject:outputPinyin];
+    if (mstring.length<=3) {
+        for (int i=0; i<mstring.length; i++) {
+            NSRange range = {i,1};//{位置,要截取的长度}
+            
+            NSString *s = [mstring substringWithRange:range];
+            NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:s withHanyuPinyinOutputFormat:outputFormat withNSString:@""];
+            
+            //VCLog(@"outputPinyin-----%@ ",outputPinyin);
+            [arr2 addObject:outputPinyin];
+        }
+        VCLog(@"-------------arr:%@",arr2);
         
+        //组合
+        NSMutableString *mutstrA = [[NSMutableString alloc ] init];
+        NSMutableString *mutstrC = [[NSMutableString alloc ] init];
+        NSMutableString *mutstrD = [[NSMutableString alloc ] init];
+        NSMutableString *mutstrf = [[NSMutableString alloc ] init];
+        NSMutableString *mutstre = [[NSMutableString alloc ] init];
+        NSMutableString *mutstrg = [[NSMutableString alloc ] init];
+        NSMutableString *mutstrh = [[NSMutableString alloc ] init];
+        for (int j = 0; j<arr2.count; j++) {
+            
+            //zhangsanfeng
+            NSString *nameA = arr2[j];
+            [mutstrA appendString:nameA];
+            //z s f
+            NSString *nameC = [arr2[j] substringWithRange:NSMakeRange(0, 1)];
+            [mutstrC appendString:nameC];
+            //z san f
+            NSString *xnamex =[arr2[j] substringWithRange:NSMakeRange(0, 1)];
+            if (j%2!=0) {
+                xnamex = arr2[j];
+            }
+            [mutstrD appendString:xnamex];
+            
+            //z s feng
+            NSString *xxname = arr2[j];
+            if (j<2) {
+                xxname = [arr2[j] substringWithRange:NSMakeRange(0, 1)];
+            }
+            [mutstrf appendString:xxname];
+            //zhang s f
+            NSString *namexx = arr2[j];
+            if (j>0) {
+                namexx = [arr2[j] substringWithRange:NSMakeRange(0, 1)];
+            }
+            [mutstre appendString:namexx];
+            
+            //zhang s feng
+            NSString *namexname = arr2[j];
+            if (j%2 ==1) {
+                namexname = [arr2[j] substringWithRange:NSMakeRange(0, 1)];
+            }
+            [mutstrg appendString:namexname];
+            //z san feng
+            NSString *xnamename = arr2[j];
+            if (j<1) {
+                xnamename =[arr2[j] substringWithRange:NSMakeRange(0, 1)];
+            }
+            [mutstrh appendString:xnamename];
+            
+        }
+        NSString *strings = [NSString stringWithFormat:@"%@,%@,%@,%@,%@,%@,%@",mutstrA,mutstrC,mutstrD,mutstre,mutstrf,mutstrg,mutstrh];
+        
+        VCLog(@"strings:%@",strings);
+
+    }else{
+        VCLog(@"--------------");
     }
-    VCLog(@"arr:%@",arr2);
-    
+
     
 }
 
