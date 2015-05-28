@@ -11,10 +11,14 @@
 #import "MsgFrame.h"
 #import "MsgDetailCell.h"
 #import "TXSqliteOperate.h"
+#import "EditView.h"
 
-@interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate>
+@interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate>
 {
     TXSqliteOperate *txsqlite;
+    UILongPressGestureRecognizer *longPress;
+    EditView *editView;
+    NSMutableArray *selectArray;
 }
 @property (strong, nonatomic) NSMutableArray *detailArray;
 @property (strong, nonatomic) NSMutableArray *allMsgFrame;
@@ -22,10 +26,10 @@
 @property (nonatomic,strong) UILabel *nameLabel;//姓名
 @property (nonatomic,strong) UILabel *arearLabel;//号码归属地
 
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *callBtn;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *callOutBtn;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *contactsInfoBtn;
 
-- (IBAction)callBtn:(UIBarButtonItem *)sender;
+- (IBAction)callOutBtn:(UIBarButtonItem *)sender;
 - (IBAction)ContactsInfo:(UIBarButtonItem *)sender;
 
 @property (nonatomic,strong) UITableView *tableview;
@@ -59,6 +63,7 @@
     [super viewDidLoad];
     txsqlite =[[TXSqliteOperate alloc] init];
     self.detailArray = [[NSMutableArray alloc] init];
+    selectArray = [[NSMutableArray alloc] init];
     VCLog(@"datailDatas:%@",self.datailDatas);
     
     // 显示左边按钮
@@ -74,17 +79,10 @@
     self.nameLabel.textColor = [UIColor whiteColor];
     
     self.arearLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 1, 230, 20)];
-    if (self.datailDatas.hisNumber.length>0 && self.datailDatas.hisHome.length==0) {
-        self.arearLabel.text = [NSString stringWithFormat:@"< %@",self.datailDatas.hisNumber];
-    }else if(self.datailDatas.hisNumber.length>0 && self.datailDatas.hisHome.length>0)
-    {
-        self.arearLabel.text = [NSString stringWithFormat:@"< %@%@",self.datailDatas.hisNumber,self.datailDatas.hisHome];
-        
-    }else
-    {
-        self.arearLabel.text = [NSString stringWithFormat:@"< back"];
-    }
+    [self setArearLabelTitle];
     self.arearLabel.textColor = [UIColor whiteColor];
+    
+    [self.callOutBtn setImage:[UIImage imageNamed:@"actionbar_call_hub32"]];
     
     //注册手势
     UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(initRecognizer:)];
@@ -115,10 +113,110 @@
     [self initKeyBoardNotif];
     
     
+    //编辑时显示
+    editView =[[EditView alloc] initWithFrame:CGRectMake(0, DEVICE_HEIGHT, DEVICE_WIDTH, 50)];
+    editView.backgroundColor = [UIColor whiteColor];
+    editView.delegate  =self;
+    [self.view addSubview:editView];
     
     
+}
+
+
+
+-(BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+    return (action ==@selector(copy:));
+}
+-(void)copy:(id)sender
+{
+    VCLog(@"xx");
+}
+
+#pragma  mark --EditViewDelegate
+
+-(void)buttonClickAndChanged:(UIButton *)button
+{
+    if (button.tag == 2000) {
+        VCLog(@"copys");
+    }
     
+    if (button.tag == 2001) {
+        [self shareContent];
+    }
     
+    if (button.tag == 2002) {
+        [self deleteButtonClick:button];
+    }
+}
+
+-(void)shareContent
+{
+    VCLog(@"share");
+}
+
+-(void)deleteButtonClick:(UIButton *)button
+{
+    
+    /*
+    //数据库
+    for (NSArray *arr in selectArray) {
+        [txsqlite deleteContacterWithNumber:arr[0] formTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME peopleId:arr[1] withSql:DELETE_MESSAGE_RECORD_SQL];
+    }
+    */
+}
+
+// 允许编辑
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        
+        /*
+         
+         //删除选中的条目
+         
+         NSMutableArray *indepathArray = (NSMutableArray *)[self.tableview indexPathsForSelectedRows];
+         NSMutableArray *mutarray = [[NSMutableArray alloc] init];
+         
+         
+         //tableview
+         for (NSString *indexStr in indepathArray) {
+         
+         [mutarray addObject:indexStr];
+         [self.detailArray removeObjectAtIndex:[indexStr intValue]];
+         }
+         
+         [self.tableview deleteRowsAtIndexPaths:mutarray withRowAnimation:UITableViewRowAnimationFade];
+
+         
+         */
+        
+        
+        NSMutableArray *array = [ [ NSMutableArray alloc ] init ];
+        
+        [ array addObject: indexPath];
+        
+        [self.detailArray removeObjectAtIndex:indexPath.row];//移除数组的元素
+        
+        
+        [tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];
+    }
+}
+
+
+-(void)setArearLabelTitle
+{
+    if (self.datailDatas.hisNumber.length>0 && self.datailDatas.hisHome.length==0) {
+        self.arearLabel.text = [NSString stringWithFormat:@"< %@",self.datailDatas.hisNumber];
+    }else if(self.datailDatas.hisNumber.length>0 && self.datailDatas.hisHome.length>0)
+    {
+        self.arearLabel.text = [NSString stringWithFormat:@"< %@%@",self.datailDatas.hisNumber,self.datailDatas.hisHome];
+        
+    }else
+    {
+        self.arearLabel.text = [NSString stringWithFormat:@"< back"];
+    }
+
 }
 
 -(void) getResouce
@@ -198,10 +296,7 @@
     
 }
 
--(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    
-}
+
 #pragma mark - 键盘隐藏响应函数
 -(void)keyboardHiddenNotif:(NSNotification*)notif{
     
@@ -275,9 +370,14 @@
 
 -(void)jumpToLastRow
 {
-    //滚动到当前信息
-    NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:self.detailArray.count-1 inSection:0];
-    [self.tableview scrollToRowAtIndexPath:lastIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    if (self.allMsgFrame.count>5) {
+        //滚动到当前信息
+        NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:self.detailArray.count-1 inSection:0];
+        [self.tableview scrollToRowAtIndexPath:lastIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    }else{
+        return;
+    }
+    
     
 }
 
@@ -300,7 +400,22 @@
 //返回上一层界面
 -(void)arearBtnClick:(UIGestureRecognizer *)recognizer
 {
-    [self.navigationController popToRootViewControllerAnimated:YES];
+    if ([self.arearLabel.text isEqualToString:@"取消"]) {
+        [self.tableview setEditing:NO animated:YES];
+        [self setArearLabelTitle];
+        [UIView beginAnimations:@"" context:nil];
+        [UIView setAnimationCurve:.5];
+        editView.frame = CGRectMake(0, DEVICE_HEIGHT, DEVICE_WIDTH, 50);
+        [UIView commitAnimations];
+        
+        [self.callOutBtn setImage:[UIImage imageNamed:@"actionbar_call_hub32"]];
+        [self.callOutBtn setEnabled:YES];
+        
+    }else{
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    }
+    
+    
 }
 
 #pragma mark -- UITableView
@@ -328,29 +443,79 @@
 {
     static NSString *CellIdentifier = @"Cell";
     MsgDetailCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
+    cell.selectedBackgroundView.backgroundColor = [UIColor clearColor];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     if (cell == nil) {
         cell = [[MsgDetailCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        longPress =[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressAction:)];
+        longPress.minimumPressDuration = 1.f;
+        longPress.delegate = self;
     }
     
     NSInteger aa = indexPath.row;
     // 设置数据
     cell.msgFrame = self.allMsgFrame[aa];
     //VCLog(@"state:%@",[array[indexPath.row] msgState]);
+    [cell.contentBtn addGestureRecognizer:longPress];
     return cell;
 }
+
+-(void)longPressAction:(UIGestureRecognizer *)recongizer
+{
+    if (recongizer.state == UIGestureRecognizerStateBegan) {
+        VCLog(@"longPress");
+        
+        //
+        [self.tableview setEditing:YES animated:YES];
+        self.arearLabel.text = @"取消";
+        [UIView beginAnimations:@"" context:nil];
+        [UIView setAnimationCurve:.5];
+        editView.frame = CGRectMake(0, DEVICE_HEIGHT-50, DEVICE_WIDTH, 50);
+        [UIView commitAnimations];
+        
+        [self.callOutBtn setImage:[UIImage imageNamed:@""]];
+        [self.callOutBtn setTitle:@""];
+        [self.callOutBtn setEnabled:NO];
+    }
+    
+    
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    //出现圈圈
+    return UITableViewCellEditingStyleDelete | UITableViewCellEditingStyleInsert;
+}
+
 
 //选中cell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    VCLog(@"indepath:%ld",(long)indexPath.row);
+    [editView.copysButton setEnabled:YES];
+    [editView.sharesButton setEnabled:YES];
+    [editView.deleteButton setEnabled:YES];
+    
+    //获取选中的数据
+    NSString *msgsender = [self.detailArray[indexPath.row] msgSender];
+    NSString *peopleId = [NSString stringWithFormat:@"%d",[self.detailArray[indexPath.row] peopleId]];
+    NSArray *checkDatas=[[NSArray alloc] initWithObjects:msgsender,peopleId, nil];
+    
+    [selectArray addObject:checkDatas];
+    
+    
+    
+    
+    
     
 }
 
 //导航栏右边按钮拨-拨打电话
-- (IBAction)callBtn:(UIBarButtonItem *)sender {
+- (IBAction)callOutBtn:(UIBarButtonItem *)sender {
     
     NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:self.datailDatas.hisName,@"hisName",self.datailDatas.hisNumber,@"hisNumber", nil];
     
+    VCLog(@"number:%@",self.datailDatas.hisNumber);
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallingBtnClick object:self userInfo:dict]];
     
 }
@@ -378,7 +543,7 @@
         
         //保存到数据库
         TXData *txdata =  [[TXData alloc] init];
-        txdata.msgSender = @"";
+        txdata.msgSender = @"1";
         txdata.msgTime = time;
         txdata.msgContent = self.textView.text;
         txdata.msgAccepter = self.datailDatas.hisNumber;

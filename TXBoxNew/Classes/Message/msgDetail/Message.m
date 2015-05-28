@@ -20,4 +20,5 @@
     self.type = [ddata.msgStates intValue];
 }
 
+
 @end

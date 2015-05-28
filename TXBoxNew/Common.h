@@ -56,7 +56,7 @@
 //添加msg记录
 #define MESSAGE_RECORDS_ADDINFO_SQL @"insert into %@(msgSender,msgTime,msgContent,msgAccepter,msgState) values(?,?,?,?,?)"
 //删除单条短信记录
-#define DELETE_MESSAGE_RECORD_SQL @"delete from %@ where msgSender=%@ and msgTime = %@"
+#define DELETE_MESSAGE_RECORD_SQL @"delete from %@ where msgSender=%@ and peopleId = %@"
 //删除整个短信会话
 #define DELETE_MESSAGE_RECORD_CONVERSATION_SQL  @"delete from %@ where hisNumber=%@ or msgAccepter = %@"
 

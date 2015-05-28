@@ -111,6 +111,8 @@
     _alertView.delegate = self;
     [_alertView textFieldAtIndex:0];//获取输入框，在UIAlertViewStyle -> input模式
     
+    UIAlertView *aaa =[[UIAlertView alloc] initWithTitle:@"" message:[NSString stringWithFormat:@"%@",[self getCarrier]] delegate:self cancelButtonTitle:@"n" otherButtonTitles:@"y", nil];
+    [aaa show];
     
 }
 
@@ -127,13 +129,14 @@
     singleton = [TXTelNumSingleton sharedInstance];
     searchResault = [[NSMutableArray alloc] init];
     
-    [self hanziTopinyin];
+    //[self hanziTopinyin];
 }
 
 
 #pragma mark -- 用户输入时
 -(void)inputTextDidChanged:(NSNotification*)notifi{
     
+    /*
     NSPredicate *preicate = [NSPredicate predicateWithFormat:@"(SELF.personName CONTAINS[cd] %@) or (self.personTel contains[cd] %@)", singleton.singletonValue,singleton.singletonValue ];
     
     if (searchResault!= nil) {
@@ -148,6 +151,7 @@
     
     
     [self.tableView reloadData];
+     */
 }
 
 #pragma mark - Table view data source
@@ -224,14 +228,15 @@
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
     //当前选中行
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    TXData *mdata = [[TXData alloc] init];
     TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
-    msgdata.hisName = aRecord.hisName;
-    msgdata.hisNumber = aRecord.hisNumber;
-    msgdata.hisHome = aRecord.hisHome;
+    mdata.hisName = aRecord.hisName;
+    mdata.hisNumber = aRecord.hisNumber;
+    mdata.hisHome = aRecord.hisHome;
     
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     MsgDetailController *controller = [board instantiateViewControllerWithIdentifier:@"msgDetail"];
-    controller.datailDatas = msgdata;
+    controller.datailDatas = mdata;
     
     [self.navigationController pushViewController:controller animated:YES];
     
@@ -289,7 +294,7 @@
         //删除数据库的数据
         TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
 
-        [sqlite deleteContacterWithNumber:aRecord.hisNumber formTable:CALL_RECORDS_TABLE_NAME msgTime:nil withSql:DELETE_CALL_RECORD_SQL];
+        [sqlite deleteContacterWithNumber:aRecord.hisNumber formTable:CALL_RECORDS_TABLE_NAME peopleId:nil withSql:DELETE_CALL_RECORD_SQL];
         
         NSMutableArray *array = [ [ NSMutableArray alloc ] init ];
         [array addObject: indexPath];
@@ -530,7 +535,7 @@
     string = [NSString stringWithFormat:@"%d",duringTime];
     
     VCLog(@"string:%@",string);
-    VCLog(@"int max:%i",INT_MAX);//2147483647
+    //VCLog(@"int max:%i",INT_MAX);//2147483647
     return string;
 }
 

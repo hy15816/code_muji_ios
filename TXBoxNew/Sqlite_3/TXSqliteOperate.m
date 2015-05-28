@@ -205,7 +205,7 @@
 }
 
 #pragma mark --删除-->根据联系人号码
--(void)deleteContacterWithNumber:(NSString *)hisNumber formTable:(NSString *)table msgTime:(NSString *)time withSql:(NSString *)sqlSring;
+-(void)deleteContacterWithNumber:(NSString *)hisNumber formTable:(NSString *)table peopleId:(NSString *)pId withSql:(NSString *)sqlSring
 {
     if ([self openDatabase]) {
         
@@ -217,7 +217,7 @@
         
         //删除单条短信记录
         if ([sqlSring isEqualToString:DELETE_MESSAGE_RECORD_SQL]) {
-            deleteSql = [NSString stringWithFormat:sqlSring,table,hisNumber,time];
+            deleteSql = [NSString stringWithFormat:sqlSring,table,hisNumber,pId];
         }
         
         //删除整个短信会话

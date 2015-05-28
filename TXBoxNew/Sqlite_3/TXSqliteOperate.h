@@ -31,7 +31,7 @@
 
 //
 -(NSMutableArray *)searchInfoFromTable:(NSString *)table ;//查找记录
--(void)deleteContacterWithNumber:(NSString *)hisNumber formTable:(NSString *)table msgTime:(NSString *)time withSql:(NSString *)sqlSring; ;//删除
+-(void)deleteContacterWithNumber:(NSString *)hisNumber formTable:(NSString *)table peopleId:(NSString *)pId withSql:(NSString *)sqlSring; ;//删除
 
 -(void)deleteTableWithName:(NSString *)table;//删除整张表
 

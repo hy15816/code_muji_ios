@@ -15,7 +15,7 @@
 #import "NSString+helper.h"
 #import "BATableView.h"
 #import "MsgDetailController.h"
-#import "MsgDatas.h"
+#import "TXData.h"
 
 @interface ContactersController ()<UISearchBarDelegate,UISearchResultsUpdating,BATableViewDelegate,ABNewPersonViewControllerDelegate,ABPersonViewControllerDelegate,UISearchControllerDelegate>
 {
@@ -23,7 +23,7 @@
     NSMutableDictionary *phoneDic;      //同一个人的手机号码dic，
     NSMutableArray *phoneArray;         //联系人({name:@"",tel:@""},{name:@"",tel:@""})
     NSArray *sortedArray;               //排序后的数组
-    MsgDatas *msgdata;
+    TXData *msgdata;
     
 }
 
@@ -45,7 +45,7 @@
     sectionDic= [[NSMutableDictionary alloc] init];
     phoneDic=[[NSMutableDictionary alloc] init];
     phoneArray = [[NSMutableArray alloc] init];
-    msgdata = [[MsgDatas alloc] init];
+    msgdata = [[TXData alloc] init];
     
     [self createTableView];
     

@@ -542,8 +542,8 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="calling_bg" translatesAutoresizingMaskIntoConstraints="NO" id="QI5-Yx-6l1">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LZa-n5-zoC">
-                                <rect key="frame" x="300" y="70" width="0.0" height="0.0"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="123" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LZa-n5-zoC">
+                                <rect key="frame" x="282" y="50" width="37" height="27"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -555,7 +555,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="05:05" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sfz-zN-3BY">
-                                <rect key="frame" x="282" y="85" width="37" height="17"/>
+                                <rect key="frame" x="282" y="92" width="37" height="17"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="168" id="fs4-Or-biZ"/>
                                 </constraints>
@@ -649,7 +649,7 @@
                             <constraint firstAttribute="centerX" secondItem="Sfz-zN-3BY" secondAttribute="centerX" id="Son-v0-2ef"/>
                             <constraint firstItem="heY-H7-gYd" firstAttribute="top" secondItem="HKR-Ob-pM5" secondAttribute="bottom" constant="83" id="U3l-dL-VxY"/>
                             <constraint firstItem="heY-H7-gYd" firstAttribute="leading" secondItem="kqw-8X-iTS" secondAttribute="leadingMargin" constant="80" id="UPA-ng-RoB"/>
-                            <constraint firstItem="LZa-n5-zoC" firstAttribute="top" secondItem="Yte-em-U4q" secondAttribute="bottom" constant="50" id="V6e-OY-vVf"/>
+                            <constraint firstItem="LZa-n5-zoC" firstAttribute="top" secondItem="Yte-em-U4q" secondAttribute="bottom" constant="30" id="V6e-OY-vVf"/>
                             <constraint firstItem="heY-H7-gYd" firstAttribute="top" secondItem="HKR-Ob-pM5" secondAttribute="bottom" constant="15" id="aBG-Sp-UhI">
                                 <variation key="widthClass=compact" constant="120"/>
                             </constraint>
@@ -789,7 +789,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="god-rx-0Qp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1464" y="150"/>
+            <point key="canvasLocation" x="1467" y="149"/>
         </scene>
         <!--短信-->
         <scene sceneID="m4b-ex-zJy">
@@ -1176,15 +1176,14 @@
                                 <action selector="ContactsInfo:" destination="Hft-A6-jcr" id="vNu-aN-r88"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" image="actionbar_call_hub32" id="fgy-zJ-wN3">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="fgy-zJ-wN3">
                             <connections>
-                                <action selector="callBtn:" destination="Hft-A6-jcr" id="phZ-Hy-2di"/>
+                                <action selector="callOutBtn:" destination="Hft-A6-jcr" id="7gx-SL-ltU"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="callBtn" destination="fgy-zJ-wN3" id="cQF-nY-uBl"/>
+                        <outlet property="callOutBtn" destination="fgy-zJ-wN3" id="qNJ-vp-aX7"/>
                         <outlet property="contactsInfoBtn" destination="Nb4-Aa-w0r" id="fkB-6O-KTf"/>
                     </connections>
                 </viewController>
@@ -1483,7 +1482,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="actionbar_call_hub32" width="16" height="16"/>
         <image name="call_another60_selected" width="30" height="30"/>
         <image name="calling_bg" width="450" height="720"/>
         <image name="icon_call" width="32" height="32"/>
