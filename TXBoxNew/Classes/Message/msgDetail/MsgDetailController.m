@@ -13,12 +13,13 @@
 #import "TXSqliteOperate.h"
 #import "EditView.h"
 
-@interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate>
+@interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate,ChangeRightMarginDelegate>
 {
     TXSqliteOperate *txsqlite;
     UILongPressGestureRecognizer *longPress;
     EditView *editView;
     NSMutableArray *selectArray;
+    NSMutableArray *indexpathArray;
 }
 @property (strong, nonatomic) NSMutableArray *detailArray;
 @property (strong, nonatomic) NSMutableArray *allMsgFrame;
@@ -64,6 +65,7 @@
     txsqlite =[[TXSqliteOperate alloc] init];
     self.detailArray = [[NSMutableArray alloc] init];
     selectArray = [[NSMutableArray alloc] init];
+    indexpathArray = [[NSMutableArray alloc] init];
     VCLog(@"datailDatas:%@",self.datailDatas);
     
     // 显示左边按钮
@@ -155,15 +157,45 @@
     VCLog(@"share");
 }
 
+
 -(void)deleteButtonClick:(UIButton *)button
 {
+
+
+
+    //删除选中的条目
+
+    //[self.tableview beginUpdates];
     
+    NSMutableArray *array = [ [ NSMutableArray alloc ] init ];
+    NSMutableArray *gga =(NSMutableArray *)[[indexpathArray reverseObjectEnumerator] allObjects];
+    //tableview
+    /*
+    for (NSIndexPath *indexPaths in gga) {
+
+        VCLog(@"detailArray:%@",self.detailArray );
+        VCLog(@"index.r:%ld",(long)indexPaths.row);
+        [array addObject:[NSIndexPath indexPathForRow:indexPaths.row inSection:0]];
+        //[ array addObject: indexPaths];
+        [self.detailArray removeObjectAtIndex:indexPaths.row];
+        
+
+    }
+    */
+    //[self.tableview deleteRowsAtIndexPaths:indexpathArray withRowAnimation:UITableViewRowAnimationFade];
     /*
     //数据库
     for (NSArray *arr in selectArray) {
         [txsqlite deleteContacterWithNumber:arr[0] formTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME peopleId:arr[1] withSql:DELETE_MESSAGE_RECORD_SQL];
     }
     */
+    
+    //取消选中
+    
+    [self cancelCheckCell];
+    //[self.tableview reloadData];
+    
+    //[self.tableview endUpdates];
 }
 
 // 允许编辑
@@ -171,25 +203,7 @@
     
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         
-        /*
-         
-         //删除选中的条目
-         
-         NSMutableArray *indepathArray = (NSMutableArray *)[self.tableview indexPathsForSelectedRows];
-         NSMutableArray *mutarray = [[NSMutableArray alloc] init];
-         
-         
-         //tableview
-         for (NSString *indexStr in indepathArray) {
-         
-         [mutarray addObject:indexStr];
-         [self.detailArray removeObjectAtIndex:[indexStr intValue]];
-         }
-         
-         [self.tableview deleteRowsAtIndexPaths:mutarray withRowAnimation:UITableViewRowAnimationFade];
-
-         
-         */
+        
         
         
         NSMutableArray *array = [ [ NSMutableArray alloc ] init ];
@@ -221,14 +235,14 @@
 
 -(void) getResouce
 {
-    
-    
+   
     self.allMsgFrame = [[NSMutableArray alloc] init];
     NSString *previousTime = nil;
     
     for (TXData *data in self.detailArray) {
         
         MsgFrame *messageFrame = [[MsgFrame alloc] init];
+        messageFrame.delegate = self;
         Message *message = [[Message alloc] init];
         
         message.data = data;
@@ -401,21 +415,28 @@
 -(void)arearBtnClick:(UIGestureRecognizer *)recognizer
 {
     if ([self.arearLabel.text isEqualToString:@"取消"]) {
-        [self.tableview setEditing:NO animated:YES];
-        [self setArearLabelTitle];
-        [UIView beginAnimations:@"" context:nil];
-        [UIView setAnimationCurve:.5];
-        editView.frame = CGRectMake(0, DEVICE_HEIGHT, DEVICE_WIDTH, 50);
-        [UIView commitAnimations];
         
-        [self.callOutBtn setImage:[UIImage imageNamed:@"actionbar_call_hub32"]];
-        [self.callOutBtn setEnabled:YES];
+        [self cancelCheckCell];
         
     }else{
         [self.navigationController popToRootViewControllerAnimated:YES];
     }
     
     
+}
+
+//取消选中cell
+-(void)cancelCheckCell
+{
+    [self.tableview setEditing:NO animated:YES];
+    [self setArearLabelTitle];
+    [UIView beginAnimations:@"" context:nil];
+    [UIView setAnimationCurve:.5];
+    editView.frame = CGRectMake(0, DEVICE_HEIGHT, DEVICE_WIDTH, 50);
+    [UIView commitAnimations];
+    
+    [self.callOutBtn setImage:[UIImage imageNamed:@"actionbar_call_hub32"]];
+    [self.callOutBtn setEnabled:YES];
 }
 
 #pragma mark -- UITableView
@@ -460,6 +481,19 @@
     return cell;
 }
 
+#pragma mark - -changerightMargin delegate
+-(CGFloat)changeRightMargin
+{
+    
+    if (editView.frame.origin.y == DEVICE_HEIGHT-50) {
+        return 30;
+    }
+    return 10;
+    
+    
+    
+}
+
 -(void)longPressAction:(UIGestureRecognizer *)recongizer
 {
     if (recongizer.state == UIGestureRecognizerStateBegan) {
@@ -477,7 +511,8 @@
         [self.callOutBtn setTitle:@""];
         [self.callOutBtn setEnabled:NO];
     }
-    
+    [self getResouce];
+    //[self.tableview reloadData];
     
 }
 
@@ -491,7 +526,7 @@
 //选中cell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    VCLog(@"indepath:%ld",(long)indexPath.row);
+    VCLog(@"indepath.row:%ld",(long)indexPath.row);
     [editView.copysButton setEnabled:YES];
     [editView.sharesButton setEnabled:YES];
     [editView.deleteButton setEnabled:YES];
@@ -502,7 +537,7 @@
     NSArray *checkDatas=[[NSArray alloc] initWithObjects:msgsender,peopleId, nil];
     
     [selectArray addObject:checkDatas];
-    
+    [indexpathArray addObject:indexPath];
     
     
     

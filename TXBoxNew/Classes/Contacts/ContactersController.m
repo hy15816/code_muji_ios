@@ -77,7 +77,7 @@
 
 // 创建tableView
 - (void) createTableView {
-    self.contactTableView = [[BATableView alloc] initWithFrame:self.view.bounds];
+    self.contactTableView = [[BATableView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH-5, DEVICE_HEIGHT)];
     self.contactTableView.delegate = self;
     [self.view addSubview:self.contactTableView];
 }
@@ -208,6 +208,7 @@
         for (int k = 0; k<ABMultiValueGetCount(personPhone); k++)
         {
             NSString * phone = (__bridge NSString*)ABMultiValueCopyValueAtIndex(personPhone, k);
+            /*
             //范围0~3
             NSRange range=NSMakeRange(0,3);
             NSString *str=[phone substringWithRange:range];
@@ -215,6 +216,7 @@
             if ([str isEqualToString:@"+86"]) {
                 phone=[phone substringFromIndex:3];
             }
+             */
             //加入phoneDic中
             [phoneDic setObject:(__bridge id)(record) forKey:[NSString stringWithFormat:@"%@%d",phone,recordID]];
             [tempDic setObject:phone forKey:@"personTel"];//把每一条号码存为key:“personTel”的Value

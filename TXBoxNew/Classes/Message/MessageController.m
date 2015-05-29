@@ -195,8 +195,10 @@
         
         [self.dataArray removeObjectAtIndex:indexPath.row];//移除数组的元素
         
-        
         [tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];
+        
+        //删除数据库数据
+        
     }
 }
 

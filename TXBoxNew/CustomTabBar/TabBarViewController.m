@@ -11,7 +11,7 @@
 #import "TXCallAction.h"
 #import "CallingController.h"
 
-@interface TabBarViewController ()<tabBarViewDelegate>
+@interface TabBarViewController ()<tabBarViewDelegate,UIAlertViewDelegate>
 {
     CustomTabBarView *tabBarView;
     CustomTabBarBtn *previousBtn;
@@ -193,8 +193,22 @@
         
     }else {
         //添加calling页面
-        [self addCallingView];
-        [self callingBtn:nil];
+        //是否登录？
+        //获取拇机号码,
+        NSString *phoneNumber =nil;// [defaults valueForKey:muji_bind_number];
+        
+        //已有number
+        if (phoneNumber.length>0 ) {
+            //获取呼转状态
+            //添加calling页面
+            [self addCallingView];
+            [self callingBtn:nil];
+        }else
+        {
+            [self isOrNotCallOut];
+        }
+        
+        
         
     }
 
@@ -248,9 +262,23 @@
     }
     //点击callBtn
     if ([notifi.name isEqualToString:kCallingBtnClick]) {
-        //添加calling页面
-        [self addCallingView];
-        [self callingBtn:notifi];
+        
+        //是否登录？
+        //获取拇机号码,
+        NSString *phoneNumber =nil;// [defaults valueForKey:muji_bind_number];
+        
+        //已有number
+        if (phoneNumber.length>0 ) {
+            //获取呼转状态
+            //添加calling页面
+            [self addCallingView];
+            [self callingBtn:notifi];
+        }else
+        {
+            [self isOrNotCallOut];
+        }
+        
+        
     }
     //显示tabBarView
     if ([notifi.name isEqualToString:kShowCusotomTabBar]) {
@@ -265,6 +293,22 @@
     }
     
 }
+
+
+
+//判断是否可以呼叫？
+-(void)isOrNotCallOut
+{
+      //没有则弹框提示
+        UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【绑定】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+        isNoMujiAlert.tag =1200;
+        [isNoMujiAlert show];
+        
+    
+
+    
+}
+
 -(void) addCallingView
 {
     //添加calling页面
@@ -313,6 +357,39 @@
     //移除通知
     //[[NSNotificationCenter defaultCenter] removeObserver:self name:ktextChangeNotify object:nil];
     
+}
+
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (alertView.tag == 1200) {
+        if (buttonIndex ==0) {
+            //跳转到-发现
+            //disvyCtorl
+            //
+            //self.selectedIndex  =3;
+            CustomTabBarBtn *button = [[CustomTabBarBtn alloc] init];
+            button.tag =3;
+            self.selectedIndex = button.tag; //切换不同控制器的界面
+            
+            button.selected = YES;//选中
+            
+            if (previousBtn != button) {
+                
+                previousBtn.selected = NO;
+                
+            }
+            
+            //previousBtn = button;
+            
+            //[self changeViewController:button];
+            //[previousBtn setImage:[UIImage imageNamed:@"icon_discover_selected"] forState:UIControlStateNormal];
+            
+            
+            //隐藏tabbar
+            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCustomKeyboardHide object:self]];
+
+        }
+    }
 }
 
 - (void)didReceiveMemoryWarning {

@@ -22,6 +22,7 @@
 #import "Records.h"
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CoreTelephony/CTCarrier.h>
+#import "DiscoveryController.h"
 
 @interface CallController ()<UITextFieldDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate,PopViewDelegate>
 {
@@ -41,6 +42,7 @@
     TXTelNumSingleton *singleton;   //获取输入的号码
     NSMutableArray *searchResault;
     NSArray *dataList;
+    DiscoveryController *discoveryCtrol;
 }
 
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
@@ -162,9 +164,11 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
+    /*
     if (singleton.singletonValue.length !=0) {
         return searchResault.count;
     }
+     */
     return [CallRecords count];
 }
 
@@ -178,13 +182,14 @@
     //更新cell的label，让其显示data对象的itemName
     TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
     
-    
+    /*
         //2.用户输入时
     if (singleton.singletonValue.length!=0) {
         Records *record = searchResault[indexPath.row];
         cell.hisName.text = record.personName;
         cell.hisNumber.text = record.personTel;
     }else{
+     */
         cell.hisName.text = aRecord.hisName;
         cell.hisNumber.text = [[aRecord.hisNumber purifyString] insertStr];
         cell.callDirection.image = [self imageForRating:[aRecord.callDirection intValue]];
@@ -192,8 +197,9 @@
         cell.callBeginTime.text = aRecord.callBeginTime;
         cell.hisHome.text = aRecord.hisHome;
         cell.hisOperator.text = aRecord.hisOperator;
-        
-    }
+     
+    //}
+    
     //没有名字。显示为编辑图标
     if (cell.hisName.text.length!=0) {
         [cell.PersonButton setImage:[UIImage imageNamed:@"icon_edit"] forState:UIControlStateNormal];
@@ -340,18 +346,31 @@
 //呼转方法
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender
 {
-    //获取拇机,email号码,
-    NSString *phoneNumber = [defaults valueForKey:muji_bind_number];
-    NSString *emailNumber = [defaults valueForKey:email_number];
+    
+    //是否登录？
+    //获取拇机号码,
+    NSString *phoneNumber =nil;// [defaults valueForKey:muji_bind_number];
     
     //已有number和email
-    if (phoneNumber.length>0 && emailNumber.length>0 ) {
+    if (phoneNumber.length>0 ) {
         //获取呼转状态
         [self getCallDivert];
     }else
     {   //没有则弹框提示
-        [self addShadeAndAlertView];
+        UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请到【发现】中【登录】,然后【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+        isNoMujiAlert.tag =1100;
+        [isNoMujiAlert show];
+        
+        
+        //[self addShadeAndAlertView];
     }
+    
+    
+   
+    
+    
+    
+    
 
 }
 
@@ -508,6 +527,25 @@
 
         }
     }
+    
+    if (alertView.tag == 1100) {
+        if (buttonIndex == 0) {
+            //跳转到-发现
+            //disvyCtorl
+            UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            discoveryCtrol = [board instantiateViewControllerWithIdentifier:@"disvyCtorl"];
+            
+            [self.navigationController pushViewController:discoveryCtrol animated:YES];
+            
+            //隐藏tabbar
+            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
+            
+            
+        }
+    }
+    
+    
+    
     if (str.length>0) {
         // 呼叫
         // 不要将webView添加到self.view，如果添加会遮挡原有的视图
@@ -699,6 +737,7 @@
         for (int k = 0; k<ABMultiValueGetCount(personPhone); k++)
         {
             NSString * phone = (__bridge NSString*)ABMultiValueCopyValueAtIndex(personPhone, k);
+            /*
             //范围0~3
             NSRange range=NSMakeRange(0,3);
             NSString *str=[phone substringWithRange:range];
@@ -706,6 +745,7 @@
             if ([str isEqualToString:@"+86"]) {
                 phone=[phone substringFromIndex:3];
             }
+             */
             //加入phoneDic中
             [phoneDic setObject:(__bridge id)(record) forKey:[NSString stringWithFormat:@"%@%d",phone,recordID]];
             [tempDic setObject:phone forKey:@"personTel"];//把每一条号码存为key:“personTel”的Value

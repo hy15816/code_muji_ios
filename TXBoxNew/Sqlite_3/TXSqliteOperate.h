@@ -41,4 +41,9 @@
 -(NSMutableArray *)searchConversationFromtable:(NSString *)table hisNumber:(NSString *)number wihtSqlString:(NSString *)sqlString; //查询某一次会话的最后一条
 ;
 
+
+
+-(NSMutableArray *)searchInfoFromPhoneDB;
+
+
 @end

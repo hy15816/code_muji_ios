@@ -73,11 +73,24 @@
     }
     //str>7
     
-    if (mutStr.length>8 ) {
+    if (mutStr.length>8 &&mutStr.length<=11) {
         [mutStr insertString:@"-" atIndex:3];
         [mutStr insertString:@"-" atIndex:8];
+        return (NSString *)mutStr;
     }
     
+    if (mutStr.length==12 ) {
+        [mutStr insertString:@"-" atIndex:4];
+        return (NSString *)mutStr;
+
+    }
+    
+    if (mutStr.length>11) {
+        [mutStr insertString:@" " atIndex:3];
+        [mutStr insertString:@"-" atIndex:7];
+        [mutStr insertString:@"-" atIndex:12];
+        return (NSString *)mutStr;
+    }
     
     
     return (NSString *)mutStr;

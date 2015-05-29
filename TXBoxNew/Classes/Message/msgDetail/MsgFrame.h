@@ -6,7 +6,7 @@
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 #define kEdging 20          //距离设备边框
-#define kMargin 10          //间隔
+#define kMargin 10          //左间隔
 //#define kIconWH 40          //头像宽高
 #define kIconWH 00          //头像宽高
 //#define kContentW 180       //内容宽度
@@ -27,6 +27,12 @@
 
 @class Message;
 
+@protocol ChangeRightMarginDelegate <NSObject>
+
+-(CGFloat)changeRightMargin;
+
+@end
+
 @interface MsgFrame : UIView
 
 @property (nonatomic, assign, readonly) CGRect iconF;
@@ -36,5 +42,7 @@
 @property (nonatomic, assign, readonly) CGFloat cellHeight; //cell高度
 @property (nonatomic, strong) Message *message;
 @property (nonatomic, assign) BOOL showTime;    //显示时间
+
+@property (assign,nonatomic) id<ChangeRightMarginDelegate> delegate;
 
 @end

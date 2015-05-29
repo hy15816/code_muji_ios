@@ -10,7 +10,7 @@
 #import "Message.h"
 
 @implementation MsgFrame
-
+@synthesize delegate;
 
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
@@ -31,8 +31,8 @@
         CGFloat timeY = 0;//kMargin  与cell边框高度间隔
         CGSize timeSize = [_message.time sizeWithAttributes:@{NSFontAttributeName:kTimeFont}];
         //VCLog(@"----%@", NSStringFromCGSize(timeSize));
-        
-        timeX = DEVICE_WIDTH - timeSize.width-kMargin-kEdging-kMargin;
+        //=480-77-10-20-?
+        timeX = DEVICE_WIDTH - timeSize.width-kMargin-kEdging-[self getMargin];//
         if (_message.type == MessageTypeHe) {
             timeX = kMargin+kEdging;
         }
@@ -58,7 +58,7 @@
     CGSize contentSize = [_message.content boundingRectWithSize:CGSizeMake(DEVICE_WIDTH*.618, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:kContentFont} context:nil].size;
     
     if (_message.type == MessageTypeMe) {
-        contentX = iconX - kMargin - contentSize.width - kContentLeft - kContentRight;
+        contentX = iconX  - contentSize.width - kContentLeft - kContentRight-[self getMargin];
     }
     
     _contentF = CGRectMake(contentX, contentY, contentSize.width + kContentLeft + kContentRight, contentSize.height + kContentTop + kContentBottom);
@@ -69,6 +69,10 @@
 }
 
 
-
+-(CGFloat)getMargin
+{
+    VCLog(@"%f",[self.delegate changeRightMargin]);
+    return [self.delegate changeRightMargin];
+}
 
 @end
