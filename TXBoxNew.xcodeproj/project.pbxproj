@@ -38,9 +38,11 @@
 		637C29D51AEB9B0200CD3DAF /* BATableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29D11AEB9B0200CD3DAF /* BATableView.m */; };
 		637C29D61AEB9B0200CD3DAF /* BATableViewIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29D31AEB9B0200CD3DAF /* BATableViewIndex.m */; };
 		637C29D91AEB9FF200CD3DAF /* ContactsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 637C29D81AEB9FF200CD3DAF /* ContactsCell.xib */; };
+		63806BE71B1BF4F500ED301D /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63806BE61B1BF4F500ED301D /* AVOSCloud.framework */; };
+		63806BEA1B1BFF8600ED301D /* LoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63806BE91B1BFF8600ED301D /* LoginController.m */; };
+		63806BED1B1C099F00ED301D /* RegisteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63806BEC1B1C099F00ED301D /* RegisteViewController.m */; };
 		63975E6D1AE73C040076E849 /* CustomTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63975E6C1AE73C040076E849 /* CustomTabBarView.m */; };
 		63D34AFD1AF9C6DD00C8B533 /* board.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D34AFC1AF9C6DD00C8B533 /* board.gif */; };
-		63D487191B17FF81005F2E1A /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D487181B17FF81005F2E1A /* AVOSCloud.framework */; };
 		63D4871C1B1835CA005F2E1A /* DiscoveryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D4871B1B1835CA005F2E1A /* DiscoveryController.m */; };
 		63D4871E1B183B24005F2E1A /* ble_connect.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D4871D1B183B24005F2E1A /* ble_connect.gif */; };
 		63D487201B183B72005F2E1A /* phone_connect.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D4871F1B183B72005F2E1A /* phone_connect.gif */; };
@@ -150,10 +152,14 @@
 		637C29D21AEB9B0200CD3DAF /* BATableViewIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BATableViewIndex.h; sourceTree = "<group>"; };
 		637C29D31AEB9B0200CD3DAF /* BATableViewIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BATableViewIndex.m; sourceTree = "<group>"; };
 		637C29D81AEB9FF200CD3DAF /* ContactsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactsCell.xib; sourceTree = "<group>"; };
+		63806BE61B1BF4F500ED301D /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
+		63806BE81B1BFF8600ED301D /* LoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginController.h; sourceTree = "<group>"; };
+		63806BE91B1BFF8600ED301D /* LoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginController.m; sourceTree = "<group>"; };
+		63806BEB1B1C099F00ED301D /* RegisteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisteViewController.h; sourceTree = "<group>"; };
+		63806BEC1B1C099F00ED301D /* RegisteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisteViewController.m; sourceTree = "<group>"; };
 		63975E6B1AE73C040076E849 /* CustomTabBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomTabBarView.h; sourceTree = "<group>"; };
 		63975E6C1AE73C040076E849 /* CustomTabBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomTabBarView.m; sourceTree = "<group>"; };
 		63D34AFC1AF9C6DD00C8B533 /* board.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = board.gif; sourceTree = "<group>"; };
-		63D487181B17FF81005F2E1A /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		63D4871A1B1835CA005F2E1A /* DiscoveryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscoveryController.h; sourceTree = "<group>"; };
 		63D4871B1B1835CA005F2E1A /* DiscoveryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoveryController.m; sourceTree = "<group>"; };
 		63D4871D1B183B24005F2E1A /* ble_connect.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = ble_connect.gif; sourceTree = "<group>"; };
@@ -229,7 +235,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				63D487191B17FF81005F2E1A /* AVOSCloud.framework in Frameworks */,
+				63806BE71B1BF4F500ED301D /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -346,6 +352,10 @@
 				63DEA6851B0095F7003343A7 /* setting */,
 				63D4871A1B1835CA005F2E1A /* DiscoveryController.h */,
 				63D4871B1B1835CA005F2E1A /* DiscoveryController.m */,
+				63806BE81B1BFF8600ED301D /* LoginController.h */,
+				63806BE91B1BFF8600ED301D /* LoginController.m */,
+				63806BEB1B1C099F00ED301D /* RegisteViewController.h */,
+				63806BEC1B1C099F00ED301D /* RegisteViewController.m */,
 			);
 			path = Discover;
 			sourceTree = "<group>";
@@ -456,7 +466,7 @@
 		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
 			isa = PBXGroup;
 			children = (
-				63D487181B17FF81005F2E1A /* AVOSCloud.framework */,
+				63806BE61B1BF4F500ED301D /* AVOSCloud.framework */,
 				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
 				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
 				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
@@ -739,6 +749,7 @@
 				63E1FAE61B0AD5DE005C7258 /* PinyinFormatter.m in Sources */,
 				6367B0B61B16E1AE0005F4B0 /* EditView.m in Sources */,
 				6352996B1ADE372E006840AC /* TabBarViewController.m in Sources */,
+				63806BED1B1C099F00ED301D /* RegisteViewController.m in Sources */,
 				63DEA6801B009512003343A7 /* NewMsgController.m in Sources */,
 				637005D81AE4DE2400B8BAFD /* NSString+helper.m in Sources */,
 				63D7A5A11B01AD9B004362B0 /* UITextField+AKNumericFormatter.m in Sources */,
@@ -773,6 +784,7 @@
 				63DEA67B1B0094FB003343A7 /* MsgDetailCell.m in Sources */,
 				63E1FAE41B0AD5DE005C7258 /* HanyuPinyinOutputFormat.m in Sources */,
 				632AC6391ADCE92F0023FAA9 /* TXData.m in Sources */,
+				63806BEA1B1BFF8600ED301D /* LoginController.m in Sources */,
 				6352996A1ADE372E006840AC /* CustomTabBarBtn.m in Sources */,
 				637005CC1AE4C1D000B8BAFD /* TXMessageProcessing.m in Sources */,
 				63FB5FD51ADBB58700A1A92B /* main.m in Sources */,
@@ -944,6 +956,8 @@
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
@@ -977,6 +991,8 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,

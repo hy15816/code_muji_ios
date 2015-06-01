@@ -377,7 +377,7 @@
     //若数据库存在就打开，不存在就创建，
     //[path UTF8String]把字符串转成char。。。SQLITE_OK常量0
     if (sqlite3_open([path UTF8String], &dataBase)==SQLITE_OK) {
-        //NSLog(@"is open");
+        NSLog(@"is open");
         return YES;
     }
     

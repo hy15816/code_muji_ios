@@ -42,7 +42,7 @@
 ;
 
 
-
+-(BOOL)openPhoneArearDatabase;
 -(NSMutableArray *)searchInfoFromPhoneDB;
 
 

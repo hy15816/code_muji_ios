@@ -114,7 +114,9 @@
     [_alertView textFieldAtIndex:0];//获取输入框，在UIAlertViewStyle -> input模式
     
     UIAlertView *aaa =[[UIAlertView alloc] initWithTitle:@"" message:[NSString stringWithFormat:@"%@",[self getCarrier]] delegate:self cancelButtonTitle:@"n" otherButtonTitles:@"y", nil];
-    [aaa show];
+    //[aaa show];
+    
+    [sqlite openPhoneArearDatabase];
     
 }
 
