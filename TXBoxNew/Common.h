@@ -85,9 +85,6 @@
 #define SliderHeight 5
 #define SliderWidth 200
 
-// 号码归属地的网址
-#define TelNumAddress @"http://virtual.paipai.com/extinfo/GetMobileProductInfo?mobile=%@&amount=10000&callname=getPhoneNumInfoExtCallback"
-
 // 其它
 #define OtherNumber NSLocalizedString(@"Other", nil)
 
@@ -103,12 +100,12 @@
 #define email_number @"e_mail_number"
 #define muji_bind_number @"muji_bind_number"
 // 呼转状态
-#define call_divert @"call_divert"
+#define call_divert_state @"call_divert_state"
 // window窗口
 #define WINDOW  [[UIApplication sharedApplication]keyWindow]
 
-#define PopViewHeight 170   //弹出框高度
-#define PopViewWidth 200    //弹出框宽度
+#define PopViewHeight 140   //弹出框高度
+#define PopViewWidth 0.9*DEVICE_WIDTH    //弹出框宽度
 
 #define China_Mobile @"China Mobile"
 #define China_Unicom @"China Unicom"
@@ -120,6 +117,9 @@
 
 #define CallForwardStartTime @"CallForwardStartTime"
 #define CallForwardEndTime @"CallForwardEndTime"
+//登录状态
+#define LOGIN_STATE @"loginState"
+#define BIND_STATE @"bindState"
+#define CONFIG_STATE @"configState"
 
-
-
+#define CurrentUser @"currentUser"

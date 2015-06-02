@@ -30,35 +30,14 @@
     [self changeNavigationBarStyle];
     
     usDefaults = [NSUserDefaults standardUserDefaults];
-    [usDefaults setValue:@"0" forKey:call_divert];//呼转状态
-    /*
-    //提示绑定拇机号码
-    if (![[usDefaults valueForKey:@"isSetting"] intValue]) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"是否绑定拇机号码？" delegate:self cancelButtonTitle:@"以后再说" otherButtonTitles:@"确定", nil];
-        alert.delegate = self;
-        alert.alertViewStyle =UIAlertViewStylePlainTextInput;
-        [alert show];
-
-    }
-    */
-    
-    //注册LeanCloud
-    //[AVOSCloud setApplicationId:@"" clientKey:@""];
+    [usDefaults setValue:@"0" forKey:call_divert_state];//呼转状态
+    [usDefaults setValue:@"0" forKey:LOGIN_STATE];//登录状态
         
     
     return YES;
 }
 
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex == 1) {
-        VCLog(@"sure,set number:13698006536");
-        //保存拇机号码 muji_bind_number
-        [usDefaults setValue:@"13698006536" forKey:@"muji_bind_number"];
-        //保存isSetting状态
-        [usDefaults setValue:@"1" forKey:@"isSetting"];
-    }
-}
+
 -(void) changeNavigationBarStyle
 {
     //背景颜色

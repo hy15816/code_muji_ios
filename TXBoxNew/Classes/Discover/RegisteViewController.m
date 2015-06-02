@@ -15,9 +15,7 @@
 }
 @property (weak, nonatomic) IBOutlet UITextField *regNumberField;
 @property (weak, nonatomic) IBOutlet UITextField *regPwdField;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *cancelBtn;
 @property (weak, nonatomic) IBOutlet UIButton *registerBtn;
-- (IBAction)cancelBtnClick:(UIBarButtonItem *)sender;
 @property (weak, nonatomic) IBOutlet UIButton *clause;
 - (IBAction)registerBtnClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UITextField *enterSmsCode;
@@ -54,34 +52,32 @@
 
 -(void)registerViewSwipeActions:(UISwipeGestureRecognizer *)recognizer
 {
-    [self.regNumberField resignFirstResponder];
-    [self.regPwdField resignFirstResponder];
-    [self.pwdFieldAgain resignFirstResponder];
-    [self.enterSmsCode resignFirstResponder];
+    [self closeKeyBoard];
 }
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    [self closeKeyBoard];
+}
+
+-(void)closeKeyBoard{
     [self.regNumberField resignFirstResponder];
     [self.regPwdField resignFirstResponder];
     [self.pwdFieldAgain resignFirstResponder];
     [self.enterSmsCode resignFirstResponder];
+    
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-
-
-- (IBAction)cancelBtnClick:(UIBarButtonItem *)sender {
-    
-    
-    [self dismissViewControllerAnimated:YES completion:^{
-        NSLog(@"cancel");
-    }];
-    
+-(BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [self closeKeyBoard];
+    //
+    //[self loginUserAccount];
+    return YES;
 }
 
 -(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
@@ -112,13 +108,23 @@
             AVUser *user = [AVUser user];
             user.username = self.regNumberField.text;
             user.password = self.regPwdField.text;
-            
+            //注册
             [user signUpInBackgroundWithBlock:^(BOOL suc,NSError *error){
             
                 if (error) {
                     VCLog(@"reg - error");
+                    
+                    UIAlertView *regAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"用户名已存在" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                    [regAlert show];
+                    self.regNumberField.text = nil;
+                    self.regPwdField.text = nil;
+                    self.pwdFieldAgain.text = nil;
+                    self.enterSmsCode.text = nil;
+                    
                 }else{
                     VCLog(@"reg -suc");
+                    //[self.cancelBtn setTitle:@"完成"];
+                    
 
                 }
             }];
@@ -133,7 +139,7 @@
 }
 
 - (IBAction)smsCodeClick:(UIButton *)sender {
-    /*
+    
     //请求手机验证码
     [AVOSCloud requestSmsCodeWithPhoneNumber:self.regNumberField.text callback:^(BOOL suc,NSError *error){
         if (suc) {
@@ -143,7 +149,7 @@
             NSLog(@"reg error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
         }
     }];
-*/
+
     /*
     //========GCD
     __block int timeout = 60;

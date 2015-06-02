@@ -12,7 +12,6 @@
 #import <AddressBookUI/AddressBookUI.h>
 #import "NSString+helper.h"
 #import "MsgDatas.h"
-#import "PopView.h"
 #import "MsgDetailController.h"
 #import "TXNavgationController.h"
 #import "PinYin4Objc.h"
@@ -24,7 +23,7 @@
 #import <CoreTelephony/CTCarrier.h>
 #import "DiscoveryController.h"
 
-@interface CallController ()<UITextFieldDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate,PopViewDelegate>
+@interface CallController ()<UITextFieldDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate>
 {
     NSMutableArray *CallRecords;
     TXSqliteOperate *sqlite;
@@ -32,9 +31,6 @@
     
     MsgDatas *msgdata;
     UIWebView *webView;
-    UIView *shadeView;  //遮罩层
-    PopView *popview;   //提示框
-    UIAlertView *_alertView; //提示框
     NSUserDefaults *defaults;
     NSMutableArray *mutPhoneArray;
     NSMutableDictionary *phoneDic;      //同一个人的手机号码dic
@@ -56,8 +52,6 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    //键盘活动  键盘出现时
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
     
     //显示tabbar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
@@ -75,23 +69,6 @@
     VCLog(@"int max:%i",INT_MAX);
 }
 
-//键盘显示
-- (void)keyboardWasShow:(NSNotification*)aNotification
-{
-    NSDictionary* info = [aNotification userInfo];
-    /*
-     NSNumber *duration = [info objectForKey:UIKeyboardAnimationDurationUserInfoKey];
-     VCLog(@"duration:%@",duration);
-     CGRect beginRect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-     */
-    CGRect endRect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    
-    VCLog(@"·······%f",endRect.size.height);
-    [UIView beginAnimations:@"" context:nil];
-    popview.frame =  CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, DEVICE_HEIGHT-PopViewHeight-endRect.size.height, PopViewWidth, PopViewHeight);
-    [UIView setAnimationDuration:.25];
-    [UIView commitAnimations];
-}
 
 -(void)viewDidAppear:(BOOL)animated
 {
@@ -107,11 +84,6 @@
     
     self.selectedIndexPath = nil;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;//tableview分割线
-    
-    //创建提醒对话框
-    _alertView = [[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"Please_enter_the_correct_info", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"Sure", nil) otherButtonTitles:nil, nil];
-    _alertView.delegate = self;
-    [_alertView textFieldAtIndex:0];//获取输入框，在UIAlertViewStyle -> input模式
     
     UIAlertView *aaa =[[UIAlertView alloc] initWithTitle:@"" message:[NSString stringWithFormat:@"%@",[self getCarrier]] delegate:self cancelButtonTitle:@"n" otherButtonTitles:@"y", nil];
     //[aaa show];
@@ -379,7 +351,7 @@
 -(void)getCallDivert
 {
     NSString *number = [defaults valueForKey:muji_bind_number];
-    if ([[defaults valueForKey:call_divert] intValue]) {
+    if ([[defaults valueForKey:call_divert_state] intValue]) {
         //已呼转,弹框提示，到拇机123456789321的呼转取消？
         
         UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Cancel_Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
@@ -397,89 +369,7 @@
 
 }
 
-#pragma mark -- 弹出框
--(void)addShadeAndAlertView
-{
-    //透明层
-    shadeView =[[UIView alloc] initWithFrame:self.view.window.bounds];
-    shadeView.backgroundColor = [UIColor grayColor];//self.view.window.bounds
-    shadeView.alpha = .5;
-    [self.view.window addSubview:shadeView];
-    
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(shadeViewTap:)];
-    tap.numberOfTapsRequired = 1;
-    [shadeView addGestureRecognizer:tap];
-    
-    
-    //pop
-    popview = [[PopView alloc] initWithFrame:CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, DEVICE_HEIGHT-PopViewHeight-216, PopViewWidth, PopViewHeight)];
-    popview.delegate = self;
-    [popview initWithTitle:NSLocalizedString(@"The_Call_Forwarding_was_get_info", nil) firstMsg:NSLocalizedString(@"E-mail", nil) secondMsg:NSLocalizedString(@"MuJi-Number", nil) cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:NSLocalizedString(@"Sure", nil)];
-    
-    
-    [self.view.window addSubview:popview];
-}
 
--(void)shadeViewTap:(UIGestureRecognizer *)recongnizer
-{
-    VCLog(@"-------tap");
-    
-    [shadeView removeFromSuperview];
-    [popview removeFromSuperview];
-}
-
-#pragma mark-- popview delegate
--(void)resaultsButtonClick:(UIButton *)button firstField:(UITextField *)ffield secondField:(UITextField *)sfield
-{
-    //获取输入的text
-    NSString *email =ffield.text;
-    NSString *number = [sfield.text trimOfString];
-    //取消
-    if (button.tag == 0) {
-        
-        [shadeView removeFromSuperview];
-        [popview removeFromSuperview];
-    }
-    //sure按钮
-    if (button.tag == 1) {
-        if (email.length<=0 || number.length<=0 || ![number isValidateMobile:number]) {
-            [_alertView show];
-        }else
-        {
-            //本地保存数据
-            [defaults setValue:email forKey:email_number];
-            [defaults setValue:number forKey:muji_bind_number];
-            
-            //上传到服务器
-            /*
-            AVUser *auser = [AVUser user];
-            auser.username = sfield.text;//号码
-            auser.password = @"";
-            auser.email = ffield.text;//邮箱
-            
-            [auser signUpInBackgroundWithBlock:^(BOOL suc,NSError *error){
-                
-                if (suc) {
-                    VCLog(@"sign suc");
-                }else{
-                    VCLog(@"reg error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
-                    UIAlertView *alert =[[UIAlertView alloc] initWithTitle:error.localizedDescription message:nil delegate:self cancelButtonTitle:@"是" otherButtonTitles:nil, nil];
-                    alert.delegate = self;
-                    [alert show];
-                }
-            }];
-            */
-             
-            VCLog(@"save-->email:%@,number:%@",email,number);
-            [shadeView removeFromSuperview];
-            [popview removeFromSuperview];
-            
-            [self getCallDivert];
-        }
-    }
-    
-    
-}
 
 #pragma mark -- AlertView Delegate
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -497,7 +387,7 @@
             str = [self cancelCallFrowardingWithNumber: [defaults valueForKey:muji_bind_number]];
             
             //设置状态为0
-            [defaults setValue:@"0" forKey:call_divert];
+            [defaults setValue:@"0" forKey:call_divert_state];
             //设定呼转结束时间
             time = [dfmt stringFromDate:date ];
             
@@ -522,7 +412,7 @@
             //设置呼转,
             str = [self setCallForwardingWithNumber:[defaults valueForKey:muji_bind_number]];
             //设置状态为1
-            [defaults setValue:@"1" forKey:call_divert];
+            [defaults setValue:@"1" forKey:call_divert_state];
             //设定呼转开始时间
             time = [dfmt stringFromDate:date ];
             [defaults setValue:time forKey:CallForwardStartTime];

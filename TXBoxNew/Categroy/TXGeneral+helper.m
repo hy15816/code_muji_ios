@@ -168,37 +168,6 @@
 }
 
 
-#pragma mark -- 获取手机号码归属地(11位号码)
--(NSString *) getNumbersAddress:(NSString *)number
-{
-    NSString *str = [[NSString alloc] init];
-    NSError *error;
-    
-    if (number.length==11) {
-        NSURL *url3= [NSURL URLWithString:[NSString stringWithFormat:TelNumAddress,number]];
-        
-        NSURLRequest *request = [NSURLRequest requestWithURL:url3];
-        
-        
-        NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
-        
-        NSString *str2 = [[NSString alloc] initWithData:data encoding:CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000)];
-        
-        NSString *str3 = [str2 substringWithRange:NSMakeRange(59, str2.length-205)];
-        NSString *str5 = [str2 substringWithRange:NSMakeRange(135, str2.length-205)];
-        
-        
-        VCLog(@"str2 :%@\n",str2);
-        VCLog(@"address :%@%@\n",str3,str5);
-        
-        str = [[NSString alloc] initWithFormat:@"%@%@",str3,str5];
-        
-        return str;
-        
-    }
-    
-    return @"未知";
-}
 
 #pragma mark --计算2个时间点的时间差
 

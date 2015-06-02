@@ -13,7 +13,6 @@
 		632AC63A1ADCE92F0023FAA9 /* TXSqliteOperate.m in Sources */ = {isa = PBXBuildFile; fileRef = 632AC6381ADCE92F0023FAA9 /* TXSqliteOperate.m */; };
 		632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 632AC6431ADCF0240023FAA9 /* libsqlite3.dylib */; };
 		63315A521B12D5FF00BD9817 /* Addresser.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63315A511B12D5FF00BD9817 /* Addresser.plist */; };
-		635003531ADF93010051377F /* DiscoverController.m in Sources */ = {isa = PBXBuildFile; fileRef = 635003521ADF93010051377F /* DiscoverController.m */; };
 		635003591ADF9C790051377F /* ContactsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 635003581ADF9C790051377F /* ContactsCell.m */; };
 		6350035C1ADFB9710051377F /* pinyin.c in Sources */ = {isa = PBXBuildFile; fileRef = 6350035A1ADFB9710051377F /* pinyin.c */; };
 		6350035F1ADFBB750051377F /* Records.m in Sources */ = {isa = PBXBuildFile; fileRef = 6350035E1ADFBB750051377F /* Records.m */; };
@@ -38,9 +37,10 @@
 		637C29D51AEB9B0200CD3DAF /* BATableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29D11AEB9B0200CD3DAF /* BATableView.m */; };
 		637C29D61AEB9B0200CD3DAF /* BATableViewIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29D31AEB9B0200CD3DAF /* BATableViewIndex.m */; };
 		637C29D91AEB9FF200CD3DAF /* ContactsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 637C29D81AEB9FF200CD3DAF /* ContactsCell.xib */; };
-		63806BE71B1BF4F500ED301D /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63806BE61B1BF4F500ED301D /* AVOSCloud.framework */; };
 		63806BEA1B1BFF8600ED301D /* LoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63806BE91B1BFF8600ED301D /* LoginController.m */; };
 		63806BED1B1C099F00ED301D /* RegisteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63806BEC1B1C099F00ED301D /* RegisteViewController.m */; };
+		63947F181B1D465700555479 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63947F171B1D465700555479 /* AVOSCloud.framework */; };
+		63947F1B1B1D7B7800555479 /* UpdatePwdController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63947F1A1B1D7B7800555479 /* UpdatePwdController.m */; };
 		63975E6D1AE73C040076E849 /* CustomTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63975E6C1AE73C040076E849 /* CustomTabBarView.m */; };
 		63D34AFD1AF9C6DD00C8B533 /* board.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D34AFC1AF9C6DD00C8B533 /* board.gif */; };
 		63D4871C1B1835CA005F2E1A /* DiscoveryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D4871B1B1835CA005F2E1A /* DiscoveryController.m */; };
@@ -52,7 +52,6 @@
 		63D7A5A11B01AD9B004362B0 /* UITextField+AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D7A59E1B01AD9B004362B0 /* UITextField+AKNumericFormatter.m */; };
 		63DBF8AC1B0303C500041321 /* TXNavgationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DBF8AB1B0303C500041321 /* TXNavgationController.m */; };
 		63DBF8B21B0321FB00041321 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63DBF8B41B0321FB00041321 /* Localizable.strings */; };
-		63DBF8B81B033D1600041321 /* DiscoverCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DBF8B71B033D1600041321 /* DiscoverCell.m */; };
 		63DEA6791B0094FB003343A7 /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6711B0094FB003343A7 /* Message.m */; };
 		63DEA67B1B0094FB003343A7 /* MsgDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6741B0094FB003343A7 /* MsgDetailCell.m */; };
 		63DEA67C1B0094FB003343A7 /* MsgDetailController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6761B0094FB003343A7 /* MsgDetailController.m */; };
@@ -103,8 +102,6 @@
 		632AC63E1ADCEB7C0023FAA9 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		632AC6431ADCF0240023FAA9 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		63315A511B12D5FF00BD9817 /* Addresser.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Addresser.plist; sourceTree = "<group>"; };
-		635003511ADF93010051377F /* DiscoverController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscoverController.h; sourceTree = "<group>"; };
-		635003521ADF93010051377F /* DiscoverController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoverController.m; sourceTree = "<group>"; };
 		635003571ADF9C790051377F /* ContactsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsCell.h; sourceTree = "<group>"; };
 		635003581ADF9C790051377F /* ContactsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsCell.m; sourceTree = "<group>"; };
 		6350035A1ADFB9710051377F /* pinyin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pinyin.c; sourceTree = "<group>"; };
@@ -152,11 +149,13 @@
 		637C29D21AEB9B0200CD3DAF /* BATableViewIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BATableViewIndex.h; sourceTree = "<group>"; };
 		637C29D31AEB9B0200CD3DAF /* BATableViewIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BATableViewIndex.m; sourceTree = "<group>"; };
 		637C29D81AEB9FF200CD3DAF /* ContactsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactsCell.xib; sourceTree = "<group>"; };
-		63806BE61B1BF4F500ED301D /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		63806BE81B1BFF8600ED301D /* LoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginController.h; sourceTree = "<group>"; };
 		63806BE91B1BFF8600ED301D /* LoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginController.m; sourceTree = "<group>"; };
 		63806BEB1B1C099F00ED301D /* RegisteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisteViewController.h; sourceTree = "<group>"; };
 		63806BEC1B1C099F00ED301D /* RegisteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisteViewController.m; sourceTree = "<group>"; };
+		63947F171B1D465700555479 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
+		63947F191B1D7B7800555479 /* UpdatePwdController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdatePwdController.h; sourceTree = "<group>"; };
+		63947F1A1B1D7B7800555479 /* UpdatePwdController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdatePwdController.m; sourceTree = "<group>"; };
 		63975E6B1AE73C040076E849 /* CustomTabBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomTabBarView.h; sourceTree = "<group>"; };
 		63975E6C1AE73C040076E849 /* CustomTabBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomTabBarView.m; sourceTree = "<group>"; };
 		63D34AFC1AF9C6DD00C8B533 /* board.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = board.gif; sourceTree = "<group>"; };
@@ -164,8 +163,8 @@
 		63D4871B1B1835CA005F2E1A /* DiscoveryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoveryController.m; sourceTree = "<group>"; };
 		63D4871D1B183B24005F2E1A /* ble_connect.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = ble_connect.gif; sourceTree = "<group>"; };
 		63D4871F1B183B72005F2E1A /* phone_connect.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = phone_connect.gif; sourceTree = "<group>"; };
-		63D7A5931B0196A9004362B0 /* PopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopView.h; sourceTree = "<group>"; };
-		63D7A5941B0196A9004362B0 /* PopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PopView.m; sourceTree = "<group>"; };
+		63D7A5931B0196A9004362B0 /* PopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PopView.h; path = ../Call/PopView.h; sourceTree = "<group>"; };
+		63D7A5941B0196A9004362B0 /* PopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PopView.m; path = ../Call/PopView.m; sourceTree = "<group>"; };
 		63D7A5981B01AD9B004362B0 /* AKNumericFormatter-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AKNumericFormatter-Prefix.pch"; sourceTree = "<group>"; };
 		63D7A5991B01AD9B004362B0 /* AKNumericFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AKNumericFormatter.h; sourceTree = "<group>"; };
 		63D7A59A1B01AD9B004362B0 /* AKNumericFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AKNumericFormatter.m; sourceTree = "<group>"; };
@@ -177,8 +176,6 @@
 		63DBF8AB1B0303C500041321 /* TXNavgationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXNavgationController.m; sourceTree = "<group>"; };
 		63DBF8B31B0321FB00041321 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		63DBF8B51B0321FD00041321 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		63DBF8B61B033D1600041321 /* DiscoverCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscoverCell.h; sourceTree = "<group>"; };
-		63DBF8B71B033D1600041321 /* DiscoverCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoverCell.m; sourceTree = "<group>"; };
 		63DEA6701B0094FB003343A7 /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
 		63DEA6711B0094FB003343A7 /* Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Message.m; sourceTree = "<group>"; };
 		63DEA6731B0094FB003343A7 /* MsgDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MsgDetailCell.h; sourceTree = "<group>"; };
@@ -235,7 +232,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				63806BE71B1BF4F500ED301D /* AVOSCloud.framework in Frameworks */,
+				63947F181B1D465700555479 /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -318,8 +315,6 @@
 				6352997B1ADE3AF7006840AC /* CallRecordsCell.m */,
 				6359D09B1AE62CF800592201 /* CallingController.h */,
 				6359D09C1AE62CF800592201 /* CallingController.m */,
-				63D7A5931B0196A9004362B0 /* PopView.h */,
-				63D7A5941B0196A9004362B0 /* PopView.m */,
 			);
 			path = Call;
 			sourceTree = "<group>";
@@ -345,17 +340,17 @@
 		6352997F1ADE3AF7006840AC /* Discover */ = {
 			isa = PBXGroup;
 			children = (
-				635003511ADF93010051377F /* DiscoverController.h */,
-				635003521ADF93010051377F /* DiscoverController.m */,
-				63DBF8B61B033D1600041321 /* DiscoverCell.h */,
-				63DBF8B71B033D1600041321 /* DiscoverCell.m */,
-				63DEA6851B0095F7003343A7 /* setting */,
 				63D4871A1B1835CA005F2E1A /* DiscoveryController.h */,
 				63D4871B1B1835CA005F2E1A /* DiscoveryController.m */,
+				63D7A5931B0196A9004362B0 /* PopView.h */,
+				63D7A5941B0196A9004362B0 /* PopView.m */,
+				63DEA6851B0095F7003343A7 /* setting */,
 				63806BE81B1BFF8600ED301D /* LoginController.h */,
 				63806BE91B1BFF8600ED301D /* LoginController.m */,
 				63806BEB1B1C099F00ED301D /* RegisteViewController.h */,
 				63806BEC1B1C099F00ED301D /* RegisteViewController.m */,
+				63947F191B1D7B7800555479 /* UpdatePwdController.h */,
+				63947F1A1B1D7B7800555479 /* UpdatePwdController.m */,
 			);
 			path = Discover;
 			sourceTree = "<group>";
@@ -466,7 +461,7 @@
 		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
 			isa = PBXGroup;
 			children = (
-				63806BE61B1BF4F500ED301D /* AVOSCloud.framework */,
+				63947F171B1D465700555479 /* AVOSCloud.framework */,
 				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
 				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
 				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
@@ -757,9 +752,7 @@
 				6359D09D1AE62CF800592201 /* CallingController.m in Sources */,
 				635003591ADF9C790051377F /* ContactsCell.m in Sources */,
 				6359D08E1AE5F28E00592201 /* MessageCell.m in Sources */,
-				635003531ADF93010051377F /* DiscoverController.m in Sources */,
 				63E1FAE71B0AD5DE005C7258 /* PinyinHelper.m in Sources */,
-				63DBF8B81B033D1600041321 /* DiscoverCell.m in Sources */,
 				637C29D61AEB9B0200CD3DAF /* BATableViewIndex.m in Sources */,
 				637C29D51AEB9B0200CD3DAF /* BATableView.m in Sources */,
 				630DE9501AEE23A600FAA575 /* HPTextViewInternal.m in Sources */,
@@ -780,6 +773,7 @@
 				63DEA68B1B0095F7003343A7 /* BLEDevicesController.m in Sources */,
 				635299831ADE3AF7006840AC /* TXKeyView.m in Sources */,
 				637005CB1AE4C1D000B8BAFD /* TXCallAction.m in Sources */,
+				63947F1B1B1D7B7800555479 /* UpdatePwdController.m in Sources */,
 				637005D91AE4DE2400B8BAFD /* TXGeneral+helper.m in Sources */,
 				63DEA67B1B0094FB003343A7 /* MsgDetailCell.m in Sources */,
 				63E1FAE41B0AD5DE005C7258 /* HanyuPinyinOutputFormat.m in Sources */,
@@ -929,7 +923,7 @@
 		63FB5FF31ADBB58800A1A92B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				CODE_SIGN_IDENTITY = "iPhone Distribution: ShenZhen WanShi Technology Co.,Ltd (FUNQN7N5RS)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: ShenZhen WanShi Technology Co.,Ltd (FUNQN7N5RS)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -941,6 +935,8 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
@@ -979,7 +975,7 @@
 		63FB5FF41ADBB58800A1A92B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				CODE_SIGN_IDENTITY = "iPhone Distribution: ShenZhen WanShi Technology Co.,Ltd (FUNQN7N5RS)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: ShenZhen WanShi Technology Co.,Ltd (FUNQN7N5RS)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -991,6 +987,8 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
