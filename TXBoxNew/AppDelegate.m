@@ -32,8 +32,9 @@
     usDefaults = [NSUserDefaults standardUserDefaults];
     [usDefaults setValue:@"0" forKey:call_divert_state];//呼转状态
     [usDefaults setValue:@"0" forKey:LOGIN_STATE];//登录状态
-        
-    
+    [usDefaults setValue:@"0" forKey:CONFIG_STATE];//配置状态
+    [usDefaults setValue:@"0" forKey:@"opstate"];
+    [usDefaults setValue:@"0" forKey:BIND_STATE];
     return YES;
 }
 

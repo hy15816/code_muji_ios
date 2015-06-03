@@ -24,6 +24,7 @@
     NSMutableArray *phoneArray;         //联系人({name:@"",tel:@""},{name:@"",tel:@""})
     NSArray *sortedArray;               //排序后的数组
     TXData *msgdata;
+    NSMutableArray *zzsArrar;
     
 }
 
@@ -46,6 +47,7 @@
     phoneDic=[[NSMutableDictionary alloc] init];
     phoneArray = [[NSMutableArray alloc] init];
     msgdata = [[TXData alloc] init];
+    zzsArrar =[[NSMutableArray alloc] init];
     
     [self createTableView];
     
@@ -77,7 +79,7 @@
 
 // 创建tableView
 - (void) createTableView {
-    self.contactTableView = [[BATableView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH-5, DEVICE_HEIGHT)];
+    self.contactTableView = [[BATableView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT)];
     self.contactTableView.delegate = self;
     [self.view addSubview:self.contactTableView];
 }
@@ -199,6 +201,9 @@
             name = [[NSString alloc] initWithFormat:NSLocalizedString(@"Unknow", nil)];
         }
         
+        //转拼音
+        NSString *namePinYin = [name hanziTopinyin];
+        NSString *nameNum = [namePinYin pinyinTrimIntNumber];
         
         //获取电话号码，通用的，基本的,概括的
         ABMultiValueRef personPhone = ABRecordCopyValue(record, kABPersonPhoneProperty);
@@ -208,21 +213,16 @@
         for (int k = 0; k<ABMultiValueGetCount(personPhone); k++)
         {
             NSString * phone = (__bridge NSString*)ABMultiValueCopyValueAtIndex(personPhone, k);
-            /*
-            //范围0~3
-            NSRange range=NSMakeRange(0,3);
-            NSString *str=[phone substringWithRange:range];
-            //若前3个字符为+86，从后一位开始取出
-            if ([str isEqualToString:@"+86"]) {
-                phone=[phone substringFromIndex:3];
-            }
-             */
+            
             //加入phoneDic中
             [phoneDic setObject:(__bridge id)(record) forKey:[NSString stringWithFormat:@"%@%d",phone,recordID]];
             [tempDic setObject:phone forKey:@"personTel"];//把每一条号码存为key:“personTel”的Value
+            NSString *phoneNum = [phone pinyinTrimIntNumber];
+            [tempDic setObject:phoneNum forKey:@"personTelNum"];
             
         }
         [tempDic setObject:name forKey:@"personName"];//把名字存为key:"personName"的Value
+        [tempDic setObject:namePinYin forKey:@"personNameNum"];
         //VCLog(@"tempDictemp：%@",tempDic);
         [phoneArray addObject:tempDic];//把tempDic赋给phoneArray数组
         
@@ -524,8 +524,18 @@
 -(void) updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     
-    NSString *searchString = [self.searchController.searchBar text];
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*
+    NSString *searchString = [self.searchController.searchBar text];
     //NSPredicate *preicate = [NSPredicate predicateWithFormat:@"(SELF.personName CONTAINS[c] %@) OR (SELF.personTel contains [c] %@)", searchString];
     NSPredicate *preicate = [NSPredicate predicateWithFormat:@"(SELF.personName CONTAINS[c] %@) or (self.personTel contains[c] %@)", searchString,searchString ];
     
@@ -541,7 +551,83 @@
     //刷新表格
     [self.searchVC.tableView reloadData];
     [self.contactTableView reloadData];
+     */
 }
+/*
+#pragma mark -- 用户退格输入时
+-(void)deleteTextDidChanged:(NSNotification*)notifi{
+    NSString *lastChar = [[notifi userInfo] valueForKey:@"lastChar"];
+    
+    //退格
+    [self deleteCharWithLastinput:lastChar];
+    [self predictaeData];
+    
+}
+#pragma mark -- 用户增加输入时
+-(void)inputTextDidChanged:(NSNotification*)notifi{
+    
+    NSString *searchText = [[notifi userInfo] valueForKey:@"searchBarText"];
+    NSString *lastChar = [searchText substringWithRange:NSMakeRange(searchText.length-1, 1)];
+    NSString *testString = [NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastChar];
+    if (zzArray.count <1) {
+        NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"%@",testString];
+        [zzArray addObject:mstring];
+    }
+    
+    NSString *inputString = [NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastChar];
+    
+    VCLog(@"lastchar:%@",lastChar);
+    VCLog(@"searchText:%@",searchText);
+    VCLog(@"inputstring:%@",inputString);
+    //生成zz表达式
+    //输入
+    if (searchText.length>1) {
+        [self zzStringAndArrayInputchar:inputString aChar:lastChar];
+    }
+    
+    [self predictaeData];
+}
+
+-(void)predictaeData{
+    
+    if (searchResault.count != 0) {
+        [searchResault removeAllObjects];
+    }
+    
+    //过滤数据
+    for (NSMutableString *str in zzArray) {
+        NSPredicate *regextestcm = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", str];
+        for (NSDictionary *dict in mutPhoneArray) {
+            //匹配姓名
+            NSString *pnameNum = [dict valueForKey:@"personNameNum"];
+            if ([regextestcm evaluateWithObject:pnameNum]) {
+                [searchResault addObject:dict];
+                
+            }
+            //匹配号码
+            NSString *phoneNum = [dict valueForKey:@"personTelNum"];
+            if ([regextestcm evaluateWithObject:phoneNum]) {
+                [searchResault addObject:dict];
+                
+            }
+            
+        }
+    }
+    
+    [self setModel];
+    VCLog(@"searchResault:%@",searchResault);
+    
+    //重新获取数据库获取通话记录
+    //NSMutableArray *array = [sqlite searchInfoFromTable:CALL_RECORDS_TABLE_NAME];
+    //排序
+    //CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
+    
+    //[self.tableView reloadData];
+    
+    
+}
+
+*/
 
 /*改变删除按钮的text*/
 -(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath

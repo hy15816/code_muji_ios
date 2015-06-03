@@ -10,22 +10,14 @@
 #import "NSString+helper.h"
 #import "PopView.h"
 #import <ImageIO/ImageIO.h>
+#import "LoginController.h"
 
 @interface DiscoveryController ()<PopViewDelegate>
 {
     NSUserDefaults *defaults;
-    BOOL loginState;
-    BOOL bindState;
-    BOOL configState;
-    
+  
     UIView *shadeView;  //遮罩层
     PopView *popview;   //提示框
-    
-    CGImageSourceRef gif; // 保存gif动画
-    NSDictionary *gifProperties; // 保存gif动画属性
-    size_t index; // gif动画播放开始的帧序号
-    size_t count; // gif动画的总帧数
-    NSTimer *gifViewTimer; // 播放gif动画所使用的timer
     
     UIImageView *con_imgv;  //
     UIImageView *ble_imgv;  //蓝牙图片
@@ -40,10 +32,15 @@
 @property (weak, nonatomic) IBOutlet UIButton *mujiButton;
 @property (weak, nonatomic) IBOutlet UIButton *connectButton;
 
-//gif图
+//静态图片
 @property (weak, nonatomic) IBOutlet UIView *BLEView;
 @property (weak, nonatomic) IBOutlet UIView *connectView;
-//
+
+//gif图
+@property (weak, nonatomic) IBOutlet UIView *BLEgifView;
+@property (weak, nonatomic) IBOutlet UIView *connectGifView;
+
+//button
 @property (weak, nonatomic) IBOutlet UIButton *loginButton;
 - (IBAction)loginButtonClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UIButton *bindButton;
@@ -61,15 +58,40 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    //键盘活动  键盘出现时
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
+    
     //通知显示tabBar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
-    loginState = [[defaults valueForKey:LOGIN_STATE] intValue];
-    bindState = [[defaults valueForKey:BIND_STATE] intValue];
-    configState = [[defaults valueForKey:CONFIG_STATE] intValue];
-    
     
     [self initButtons];
     
+}
+
+
+- (void)keyboardWasShow:(NSNotification*)aNotification{
+    
+    NSDictionary* info = [aNotification userInfo];
+    /*
+     NSNumber *duration = [info objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+     VCLog(@"duration:%@",duration);
+     CGRect beginRect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+     */
+    
+    CGRect endRect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    //VCLog(@"·······%f",endRect.size.height);
+    [UIView beginAnimations:@"" context:nil];
+    popview.frame =  CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, DEVICE_HEIGHT-PopViewHeight-endRect.size.height-10, PopViewWidth, PopViewHeight);
+    [UIView setAnimationDuration:.25];
+    [UIView commitAnimations];
+    
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
     
     
 }
@@ -83,7 +105,6 @@
     self.phoneNumber.hidden = YES;
     self.mujiNumber.hidden = YES;
     self.connectNumber.hidden = YES;
-    
     
     [self.isAppVersion setTitle:@"v1.0" forState:UIControlStateNormal];
     self.isAppVersion.enabled = YES;
@@ -103,11 +124,6 @@
     
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -123,14 +139,22 @@
     return 2;
 }
 
-
+#pragma mark -- 初始化btn
 -(void)initButtons{
+    
+    BOOL loginState = [[defaults valueForKey:LOGIN_STATE] intValue];
+    BOOL bindState = [[defaults valueForKey:BIND_STATE] intValue];
+    BOOL configState = [[defaults valueForKey:CONFIG_STATE] intValue];
     
     if (loginState) {//已登录
         self.phoneNumber.hidden = NO;
         [self.loginButton setTitle:@"  退出  " forState:UIControlStateNormal];
         [self.loginButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];
         self.phoneNumber.text = [defaults valueForKey:CurrentUser];
+    }else{
+        self.phoneNumber.hidden = YES;
+        [self.loginButton setTitle:@"  登录  " forState:UIControlStateNormal];
+        [self.loginButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
     }
     
     if (configState) {//已配置
@@ -141,76 +165,98 @@
         self.connectNumber.hidden = NO;
         self.connectNumber.text = @"运营商";
         
+        self.connectView.hidden = YES;
+        self.connectGifView.hidden = NO;
+        
         //显示gif图片
-        [self initWithGifFrame:CGRectMake(0, 0, 0, 0) filePath:[[NSBundle mainBundle] pathForResource:@"phone_connect" ofType:@"gif"]];
+        [self initAnimatedWithFileName:@"phone_connect" andType:@"gif" view:self.connectGifView];
     }else{
         //显示静态图片
+
+        self.connectView.hidden = NO;
+        self.connectGifView.hidden = YES;
         con_imgv.image = [UIImage imageNamed:@"flow_phone"];
         [self.connectView addSubview:con_imgv];
+        [self.configureButton setTitle:@"  配置  " forState:UIControlStateNormal];
+        [self.configureButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
+        self.mujiNumber.hidden = YES;
+        //self.mujiNumber.text = [defaults valueForKey:muji_bind_number];
+        self.connectNumber.hidden = NO;
+        self.connectNumber.text = @"运营商";
     }
     
     if (bindState) {//已绑定
-        [self.bindButton setTitle:@"  解绑  " forState:UIControlStateNormal];
+        [self.bindButton setTitle:@" 解绑  " forState:UIControlStateNormal];
         [self.bindButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];//ble_connect
+        self.BLEView.hidden = YES;
+        self.BLEgifView.hidden = NO;
+        
         //显示gif图片
-        [self initWithGifFrame:CGRectMake(0, 0, 0, 0) filePath:[[NSBundle mainBundle] pathForResource:@"ble_connect" ofType:@"gif"]];
+        [self initAnimatedWithFileName:@"ble_connect" andType:@"gif" view:self.BLEgifView];
         
     }else{
         //显示静态图片
+        self.BLEView.hidden = NO;
+        self.BLEgifView.hidden = YES;
+        
         ble_imgv.image = [UIImage imageNamed:@"flow_ble"];
         [self.BLEView addSubview:ble_imgv];
+        [self.bindButton setTitle:@" 绑定  " forState:UIControlStateNormal];
+        [self.bindButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
+        
     }
     
-    
 }
-
-//加载gif
-- (void)initWithGifFrame:(CGRect)frame filePath:(NSString *)filePath
+#pragma mark -- 加载gif图片
+-(void)initAnimatedWithFileName :(NSString *)fileName andType:(NSString *)type view:(UIView *)vview
 {
-    NSDictionary *gifLoopCount = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:0] forKey:(NSString *)kCGImagePropertyGIFLoopCount];
+    //解码图片
+    NSString *imagePath =[[NSBundle mainBundle] pathForResource:fileName ofType:type];
+    CGImageSourceRef  cImageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:imagePath], NULL);
+    //读取动画的每一帧
+    size_t imageCount = CGImageSourceGetCount(cImageSource);
+    NSMutableArray *images = [[NSMutableArray alloc] initWithCapacity:imageCount];
+    NSMutableArray *times = [[NSMutableArray alloc] initWithCapacity:imageCount];
+    NSMutableArray *keyTimes = [[NSMutableArray alloc] initWithCapacity:imageCount];
     
-    gifProperties = [NSDictionary dictionaryWithObject:gifLoopCount forKey:(NSString *)kCGImagePropertyGIFDictionary] ;
-    
-    gif = CGImageSourceCreateWithURL((CFURLRef)[NSURL fileURLWithPath:filePath], (CFDictionaryRef)gifProperties);
-    
-    count =CGImageSourceGetCount(gif);
-    
-    gifViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(playGif) userInfo:nil repeats:YES];
-    [gifViewTimer fire];
-    
-}
-
-//开始动画
--(void)playGif
-{
-    index ++;
-    index = index%count;
-    CGImageRef ref = CGImageSourceCreateImageAtIndex(gif, index, (CFDictionaryRef)gifProperties);
-    if (configState) {
-        self.connectView.layer.contents = (__bridge id)ref;;
+    //显示时间
+    float totalTime = 0;
+    CGSize size;
+    for (size_t i = 0; i < imageCount; i++) {
+        CGImageRef cgimage= CGImageSourceCreateImageAtIndex(cImageSource, i, NULL);
+        [images addObject:(__bridge id)cgimage];
+        CGImageRelease(cgimage);
+        
+        NSDictionary *properties = (__bridge NSDictionary *)CGImageSourceCopyPropertiesAtIndex(cImageSource, i, NULL);
+        NSDictionary *gifProperties = [properties valueForKey:(__bridge NSString *)kCGImagePropertyGIFDictionary];
+        NSString *gifDelayTime = [gifProperties valueForKey:(__bridge NSString* )kCGImagePropertyGIFDelayTime];
+        [times addObject:gifDelayTime];
+        totalTime += [gifDelayTime floatValue];
+        
+        size.width = [[properties valueForKey:(NSString*)kCGImagePropertyPixelWidth] floatValue];
+        size.height = [[properties valueForKey:(NSString*)kCGImagePropertyPixelHeight] floatValue];
     }
-    if (bindState) {
-        self.BLEView.layer.contents = (__bridge id)ref;
+    
+    float currentTime = 0;
+    for (size_t i = 0; i < times.count; i++) {
+        float keyTime = currentTime / totalTime;
+        [keyTimes addObject:[NSNumber numberWithFloat:keyTime]];
+        currentTime += [[times objectAtIndex:i] floatValue];
     }
     
-    CFRelease(ref);
-}
-//停止定时器
--(void)timerHasOver
-{
-    [gifViewTimer invalidate];
+    //执行CAKeyFrameAnimation动画
+    CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"contents"];
+    [animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+    [animation setValues:images];
+    [animation setKeyTimes:keyTimes];
+    animation.duration = totalTime;
+    animation.repeatCount = HUGE_VALF;
     
+    [vview.layer addAnimation:animation forKey:@"gifAnimation"];
+
 }
 
--(void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-    
-    [self timerHasOver];
-    gifViewTimer = nil;
-}
-
-#pragma mark -- 弹出框
+#pragma mark -- show popView
 -(void)addShadeAndAlertViewWithNumber:(NSString *)mujiNumber
 {
     //透明层
@@ -246,7 +292,7 @@
     [popview removeFromSuperview];
 }
 
-#pragma mark-- popview delegate
+#pragma mark-- popView delegate
 -(void)resaultsButtonClick:(UIButton *)button  textField:(UITextField *)sfield;
 {
     //获取输入的text
@@ -256,6 +302,7 @@
         
         [shadeView removeFromSuperview];
         [popview removeFromSuperview];
+        
     }
     //sure按钮
     if (button.tag == 0) {
@@ -296,91 +343,66 @@
         }
     }
     
-    
+    [self initButtons];
 }
 
-
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
-    
-    // Configure the cell...
-    
-    return cell;
-}
-*/
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-#pragma mark -- 绑定
-
+#pragma mark -- 绑定 & 解绑
 - (IBAction)bindButtonClick:(UIButton *)sender {
     
+    BOOL bstate = [[defaults valueForKey:BIND_STATE] intValue];
+    if (bstate) {
+        [defaults setObject:@"0" forKey:BIND_STATE];
+        
+    }else{
+        [defaults setObject:@"1" forKey:BIND_STATE];
+    }
+    
+    [self initButtons];
     
 }
 
-#pragma mark -- 配置
+#pragma mark -- 配置 & 修改
 - (IBAction)configureButtonClick:(UIButton *)sender {
+    BOOL loginState = [[defaults valueForKey:LOGIN_STATE] intValue];
     
     if (loginState) {
         VCLog(@"pz");
-        BOOL conState = [defaults valueForKey:CONFIG_STATE];
+        BOOL conState = [[defaults valueForKey:CONFIG_STATE] intValue];
         if (conState) {
             //已配置，修改
             [self addShadeAndAlertViewWithNumber:[defaults valueForKey:muji_bind_number]];
         }else{
             //配置
             [self addShadeAndAlertViewWithNumber:nil];
-        
         }
         
-    }
-    
-    else{
+    }else{
         //提示登录
         UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"想【配置】拇机号码？请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [configAlert show];
+    }
+
+    
+}
+
+#pragma mark -- 登录 & 退出
+- (IBAction)loginButtonClick:(UIButton *)sender {
+    
+    BOOL loginstate = [[defaults valueForKey:LOGIN_STATE] intValue];
+    if (loginstate) {
+        [self loginOut];
+        [defaults setValue:@"0" forKey:LOGIN_STATE];
+        [defaults setValue:@"0" forKey:CONFIG_STATE];
+        [self initButtons];
+    }else
+    {
+        VCLog(@"11");
+        //添加calling页面
+        
+        UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        LoginController *loginview = [board instantiateViewControllerWithIdentifier:@"loginVCIdentity"];
+        [self.navigationController pushViewController:loginview animated:YES];
+         
     }
     
 }
@@ -390,17 +412,14 @@
     [AVUser logOut];
 }
 
-- (IBAction)loginButtonClick:(UIButton *)sender {
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
     
-    BOOL loginstate = [[defaults valueForKey:LOGIN_STATE] intValue];
-    if (loginstate) {
-        [self loginOut];
-        [defaults setValue:@"0" forKey:LOGIN_STATE];
-        [self initButtons];
-    }else
-    {
-        VCLog(@"11");
-    }
-    
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
 }
 @end

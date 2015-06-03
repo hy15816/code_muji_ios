@@ -14,7 +14,6 @@
 #import "MsgDatas.h"
 #import "MsgDetailController.h"
 #import "TXNavgationController.h"
-#import "PinYin4Objc.h"
 #import "TXTelNumSingleton.h"
 #import "TXKeyView.h"
 #import "CustomTabBarView.h"
@@ -39,6 +38,9 @@
     NSMutableArray *searchResault;
     NSArray *dataList;
     DiscoveryController *discoveryCtrol;
+    
+    NSMutableArray *zzArray;
+    
 }
 
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
@@ -55,10 +57,15 @@
     
     //显示tabbar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
-    //textInput
+    //textInput & delete
     if([self respondsToSelector:@selector(inputTextDidChanged:)]) {
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(inputTextDidChanged:) name:ktextChangeNotify object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(inputTextDidChanged:) name:kInputCharNoti object:nil];
+    }
+    
+    if([self respondsToSelector:@selector(deleteTextDidChanged:)]) {
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteTextDidChanged:) name:kDeleteCharNoti object:nil];
     }
     
     //查询数据库获取通话记录
@@ -85,9 +92,13 @@
     self.selectedIndexPath = nil;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;//tableview分割线
     
-    UIAlertView *aaa =[[UIAlertView alloc] initWithTitle:@"" message:[NSString stringWithFormat:@"%@",[self getCarrier]] delegate:self cancelButtonTitle:@"n" otherButtonTitles:@"y", nil];
-    //[aaa show];
+    if ([[defaults valueForKey:@"opstate"] intValue]) {
+        UIAlertView *aaa =[[UIAlertView alloc] initWithTitle:@"" message:[NSString stringWithFormat:@"%@",[self getCarrier]] delegate:self cancelButtonTitle:@"n" otherButtonTitles:@"y", nil];
+        [aaa show];
+        [defaults setObject:@"1" forKey:@"opstate"];
+    }
     
+    zzArray =[[NSMutableArray alloc] init];
     [sqlite openPhoneArearDatabase];
     
 }
@@ -108,27 +119,139 @@
     //[self hanziTopinyin];
 }
 
-
-#pragma mark -- 用户输入时
+#pragma mark -- 用户退格输入时
+-(void)deleteTextDidChanged:(NSNotification*)notifi{
+    NSString *lastChar = [[notifi userInfo] valueForKey:@"lastChar"];
+    
+    //退格
+    [self deleteCharWithLastinput:lastChar];
+    [self predictaeData];
+    
+}
+#pragma mark -- 用户增加输入时
 -(void)inputTextDidChanged:(NSNotification*)notifi{
     
-    /*
-    NSPredicate *preicate = [NSPredicate predicateWithFormat:@"(SELF.personName CONTAINS[cd] %@) or (self.personTel contains[cd] %@)", singleton.singletonValue,singleton.singletonValue ];
+    NSString *searchText = [[notifi userInfo] valueForKey:@"searchBarText"];
+    NSString *lastChar = [searchText substringWithRange:NSMakeRange(searchText.length-1, 1)];
+    NSString *testString = [NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastChar];
+    if (zzArray.count <1) {
+        NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"%@",testString];
+        [zzArray addObject:mstring];
+    }
     
-    if (searchResault!= nil) {
+    NSString *inputString = [NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastChar];
+    
+    VCLog(@"lastchar:%@",lastChar);
+    VCLog(@"searchText:%@",searchText);
+    VCLog(@"inputstring:%@",inputString);
+    //生成zz表达式
+    //输入
+    if (searchText.length>1) {
+        [self zzStringAndArrayInputchar:inputString aChar:lastChar];
+    }
+    
+    [self predictaeData];
+}
+
+-(void)predictaeData{
+    
+    if (searchResault.count != 0) {
         [searchResault removeAllObjects];
     }
     
     //过滤数据
-    searchResault = [NSMutableArray arrayWithArray:[dataList filteredArrayUsingPredicate:preicate]];
+    for (NSMutableString *str in zzArray) {
+        NSPredicate *regextestcm = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", str];
+        for (NSDictionary *dict in mutPhoneArray) {
+            //匹配姓名
+            NSString *pnameNum = [dict valueForKey:@"personNameNum"];
+            if ([regextestcm evaluateWithObject:pnameNum]) {
+                    [searchResault addObject:dict];
+                
+            }
+            //匹配号码
+            NSString *phoneNum = [dict valueForKey:@"personTelNum"];
+            if ([regextestcm evaluateWithObject:phoneNum]) {
+                [searchResault addObject:dict];
+                
+            }
+            
+        }
+    }
     
-    VCLog(@"searchRes%@",searchResault);
-    VCLog(@"%@",singleton.singletonValue);
+    [self setModel];
+     VCLog(@"searchResault:%@",searchResault);
     
+    //重新获取数据库获取通话记录
+    NSMutableArray *array = [sqlite searchInfoFromTable:CALL_RECORDS_TABLE_NAME];
+    //排序
+    CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
     
     [self.tableView reloadData];
-     */
+    
+    
 }
+
+//数据模型
+-(void)setModel{
+    
+    NSMutableArray *arrayM = [NSMutableArray array];
+    for (NSDictionary *dict in searchResault) {
+        
+        Records *record = [[Records alloc] init];
+        // 给record赋值
+        [record setValuesForKeysWithDictionary:dict];//record:<Records: 0x7fa2f27207c0,personTel: 888-555-1212,personName: John Appleseed>
+        [arrayM addObject:record];
+        
+    }
+    VCLog(@"arrayM:%@",arrayM);
+    dataList = arrayM;
+    //VCLog(@"arrayM-0:%@",[[arrayM objectAtIndex:0] valueForKey:@"personTel"]);
+    
+}
+
+-(void)zzStringAndArrayInputchar:(NSString *)inputChar aChar:(NSString *)achar
+{
+    NSMutableArray *latterArray = [[NSMutableArray alloc] init];
+    
+    for (NSMutableString *sss in zzArray) {
+        //-1[0-9].* -> -1[0-9].*-2[0-9].*
+        NSMutableString *str1 = [NSMutableString stringWithFormat:@"%@%@",sss,inputChar];
+        
+        //-1[0-9].* -> -12[0-9].*
+        [sss insertString:achar atIndex:sss.length-13];
+        
+        [latterArray addObject:str1];
+        [latterArray addObject:sss];
+    }
+    
+    zzArray =latterArray;
+    VCLog(@"zzArray:%@",zzArray);
+    
+}
+
+-(void)deleteCharWithLastinput:(NSString *)lastinput{
+    NSMutableArray *lArray = [[NSMutableArray alloc] init];
+    
+    for (int i= 0; i<zzArray.count; i++) {
+        if (i%2==0) {
+            NSString *sas = zzArray[i];
+            
+            NSString *zzs = [sas stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastinput] withString:@""];
+            if(![lArray containsObject:zzs])
+                [lArray addObject:zzs];
+        }
+        
+    }
+    
+    zzArray = lArray;
+    if (singleton.singletonValue.length-1 == 0) {
+        [zzArray removeAllObjects];
+    }
+
+    VCLog(@"lArray:%@",lArray);
+}
+
 
 #pragma mark - Table view data source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -138,11 +261,11 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
-    /*
-    if (singleton.singletonValue.length !=0) {
+    
+    if (searchResault.count > 0) {
         return searchResault.count;
     }
-     */
+    
     return [CallRecords count];
 }
 
@@ -154,16 +277,26 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     //1.是原来的表
     //更新cell的label，让其显示data对象的itemName
-    TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
     
-    /*
+    
+    
         //2.用户输入时
-    if (singleton.singletonValue.length!=0) {
-        Records *record = searchResault[indexPath.row];
+    if (searchResault.count != 0) {
+        Records *record = dataList[indexPath.row];
         cell.hisName.text = record.personName;
-        cell.hisNumber.text = record.personTel;
+        cell.hisNumber.hidden = YES;
+        cell.callDirection.hidden = YES;
+        cell.callLength.hidden = YES;
+        cell.callBeginTime.text = record.personTel;
+        cell.hisHome.hidden = YES;
+        cell.hisOperator.hidden = YES;
     }else{
-     */
+        TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
+        cell.callDirection.hidden = NO;
+        cell.callLength.hidden = NO;
+        cell.hisNumber.hidden = NO;
+        cell.hisHome.hidden = NO;
+        cell.hisOperator.hidden = NO;
         cell.hisName.text = aRecord.hisName;
         cell.hisNumber.text = [[aRecord.hisNumber purifyString] insertStr];
         cell.callDirection.image = [self imageForRating:[aRecord.callDirection intValue]];
@@ -172,7 +305,7 @@
         cell.hisHome.text = aRecord.hisHome;
         cell.hisOperator.text = aRecord.hisOperator;
      
-    //}
+    }
     
     //没有名字。显示为编辑图标
     if (cell.hisName.text.length!=0) {
@@ -244,16 +377,19 @@
     
 }
 
-
+#pragma mark -- tableView delegate
 //设置cell高度
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    if ([indexPath isEqual:self.selectedIndexPath]) {
-        
-        return 50 + 50;
-    }
     
-    return 50;
+        if ([indexPath isEqual:self.selectedIndexPath]) {
+            
+            return 50 + 50;
+        }
+        
+        return 50;
+    
+    
     
 }
 
@@ -320,10 +456,12 @@
 //呼转方法
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender
 {
-    
+    //BOOL loginstate = [defaults valueForKey:LOGIN_STATE];
     //是否登录？
+    
+    
     //获取拇机号码,
-    NSString *phoneNumber =nil;// [defaults valueForKey:muji_bind_number];
+    NSString *phoneNumber = [defaults valueForKey:muji_bind_number];
     
     //已有number和email
     if (phoneNumber.length>0 ) {
@@ -338,13 +476,6 @@
         
         //[self addShadeAndAlertView];
     }
-    
-    
-   
-    
-    
-    
-    
 
 }
 
@@ -472,8 +603,6 @@
 //设置开通呼转短号
 -(NSMutableString *)setCallForwardingWithNumber:(NSString *)string
 {
-    
-    
     NSMutableString *str;
     //cmcc
     if ([[self getCarrier] isEqualToString:China_Mobile]) {
@@ -497,15 +626,15 @@
     NSMutableString *str;
     //cmcc
     if ([[self getCarrier] isEqualToString:China_Mobile]) {
-        str = [[NSMutableString alloc] initWithFormat:@"##21#tel://%@",string];
+        str = [[NSMutableString alloc] initWithFormat:@"tel://##21#"];
     }
     //unicom
     if ([[self getCarrier] isEqualToString:China_Unicom]) {
-        str = [[NSMutableString alloc] initWithFormat:@"##21#tel://%@",[defaults valueForKey:muji_bind_number]];
+        str = [[NSMutableString alloc] initWithFormat:@"tel://##21#"];
     }
     //telecom
     if ([[self getCarrier] isEqualToString:China_Telecom]) {
-        str = [[NSMutableString alloc] initWithFormat:@"*720tel://%@",[defaults valueForKey:muji_bind_number]];
+        str = [[NSMutableString alloc] initWithFormat:@"tel://*720"];
     }
 
 
@@ -621,6 +750,9 @@
         }
         
         
+        NSString *namePinYin = [name hanziTopinyin];
+        NSString *nameNum = [namePinYin pinyinTrimIntNumber];//转数字
+        
         //获取电话号码，通用的，基本的,概括的
         ABMultiValueRef personPhone = ABRecordCopyValue(record, kABPersonPhoneProperty);
         //记录在底层数据库中的ID号。具有唯一性
@@ -629,131 +761,29 @@
         for (int k = 0; k<ABMultiValueGetCount(personPhone); k++)
         {
             NSString * phone = (__bridge NSString*)ABMultiValueCopyValueAtIndex(personPhone, k);
-            /*
-            //范围0~3
-            NSRange range=NSMakeRange(0,3);
-            NSString *str=[phone substringWithRange:range];
-            //若前3个字符为+86，从后一位开始取出
-            if ([str isEqualToString:@"+86"]) {
-                phone=[phone substringFromIndex:3];
-            }
-             */
             //加入phoneDic中
             [phoneDic setObject:(__bridge id)(record) forKey:[NSString stringWithFormat:@"%@%d",phone,recordID]];
             [tempDic setObject:phone forKey:@"personTel"];//把每一条号码存为key:“personTel”的Value
+            NSString *phoneNum = [[phone purifyString] pinyinTrimIntNumber];
+            [tempDic setObject:phoneNum forKey:@"personTelNum"];//-数字号码
+            VCLog(@"phoneNum:%@",phoneNum);
             
         }
         [tempDic setObject:name forKey:@"personName"];//把名字存为key:"personName"的Value
+        [tempDic setObject:nameNum forKey:@"personNameNum"];//把数字名字保存
+        
         //VCLog(@"tempDictemp：%@",tempDic);
         [mutPhoneArray addObject:tempDic];//把tempDic赋给phoneArray数组
         
     }
     VCLog(@"mutPhoneArray：%@",mutPhoneArray);
     
-    [self setModel];
+    //[self setModel];
     return mutPhoneArray;
     
 }
 
-//数据模型
--(void)setModel{
-    
-    NSMutableArray *arrayM = [NSMutableArray array];
-    for (NSDictionary *dict in mutPhoneArray) {
-        
-        Records *record = [[Records alloc] init];
-        // 给record赋值
-        [record setValuesForKeysWithDictionary:dict];//record:<Records: 0x7fa2f27207c0,personTel: 888-555-1212,personName: John Appleseed>
-        [arrayM addObject:record];
-        
-    }
-    VCLog(@"arrayM:%@",arrayM);
-    dataList = arrayM;
-    //VCLog(@"arrayM-0:%@",[[arrayM objectAtIndex:0] valueForKey:@"personTel"]);
-}
 
-#pragma mark -- 汉字转拼音
--(void)hanziTopinyin{
-    
-    HanyuPinyinOutputFormat *outputFormat =[[HanyuPinyinOutputFormat alloc] init];
-    [outputFormat setToneType:ToneTypeWithoutTone];//声调
-    [outputFormat setVCharType:VCharTypeWithV];//特殊拼音的显示格式如 ü
-    [outputFormat setCaseType:CaseTypeLowercase];//大小写
-    
-    NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"*你是"];
-    NSMutableArray *arr2 =[[NSMutableArray alloc] init];
-    if (mstring.length<=3) {
-        for (int i=0; i<mstring.length; i++) {
-            NSRange range = {i,1};//{位置,要截取的长度}
-            
-            NSString *s = [mstring substringWithRange:range];
-            NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:s withHanyuPinyinOutputFormat:outputFormat withNSString:@""];
-            
-            //VCLog(@"outputPinyin-----%@ ",outputPinyin);
-            [arr2 addObject:outputPinyin];
-        }
-        VCLog(@"-------------arr:%@",arr2);
-        
-        //组合
-        NSMutableString *mutstrA = [[NSMutableString alloc ] init];
-        NSMutableString *mutstrC = [[NSMutableString alloc ] init];
-        NSMutableString *mutstrD = [[NSMutableString alloc ] init];
-        NSMutableString *mutstrf = [[NSMutableString alloc ] init];
-        NSMutableString *mutstre = [[NSMutableString alloc ] init];
-        NSMutableString *mutstrg = [[NSMutableString alloc ] init];
-        NSMutableString *mutstrh = [[NSMutableString alloc ] init];
-        for (int j = 0; j<arr2.count; j++) {
-            
-            //zhangsanfeng
-            NSString *nameA = arr2[j];
-            [mutstrA appendString:nameA];
-            //z s f
-            NSString *nameC = [arr2[j] substringWithRange:NSMakeRange(0, 1)];
-            [mutstrC appendString:nameC];
-            //z san f
-            NSString *xnamex =[arr2[j] substringWithRange:NSMakeRange(0, 1)];
-            if (j%2!=0) {
-                xnamex = arr2[j];
-            }
-            [mutstrD appendString:xnamex];
-            
-            //z s feng
-            NSString *xxname = arr2[j];
-            if (j<2) {
-                xxname = [arr2[j] substringWithRange:NSMakeRange(0, 1)];
-            }
-            [mutstrf appendString:xxname];
-            //zhang s f
-            NSString *namexx = arr2[j];
-            if (j>0) {
-                namexx = [arr2[j] substringWithRange:NSMakeRange(0, 1)];
-            }
-            [mutstre appendString:namexx];
-            
-            //zhang s feng
-            NSString *namexname = arr2[j];
-            if (j%2 ==1) {
-                namexname = [arr2[j] substringWithRange:NSMakeRange(0, 1)];
-            }
-            [mutstrg appendString:namexname];
-            //z san feng
-            NSString *xnamename = arr2[j];
-            if (j<1) {
-                xnamename =[arr2[j] substringWithRange:NSMakeRange(0, 1)];
-            }
-            [mutstrh appendString:xnamename];
-            
-        }
-        NSString *strings = [NSString stringWithFormat:@"%@,%@,%@,%@,%@,%@,%@",mutstrA,mutstrC,mutstrD,mutstre,mutstrf,mutstrg,mutstrh];
-        
-        VCLog(@"strings:%@",strings);
-
-    }else{
-        VCLog(@"--------------");
-    }
-
-    
-}
 
 #pragma mark -- 跳转到添加联系人
 //跳转到add联系人

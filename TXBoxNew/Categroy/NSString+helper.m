@@ -7,6 +7,8 @@
 //
 
 #import "NSString+helper.h"
+#import "PinYin4Objc.h"
+
 
 @implementation NSString (helper)
 
@@ -153,6 +155,118 @@
     NSLog(@"carTest is %@",carTest);
     return [carTest evaluateWithObject:carNo];
 }
+
+#pragma mark -- 汉字转拼音
+-(NSString  *)hanziTopinyin{
+    
+    HanyuPinyinOutputFormat *outputFormat =[[HanyuPinyinOutputFormat alloc] init];
+    [outputFormat setToneType:ToneTypeWithoutTone];//声调
+    [outputFormat setVCharType:VCharTypeWithV];//特殊拼音的显示格式如 ü
+    [outputFormat setCaseType:CaseTypeLowercase];//大小写
+    
+    NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"%@",self];
+    NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:mstring withHanyuPinyinOutputFormat:outputFormat withNSString:@"-"];
+    VCLog(@"-------------outputpy:%@",outputPinyin);
+    
+    return outputPinyin;
+}
+
+#pragma mark -- 拼音转数字
+-(NSString *)pinyinTrimIntNumber
+{
+    NSString *lString=[[NSString alloc] init];
+    NSString *ss = [[NSString alloc] init];
+    for (int i =0; i<self.length; i++) {
+        char s = [self  characterAtIndex:i];
+        switch (s) {
+            case 'a':
+            case 'b':
+            case 'c':
+            case 'A':
+            case 'B':
+            case 'C':
+                ss = @"2";
+                break;
+            case 'd':
+            case 'e':
+            case 'f':
+            case 'D':
+            case 'E':
+            case 'F':
+                ss = @"3";
+                break;
+            case 'g':
+            case 'h':
+            case 'i':
+            case 'G':
+            case 'H':
+            case 'I':
+                ss = @"4";
+                break;
+            case 'j':
+            case 'k':
+            case 'l':
+            case 'J':
+            case 'K':
+            case 'L':
+                ss = @"5";
+                break;
+            case 'm':
+            case 'n':
+            case 'o':
+            case 'M':
+            case 'N':
+            case 'O':
+                ss = @"6";
+                break;
+            case 'p':
+            case 'q':
+            case 'r':
+            case 's':
+            case 'P':
+            case 'Q':
+            case 'R':
+            case 'S':
+                ss = @"7";
+                break;
+            case 't':
+            case 'u':
+            case 'v':
+            case 'T':
+            case 'U':
+            case 'V':
+                ss = @"8";
+                break;
+            case 'w':
+            case 'x':
+            case 'y':
+            case 'z':
+            case 'W':
+            case 'X':
+            case 'Y':
+            case 'Z':
+                ss = @"9";
+                break;
+            case '*':
+                ss = @"A";
+                break;
+            case '#':
+                ss = @"B";
+                break;
+            case '+':
+                ss = @"C";
+                break;
+            default:
+                ss = [self substringWithRange:NSMakeRange(i, 1)];
+                break;
+        }
+        
+        lString = [NSString stringWithFormat:@"%@%@",lString,ss];
+    }
+    NSLog(@"-lString:%@",[NSString stringWithFormat:@"-%@",lString]);
+    return [NSString stringWithFormat:@"-%@",lString];
+}
+
 
 
 @end

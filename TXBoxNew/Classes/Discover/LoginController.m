@@ -155,18 +155,17 @@
             [self.pwdImg setImage:[UIImage imageNamed:@"login_key"] forState:UIControlStateNormal];
         }else{
             //登录成功，返回上一页面
-            //[self.navigationController popViewControllerAnimated:YES];
+            
             [defaults setValue:@"1" forKey:LOGIN_STATE];
             [defaults setValue:self.numberField.text forKey:CurrentUser];
             VCLog(@"user:%@",user);
-            
+            [self.navigationController popToRootViewControllerAnimated:YES];
             
         }
         
     }];
     
 }
-
 
 
 - (IBAction)loginButtonClick:(UIButton *)sender {

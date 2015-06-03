@@ -22,13 +22,11 @@
     if (self) {
         // Initialization code
         
-        
         self.tableView = [[UITableView alloc] initWithFrame:self.bounds style:UITableViewStylePlain];
         self.tableView.showsVerticalScrollIndicator = NO;
         [self addSubview:self.tableView];
         
-        
-        self.tableViewIndex = [[BATableViewIndex alloc] initWithFrame:(CGRect){DEVICE_WIDTH-20,0,20,frame.size.height}];
+        self.tableViewIndex = [[BATableViewIndex alloc] initWithFrame:(CGRect){DEVICE_WIDTH-30,0,30,frame.size.height}];
         [self addSubview:self.tableViewIndex];
         
         self.flotageLabel = [[UILabel alloc] initWithFrame:(CGRect){(self.bounds.size.width - 64 ) / 2,(self.bounds.size.height - 64) / 2,64,64}];

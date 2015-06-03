@@ -18,6 +18,9 @@
 #define kHideTabBarAndCallBtn @"hideTabBarAndCallBtn" //隐藏tabbar和callBtn
 #define kShowValueToMsgDetail @"showValue"
 
+#define kDeleteCharNoti @"deleteCharNoti"
+#define kInputCharNoti @"inputCharNoti"
+
 // custom键盘高宽
 #define keyWidth DEVICE_WIDTH/3.f
 #define keyHight keyWidth/3.f
