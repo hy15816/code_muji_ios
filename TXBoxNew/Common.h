@@ -21,6 +21,7 @@
 #define kDeleteCharNoti @"deleteCharNoti"
 #define kInputCharNoti @"inputCharNoti"
 
+#define kCallViewReloadData @"callViewReloadData"
 // custom键盘高宽
 #define keyWidth DEVICE_WIDTH/3.f
 #define keyHight keyWidth/3.f

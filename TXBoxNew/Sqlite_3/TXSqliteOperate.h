@@ -43,7 +43,7 @@
 
 
 -(BOOL)openPhoneArearDatabase;
--(NSMutableArray *)searchInfoFromPhoneDB;
+-(NSString *)searchAreaWithHisNumber:(NSString *)hisNumber;
 
 
 @end

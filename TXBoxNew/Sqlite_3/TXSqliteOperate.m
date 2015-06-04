@@ -7,6 +7,7 @@
 //
 
 #import "TXSqliteOperate.h"
+#import "NSString+helper.h"
 
 @implementation TXSqliteOperate
 
@@ -216,7 +217,7 @@
             deleteSql=[NSString stringWithFormat:sqlSring,table,hisNumber];
         }
         
-        //删除单条短信记录
+        //删除单条短信记录，根据id和sender
         if ([sqlSring isEqualToString:DELETE_MESSAGE_RECORD_SQL]) {
             deleteSql = [NSString stringWithFormat:sqlSring,table,hisNumber,pId];
         }
@@ -371,12 +372,12 @@
 -(BOOL)openPhoneArearDatabase
 {
     //文件的路径
-    NSString *path=[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@",DB_PHONE_AREAR_NAME]];
-    
-    VCLog(@"sqlite3_path:%@",path);
+    //NSString *path=[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@",DB_PHONE_AREAR_NAME]];
+    NSString *dbPath = [[NSBundle mainBundle] pathForResource:@"PhoneAreas" ofType:@"sqlite"];
+    VCLog(@"dbPath:%@",dbPath);
     //若数据库存在就打开，不存在就创建，
     //[path UTF8String]把字符串转成char。。。SQLITE_OK常量0
-    if (sqlite3_open([path UTF8String], &dataBase)==SQLITE_OK) {
+    if (sqlite3_open([dbPath UTF8String], &dataBase)==SQLITE_OK) {
         NSLog(@"is open");
         return YES;
     }
@@ -385,53 +386,79 @@
     return NO;
 }
 
-
--(NSMutableArray *)searchInfoFromPhoneDB
+//
+-(NSString *)searchAreacodeFromPhoneDB:(NSString *)hisNumber
 {
-    NSMutableArray *phoneArea = [[NSMutableArray alloc] init];
+    NSString *areacode;
     
-    NSString *selectSql = [NSString stringWithFormat:@"select *from %@",DB_PHONE_AREAR_NAME];
+    NSString *selectSql = [NSString stringWithFormat:@"select * from numarea where number = %@ ",hisNumber];
     
     if (sqlite3_prepare_v2(dataBase, [selectSql UTF8String], -1, &stmt, nil)==SQLITE_OK) {
         VCLog(@"select prepare ok!");
     }
-
-    if ([self openPhoneArearDatabase]) {
-        //循环遍历，sqlite3_step处理一行结果
-        while (sqlite3_step(stmt)==SQLITE_ROW) {
-            
-            int tid=sqlite3_column_int(stmt, 0);
-            
-            NSString *sender = [NSString stringWithCString:(char *)sqlite3_column_text(stmt, 1) encoding:NSUTF8StringEncoding];
-            NSString *beginTime=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 2) encoding:NSUTF8StringEncoding];
-            NSString *content=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 3) encoding:NSUTF8StringEncoding];
-            NSString *accepter=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 4) encoding:NSUTF8StringEncoding];
-            NSString *state = [NSString stringWithCString:(char *)sqlite3_column_text(stmt, 5) encoding:NSUTF8StringEncoding];
-            //VCLog(@"id = %d,date = %@",tid,date);
-            
-            TXData *data=[[TXData alloc] init];
-            data.peopleId = tid;
-            data.msgSender=sender;
-            data.msgTime=beginTime;
-            data.msgContent = content;
-            data.msgAccepter = accepter;
-            data.msgStates = state;
-            [phoneArea addObject:data];//
-            
-        }
+    
+    //循环遍历，sqlite3_step处理一行结果
+    while (sqlite3_step(stmt)==SQLITE_ROW) {
+        
+        // 0 number
+        // 1 areacode
+        areacode = [NSString stringWithCString:(char *)sqlite3_column_text(stmt, 1) encoding:NSUTF8StringEncoding];
+        
+        
+    }
     
     //删除预备语句
     sqlite3_finalize(stmt);
     //关闭
-    sqlite3_close(dataBase);
+    //sqlite3_close(dataBase);
     
-    VCLog(@" mutArr=%@",mutArray);
-    return phoneArea;
+    VCLog(@" areacode=%@",areacode);
+    return areacode;
     
+
+}
+
+-(NSString *)searchAreaWithHisNumber:(NSString *)hisNumber
+{
+    if ([self openPhoneArearDatabase]) {
+        NSString *acode = [self searchAreacodeFromPhoneDB:hisNumber];
+        NSString *area;
+        NSString *selectSql = [NSString stringWithFormat:@"select * from areas where areacode = %@  ",acode];
+        
+        if (sqlite3_prepare_v2(dataBase, [selectSql UTF8String], -1, &stmt, nil)==SQLITE_OK) {
+            VCLog(@"select prepare ok!");
+        }
+        
+        while (sqlite3_step(stmt)==SQLITE_ROW) {
+            // 0 areacode   区号
+            // 1 area       地区
+            // 2 postCode   邮编
+                
+                
+            area = [NSString stringWithCString:(char *)sqlite3_column_text(stmt, 1) encoding:NSUTF8StringEncoding];
+                
+                
+        }
+            
+        //删除预备语句
+        sqlite3_finalize(stmt);
+        //关闭
+        sqlite3_close(dataBase);
+        
+        VCLog(@" area=%@",area);
+        if (area.length>0) {
+            return [area purifyString];
+        }else{
+            return @"未知";
+        }
+        
+        
+        
     }
     
+    
+    
     return nil;
-
 }
 
 @end

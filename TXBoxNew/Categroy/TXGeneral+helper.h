@@ -19,7 +19,7 @@
 /****计算2个时间点的时间差****/
 - (NSString *)intervalFromLastDate:(NSString *)sDate toTheDate:(NSString *)endDate;
 
-+(NSString *)purifyString:(NSString *)str;
+
 
 
 

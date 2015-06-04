@@ -26,11 +26,6 @@
     return [self stringByReplacingOccurrencesOfString:@" " withString:@""];
 }
 
--(NSString *)trimOfStringTwo:(NSString *)string
-{
-    //其实是替换
-    return [string stringByReplacingOccurrencesOfString:@" " withString:@""];
-}
 
 #pragma mark --是否为空字符串
 -(BOOL) isEmptyString{
@@ -56,6 +51,18 @@
     return [self stringByReplacingOccurrencesOfString:@")" withString:@""];
     
 }
+
+#pragma mark --过滤字符串中的““”
+-(NSString *) iPhoneStandardedleftMarkFormat{
+    return [self stringByReplacingOccurrencesOfString:@"“" withString:@""];
+    
+}
+#pragma mark --过滤字符串中的“””
+-(NSString *) iPhoneStandardedrightMarkFormat{
+    return [self stringByReplacingOccurrencesOfString:@"”" withString:@""];
+    
+}
+
 
 #pragma mark --写入系统偏好
 -(void)saveToNSDefaultWithKey:(NSString*)key{
@@ -102,7 +109,7 @@
 -(NSString *)purifyString
 {
     NSString *string = [[NSString alloc] init];
-    NSString *isString = [[NSString alloc] init];
+    
     if (self.length>0) {
         string = [self trimLeftOrRightString];//去除左右空格和换行符
         string = [string iPhoneStandardedFormat ];//去除左括号
@@ -110,15 +117,12 @@
         string = [string trimOfString];     //去除字符串中间的空格
         string = [string iPhoneStandardFormat];//去除 -
         
-        string = [string trimOfString];
-        
-        isString = [string trimOfStringTwo:string];
-        isString = [isString trimLeftOrRightString];
-        isString = [isString trimOfString];
+        string = [string iPhoneStandardedleftMarkFormat];
+        string = [string iPhoneStandardedrightMarkFormat];
         //551 87896
         //123654896
     }
-    return isString;
+    return string;
 }
 
 #pragma mark --给string 计算文本size
@@ -263,7 +267,7 @@
         
         lString = [NSString stringWithFormat:@"%@%@",lString,ss];
     }
-    NSLog(@"-lString:%@",[NSString stringWithFormat:@"-%@",lString]);
+    //VCLog(@"-lString:%@",[NSString stringWithFormat:@"-%@",lString]);
     return [NSString stringWithFormat:@"-%@",lString];
 }
 

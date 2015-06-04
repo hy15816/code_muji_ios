@@ -19,6 +19,7 @@
     CallingController *calling;
     TXTelNumSingleton *singleton;
     BOOL flag;
+    NSUserDefaults *defaults;
 }
 @end
 
@@ -73,6 +74,7 @@
     singleton = [TXTelNumSingleton sharedInstance];
     //call action
     callAct = [[TXCallAction alloc] init];
+    defaults =[NSUserDefaults standardUserDefaults];
     
     //注册手势
     UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(initRecognizer:)];
@@ -195,7 +197,7 @@
         //添加calling页面
         //是否登录？
         //获取拇机号码,
-        NSString *phoneNumber =nil;// [defaults valueForKey:muji_bind_number];
+        NSString *phoneNumber =[defaults valueForKey:muji_bind_number];
         
         //已有number
         if (phoneNumber.length>0 ) {
@@ -265,7 +267,7 @@
         
         //是否登录？
         //获取拇机号码,
-        NSString *phoneNumber =nil;// [defaults valueForKey:muji_bind_number];
+        NSString *phoneNumber = [defaults valueForKey:muji_bind_number];
         
         //已有number
         if (phoneNumber.length>0 ) {
@@ -299,10 +301,13 @@
 //判断是否可以呼叫？
 -(void)isOrNotCallOut
 {
-      //没有则弹框提示
-        UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【绑定】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-        isNoMujiAlert.tag =1200;
-        [isNoMujiAlert show];
+    
+    //没有则弹框提示
+    UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【绑定】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+    isNoMujiAlert.tag =1200;
+    [isNoMujiAlert show];
+    
+    
         
     
 
@@ -322,7 +327,7 @@
 //加载call out
 -(void) callingBtn:(NSNotification *)notification
 {
-    
+    //
     [UIView beginAnimations:@"" context:@""];
     [UIView setAnimationDuration:.9];
     calling.view.alpha = 1.f;

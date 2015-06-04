@@ -40,6 +40,8 @@
     DiscoveryController *discoveryCtrol;
     
     NSMutableArray *zzArray;
+    NSString *areaString;
+    NSString *opeareString;
     
 }
 
@@ -68,6 +70,11 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteTextDidChanged:) name:kDeleteCharNoti object:nil];
     }
     
+    if([self respondsToSelector:@selector(callviewWillRefresh)]) {
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callviewWillRefresh) name:kCallViewReloadData object:nil];
+    }
+    
     //查询数据库获取通话记录
     NSMutableArray *array = [sqlite searchInfoFromTable:CALL_RECORDS_TABLE_NAME];
     //排序
@@ -92,7 +99,7 @@
     self.selectedIndexPath = nil;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;//tableview分割线
     
-    if ([[defaults valueForKey:@"opstate"] intValue]) {
+    if (![[defaults valueForKey:@"opstate"] intValue]) {
         UIAlertView *aaa =[[UIAlertView alloc] initWithTitle:@"" message:[NSString stringWithFormat:@"%@",[self getCarrier]] delegate:self cancelButtonTitle:@"n" otherButtonTitles:@"y", nil];
         [aaa show];
         [defaults setObject:@"1" forKey:@"opstate"];
@@ -100,6 +107,8 @@
     
     zzArray =[[NSMutableArray alloc] init];
     [sqlite openPhoneArearDatabase];
+    areaString = [[NSString alloc] init];
+    opeareString = [[NSString alloc] init];
     
 }
 
@@ -117,6 +126,11 @@
     searchResault = [[NSMutableArray alloc] init];
     
     //[self hanziTopinyin];
+}
+
+-(void)callviewWillRefresh
+{
+    [self.tableView reloadData];
 }
 
 #pragma mark -- 用户退格输入时
@@ -141,9 +155,9 @@
     
     NSString *inputString = [NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastChar];
     
-    VCLog(@"lastchar:%@",lastChar);
-    VCLog(@"searchText:%@",searchText);
-    VCLog(@"inputstring:%@",inputString);
+//    VCLog(@"lastchar:%@",lastChar);
+//    VCLog(@"searchText:%@",searchText);
+//    VCLog(@"inputstring:%@",inputString);
     //生成zz表达式
     //输入
     if (searchText.length>1) {
@@ -154,6 +168,7 @@
 }
 
 -(void)predictaeData{
+    
     
     if (searchResault.count != 0) {
         [searchResault removeAllObjects];
@@ -186,11 +201,23 @@
     NSMutableArray *array = [sqlite searchInfoFromTable:CALL_RECORDS_TABLE_NAME];
     //排序
     CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
-    
     [self.tableView reloadData];
+    
+    if (searchResault.count == 0) {
+        if (singleton.singletonValue.length>=7) {
+            areaString = [sqlite searchAreaWithHisNumber:[singleton.singletonValue substringToIndex:7]];
+            VCLog(@"areaString:%@",areaString);
+        }
+        
+        opeareString = [self isMobileNumber:singleton.singletonValue];
+        [self.tableView reloadData];
+    }
+    
+    
     
     
 }
+
 
 //数据模型
 -(void)setModel{
@@ -204,7 +231,7 @@
         [arrayM addObject:record];
         
     }
-    VCLog(@"arrayM:%@",arrayM);
+    //VCLog(@"arrayM:%@",arrayM);
     dataList = arrayM;
     //VCLog(@"arrayM-0:%@",[[arrayM objectAtIndex:0] valueForKey:@"personTel"]);
     
@@ -226,7 +253,7 @@
     }
     
     zzArray =latterArray;
-    VCLog(@"zzArray:%@",zzArray);
+    //VCLog(@"zzArray:%@",zzArray);
     
 }
 
@@ -252,6 +279,57 @@
     VCLog(@"lArray:%@",lArray);
 }
 
+-(NSString *)isMobileNumber:(NSString *)number
+{
+    //处理str
+    NSString *mobileNum = [number purifyString];
+    
+    
+    /**
+     * 手机号码
+     * 移动：134,135,136,137,138,139,150,151,152,157,158,159,182,183,187,188
+     * 联通：130,131,132,155,156,185,186
+     * 电信：133,153,180,189
+     */
+    
+    /**
+     * 中国移动
+     */
+    NSString * CM = @"^1(34[0-8]|(3[5-9]|5[0127-9]|8[2378])\\d).*$";
+    /**
+     * 中国联通
+     */
+    NSString * CU = @"^1(3[0-2]|5[56]|8[56]).*$";
+    /**
+     * 中国电信
+     */
+    NSString * CT = @"^1(33|53|8[09]).*$";
+    
+    NSPredicate *regextestcm = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CM];
+    NSPredicate *regextestcu = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CU];
+    NSPredicate *regextestct = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CT];
+    
+    NSString *str = [[NSString alloc] init];
+    
+    if([regextestcm evaluateWithObject:mobileNum] == YES) {
+        str = NSLocalizedString(@"Communication_Corp", nil);
+        VCLog(@"China Mobile");
+    } else if([regextestct evaluateWithObject:mobileNum] == YES) {
+        str =  NSLocalizedString(@"Unicom", nil);
+        VCLog(@"China Telecom");
+    } else if ([regextestcu evaluateWithObject:mobileNum] == YES) {
+        str =  NSLocalizedString(@"Telecom", nil);
+        VCLog(@"China Unicom");
+    } else {
+        str  = NSLocalizedString(@"Other", nil);;
+        VCLog(@"Unknow");
+    }
+    
+    return str;
+    
+
+}
+
 
 #pragma mark - Table view data source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -261,6 +339,9 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
+    if (searchResault.count == 0 && singleton.singletonValue.length>=7) {
+        return 1;
+    }
     
     if (searchResault.count > 0) {
         return searchResault.count;
@@ -281,7 +362,7 @@
     
     
         //2.用户输入时
-    if (searchResault.count != 0) {
+    if (searchResault.count > 0) {
         Records *record = dataList[indexPath.row];
         cell.hisName.text = record.personName;
         cell.hisNumber.hidden = YES;
@@ -290,6 +371,14 @@
         cell.callBeginTime.text = record.personTel;
         cell.hisHome.hidden = YES;
         cell.hisOperator.hidden = YES;
+    }else if (searchResault.count == 0 && singleton.singletonValue.length>=7) {
+        cell.hisName.text = singleton.singletonValue;
+        cell.callBeginTime.text =[NSString stringWithFormat:@"%@ %@",[areaString substringWithRange:NSMakeRange(1, areaString.length-2)],opeareString] ;
+        cell.hisNumber.hidden = YES;
+        cell.callDirection.hidden = YES;
+        cell.callLength.hidden = YES;
+        cell.hisOperator.hidden = YES;
+        cell.hisHome.hidden = YES;
     }else{
         TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
         cell.callDirection.hidden = NO;
@@ -304,13 +393,14 @@
         cell.callBeginTime.text = aRecord.callBeginTime;
         cell.hisHome.text = aRecord.hisHome;
         cell.hisOperator.text = aRecord.hisOperator;
+        //没有名字。显示为编辑图标
+        if (cell.hisName.text.length>0) {
+            [cell.PersonButton setImage:[UIImage imageNamed:@"icon_edit"] forState:UIControlStateNormal];
+        }
      
     }
     
-    //没有名字。显示为编辑图标
-    if (cell.hisName.text.length!=0) {
-        [cell.PersonButton setImage:[UIImage imageNamed:@"icon_edit"] forState:UIControlStateNormal];
-    }
+    
     [cell.CallButton addTarget:self action:@selector(CallButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [cell.MsgButton addTarget:self action:@selector(MsgButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [cell.PersonButton addTarget:self action:@selector(PersonButtonClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -764,9 +854,10 @@
             //加入phoneDic中
             [phoneDic setObject:(__bridge id)(record) forKey:[NSString stringWithFormat:@"%@%d",phone,recordID]];
             [tempDic setObject:phone forKey:@"personTel"];//把每一条号码存为key:“personTel”的Value
+            
             NSString *phoneNum = [[phone purifyString] pinyinTrimIntNumber];
             [tempDic setObject:phoneNum forKey:@"personTelNum"];//-数字号码
-            VCLog(@"phoneNum:%@",phoneNum);
+            //VCLog(@"phoneNum:%@",phoneNum);
             
         }
         [tempDic setObject:name forKey:@"personName"];//把名字存为key:"personName"的Value

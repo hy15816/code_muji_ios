@@ -60,4 +60,5 @@
 
 #pragma mark -- 拼音转数字
 -(NSString *)pinyinTrimIntNumber;
+
 @end

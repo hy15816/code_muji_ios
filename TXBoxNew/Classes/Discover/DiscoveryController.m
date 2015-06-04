@@ -11,8 +11,11 @@
 #import "PopView.h"
 #import <ImageIO/ImageIO.h>
 #import "LoginController.h"
+#import <CoreBluetooth/CoreBluetooth.h>
 
-@interface DiscoveryController ()<PopViewDelegate>
+#define UUIDSTR_TEST_SERVICE @"FFE0"
+
+@interface DiscoveryController ()<PopViewDelegate,CBCentralManagerDelegate,CBPeripheralDelegate>
 {
     NSUserDefaults *defaults;
   
@@ -51,6 +54,13 @@
 @property (weak, nonatomic) IBOutlet UIButton *isAppVersion;
 @property (weak, nonatomic) IBOutlet UIButton *isFirmwareVersion;
 
+
+//
+@property (strong,nonatomic) CBCentralManager *manager;
+@property (strong,nonatomic) NSMutableArray *peripheralArray;
+@property (strong,nonatomic) CBPeripheral *peripheral;
+@property (strong,nonatomic) CBCharacteristic *readCharacteristic;
+@property (strong,nonatomic) CBCharacteristic *writeCharacteristic;
 @end
 
 @implementation DiscoveryController
@@ -99,8 +109,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     defaults = [NSUserDefaults standardUserDefaults];
+    
+    
     con_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 42, 23)];
     ble_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 42, 23)];
+    
+    //(self.configureButton.frame.origin.x-self.loginButton.frame.origin.x+45)/2
+    [self.bindButton setFrame:CGRectMake(50, self.loginButton.frame.origin.y, 45, 23)];
+    
+    
     
     self.phoneNumber.hidden = YES;
     self.mujiNumber.hidden = YES;
@@ -121,7 +138,8 @@
     footv.alpha = .3;
     self.tableView.tableFooterView = footv;
     
-    
+    //数组保存找到的设备
+    self.peripheralArray = [[NSMutableArray alloc] init];
 }
 
 #pragma mark - Table view data source
@@ -186,7 +204,7 @@
     }
     
     if (bindState) {//已绑定
-        [self.bindButton setTitle:@" 解绑  " forState:UIControlStateNormal];
+        [self.bindButton setTitle:@"  解绑  " forState:UIControlStateNormal];
         [self.bindButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];//ble_connect
         self.BLEView.hidden = YES;
         self.BLEgifView.hidden = NO;
@@ -201,7 +219,7 @@
         
         ble_imgv.image = [UIImage imageNamed:@"flow_ble"];
         [self.BLEView addSubview:ble_imgv];
-        [self.bindButton setTitle:@" 绑定  " forState:UIControlStateNormal];
+        [self.bindButton setTitle:@"  绑定  " forState:UIControlStateNormal];
         [self.bindButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
         
     }
@@ -346,20 +364,6 @@
     [self initButtons];
 }
 
-#pragma mark -- 绑定 & 解绑
-- (IBAction)bindButtonClick:(UIButton *)sender {
-    
-    BOOL bstate = [[defaults valueForKey:BIND_STATE] intValue];
-    if (bstate) {
-        [defaults setObject:@"0" forKey:BIND_STATE];
-        
-    }else{
-        [defaults setObject:@"1" forKey:BIND_STATE];
-    }
-    
-    [self initButtons];
-    
-}
 
 #pragma mark -- 配置 & 修改
 - (IBAction)configureButtonClick:(UIButton *)sender {
@@ -410,6 +414,116 @@
 -(void)loginOut
 {
     [AVUser logOut];
+}
+
+
+
+
+#pragma mark -- 绑定 & 解绑
+- (IBAction)bindButtonClick:(UIButton *)sender {
+    
+    BOOL bstate = [[defaults valueForKey:BIND_STATE] intValue];
+    if (bstate) {
+        [defaults setObject:@"0" forKey:BIND_STATE];
+        
+    }else{//没绑定
+        //
+        //[self createBLECentralManager];
+        [defaults setObject:@"1" forKey:BIND_STATE];
+        
+
+        
+    }
+    [self initButtons];
+    
+    
+}
+
+
+#pragma mark --创建central并扫描外设
+//1.创建CBCentralManager
+-(void)createBLECentralManager
+{
+    self.manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+}
+
+//2.发现外设成功时回调，说明self.manager创建成功
+- (void)centralManagerDidUpdateState:(CBCentralManager *)central;
+{
+    NSString *state = nil;
+    
+    switch ([central state])
+    {
+        case CBCentralManagerStateUnsupported:
+            state = @"The platform/hardware doesn't support Bluetooth Low Energy.";
+            break;
+        case CBCentralManagerStateUnauthorized:
+            state = @"The app is not authorized to use Bluetooth Low Energy.";
+            break;
+        case CBCentralManagerStatePoweredOff:
+            state = @"Bluetooth is currently powered off.";
+            break;
+        case CBCentralManagerStatePoweredOn:
+            state = @"work";//可用
+            break;
+        case CBCentralManagerStateUnknown:
+        default:
+            ;
+    }
+    
+    VCLog(@"Central manager state: %@", state);
+    
+}
+
+
+//3.扫描外设
+-(void)scanForPeripherals
+{
+    [self.manager scanForPeripheralsWithServices:nil options:nil];//Services为nil表示扫描所有外设
+}
+
+//4.发现蓝牙设备，返回设备参数
+-(void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
+{
+    //若数组里没有，则添加
+    if(![self.peripheralArray containsObject:peripheral.name])
+        [self.peripheralArray addObject:peripheral.name];
+    
+    VCLog(@"peripheralArray:%@", self.peripheralArray);
+    
+    VCLog(@"设备名：%@ 广告数据：%@ 信号强度：%@ ",peripheral.name,advertisementData,RSSI);
+    
+    [self connectPeripheral];
+}
+
+// 5.1连接设备
+-(void)connectPeripheral
+{
+    //假设连接第一个
+    [self.manager connectPeripheral:[self.peripheralArray firstObject]  options:nil];
+}
+// 5.2连接成功
+-(void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
+{
+    VCLog(@"connect suc :%@",peripheral);
+    //[self.connectTimer invalidate];//停止计时
+    
+    peripheral.delegate = self;
+    [central stopScan];//停止扫描
+    [peripheral discoverServices:nil];// nil表示返回所有服务
+    //
+    [self.peripheral discoverServices:@[[CBUUID UUIDWithString:UUIDSTR_TEST_SERVICE]]];
+    [defaults setObject:@"1" forKey:BIND_STATE];
+    [self initButtons];
+}
+
+//断开连接
+-(void)disConnect
+{
+    if (self.peripheral != nil) {
+        VCLog(@"is disConnect");
+        [self.manager cancelPeripheralConnection:self.peripheral];
+    }
 }
 
 -(void)viewDidDisappear:(BOOL)animated

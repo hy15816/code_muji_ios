@@ -154,7 +154,7 @@
     singleton.singletonValue = self.textsearch.text;
     
     //2.通过通知中心发送通知
-    
+    [[NSNotificationCenter defaultCenter] postNotification:notification];
 }
 #pragma mark 监听item点击
 - (void)itemClick:(UIButton *)item
@@ -187,7 +187,7 @@
     //2.通过通知中心发送通知
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
         
-    
+    [[NSNotificationCenter defaultCenter] postNotification:notification];
     
 }
 

@@ -55,7 +55,7 @@
     
     
     self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
-    
+    VCLog(@"self.detailArray %@",self.detailArray);
     [self getResouce];
     [self jumpToLastRow];
     [self.tableview reloadData];
@@ -163,44 +163,64 @@
 
 
 
-    //删除选中的条目
-
-    //[self.tableview beginUpdates];
     
-    NSMutableArray *array = [ [ NSMutableArray alloc ] init ];
-    NSMutableArray *gga =(NSMutableArray *)[[indexpathArray reverseObjectEnumerator] allObjects];
-    //tableview
-    /*
-    for (NSIndexPath *indexPaths in gga) {
 
-        VCLog(@"detailArray:%@",self.detailArray );
-        VCLog(@"index.r:%ld",(long)indexPaths.row);
-        [array addObject:[NSIndexPath indexPathForRow:indexPaths.row inSection:0]];
-        //[ array addObject: indexPaths];
-        [self.detailArray removeObjectAtIndex:indexPaths.row];
-        
-
-    }
-    */
-    //[self.tableview deleteRowsAtIndexPaths:indexpathArray withRowAnimation:UITableViewRowAnimationFade];
-    /*
+    
+    //删除选中的条目
     //数据库
     for (NSArray *arr in selectArray) {
         [txsqlite deleteContacterWithNumber:arr[0] formTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME peopleId:arr[1] withSql:DELETE_MESSAGE_RECORD_SQL];
     }
-    */
-    
+    //重新获取数据
+    self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
     //取消选中
-    
     [self cancelCheckCell];
-    //[self.tableview reloadData];
-    
+    //
+    //[self.tableview beginUpdates];
     //[self.tableview endUpdates];
 }
 
+//
+-(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [indexpathArray removeLastObject];
+    if (indexpathArray.count <= 0) {
+        [editView.copysButton setEnabled:NO];
+        [editView.sharesButton setEnabled:NO];
+        [editView.deleteButton setEnabled:NO];
+        
+    }
+    
+    VCLog(@"did deselect");
+}
+
+//选中cell
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    VCLog(@"indepath.row:%ld",(long)indexPath.row);
+    
+    //获取选中的数据
+    NSString *msgsender = [self.detailArray[indexPath.row] msgSender];
+    NSString *peopleId = [NSString stringWithFormat:@"%d",[self.detailArray[indexPath.row] peopleId]];
+    NSArray *checkDatas=[[NSArray alloc] initWithObjects:msgsender,peopleId, nil];
+    
+    [selectArray addObject:checkDatas];
+    [indexpathArray addObject:indexPath];
+    
+    if (indexpathArray.count >0) {
+        [editView.copysButton setEnabled:YES];
+        [editView.sharesButton setEnabled:YES];
+        [editView.deleteButton setEnabled:YES];
+
+    }
+    
+    
+    
+}
 // 允许编辑
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    /*
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         
         
@@ -215,6 +235,7 @@
         
         [tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];
     }
+     */
 }
 
 
@@ -246,13 +267,15 @@
         Message *message = [[Message alloc] init];
         
         message.data = data;
-        messageFrame.showTime = ![previousTime isEqualToString:message.time];
+        messageFrame.showTime = 1;//![previousTime isEqualToString:message.time];
         messageFrame.message = message;
         previousTime = message.time;
        
         [self.allMsgFrame addObject:messageFrame];
         
     }
+    
+    //[self.tableview reloadData];
 }
 
 #pragma --mark 给数据源增加内容-自己发送的内容
@@ -437,6 +460,14 @@
     
     [self.callOutBtn setImage:[UIImage imageNamed:@"actionbar_call_hub32"]];
     [self.callOutBtn setEnabled:YES];
+    if (indexpathArray.count <= 0) {
+        [editView.copysButton setEnabled:NO];
+        [editView.sharesButton setEnabled:NO];
+        [editView.deleteButton setEnabled:NO];
+        
+    }
+
+    //[self.tableview reloadData];
 }
 
 #pragma mark -- UITableView
@@ -512,38 +543,22 @@
         [self.callOutBtn setEnabled:NO];
     }
     [self getResouce];
-    //[self.tableview reloadData];
     
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //出现圈圈
-    return UITableViewCellEditingStyleDelete | UITableViewCellEditingStyleInsert;
+    UITableViewCellEditingStyle result = UITableViewCellEditingStyleNone;//默认没有编辑风格
+    if ([tableView isEqual:self.tableview]) {
+        //出现圈圈
+        result  =  UITableViewCellEditingStyleDelete | UITableViewCellEditingStyleInsert;
+    }
+    
+    return result;
 }
 
 
-//选中cell
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    VCLog(@"indepath.row:%ld",(long)indexPath.row);
-    [editView.copysButton setEnabled:YES];
-    [editView.sharesButton setEnabled:YES];
-    [editView.deleteButton setEnabled:YES];
-    
-    //获取选中的数据
-    NSString *msgsender = [self.detailArray[indexPath.row] msgSender];
-    NSString *peopleId = [NSString stringWithFormat:@"%d",[self.detailArray[indexPath.row] peopleId]];
-    NSArray *checkDatas=[[NSArray alloc] initWithObjects:msgsender,peopleId, nil];
-    
-    [selectArray addObject:checkDatas];
-    [indexpathArray addObject:indexPath];
-    
-    
-    
-    
-    
-}
+
 
 //导航栏右边按钮拨-拨打电话
 - (IBAction)callOutBtn:(UIBarButtonItem *)sender {

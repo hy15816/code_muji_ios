@@ -131,7 +131,13 @@
     
     //归属地
     NSString *strAddress = [[NSString alloc] init];
-    strAddress = @"";
+    if (hisNumber.length >=7) {
+        strAddress = [txSqlite searchAreaWithHisNumber:[hisNumber substringToIndex:7]];
+        strAddress = [strAddress substringWithRange:NSMakeRange(1, strAddress.length-2)];
+    }else{
+        strAddress = @"";
+    }
+    
     
     //data.tel_id =singleton.telID;//不需要存id，
     data.hisNumber = strNunmber;
