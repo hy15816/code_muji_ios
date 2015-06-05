@@ -48,6 +48,9 @@
 		637C29D91AEB9FF200CD3DAF /* ContactsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 637C29D81AEB9FF200CD3DAF /* ContactsCell.xib */; };
 		63806BEA1B1BFF8600ED301D /* LoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63806BE91B1BFF8600ED301D /* LoginController.m */; };
 		63806BED1B1C099F00ED301D /* RegisteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63806BEC1B1C099F00ED301D /* RegisteViewController.m */; };
+		6391323A1B213AFE00F61E04 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 639132391B213AFE00F61E04 /* AVOSCloud.framework */; };
+		639132401B21778B00F61E04 /* ShowContactsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6391323F1B21778B00F61E04 /* ShowContactsController.m */; };
+		639132431B2177A500F61E04 /* ShowContactsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 639132421B2177A500F61E04 /* ShowContactsCell.m */; };
 		63947F1B1B1D7B7800555479 /* UpdatePwdController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63947F1A1B1D7B7800555479 /* UpdatePwdController.m */; };
 		63975E6D1AE73C040076E849 /* CustomTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63975E6C1AE73C040076E849 /* CustomTabBarView.m */; };
 		63D34AFD1AF9C6DD00C8B533 /* board.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D34AFC1AF9C6DD00C8B533 /* board.gif */; };
@@ -76,7 +79,6 @@
 		63FB5FE01ADBB58700A1A92B /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63FB5FDF1ADBB58700A1A92B /* Images.xcassets */; };
 		63FB5FE31ADBB58700A1A92B /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63FB5FE11ADBB58700A1A92B /* LaunchScreen.xib */; };
 		63FB5FEF1ADBB58800A1A92B /* TXBoxNewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB5FEE1ADBB58800A1A92B /* TXBoxNewTests.m */; };
-		63FE286C1B1FFF2000A1C901 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FE286B1B1FFF2000A1C901 /* AVOSCloud.framework */; };
 		63FE286E1B20196A00A1C901 /* PhoneAreas.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 63FE286D1B20196A00A1C901 /* PhoneAreas.sqlite */; };
 /* End PBXBuildFile section */
 
@@ -173,6 +175,11 @@
 		63806BE91B1BFF8600ED301D /* LoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginController.m; sourceTree = "<group>"; };
 		63806BEB1B1C099F00ED301D /* RegisteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisteViewController.h; sourceTree = "<group>"; };
 		63806BEC1B1C099F00ED301D /* RegisteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisteViewController.m; sourceTree = "<group>"; };
+		639132391B213AFE00F61E04 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
+		6391323E1B21778B00F61E04 /* ShowContactsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowContactsController.h; sourceTree = "<group>"; };
+		6391323F1B21778B00F61E04 /* ShowContactsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowContactsController.m; sourceTree = "<group>"; };
+		639132411B2177A500F61E04 /* ShowContactsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowContactsCell.h; sourceTree = "<group>"; };
+		639132421B2177A500F61E04 /* ShowContactsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowContactsCell.m; sourceTree = "<group>"; };
 		63947F191B1D7B7800555479 /* UpdatePwdController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdatePwdController.h; sourceTree = "<group>"; };
 		63947F1A1B1D7B7800555479 /* UpdatePwdController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdatePwdController.m; sourceTree = "<group>"; };
 		63975E6B1AE73C040076E849 /* CustomTabBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomTabBarView.h; sourceTree = "<group>"; };
@@ -220,7 +227,6 @@
 		63FB5FE81ADBB58800A1A92B /* TXBoxNewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TXBoxNewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		63FB5FED1ADBB58800A1A92B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		63FB5FEE1ADBB58800A1A92B /* TXBoxNewTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TXBoxNewTests.m; sourceTree = "<group>"; };
-		63FE286B1B1FFF2000A1C901 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		63FE286D1B20196A00A1C901 /* PhoneAreas.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = PhoneAreas.sqlite; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -234,7 +240,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				63FE286C1B1FFF2000A1C901 /* AVOSCloud.framework in Frameworks */,
+				6391323A1B213AFE00F61E04 /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -499,7 +505,7 @@
 		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
 			isa = PBXGroup;
 			children = (
-				63FE286B1B1FFF2000A1C901 /* AVOSCloud.framework */,
+				639132391B213AFE00F61E04 /* AVOSCloud.framework */,
 				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
 				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
 				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
@@ -533,6 +539,10 @@
 			children = (
 				63DEA67E1B009512003343A7 /* NewMsgController.h */,
 				63DEA67F1B009512003343A7 /* NewMsgController.m */,
+				6391323E1B21778B00F61E04 /* ShowContactsController.h */,
+				6391323F1B21778B00F61E04 /* ShowContactsController.m */,
+				639132411B2177A500F61E04 /* ShowContactsCell.h */,
+				639132421B2177A500F61E04 /* ShowContactsCell.m */,
 			);
 			path = newMsg;
 			sourceTree = "<group>";
@@ -773,8 +783,10 @@
 				635B1A3E1AEC968B003F37B5 /* UIImage+helper.m in Sources */,
 				635299821ADE3AF7006840AC /* CallRecordsCell.m in Sources */,
 				637191981B1F01CF005C09C8 /* NSString+AKNumericFormatter.m in Sources */,
+				639132431B2177A500F61E04 /* ShowContactsCell.m in Sources */,
 				6359D0911AE5F37F00592201 /* MsgDatas.m in Sources */,
 				63975E6D1AE73C040076E849 /* CustomTabBarView.m in Sources */,
+				639132401B21778B00F61E04 /* ShowContactsController.m in Sources */,
 				63DEA68B1B0095F7003343A7 /* BLEDevicesController.m in Sources */,
 				635299831ADE3AF7006840AC /* TXKeyView.m in Sources */,
 				637005CB1AE4C1D000B8BAFD /* TXCallAction.m in Sources */,
@@ -966,6 +978,8 @@
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
@@ -1000,6 +1014,8 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,

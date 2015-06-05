@@ -18,7 +18,7 @@
     //文件的路径
     NSString *path=[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@",DB_NAME]];
     
-    VCLog(@"sqlite3_path:%@",path);
+    //VCLog(@"sqlite3_path:%@",path);
     //若数据库存在就打开，不存在就创建，
     //[path UTF8String]把字符串转成char。。。SQLITE_OK常量0
     if (sqlite3_open([path UTF8String], &dataBase)==SQLITE_OK) {
@@ -374,7 +374,7 @@
     //文件的路径
     //NSString *path=[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@",DB_PHONE_AREAR_NAME]];
     NSString *dbPath = [[NSBundle mainBundle] pathForResource:@"PhoneAreas" ofType:@"sqlite"];
-    VCLog(@"dbPath:%@",dbPath);
+    //VCLog(@"dbPath:%@",dbPath);
     //若数据库存在就打开，不存在就创建，
     //[path UTF8String]把字符串转成char。。。SQLITE_OK常量0
     if (sqlite3_open([dbPath UTF8String], &dataBase)==SQLITE_OK) {
@@ -447,9 +447,10 @@
         
         VCLog(@" area=%@",area);
         if (area.length>0) {
-            return [area purifyString];
+            NSString *sarea = [area purifyString];
+            return [sarea substringWithRange:NSMakeRange(1, sarea.length-2)];
         }else{
-            return @"未知";
+            return @" ";
         }
         
         

@@ -55,6 +55,7 @@
     self.secondField.keyboardType = UIKeyboardTypeNumberPad;
     self.secondField.borderStyle = UITextBorderStyleRoundedRect;
     self.secondField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    [self.secondField becomeFirstResponder];
     //设置格式化输入
     self.secondField.numericFormatter = [AKNumericFormatter formatterWithMask:@"*** **** ****" placeholderCharacter:'*'];
 

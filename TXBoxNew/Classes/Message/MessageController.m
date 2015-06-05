@@ -50,8 +50,14 @@
     
     txsqlite = [[TXSqliteOperate alloc] init];
     //获取信息的号码
+    UIView *foovt = [[UIView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, 30)];
     
+    UILabel *lline = [[UILabel alloc] initWithFrame:CGRectMake(15, 1, DEVICE_WIDTH, 1)];
+    lline.backgroundColor = [UIColor blackColor];
+    lline.alpha = .2;
+    [foovt addSubview:lline];
     
+    self.tableView.tableFooterView = foovt;
     
     
 }

@@ -168,7 +168,7 @@
     [outputFormat setVCharType:VCharTypeWithV];//特殊拼音的显示格式如 ü
     [outputFormat setCaseType:CaseTypeLowercase];//大小写
     
-    NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"%@",self];
+    NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"-%@",self];
     NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:mstring withHanyuPinyinOutputFormat:outputFormat withNSString:@"-"];
     VCLog(@"-------------outputpy:%@",outputPinyin);
     
@@ -178,6 +178,7 @@
 #pragma mark -- 拼音转数字
 -(NSString *)pinyinTrimIntNumber
 {
+    
     NSString *lString=[[NSString alloc] init];
     NSString *ss = [[NSString alloc] init];
     for (int i =0; i<self.length; i++) {
@@ -267,10 +268,67 @@
         
         lString = [NSString stringWithFormat:@"%@%@",lString,ss];
     }
+    if (self.length == 1) {
+        return [NSString stringWithFormat:@"%@1",lString];
+    }
     //VCLog(@"-lString:%@",[NSString stringWithFormat:@"-%@",lString]);
-    return [NSString stringWithFormat:@"-%@",lString];
+    return [NSString stringWithFormat:@"%@",lString];
 }
 
+-(NSString *)isMobileNumberWhoOperation
+{
+    //处理str
+    NSString *mobileNum = [self purifyString];
+    if (mobileNum.length == 0) {
+        return @"";
+    }
+    
+    /**
+     * 手机号码
+     * 移动：134,135,136,137,138,139,150,151,152,157,158,159,182,183,187,188
+     * 联通：130,131,132,155,156,185,186
+     * 电信：133,153,180,189
+     */
+    
+    /**
+     * 中国移动
+     */
+    NSString * CM = @"^1(34[0-8]|(3[5-9]|5[0127-9]|8[2378])\\d).*$";
+    /**
+     * 中国联通
+     */
+    NSString * CU = @"^1(3[0-2]|5[56]|8[56]).*$";
+    /**
+     * 中国电信
+     */
+    NSString * CT = @"^1(33|53|8[09]).*$";
+    
+    NSPredicate *regextestcm = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CM];
+    NSPredicate *regextestcu = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CU];
+    NSPredicate *regextestct = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CT];
+    
+    NSString *str = [[NSString alloc] init];
+    
+    if([regextestcm evaluateWithObject:mobileNum] == YES) {
+        str = NSLocalizedString(@"Communication_Corp", nil);
+        VCLog(@"China Mobile");
+    } else if([regextestct evaluateWithObject:mobileNum] == YES) {
+        str =  NSLocalizedString(@"Unicom", nil);
+        VCLog(@"China Telecom");
+    } else if ([regextestcu evaluateWithObject:mobileNum] == YES) {
+        str =  NSLocalizedString(@"Telecom", nil);
+        VCLog(@"China Unicom");
+    } else {
+        str  = NSLocalizedString(@"Other", nil);
+        VCLog(@"Unknow");
+    }
+    
+    
+    
+    return str;
+    
+    
+}
 
 
 @end

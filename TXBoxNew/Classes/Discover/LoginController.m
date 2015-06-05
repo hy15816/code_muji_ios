@@ -161,6 +161,7 @@
             VCLog(@"user:%@",user);
             [self.navigationController popToRootViewControllerAnimated:YES];
             
+            
         }
         
     }];

@@ -55,10 +55,28 @@
     [self.contactTableView.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     
     self.selectedIndexPath = nil;
-    
     [self initSearchController];
     
     
+}
+
+-(void)addTableViewFootView
+{
+    UIView *footv = [[UIView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, 37)];
+    
+    UILabel *text = [[UILabel alloc] initWithFrame:CGRectMake(0, 5, DEVICE_WIDTH, 25)];
+    text.text = [NSString stringWithFormat:@"共%lu位联系人",(unsigned long)phoneArray.count];
+    text.textAlignment = NSTextAlignmentCenter;
+    text.font = [UIFont systemFontOfSize:16];
+    
+    UILabel *line2 =[[UILabel alloc] initWithFrame:CGRectMake(0, 36, DEVICE_HEIGHT, 1)];
+    line2.backgroundColor = [UIColor grayColor];
+    line2.alpha = .3;
+    
+    [footv addSubview:line2];
+    [footv addSubview:text];
+    self.contactTableView.tableView.tableFooterView = footv;
+
 }
 
 //页面即将展示
@@ -74,7 +92,7 @@
     [self.contactTableView reloadData];
     //通知显示tabBar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
-    
+    [self addTableViewFootView];
 }
 
 // 创建tableView
@@ -217,8 +235,8 @@
             //加入phoneDic中
             [phoneDic setObject:(__bridge id)(record) forKey:[NSString stringWithFormat:@"%@%d",phone,recordID]];
             [tempDic setObject:phone forKey:@"personTel"];//把每一条号码存为key:“personTel”的Value
-            NSString *phoneNum = [phone pinyinTrimIntNumber];
-            [tempDic setObject:phoneNum forKey:@"personTelNum"];
+            NSString *phoneNum = [NSString stringWithFormat:@"-%@",phone];
+            [tempDic setObject:phoneNum forKey:@"personTelNum"];//-数字号码
             
         }
         [tempDic setObject:name forKey:@"personName"];//把名字存为key:"personName"的Value
@@ -534,7 +552,7 @@
     
     
     
-    /*
+    
     NSString *searchString = [self.searchController.searchBar text];
     //NSPredicate *preicate = [NSPredicate predicateWithFormat:@"(SELF.personName CONTAINS[c] %@) OR (SELF.personTel contains [c] %@)", searchString];
     NSPredicate *preicate = [NSPredicate predicateWithFormat:@"(SELF.personName CONTAINS[c] %@) or (self.personTel contains[c] %@)", searchString,searchString ];
@@ -551,7 +569,7 @@
     //刷新表格
     [self.searchVC.tableView reloadData];
     [self.contactTableView reloadData];
-     */
+     
 }
 /*
 #pragma mark -- 用户退格输入时

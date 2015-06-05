@@ -18,8 +18,21 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    usDefaults = [NSUserDefaults standardUserDefaults];
+    
     //leanCloud 服务器
     [AVOSCloud setApplicationId:@"85m0pvb0vv1iluti5sk0xsou1mkftzn06a3f1ompvza9xc7z" clientKey:@"orluh89ufnpvl773b68w5gcdk4dxfrahzwaahz7c46ettn44"];
+    //自动登录
+    //缓存当前用户
+    AVUser *currentUser = [AVUser currentUser];
+    if (currentUser == nil) {
+        [usDefaults setValue:@"0" forKey:call_divert_state];//呼转状态
+        [usDefaults setValue:@"0" forKey:LOGIN_STATE];//登录状态
+        [usDefaults setValue:@"0" forKey:CONFIG_STATE];//配置状态
+        [usDefaults setValue:@"0" forKey:@"opstate"];
+        [usDefaults setValue:@"0" forKey:BIND_STATE];
+    }
+
     
     //创建数据库-和表
     TXSqliteOperate *sqlite = [[TXSqliteOperate alloc] init];
@@ -29,13 +42,11 @@
     //修改导航栏的sytle
     [self changeNavigationBarStyle];
     /*
-    usDefaults = [NSUserDefaults standardUserDefaults];
-    [usDefaults setValue:@"0" forKey:call_divert_state];//呼转状态
-    [usDefaults setValue:@"0" forKey:LOGIN_STATE];//登录状态
-    [usDefaults setValue:@"0" forKey:CONFIG_STATE];//配置状态
-    [usDefaults setValue:@"0" forKey:@"opstate"];
-    [usDefaults setValue:@"0" forKey:BIND_STATE];
+    
+    
     */
+    
+    
     return YES;
 }
 

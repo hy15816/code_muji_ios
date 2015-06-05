@@ -12,6 +12,7 @@
 #import <ImageIO/ImageIO.h>
 #import "LoginController.h"
 #import <CoreBluetooth/CoreBluetooth.h>
+#import "TXSqliteOperate.h"
 
 #define UUIDSTR_TEST_SERVICE @"FFE0"
 
@@ -24,6 +25,7 @@
     
     UIImageView *con_imgv;  //
     UIImageView *ble_imgv;  //蓝牙图片
+    TXSqliteOperate *txsqlite;
     
 }
 //label
@@ -55,7 +57,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *isFirmwareVersion;
 
 
-//
+//连接外设
 @property (strong,nonatomic) CBCentralManager *manager;
 @property (strong,nonatomic) NSMutableArray *peripheralArray;
 @property (strong,nonatomic) CBPeripheral *peripheral;
@@ -109,7 +111,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     defaults = [NSUserDefaults standardUserDefaults];
-    
+    txsqlite = [[TXSqliteOperate alloc] init];
     
     con_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 42, 23)];
     ble_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 42, 23)];
@@ -181,10 +183,22 @@
         self.mujiNumber.hidden = NO;
         self.mujiNumber.text = [defaults valueForKey:muji_bind_number];
         self.connectNumber.hidden = NO;
-        self.connectNumber.text = @"运营商";
+        //
         
         self.connectView.hidden = YES;
         self.connectGifView.hidden = NO;
+        NSString *home;
+        NSString *operation;
+        if ([[defaults valueForKey:muji_bind_number] length] <=0) {
+            home=@"";
+            operation = @"";
+        }else{
+            home = [txsqlite searchAreaWithHisNumber:[[defaults valueForKey:muji_bind_number] substringToIndex:7]];
+            operation = [[defaults valueForKey:muji_bind_number] isMobileNumberWhoOperation];
+        }
+        
+        
+        self.connectNumber.text = [NSString stringWithFormat:@"%@ %@",home,operation];//拇机
         
         //显示gif图片
         [self initAnimatedWithFileName:@"phone_connect" andType:@"gif" view:self.connectGifView];
@@ -198,9 +212,9 @@
         [self.configureButton setTitle:@"  配置  " forState:UIControlStateNormal];
         [self.configureButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
         self.mujiNumber.hidden = YES;
-        //self.mujiNumber.text = [defaults valueForKey:muji_bind_number];
         self.connectNumber.hidden = NO;
-        self.connectNumber.text = @"运营商";
+        self.connectNumber.text = @" ";
+        
     }
     
     if (bindState) {//已绑定
@@ -413,7 +427,7 @@
 
 -(void)loginOut
 {
-    [AVUser logOut];
+    //[AVUser logOut];
 }
 
 

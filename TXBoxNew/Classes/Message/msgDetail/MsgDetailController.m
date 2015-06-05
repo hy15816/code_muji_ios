@@ -87,7 +87,7 @@
     [self.callOutBtn setImage:[UIImage imageNamed:@"actionbar_call_hub32"]];
     
     //注册手势
-    UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(initRecognizer:)];
+    UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(initMsgSwipeRecognizer:)];
     swipe.direction = UISwipeGestureRecognizerDirectionDown;
     [self.tableview addGestureRecognizer:swipe];
     [self.view addGestureRecognizer:swipe];
@@ -309,26 +309,22 @@
     NSNumber *duration = [notif.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
     //NSNumber *curve = [notif.userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey];
     
-    // Need to translate the bounds to account for rotation.
     keyboardBounds = [self.view convertRect:keyboardBounds toView:nil];
     
-    // get a rect for the textView frame
     CGRect containerFrame = self.inputView.frame;
     containerFrame.origin.y = self.view.bounds.size.height - (keyboardBounds.size.height + containerFrame.size.height);
-    // animations settings
+
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:[duration doubleValue]];
     //[UIView setAnimationCurve:[curve intValue]];
     
-    // set views with new info
     self.inputView.frame = containerFrame;
     
     CGRect rect = [notif.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     self.tableview.frame = CGRectMake(0,0 , DEVICE_WIDTH, DEVICE_HEIGHT-rect.size.height);//-rect.size.height
     [self jumpToLastRow];
     
-    // commit animations
     [UIView commitAnimations];
     
 }
@@ -341,20 +337,17 @@
     NSNumber *duration = [notif.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
     NSNumber *curve = [notif.userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey];
     
-    // get a rect for the textView frame
     CGRect containerFrame = self.inputView.frame;
     containerFrame.origin.y = self.view.bounds.size.height - containerFrame.size.height;
     
-    // animations settings
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:[duration doubleValue]];
     [UIView setAnimationCurve:[curve intValue]];
     
-    // set views with new info
     self.tableview.frame = CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT);
     self.inputView.frame = containerFrame;
-    // commit animations
+
     [UIView commitAnimations];
 
 }
@@ -429,7 +422,7 @@
     self.inputView.frame = r;
 }
 //处理swipe
--(void) initRecognizer:(UIGestureRecognizer *)recognizer
+-(void) initMsgSwipeRecognizer:(UIGestureRecognizer *)recognizer
 {
     [self.textView resignFirstResponder];
 }
@@ -609,6 +602,7 @@
     [self.tableview reloadData];
 }
 
+/*
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     //移除键盘显示和隐藏消息注册信息
@@ -616,7 +610,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 
 }
-
+*/
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
