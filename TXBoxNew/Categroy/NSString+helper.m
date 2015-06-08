@@ -170,7 +170,7 @@
     
     NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"-%@",self];
     NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:mstring withHanyuPinyinOutputFormat:outputFormat withNSString:@"-"];
-    VCLog(@"-------------outputpy:%@",outputPinyin);
+    //VCLog(@"-------------outputpy:%@",outputPinyin);
     
     return outputPinyin;
 }

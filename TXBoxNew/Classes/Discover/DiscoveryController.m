@@ -15,6 +15,8 @@
 #import "TXSqliteOperate.h"
 
 #define UUIDSTR_TEST_SERVICE @"FFE0"
+static NSString *const kDataInCharaUUID = @"FF01";//kDataOutCharaUUID
+static NSString *const kDataOutCharaUUID = @"FF01";
 
 @interface DiscoveryController ()<PopViewDelegate,CBCentralManagerDelegate,CBPeripheralDelegate>
 {
@@ -74,6 +76,7 @@
     //键盘活动  键盘出现时
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disvViewDidShow:) name:KRefreshDisvView object:nil];
     
     //通知显示tabBar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
@@ -99,6 +102,10 @@
     [UIView setAnimationDuration:.25];
     [UIView commitAnimations];
     
+}
+-(void)disvViewDidShow:(NSNotification *)notifi
+{
+    [self initButtons];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -493,7 +500,7 @@
 //3.扫描外设
 -(void)scanForPeripherals
 {
-    [self.manager scanForPeripheralsWithServices:nil options:nil];//Services为nil表示扫描所有外设
+    [self.manager scanForPeripheralsWithServices:nil options:nil]; //Services 为nil表示扫描所有外设
 }
 
 //4.发现蓝牙设备，返回设备参数
@@ -529,6 +536,87 @@
     [self.peripheral discoverServices:@[[CBUUID UUIDWithString:UUIDSTR_TEST_SERVICE]]];
     [defaults setObject:@"1" forKey:BIND_STATE];
     [self initButtons];
+}
+
+//发现外设-服务，
+-(void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error
+{
+    if (error) {
+        VCLog(@"didDiscoverServices error:%@",error);
+    }else{
+        VCLog(@"已发现外设服务:%@",peripheral.services);
+        
+        for (CBService *service in peripheral.services) {
+            NSLog(@"发现UUID=%@的服务;并开始检测这个服务的特征码...",service.UUID);
+            
+            if ([service.UUID isEqual:[CBUUID UUIDWithString:UUIDSTR_TEST_SERVICE]]) {
+                
+                [peripheral discoverCharacteristics:nil forService:service];
+            } 
+        }
+        
+        
+    }
+
+}
+
+//如果一个特征被检测到
+- (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error {
+    
+    if (error) {
+        
+        VCLog(@"%s,%@",__PRETTY_FUNCTION__,error);
+        
+    } else {
+        if ([service.UUID isEqual:[CBUUID UUIDWithString:UUIDSTR_TEST_SERVICE]]) {
+            
+            VCLog(@"-------service charactristics is %@\n=========================",service.characteristics);
+            
+            for (CBCharacteristic *characteristic in service.characteristics) {
+                
+                VCLog(@"发现特征的服务:%@ (%@)",service.UUID.data,service.UUID);
+                
+                if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:kDataInCharaUUID]]) {
+                    //主机端通过该 Characteristic 给从机端(BLE 透传模块)发送数据
+                    
+                    _writeCharacteristic = characteristic;
+                    
+                    [self.peripheral setNotifyValue:YES
+                                  forCharacteristic:_writeCharacteristic];//设定写特征
+                    
+                    //服务给设备发送数据 
+                    //[self sendDataInCharaUUID];
+                    
+                }else if([characteristic.UUID isEqual:[CBUUID UUIDWithString:kDataOutCharaUUID]]){ 
+                    
+                    
+                }//else if([characteristic.UUID isEqual:[CBUUID UUIDWithString:kBaudRateCharaUUID]]){
+                    
+                //}
+            } 
+        } 
+    } 
+}
+
+//若特征值更新，此方法收到通知
+-(void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+{
+    VCLog(@"characteristic:%@",characteristic);
+}
+
+//主机发送数据给从机者
+- (void)sendDataInCharaUUID {
+    
+    NSString* sendDataInString = @"~200141410000FDB3";
+    unsigned char dataTailString = 0x0D;
+    NSData* data = [NSData dataWithBytes:&dataTailString length:1.0];
+    NSString* string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSString * tatalString = [sendDataInString stringByAppendingString:string];
+    NSData* sendDataIn = [tatalString dataUsingEncoding:NSUTF8StringEncoding];
+    
+    NSLog(@"sendData is %@ characteristic is %@",sendDataIn,_writeCharacteristic);
+    
+    [_peripheral writeValue:sendDataIn forCharacteristic:_writeCharacteristic type:CBCharacteristicWriteWithoutResponse];
 }
 
 //断开连接

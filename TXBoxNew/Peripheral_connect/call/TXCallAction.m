@@ -8,6 +8,7 @@
 
 #import "TXCallAction.h"
 #import "TXGeneral+helper.h"
+#import "NSString+helper.h"
 
 @implementation TXCallAction
 @synthesize data,txSqlite,startDate;
@@ -132,8 +133,9 @@
     //归属地
     NSString *strAddress = [[NSString alloc] init];
     if (hisNumber.length >=7) {
-        strAddress = [txSqlite searchAreaWithHisNumber:[hisNumber substringToIndex:7]];
-        strAddress = [strAddress substringWithRange:NSMakeRange(1, strAddress.length-2)];
+        
+        strAddress = [txSqlite searchAreaWithHisNumber:[[hisNumber purifyString] substringToIndex:7]];
+        
     }else{
         strAddress = @"";
     }

@@ -2619,12 +2619,12 @@
                             <mask key="constraints">
                                 <exclude reference="Pcp-b5-74H"/>
                                 <exclude reference="VQi-d3-pTN"/>
-                                <exclude reference="OVZ-hQ-FE3"/>
-                                <exclude reference="jRc-yp-3tA"/>
-                                <exclude reference="xJ8-Mo-lsJ"/>
                                 <exclude reference="1fN-bc-5hJ"/>
                                 <exclude reference="eFl-Vh-Uv9"/>
                                 <exclude reference="ofF-T9-CTJ"/>
+                                <exclude reference="OVZ-hQ-FE3"/>
+                                <exclude reference="jRc-yp-3tA"/>
+                                <exclude reference="xJ8-Mo-lsJ"/>
                                 <exclude reference="VqC-dn-7WV"/>
                                 <exclude reference="mOv-IN-rfR"/>
                             </mask>
@@ -2639,12 +2639,12 @@
                             <mask key="constraints">
                                 <include reference="Pcp-b5-74H"/>
                                 <include reference="VQi-d3-pTN"/>
-                                <include reference="OVZ-hQ-FE3"/>
-                                <include reference="jRc-yp-3tA"/>
-                                <include reference="xJ8-Mo-lsJ"/>
                                 <include reference="1fN-bc-5hJ"/>
                                 <include reference="eFl-Vh-Uv9"/>
                                 <include reference="ofF-T9-CTJ"/>
+                                <include reference="OVZ-hQ-FE3"/>
+                                <include reference="jRc-yp-3tA"/>
+                                <include reference="xJ8-Mo-lsJ"/>
                                 <include reference="VqC-dn-7WV"/>
                                 <include reference="mOv-IN-rfR"/>
                             </mask>
@@ -2665,6 +2665,7 @@
             <objects>
                 <tableViewController storyboardIdentifier="showContactsView" id="a7w-hu-YqK" customClass="ShowContactsController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="34" sectionHeaderHeight="22" sectionFooterHeight="22" id="cNR-ky-WDt">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>

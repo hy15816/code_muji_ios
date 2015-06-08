@@ -22,7 +22,7 @@
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
 @property (strong,nonatomic) UITableViewController *searchVC;
 @property (strong,nonatomic) NSMutableArray *searchsArray;          //搜索后的结果数组
-
+@property (strong,nonatomic) NSMutableArray *contactsArray;
 
 @end
 
@@ -33,8 +33,29 @@
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
     
-    //这里只需查询某个会话的最后一条记录
-    self.dataArray = [txsqlite searchConversationFromtable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME hisNumber:@"13322224444" wihtSqlString:SELECT_A_LAST_MESSAGE_RECORDS];
+    //显示会话的所有联系人，但不重复
+    NSMutableArray *aa = [txsqlite searchInfoFromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
+    for (TXData *d in aa) {
+        NSString *accp = d.msgAccepter;
+        if (![self.contactsArray containsObject:accp]) {
+            [self.contactsArray addObject:accp];
+        }
+    }
+    
+    VCLog(@"self.contactsArray:%@",self.contactsArray);
+    //根据某个number查询某个会话的最后一条记录
+    TXData *dd = [[TXData alloc] init];
+    for (NSString *num in self.contactsArray) {
+        dd =[txsqlite searchConversationFromtable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME hisNumber:num wihtSqlString:SELECT_A_LAST_MESSAGE_RECORDS];
+        if (![self.dataArray containsObject:dd]) {
+            [self.dataArray  addObject:dd];
+        }
+        
+    }
+    
+    if (self.contactsArray.count > 0 || self.searchsArray.count > 0) {
+        [self aaddfootv];
+    }
     
     [self.tableView reloadData];
 }
@@ -45,21 +66,26 @@
     
     self.dataArray = [[NSMutableArray alloc] init];
     self.searchsArray = [[NSMutableArray alloc] init];
+    self.contactsArray = [[NSMutableArray alloc] init];
     
     [self initSearchController];
     
     txsqlite = [[TXSqliteOperate alloc] init];
-    //获取信息的号码
-    UIView *foovt = [[UIView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, 30)];
+    //
     
-    UILabel *lline = [[UILabel alloc] initWithFrame:CGRectMake(15, 1, DEVICE_WIDTH, 1)];
+    
+    
+    
+}
+-(void)aaddfootv
+{
+    UIView *foovt = [[UIView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, 30)];
+    UILabel *lline = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, DEVICE_WIDTH, 1)];
     lline.backgroundColor = [UIColor blackColor];
-    lline.alpha = .2;
+    lline.alpha = .1;
     [foovt addSubview:lline];
     
     self.tableView.tableFooterView = foovt;
-    
-    
 }
 
 //searchController
@@ -132,11 +158,8 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     //sections
-    //是搜索后的tableView
-    if (self.searchController.active) {
-        return 1;
-    }
-    return 1;//否则返回索引个数
+    
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -144,7 +167,7 @@
     if (self.searchController.active) {
         return self.searchsArray.count;
     }
-    return self.dataArray.count;
+    return self.contactsArray.count;
 }
 
 // tableViewcell
@@ -153,9 +176,10 @@
     MessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"messageCells" forIndexPath:indexPath];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
+    //VCLog(@"self.dataArray:%@",self.dataArray);
     TXData *ddata = [self.dataArray objectAtIndex:indexPath.row];
     
-    cell.contactsLabel.text = @"13322224444";//ddata.msgSender;
+    cell.contactsLabel.text = [self.contactsArray objectAtIndex:indexPath.row];//ddata.msgSender;
     cell.contentsLabel.text = ddata.msgContent;
     cell.dateLabel.text = ddata.msgTime;
     // Configure the cell...
@@ -169,7 +193,7 @@
     //传值，hisName,hisNumber,hisHome
     TXData *data = [self.dataArray objectAtIndex:indexPath.row];
     data.hisName = data.hisName;
-    data.hisNumber = @"13322224444";//data.msgSender;
+    data.hisNumber = [self.contactsArray objectAtIndex:indexPath.row];//data.msgSender;
     data.hisHome = data.hisHome;//@"hisHome"
     
     MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
@@ -199,12 +223,19 @@
         
         [ array addObject: indexPath];
         
+        //删除数据库数据,整个会话
+        NSString *hisNumbers = [self.contactsArray objectAtIndex:indexPath.row];
+        [txsqlite deleteContacterWithNumber:hisNumbers formTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME peopleId:@"" withSql:DELETE_MESSAGE_RECORD_CONVERSATION_SQL];
+        
+        //删除数组
         [self.dataArray removeObjectAtIndex:indexPath.row];//移除数组的元素
+        [self.contactsArray removeObjectAtIndex:indexPath.row];
         
         [tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];
         
-        //删除数据库数据
+       
         
+       
     }
 }
 

@@ -206,7 +206,10 @@
     return nil;
 }
 
+
+
 #pragma mark --删除-->根据联系人号码
+
 -(void)deleteContacterWithNumber:(NSString *)hisNumber formTable:(NSString *)table peopleId:(NSString *)pId withSql:(NSString *)sqlSring
 {
     if ([self openDatabase]) {
@@ -267,7 +270,7 @@
 }
 
 
-#pragma mark -- 查询某一次会话所有内容
+#pragma mark -- 根据hisName查询某一次会话所有内容
 -(NSMutableArray *)searchARecordWithNumber:(NSString *)hisNumber fromTable:(NSString *)table withSql:(NSString *)sqlString
 {
     recordsArray = [[NSMutableArray alloc] init];
@@ -318,8 +321,8 @@
     return nil;
 }
 
-#pragma mark -- 查某个会话
--(NSMutableArray *)searchConversationFromtable:(NSString *)table hisNumber:(NSString *)number wihtSqlString:(NSString *)sqlString
+#pragma mark -- 根据hisName查某个会话
+-(TXData *)searchConversationFromtable:(NSString *)table hisNumber:(NSString *)number wihtSqlString:(NSString *)sqlString
 {
     //查某个会话
     conversationArray = [[NSMutableArray alloc] init];
@@ -358,8 +361,8 @@
         sqlite3_finalize(stmt);
         //关闭
         sqlite3_close(dataBase);
-        VCLog(@"a conversation array :%@",conversationArray);
-        return conversationArray;
+        VCLog(@"a conversation array :%@",[conversationArray objectAtIndex:0]);
+        return [conversationArray objectAtIndex:0];
         
     }
     

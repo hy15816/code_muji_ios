@@ -9,10 +9,14 @@
 
 #import "NewMsgController.h"
 #import "ShowContactsController.h"
-
+#import "TXSqliteOperate.h"
+#import "MsgDetailController.h"
+#import "NSString+helper.h"
 
 @interface NewMsgController ()<UITextViewDelegate,UITextFieldDelegate,HPGrowingTextViewDelegate>
-
+{
+    TXSqliteOperate *txsqlite;
+}
 
 @property (weak, nonatomic) IBOutlet UITextField *hisNumber;
 @property (weak, nonatomic) IBOutlet UILabel *hisname;
@@ -92,9 +96,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = NSLocalizedString(@"New_Msg", nil);
-    //
+    txsqlite = [[TXSqliteOperate alloc] init];
+    //输入收件人
     self.hisNumber.delegate =self;
     self.hisNumber.contentMode = UIViewContentModeTopLeft;
+    
+    
     //注册手势
     UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(initSwipeRecognizer:)];
     swipe.direction = UISwipeGestureRecognizerDirectionDown;
@@ -155,8 +162,37 @@
 
 -(void)sendNewMsgBtnClick:(UIButton *)btn
 {
+    //保存发送的数据
+    
+    NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
+    NSDate *date = [NSDate date];
+    fmt.dateFormat = @"yy/M/d HH:mm"; // @"yyyy-MM-dd HH:mm:ss"
+    NSString *time = [fmt stringFromDate:date];
+
+    TXData *txdata =  [[TXData alloc] init];
+    txdata.msgSender = @"1";
+    txdata.msgTime = time;
+    txdata.msgContent = self.textMsgView.text;
+    txdata.msgAccepter = self.hisNumber.text;
+    txdata.msgStates = @"0";
+    
+    [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
+    
+
+    //跳转到信息detail页面
+    //传值，hisName,hisNumber,hisHome
+    txdata.hisName = self.hisNumber.text;
+    txdata.hisNumber = self.hisNumber.text;//data.msgSender;
+    txdata.hisHome = [txsqlite searchAreaWithHisNumber:[[self.hisNumber.text purifyString] substringToIndex:7]];//@"hisHome"
+    
+    MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
+    DetailVC.datailDatas = txdata;
+    
+    [self.navigationController pushViewController:DetailVC animated:YES];
+    
+    
     UIAlertView *a = [[UIAlertView alloc] initWithTitle:nil message:@"已发送" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-    [a show];
+    //[a show];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [a resignFirstResponder];
     });

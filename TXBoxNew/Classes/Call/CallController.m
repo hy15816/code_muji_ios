@@ -6,6 +6,8 @@
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 
+#define kRemoveZZArray @"removeZZArray"
+
 #import "CallController.h"
 #import "TXSqliteOperate.h"
 #import "CallingController.h"
@@ -102,7 +104,7 @@
     if (![[defaults valueForKey:@"opstate"] intValue]) {
         UIAlertView *aaa =[[UIAlertView alloc] initWithTitle:@"" message:[NSString stringWithFormat:@"%@",[self getCarrier]] delegate:self cancelButtonTitle:@"n" otherButtonTitles:@"y", nil];
         [aaa show];
-        [defaults setObject:@"1" forKey:@"opstate"];
+        [defaults setValue:@"1" forKey:@"opstate"];
     }
     
     zzArray =[[NSMutableArray alloc] init];
@@ -139,13 +141,11 @@
     
     //退格
     [self deleteCharWithLastinput:lastChar];
-    [self predictaeData];
+    [self predictaeDataWithState:0];
     
 }
 #pragma mark -- 用户增加输入时
 -(void)inputTextDidChanged:(NSNotification*)notifi{
-    
-    
     
     NSString *searchText = [[notifi userInfo] valueForKey:@"searchBarText"];
     NSString *lastChar = [searchText substringWithRange:NSMakeRange(searchText.length-1, 1)];
@@ -155,7 +155,7 @@
         [zzArray addObject:mstring];
     }
     
-    NSString *inputString = [NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastChar];
+    NSString *inputString = [NSString stringWithFormat:@"-%@[0-9,A,B,C]*",lastChar];
     
 //    VCLog(@"lastchar:%@",lastChar);
 //    VCLog(@"searchText:%@",searchText);
@@ -168,10 +168,13 @@
         }
     
     
-    [self predictaeData];
+    [self predictaeDataWithState:1];
 }
 
--(void)predictaeData{
+/**
+ *  @pragma state 输入状态，删除0，增加输入1，
+ */
+-(void)predictaeDataWithState:(int)state{
     
     
     if (searchResault.count != 0) {
@@ -209,11 +212,7 @@
     [self setModel];
      VCLog(@"searchResault:%@",searchResault);
     
-    //重新获取数据库获取通话记录
-    NSMutableArray *array = [sqlite searchInfoFromTable:CALL_RECORDS_TABLE_NAME];
-    //排序
-    CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
-    [self.tableView reloadData];
+    
     
     if (searchResault.count == 0) {
         if (singleton.singletonValue.length>=7) {
@@ -222,15 +221,20 @@
         }
         
         opeareString = [singleton.singletonValue isMobileNumberWhoOperation];
-        [self.tableView reloadData];
+        
     }
-    /*
-    if (singleton.singletonValue.length-1 == 0) {
+    
+    if (state == 0 && singleton.singletonValue.length == 0) {
         [zzArray removeAllObjects];
     }
-    */
     
+    [self.tableView reloadData];
     
+    //重新获取数据库获取通话记录
+    NSMutableArray *array = [sqlite searchInfoFromTable:CALL_RECORDS_TABLE_NAME];
+    //排序
+    CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
+    [self.tableView reloadData];
     
 }
 
@@ -265,7 +269,7 @@
         if (sss.length <=14 ) {
             [sss insertString:achar atIndex:sss.length-2];
         }else{
-            [sss insertString:achar atIndex:sss.length-13];
+            [sss insertString:achar atIndex:sss.length-12];
         }
         
         
@@ -278,30 +282,7 @@
     VCLog(@"zzArray:%@",zzArray);
     
 }
-/*
-//二次生成正则式
--(void)secondZZstring:(NSString *)inputChar aChar:(NSString *)achar
-{
-    //"-1.*-2[0-9,A,B,C].*"
-    NSMutableArray *latterArray = [[NSMutableArray alloc] init];
-    for (NSMutableString *sss in zzArray) {
-        //-1.* -> -1.*-2[0-9].*
-        NSMutableString *str1 = [NSMutableString stringWithFormat:@"%@%@",sss,inputChar];
-        
-        //-1.* -> -12[0-9].*
-        if (sss.length < 14) {
-            [sss insertString:achar atIndex:sss.length-2];
-            [latterArray addObject:sss];
-        }
-        //
-        
-        [latterArray addObject:str1];
-        
-    }
-    VCLog(@"latterArray:%@",latterArray);
-    zzArray =latterArray;
-}
-*/
+
 -(void)deleteCharWithLastinput:(NSString *)lastinput{
     
     
@@ -311,7 +292,7 @@
         if (i%2==0) {
             NSString *sas = zzArray[i];
             
-            NSString *zzs = [sas stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastinput] withString:@""];
+            NSString *zzs = [sas stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"-%@[0-9,A,B,C]*",lastinput] withString:@""];
             if(![lArray containsObject:zzs])
                 [lArray addObject:zzs];
         }
@@ -319,9 +300,6 @@
     }
     
     zzArray = lArray;
-    
-
-    
     VCLog(@"lArray:%@",lArray);
 }
 
@@ -334,15 +312,21 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
+    /*
     if (searchResault.count == 0 && singleton.singletonValue.length>=7) {
         return 1;
     }
+    */
     
-    if (searchResault.count > 0) {
+    if (searchResault.count > 0 && singleton.singletonValue.length>=1) {
         return searchResault.count;
     }
     
-    return [CallRecords count];
+    if (searchResault.count <= 0) {
+        return [CallRecords count];
+    }
+    
+    return 0;
 }
 
 
@@ -352,8 +336,9 @@
     CallRecordsCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuseCell" forIndexPath:indexPath];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-        //2.用户输入时
-    if (searchResault.count > 0) {
+    
+        //用户输入时
+    if (searchResault.count > 0 && singleton.singletonValue.length>=1 ) {
         Records *record = dataList[indexPath.row];
         cell.hisName.text = record.personName;
         cell.hisNumber.hidden = YES;
@@ -362,7 +347,7 @@
         cell.callBeginTime.text = record.personTel;
         cell.hisHome.hidden = YES;
         cell.hisOperator.hidden = YES;
-    }else if (searchResault.count == 0 && singleton.singletonValue.length>=7) {
+    }/* if (searchResault.count == 0 && singleton.singletonValue.length>=7) {
         cell.hisName.text = singleton.singletonValue;
         cell.callBeginTime.text =[NSString stringWithFormat:@"%@ %@",areaString,opeareString] ;
         cell.hisNumber.hidden = YES;
@@ -370,8 +355,14 @@
         cell.callLength.hidden = YES;
         cell.hisOperator.hidden = YES;
         cell.hisHome.hidden = YES;
-    }else{
-        TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
+    }*/
+    //未输入，显示通话记录
+    if(searchResault.count <= 0 ) {
+        
+        VCLog(@"CallRecords:%@,indexPath.row:%lu",CallRecords,indexPath.row);
+        TXData *aRecord  = [CallRecords objectAtIndex:indexPath.row];
+
+        
         cell.callDirection.hidden = NO;
         cell.callLength.hidden = NO;
         cell.hisNumber.hidden = NO;

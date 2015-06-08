@@ -409,7 +409,7 @@
 }
 -(void)msgsBtnClick:(UIButton *)btn
 {
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self ]];
     //进入msgDetail
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     MsgDetailController *msgDetail = [board instantiateViewControllerWithIdentifier:@"msgDetail"];

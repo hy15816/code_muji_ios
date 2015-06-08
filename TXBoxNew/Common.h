@@ -17,6 +17,7 @@
 #define kShowCusotomTabBar @"showCustomTabBar"//显示自定tabbar
 #define kHideTabBarAndCallBtn @"hideTabBarAndCallBtn" //隐藏tabbar和callBtn
 #define kShowValueToMsgDetail @"showValue"
+#define KRefreshDisvView @"KrefreshDisvView"
 
 #define kDeleteCharNoti @"deleteCharNoti"
 #define kInputCharNoti @"inputCharNoti"
@@ -63,13 +64,15 @@
 //删除单条短信记录
 #define DELETE_MESSAGE_RECORD_SQL @"delete from %@ where msgSender=%@ and peopleId = %@"
 //删除整个短信会话
-#define DELETE_MESSAGE_RECORD_CONVERSATION_SQL  @"delete from %@ where hisNumber=%@ or msgAccepter = %@"
+#define DELETE_MESSAGE_RECORD_CONVERSATION_SQL  @"delete from %@ where msgSender=%@ or msgAccepter = %@"
 
 //查询某一次整个会话
 #define SELECT_A_CONVERSATION_SQL @"select *from %@ where msgSender=%@ or msgAccepter = %@"
 //查询某一次会话的最后一条
 #define SELECT_A_LAST_MESSAGE_RECORDS @"select *from %@ where msgSender=%@ or msgAccepter=%@"
 
+//查询所有短信联系人,不需要重复显示
+#define SELECT_ALL_MSG_CONTACTER_SQL @"select msgAccepter from %@ "
 
 
 //===================================//

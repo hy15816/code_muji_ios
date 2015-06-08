@@ -29,7 +29,7 @@
         [usDefaults setValue:@"0" forKey:call_divert_state];//呼转状态
         [usDefaults setValue:@"0" forKey:LOGIN_STATE];//登录状态
         [usDefaults setValue:@"0" forKey:CONFIG_STATE];//配置状态
-        [usDefaults setValue:@"0" forKey:@"opstate"];
+        //[usDefaults setValue:@"0" forKey:@"opstate"];
         [usDefaults setValue:@"0" forKey:BIND_STATE];
     }
 
@@ -133,10 +133,18 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    //VCLog(@"x2");
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    
+    VCLog(@"x");
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    //
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:KRefreshDisvView object:self]];
+    
+    
+    
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

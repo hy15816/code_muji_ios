@@ -31,6 +31,13 @@
 
 //
 -(NSMutableArray *)searchInfoFromTable:(NSString *)table ;//查找记录
+/**
+ *  实现删除，一条通话记录，或单条短信记录或整个短信会话
+ *  @pragma Number 对方号码
+ *  @pragma table  数据库里的表
+ *  @pragma peopleId ID
+ *  @pragma Sql  数据库执行语句
+ */
 -(void)deleteContacterWithNumber:(NSString *)hisNumber formTable:(NSString *)table peopleId:(NSString *)pId withSql:(NSString *)sqlSring; ;//删除
 
 -(void)deleteTableWithName:(NSString *)table;//删除整张表
@@ -38,7 +45,7 @@
 -(NSMutableArray *)searchARecordWithNumber:(NSString *)hisNumber fromTable:(NSString *)table withSql:(NSString *)sqlString;//查询某一次整个会话
 
 
--(NSMutableArray *)searchConversationFromtable:(NSString *)table hisNumber:(NSString *)number wihtSqlString:(NSString *)sqlString; //查询某一次会话的最后一条
+-(TXData *)searchConversationFromtable:(NSString *)table hisNumber:(NSString *)number wihtSqlString:(NSString *)sqlString; //查询某一次会话的最后一条
 ;
 
 
