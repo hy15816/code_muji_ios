@@ -18,11 +18,11 @@
 {
     TXSqliteOperate *txsqlite;
 }
-@property (strong,nonatomic) NSMutableArray *dataArray;
+@property (strong,nonatomic) NSMutableArray *dataArray;     //短信信息
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
 @property (strong,nonatomic) UITableViewController *searchVC;
 @property (strong,nonatomic) NSMutableArray *searchsArray;          //搜索后的结果数组
-@property (strong,nonatomic) NSMutableArray *contactsArray;
+@property (strong,nonatomic) NSMutableArray *contactsArray;     //短信联系人
 
 @end
 
@@ -52,6 +52,7 @@
         }
         
     }
+    VCLog(@"self.dataArray:%@",self.dataArray);
     
     if (self.contactsArray.count > 0 || self.searchsArray.count > 0) {
         [self aaddfootv];
@@ -71,8 +72,9 @@
     [self initSearchController];
     
     txsqlite = [[TXSqliteOperate alloc] init];
-    //
     
+    
+    VCLog(@"%@",[NSString stringWithFormat:@"a '%@' b '%@' c '%@' ",@"%1%",@"%1%",@"%1%"]);
     
     
     
@@ -102,7 +104,7 @@
     self.searchController.delegate = self;
     self.searchController.searchBar.frame = CGRectMake(0, 64, DEVICE_WIDTH, 44.0);
     self.tableView.tableHeaderView = self.searchController.searchBar;
-//    self.definesPresentationContext = YES;
+    self.definesPresentationContext = YES;//输入时显示状态栏，
     [self changedSearchBarCancel];
     
 }
@@ -131,27 +133,31 @@
 -(void) updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     
-    NSString *searchString = [self.searchController.searchBar text];
     
-    //NSPredicate *preicate = [NSPredicate predicateWithFormat:@"(SELF.personName CONTAINS[c] %@) OR (SELF.personTel contains [c] %@)", searchString];
-    NSPredicate *preicate = [NSPredicate predicateWithFormat:@"(SELF.personName CONTAINS[c] %@) or (self.personTel contains[c] %@)", searchString,searchString ];
+    NSString *searchString = [NSString stringWithFormat:@"%@%@%@",@"%",[self.searchController.searchBar text],@"%"];
+    
+    VCLog(@"searchString:%@",searchString);
     
     if (self.searchsArray!= nil) {
         [self.searchsArray removeAllObjects];
     }
+    //短信搜索
+    //根据短信联系人，搜索会话内容
+    if (self.searchController.searchBar.text.length >=1) {
+        self.searchsArray = [txsqlite searchContentWithInputText:searchString fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_ALL_COINTENT_FROM_MSG];
+    }
     
-    //过滤数据
-    //self.searchsArray= [NSMutableArray arrayWithArray:[_dataList filteredArrayUsingPredicate:preicate]];
-    //VCLog(@"searchArray :%@",self.searchsArray);
-    VCLog(@"preicate :%@",preicate);
+    
+    VCLog(@"self.searchsArray :%@",self.searchsArray);
     
     //刷新表格
     //[self.searchVC.tableView reloadData];
     [self.tableView reloadData];
 }
 - (void)didReceiveMemoryWarning {
+    
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+
 }
 
 #pragma mark - Table view data source
@@ -179,9 +185,18 @@
     //VCLog(@"self.dataArray:%@",self.dataArray);
     TXData *ddata = [self.dataArray objectAtIndex:indexPath.row];
     
-    cell.contactsLabel.text = [self.contactsArray objectAtIndex:indexPath.row];//ddata.msgSender;
-    cell.contentsLabel.text = ddata.msgContent;
-    cell.dateLabel.text = ddata.msgTime;
+    if (self.searchController.active) {
+        TXData *sdata = [self.searchsArray objectAtIndex:indexPath.row];
+        cell.contactsLabel.text = sdata.msgAccepter;
+        cell.contentsLabel.text = sdata.msgContent;
+        cell.dateLabel.text = sdata.msgTime;
+
+    }else{
+        cell.contactsLabel.text = [self.contactsArray objectAtIndex:indexPath.row];//ddata.msgSender;
+        cell.contentsLabel.text = ddata.msgContent;
+        cell.dateLabel.text = ddata.msgTime;
+    }
+    
     // Configure the cell...
     
   

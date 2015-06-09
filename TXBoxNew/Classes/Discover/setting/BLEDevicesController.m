@@ -199,7 +199,7 @@
     
     for (CBService *service in peripheral.services)
     {
-        NSLog(@"Service found with UUID: %@", service.UUID);
+        NSLog(@"Service found with service UUID: %@", service.UUID);
         if ([service.UUID isEqual:[CBUUID UUIDWithString:UUIDSTR_TEST_SERVICE]])
         {
             [peripheral discoverCharacteristics:nil forService:service];//返回对应的characteristics

@@ -51,9 +51,6 @@
 {
     [super viewWillAppear:animated];
     
-    
-    
-    
     self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
     VCLog(@"self.detailArray %@",self.detailArray);
     [self getResouce];
@@ -85,6 +82,7 @@
     self.arearLabel.textColor = [UIColor whiteColor];
     
     [self.callOutBtn setImage:[UIImage imageNamed:@"actionbar_call_hub32"]];
+    
     
     //注册手势
     UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(initMsgSwipeRecognizer:)];
@@ -160,12 +158,6 @@
 
 -(void)deleteButtonClick:(UIButton *)button
 {
-
-
-
-    
-
-    
     //删除选中的条目
     //数据库
     for (NSArray *arr in selectArray) {
@@ -178,6 +170,9 @@
     //
     //[self.tableview beginUpdates];
     //[self.tableview endUpdates];
+    
+    [self.tableview reloadData];
+    
 }
 
 //
@@ -508,11 +503,12 @@
 #pragma mark - -changerightMargin delegate
 -(CGFloat)changeRightMargin
 {
-    
+    /*
     if (editView.frame.origin.y == DEVICE_HEIGHT-50) {
         return 30;
     }
-    return 10;
+     */
+    return 0;
     
     
     

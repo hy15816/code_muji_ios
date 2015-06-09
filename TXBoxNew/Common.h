@@ -74,6 +74,8 @@
 //查询所有短信联系人,不需要重复显示
 #define SELECT_ALL_MSG_CONTACTER_SQL @"select msgAccepter from %@ "
 
+//查询所有与输入匹配的短信内容
+#define SELECT_ALL_COINTENT_FROM_MSG @"select *from %@ where msgSender LIKE '%@' or msgAccepter LIKE '%@' or msgContent LIKE '%@' "
 
 //===================================//
 // 首页输入框的view

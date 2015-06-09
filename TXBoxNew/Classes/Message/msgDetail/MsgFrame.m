@@ -26,7 +26,7 @@
     
     // 1、计算时间的位置
     CGFloat timeX;
-    if (_showTime){
+    //if (_showTime){
         
         CGFloat timeY = 0;//kMargin  与cell边框高度间隔
         CGSize timeSize = [_message.time sizeWithAttributes:@{NSFontAttributeName:kTimeFont}];
@@ -38,7 +38,7 @@
         }
         
         _timeF = CGRectMake(timeX, timeY, timeSize.width + kTimeMarginW, timeSize.height + kTimeMarginH);
-    }
+   // }
     
     
     // 2、计算头像位置

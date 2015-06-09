@@ -83,9 +83,42 @@ static NSString *const kDataOutCharaUUID = @"FF01";
     
     [self initButtons];
     
+    [self isOrNotUpdateVersion];
 }
 
+-(void)isOrNotUpdateVersion
+{
+    //APP版本,检测本地版本，与最新版本比较
+    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //获取服务器版本号
+        //NSURL *url = [NSURL URLWithString:@"http://car0.autoimg.cn/upload/spec/9579/u_20120110174805627264.jpg"];
+        
+        NSString *str = [[NSString alloc] initWithFormat:@"1.2"];
+        
+        //获取当前程序版本号
+        NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+        NSString *str2 = [infoDictionary objectForKey:@"CFBundleVersion"];
+        
+        // 回到主线程，显示提示框
+        //dispatch_async(dispatch_get_main_queue(), ^{
+            
+            if ([str2 floatValue] != [str floatValue]) {
+                
+                UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"不OK" otherButtonTitles:@"OK", nil];
+                [atView show];
+                
+                // 显示更新
+                self.isFirmwareVersion.hidden = NO;
+            }else {
+                self.isFirmwareVersion.hidden = YES;
+            }
+            
+            
+            
+        //});
+    //});
 
+}
 - (void)keyboardWasShow:(NSNotification*)aNotification{
     
     NSDictionary* info = [aNotification userInfo];
@@ -151,7 +184,7 @@ static NSString *const kDataOutCharaUUID = @"FF01";
     self.peripheralArray = [[NSMutableArray alloc] init];
 }
 
-#pragma mark - Table view data source
+#pragma mark - Table view
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     // Return the number of sections.
@@ -166,6 +199,25 @@ static NSString *const kDataOutCharaUUID = @"FF01";
     return 2;
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 1) {
+        if (indexPath.row == 0) {
+            
+            
+        }
+        if (indexPath.row == 1) {
+            //设备固件版本
+            if (self.isFirmwareVersion.hidden == NO) {
+                VCLog(@"更新");
+            }else{
+                VCLog(@"已经是最新了");
+            }
+        }
+    }
+    
+    VCLog(@"x");
+}
 #pragma mark -- 初始化btn
 -(void)initButtons{
     
@@ -449,7 +501,7 @@ static NSString *const kDataOutCharaUUID = @"FF01";
         
     }else{//没绑定
         //
-        //[self createBLECentralManager];
+        [self createBLECentralManager];
         [defaults setObject:@"1" forKey:BIND_STATE];
         
 
@@ -466,9 +518,10 @@ static NSString *const kDataOutCharaUUID = @"FF01";
 -(void)createBLECentralManager
 {
     self.manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+    [self scanForPeripherals];
 }
 
-//2.发现外设成功时回调，说明self.manager创建成功
+//2.本机蓝牙状态
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central;
 {
     NSString *state = nil;

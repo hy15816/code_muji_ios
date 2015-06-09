@@ -61,19 +61,17 @@
     
     //显示tabbar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
-    //textInput & delete
+    
+    //textInput
     if([self respondsToSelector:@selector(inputTextDidChanged:)]) {
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(inputTextDidChanged:) name:kInputCharNoti object:nil];
     }
-    
+    // delete
     if([self respondsToSelector:@selector(deleteTextDidChanged:)]) {
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteTextDidChanged:) name:kDeleteCharNoti object:nil];
     }
     
     if([self respondsToSelector:@selector(callviewWillRefresh)]) {
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callviewWillRefresh) name:kCallViewReloadData object:nil];
     }
     
@@ -150,23 +148,10 @@
     NSString *searchText = [[notifi userInfo] valueForKey:@"searchBarText"];
     NSString *lastChar = [searchText substringWithRange:NSMakeRange(searchText.length-1, 1)];
     //NSString *testString = [NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastChar];
-    if (zzArray.count <1) {
-        NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"-%@.*",lastChar];
-        [zzArray addObject:mstring];
-    }
     
     NSString *inputString = [NSString stringWithFormat:@"-%@[0-9,A,B,C]*",lastChar];
-    
-//    VCLog(@"lastchar:%@",lastChar);
-//    VCLog(@"searchText:%@",searchText);
-//    VCLog(@"inputstring:%@",inputString);
     //生成zz表达式
-    
-
-        if (searchText.length>1) {
-            [self zzStringAndArrayInputchar:inputString aChar:lastChar];
-        }
-    
+    [self zzStringAndArrayInputchar:inputString aChar:lastChar];
     
     [self predictaeDataWithState:1];
 }
@@ -224,7 +209,7 @@
         
     }
     
-    if (state == 0 && singleton.singletonValue.length == 0) {
+    if (state == 0 && singleton.singletonValue.length == 1) {
         [zzArray removeAllObjects];
     }
     
@@ -260,24 +245,33 @@
 -(void)zzStringAndArrayInputchar:(NSString *)inputChar aChar:(NSString *)achar
 {
     
-    NSMutableArray *latterArray = [[NSMutableArray alloc] init];
-    for (NSMutableString *sss in zzArray) {
-        //-1.* -> -1.*-2[0-9].*
-        NSMutableString *str1 = [NSMutableString stringWithFormat:@"%@%@",sss,inputChar];
-        
-        //-1.* -> -12[0-9].*
-        if (sss.length <=14 ) {
-            [sss insertString:achar atIndex:sss.length-2];
-        }else{
-            [sss insertString:achar atIndex:sss.length-12];
-        }
-        
-        
-        [latterArray addObject:str1];
-        [latterArray addObject:sss];
+    if (zzArray.count <1) {
+        NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"-%@.*",achar];
+        [zzArray addObject:mstring];
     }
     
-    zzArray =latterArray;
+    NSMutableArray *latterArray = [[NSMutableArray alloc] init];
+    
+    if (singleton.singletonValue.length>1) {
+        for (NSMutableString *sss in zzArray) {
+            //-1.* -> -1.*-2[0-9].*
+            NSMutableString *str1 = [NSMutableString stringWithFormat:@"%@%@",sss,inputChar];
+            
+            //-1.* -> -12[0-9].*
+            if (sss.length <=14 ) {
+                [sss insertString:achar atIndex:sss.length-2];
+            }else{
+                [sss insertString:achar atIndex:sss.length-12];
+            }
+            
+            
+            [latterArray addObject:str1];
+            [latterArray addObject:sss];
+        }
+        
+        zzArray =latterArray;
+    }
+    
     
     VCLog(@"zzArray:%@",zzArray);
     
@@ -287,20 +281,24 @@
     
     
     NSMutableArray *lArray = [[NSMutableArray alloc] init];
-    
-    for (int i= 0; i<zzArray.count; i++) {
-        if (i%2==0) {
-            NSString *sas = zzArray[i];
+    if (zzArray.count >1) {
+        
+        for (int i= 0; i<zzArray.count; i++) {
+            if (i%2==0) {
+                NSString *sas = zzArray[i];
+                
+                //NSString *zzs = [sas stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"-%@[0-9,A,B,C]*",lastinput] withString:@""];
+                NSString *zzs = [sas substringToIndex:sas.length-14];
+                if(![lArray containsObject:zzs])
+                    [lArray addObject:zzs];
+            }
             
-            NSString *zzs = [sas stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"-%@[0-9,A,B,C]*",lastinput] withString:@""];
-            if(![lArray containsObject:zzs])
-                [lArray addObject:zzs];
         }
         
+        zzArray = lArray;
+        VCLog(@"lArray:%@",lArray);
     }
     
-    zzArray = lArray;
-    VCLog(@"lArray:%@",lArray);
 }
 
 
@@ -359,7 +357,7 @@
     //未输入，显示通话记录
     if(searchResault.count <= 0 ) {
         
-        VCLog(@"CallRecords:%@,indexPath.row:%lu",CallRecords,indexPath.row);
+        //VCLog(@"CallRecords:%@,indexPath.row:%lu",CallRecords,indexPath.row);
         TXData *aRecord  = [CallRecords objectAtIndex:indexPath.row];
 
         
@@ -914,7 +912,16 @@
     return NO;
 }
 
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    //移除通知
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kInputCharNoti object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kDeleteCharNoti object:nil];
 
+    
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

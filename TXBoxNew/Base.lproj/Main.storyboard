@@ -50,8 +50,11 @@
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <imageView userInteractionEnabled="NO" alpha="0.89999999999999991" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalCompressionResistancePriority="749" image="icon_call_missed" translatesAutoresizingMaskIntoConstraints="NO" id="VXa-oh-Smt">
+                                        <imageView userInteractionEnabled="NO" alpha="0.89999999999999991" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalCompressionResistancePriority="749" misplaced="YES" image="icon_call_missed" translatesAutoresizingMaskIntoConstraints="NO" id="VXa-oh-Smt">
                                             <rect key="frame" x="294" y="11" width="12" height="15"/>
+                                            <variation key="widthClass=compact" misplaced="YES">
+                                                <rect key="frame" x="192" y="13" width="16" height="19"/>
+                                            </variation>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" alpha="0.69999999999999973" contentMode="left" horizontalHuggingPriority="251" text="OP" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ahS-Jm-Hgy">
                                             <rect key="frame" x="557" y="31" width="18" height="23"/>
@@ -2572,7 +2575,7 @@
                                     <constraint firstAttribute="height" constant="1" id="D8w-5H-e6H"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="1"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                                 <variation key="default">
                                     <mask key="constraints">
@@ -2682,7 +2685,7 @@
                                                 </constraint>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                             <variation key="default">
                                                 <mask key="constraints">
@@ -2701,7 +2704,7 @@
                                                 <constraint firstAttribute="width" constant="130" id="3Qt-4L-IFb"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                             <variation key="default">
                                                 <mask key="constraints">

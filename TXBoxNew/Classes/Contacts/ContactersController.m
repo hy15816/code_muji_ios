@@ -25,7 +25,7 @@
     NSArray *sortedArray;               //排序后的数组
     TXData *msgdata;
     NSMutableArray *zzsArrar;
-    
+    UIView *footv;
 }
 
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
@@ -59,10 +59,13 @@
     
     
 }
-
+-(void)removeTableViewFootView
+{
+    [footv removeFromSuperview];
+}
 -(void)addTableViewFootView
 {
-    UIView *footv = [[UIView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, 37)];
+    footv = [[UIView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, 37)];
     
     UILabel *text = [[UILabel alloc] initWithFrame:CGRectMake(0, 5, DEVICE_WIDTH, 25)];
     text.text = [NSString stringWithFormat:@"共%lu位联系人",(unsigned long)phoneArray.count];
@@ -92,6 +95,7 @@
     [self.contactTableView reloadData];
     //通知显示tabBar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
+    
     [self addTableViewFootView];
 }
 
@@ -566,6 +570,7 @@
     VCLog(@"searchArray :%@",self.searchsArray);
     VCLog(@"preicate :%@",preicate);
     
+    [self removeTableViewFootView];
     //刷新表格
     [self.searchVC.tableView reloadData];
     [self.contactTableView reloadData];
