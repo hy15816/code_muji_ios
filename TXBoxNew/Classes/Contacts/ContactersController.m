@@ -303,6 +303,96 @@
     VCLog(@"sortedArray :%@",sortedArray);
 }
 
+#pragma mark -- tableView..
+//点击单元格
+-(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    if ([indexPath isEqual:self.selectedIndexPath] ) {
+        
+        self.selectedIndexPath = nil;
+        
+    }else {
+        
+        self.selectedIndexPath = indexPath;
+    }
+    
+    [tableView beginUpdates];
+    [tableView endUpdates];
+    
+    if (self.searchController.active) {
+        //关闭键盘
+        [self.searchController.searchBar resignFirstResponder];
+        
+    }
+    
+    
+}
+
+//设置cell高度
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if ([indexPath isEqual:self.selectedIndexPath]) {
+        
+        return kCellHeight + 40.f;
+    }
+    
+    return kCellHeight;
+    
+}
+
+/*改变删除按钮的text*/
+-(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return NSLocalizedString(@"Delete", nil);
+}
+
+// 是否可以编辑
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    return NO;
+}
+
+// 支持编辑类型
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    
+    if (editingStyle == UITableViewCellEditingStyleDelete)
+        
+    {
+        NSMutableArray *array = [ [ NSMutableArray alloc ] init ];
+        
+        [ array addObject: indexPath];
+        
+        //移除数组的元素
+        [phoneArray removeObjectAtIndex:indexPath.row];
+        
+        //删除单元格
+        [ self.contactTableView.tableView deleteRowsAtIndexPaths: array withRowAnimation: UITableViewRowAnimationLeft];
+        
+        //排序
+        [self PacketSequencing];
+        
+        //刷新表格数据
+        [self.contactTableView reloadData];
+        
+        //
+        
+        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
+        
+        NSMutableArray *persons=[sectionDic objectForKey:key];
+        //VCLog(@"persons :%@",persons);
+        
+        NSString *str = [[persons objectAtIndex:indexPath.row] objectForKey:@"personName"];
+        
+        VCLog(@"personName:%@",str);
+        
+        //删除通讯录联系人
+        
+    }
+    
+}
+
+
 //返回分区
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     
@@ -403,7 +493,7 @@
         cell.nameLabel.text = [[persons objectAtIndex:indexPath.row] objectForKey:@"personName"];
         //cell.numberLabel.text = [[persons objectAtIndex:indexPath.row] objectForKey:@"personTel"];
         cell.numberLabel.text = [[[[persons objectAtIndex:indexPath.row] objectForKey:@"personTel"] purifyString] insertStr];
-        VCLog(@"name:%@,number:%@",cell.nameLabel.text,cell.numberLabel.text);
+        //VCLog(@"name:%@,number:%@",cell.nameLabel.text,cell.numberLabel.text);
         
         
     }
@@ -482,43 +572,6 @@
 - (BOOL)personViewController:(ABPersonViewController *)personViewController shouldPerformDefaultActionForPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifierForValue
 {
     return NO;
-}
-
-
-//点击单元格
--(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    
-    if ([indexPath isEqual:self.selectedIndexPath] ) {
-        
-        self.selectedIndexPath = nil;
-        
-    }else {
-        
-        self.selectedIndexPath = indexPath;
-    }
-    
-    [tableView beginUpdates];
-    [tableView endUpdates];
-    
-    if (self.searchController.active) {
-        //关闭键盘
-        [self.searchController.searchBar resignFirstResponder];
-        
-    }
-   
-    
-}
-
-//设置cell高度
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if ([indexPath isEqual:self.selectedIndexPath]) {
-        
-        return kCellHeight + 40.f;
-    }
-    
-    return kCellHeight;
-    
 }
 
 
@@ -651,110 +704,6 @@
 }
 
 */
-
-/*改变删除按钮的text*/
--(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return NSLocalizedString(@"Delete", nil);
-}
-
-// 是否可以编辑
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    return NO;
-}
-
-// 支持编辑类型
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    
-    if (editingStyle == UITableViewCellEditingStyleDelete)
-        
-    {
-        NSMutableArray *array = [ [ NSMutableArray alloc ] init ];
-        
-        [ array addObject: indexPath];
-        
-        //移除数组的元素
-        [phoneArray removeObjectAtIndex:indexPath.row];
-        
-        //删除单元格
-        [ self.contactTableView.tableView deleteRowsAtIndexPaths: array withRowAnimation: UITableViewRowAnimationLeft];
-        
-        //排序
-        [self PacketSequencing];
-        
-        //刷新表格数据
-        [self.contactTableView reloadData];
-        
-        //
-        
-        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
-        
-        NSMutableArray *persons=[sectionDic objectForKey:key];
-        //VCLog(@"persons :%@",persons);
-        
-        NSString *str = [[persons objectAtIndex:indexPath.row] objectForKey:@"personName"];
-        
-        VCLog(@"personName:%@",str);
-        
-        //删除通讯录联系人
-        
-    }
-    
-    
-    
-}
-
-#pragma mark --删除联系人
-//根据名字以及手机号码删除联系人
--(BOOL)delete:(NSString *)name mobile:(NSString *)pNumber
-{
-    CFErrorRef *error;
-    
-    // 1.初始化并创建通讯录对象，记得释放内存
-    //ABAddressBookRef addressBook = ABAddressBookCreate();
-    ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
-    
-    NSArray *array = (__bridge NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
-    // 3.遍历所有的联系人并修改指定的联系人
-    for (id obj in array) {
-        ABRecordRef people = (__bridge ABRecordRef)obj;
-        //名
-        NSString *ln = (__bridge NSString *)ABRecordCopyValue(people, kABPersonLastNameProperty);
-        //姓
-        NSString *fn = (__bridge NSString *)ABRecordCopyValue(people, kABPersonFirstNameProperty);
-        ABMultiValueRef mv = ABRecordCopyValue(people, kABPersonPhoneProperty);
-        //手机号
-        NSArray *phones = (__bridge NSArray *)ABMultiValueCopyArrayOfAllValues(mv);
-        
-        NSString *s = [[NSString alloc] initWithFormat:@"%@%@",fn,ln];
-        BOOL phoneNumber=NO;
-        for (NSString *p in phones) {
-            //NSString *str = [p iPhoneStandardFormat];
-            // 由于获得到的电话号码可能不符合标准，所以要先将其格式化再比较是否存在
-            if ([p isEqual:pNumber]) {
-                phoneNumber = YES;
-                break;
-            }
-        }
-        
-        //若找到的名字和号码相匹配，执行删除
-        if ([s isEqualToString:[name trimOfString]] && phoneNumber) {
-            
-            ABAddressBookRemoveRecord(addressBook, people, error);
-            
-        }
-    }
-    //保存
-    ABAddressBookSave(addressBook, error);
-    // 释放通讯录对象的内存
-    if (addressBook) {
-        CFRelease(addressBook);
-    }
-    
-    return YES;
-}
 
 
 #pragma mark -- 新增联系人

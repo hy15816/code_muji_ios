@@ -220,14 +220,19 @@
     
 }
 
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (self.searchController.active) {
+        return 60;
+    }
+    return 60;
+}
 
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     // Return NO if you do not want the specified item to be editable.
     return YES;
 }
-
-
 
 // 允许编辑
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -248,9 +253,6 @@
         
         [tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];
         
-       
-        
-       
     }
 }
 
