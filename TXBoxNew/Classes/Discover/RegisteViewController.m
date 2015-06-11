@@ -7,20 +7,21 @@
 //
 
 #import "RegisteViewController.h"
+#import <AVOSCloud/AVOSCloud.h>
 
 @interface RegisteViewController ()<UITextFieldDelegate>
 {
     int secondsCountDown;
     NSTimer *countDownTimer;
 }
-@property (weak, nonatomic) IBOutlet UITextField *regNumberField;
-@property (weak, nonatomic) IBOutlet UITextField *regPwdField;
-@property (weak, nonatomic) IBOutlet UIButton *registerBtn;
-@property (weak, nonatomic) IBOutlet UIButton *clause;
-- (IBAction)registerBtnClick:(UIButton *)sender;
-@property (weak, nonatomic) IBOutlet UITextField *enterSmsCode;
-@property (weak, nonatomic) IBOutlet UITextField *pwdFieldAgain;
-@property (weak, nonatomic) IBOutlet UIButton *smsCode;
+@property (weak, nonatomic) IBOutlet UITextField *regNumberField;   //注册账号
+@property (weak, nonatomic) IBOutlet UITextField *regPwdField;      //reg密码
+@property (weak, nonatomic) IBOutlet UIButton *registerBtn;         //regButton
+@property (weak, nonatomic) IBOutlet UIButton *clause;              //条款Button
+- (IBAction)registerBtnClick:(UIButton *)sender;                    //点击注册
+@property (weak, nonatomic) IBOutlet UITextField *enterSmsCode;     //验证码
+@property (weak, nonatomic) IBOutlet UITextField *pwdFieldAgain;    //确认密码
+@property (weak, nonatomic) IBOutlet UIButton *smsCode;             //请求验证码Button
 - (IBAction)smsCodeClick:(UIButton *)sender;
 
 @end
@@ -72,6 +73,7 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark --textField ..
 -(BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [self closeKeyBoard];
@@ -101,6 +103,7 @@
     [AVOSCloud verifySmsCode:self.enterSmsCode.text mobilePhoneNumber:self.regNumberField.text callback:^(BOOL suc,NSError *error){
         if (error) {
             VCLog(@"验证- error");
+            [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@",@"请输入正确的验证码"]];
         }else{
             VCLog(@"验证-suc");
             
@@ -117,12 +120,13 @@
                     UIAlertView *regAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"用户名已存在" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
                     [regAlert show];
                     self.regNumberField.text = nil;
-                    self.regPwdField.text = nil;
-                    self.pwdFieldAgain.text = nil;
+                    //self.regPwdField.text = nil;
+                    //self.pwdFieldAgain.text = nil;
                     self.enterSmsCode.text = nil;
                     
                 }else{
                     VCLog(@"reg -suc");
+                    [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@",@"注册成功"]];
                     //[self.cancelBtn setTitle:@"完成"];
                     
 
@@ -137,13 +141,14 @@
     
     VCLog(@"reg btn");
 }
-
+#pragma mark -- 请求手机验证码
 - (IBAction)smsCodeClick:(UIButton *)sender {
     
     //请求手机验证码
     [AVOSCloud requestSmsCodeWithPhoneNumber:self.regNumberField.text callback:^(BOOL suc,NSError *error){
         if (suc) {
             NSLog(@"suc");
+            [SVProgressHUD showImage:nil status:@"已发送"];
             
         }else{
             NSLog(@"reg error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);

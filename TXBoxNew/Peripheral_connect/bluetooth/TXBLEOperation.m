@@ -40,6 +40,7 @@
 }
 
 
+
 -(void)getMessageFromMuji:(NSString *)hisNumber msgContent:(NSString *)content
 {
     //与BLE连接--接收到数据(短信)，
@@ -67,6 +68,8 @@
      dateFormate	NSDateFormatter *	0x7fe85bfaa250	0x00007fe85bfaa250
      */
 }
+
+
 
 #pragma mark -- 保存信息数据
 -(void) saveDataWithMsgSender:(NSString *)sender

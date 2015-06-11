@@ -7,6 +7,7 @@
 //
 
 #import "LoginController.h"
+#import <AVOSCloud/AVOSCloud.h>
 
 @interface LoginController ()<UITextFieldDelegate>
 {
@@ -150,11 +151,14 @@
         if (error) {
             VCLog(@"login error.code%ld error:%@",(long)error.code,error.localizedDescription);
             UIAlertView *al =[[UIAlertView alloc] initWithTitle:@"a" message:@"1" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-            [al show];
+            //[al show];
+            [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@",@"登录失败"]];
             self.pwdField.text = nil;
             [self.pwdImg setImage:[UIImage imageNamed:@"login_key"] forState:UIControlStateNormal];
         }else{
             //登录成功，返回上一页面
+            
+            [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@",@"登录成功"]];
             
             [defaults setValue:@"1" forKey:LOGIN_STATE];
             [defaults setValue:self.numberField.text forKey:CurrentUser];

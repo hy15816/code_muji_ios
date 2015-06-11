@@ -26,6 +26,15 @@
 -(int) handShake;
 
 -(void)getMessageFromMuji:(NSString *)hisNumber msgContent:(NSString *)content;
+
+/**
+ *  保存已发送的信息
+ *
+ *  @param sender   发送者
+ *  @param time     时间
+ *  @param content  内容
+ *  @param accepter 接收者
+ */
 -(void) saveDataWithMsgSender:(NSString *)sender
                       msgTime:(NSString *)time
                    msgContent:(NSString *)content

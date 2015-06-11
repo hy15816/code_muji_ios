@@ -13,6 +13,7 @@
 #import "LoginController.h"
 #import <CoreBluetooth/CoreBluetooth.h>
 #import "TXSqliteOperate.h"
+#import <AVOSCloud/AVOSCloud.h>
 
 #define UUIDSTR_TEST_SERVICE @"FFE0"
 static NSString *const kDataInCharaUUID = @"FF01";//kDataOutCharaUUID

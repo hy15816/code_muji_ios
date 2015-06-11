@@ -99,11 +99,8 @@
     self.selectedIndexPath = nil;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;//tableview分割线
     
-    if (![[defaults valueForKey:@"opstate"] intValue]) {
-        UIAlertView *aaa =[[UIAlertView alloc] initWithTitle:@"" message:[NSString stringWithFormat:@"%@",[self getCarrier]] delegate:self cancelButtonTitle:@"n" otherButtonTitles:@"y", nil];
-        [aaa show];
-        [defaults setValue:@"1" forKey:@"opstate"];
-    }
+    [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@",[self getCarrier]]];
+    
     
     zzArray =[[NSMutableArray alloc] init];
     //[sqlite openPhoneArearDatabase];

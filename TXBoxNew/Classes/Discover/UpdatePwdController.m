@@ -67,7 +67,7 @@
     [self.updpwdAgainField resignFirstResponder];
 
 }
-
+#pragma mark --textField ..
 -(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
     
@@ -89,15 +89,17 @@
     return YES;
 }
 
+#pragma mark --请求手机验证码
 - (IBAction)updSmsCodeBtnClick:(UIButton *)sender{
     
     //请求手机验证码
     [AVUser requestMobilePhoneVerify:self.updNumberField.text withBlock:^(BOOL suc,NSError *error){
         if (suc) {
             VCLog(@"req smscode suc");
-            
+            [SVProgressHUD showImage:nil status:@"已发送"];
         }else{
             VCLog(@"req smscode error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
+            [SVProgressHUD showImage:nil status:[NSString stringWithFormat:@"%@",error.localizedDescription]];
         }
     }];
 
@@ -134,7 +136,9 @@
             [AVUser resetPasswordWithSmsCode:self.updSmsCodeField.text newPassword:self.updpwdAgainField.text block:^(BOOL suc,NSError *error){
                 if (error) {
                     VCLog(@"重置pwd error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
+                    [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@",error.localizedDescription]];
                 }else{
+                    [SVProgressHUD showImage:nil status:@"以重置"];
                     VCLog(@"重置pwd suc");
                 }
                 
@@ -144,6 +148,7 @@
             
         }else{
             VCLog(@"验证smscode error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
+            [SVProgressHUD showImage:nil status:@"验证码错误"];
         }
     }];
     

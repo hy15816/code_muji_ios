@@ -19,8 +19,7 @@
 
 
 #import "Common.h"
-#import <AVOSCloud/AVOSCloud.h>
-//1、全局日志开关
+#import "SVProgressHUD.h"
 
 
 #ifdef DEBUG
