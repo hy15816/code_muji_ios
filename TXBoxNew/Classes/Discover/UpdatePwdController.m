@@ -92,22 +92,29 @@
 #pragma mark --请求手机验证码
 - (IBAction)updSmsCodeBtnClick:(UIButton *)sender{
     
-    //请求手机验证码
-    [AVUser requestMobilePhoneVerify:self.updNumberField.text withBlock:^(BOOL suc,NSError *error){
-        if (suc) {
-            VCLog(@"req smscode suc");
-            [SVProgressHUD showImage:nil status:@"已发送"];
-        }else{
-            VCLog(@"req smscode error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
-            [SVProgressHUD showImage:nil status:[NSString stringWithFormat:@"%@",error.localizedDescription]];
-        }
-    }];
+    if (self.updNumberField.text.length <11) {
+        [SVProgressHUD showImage:nil status:@"输入正确的手机号码"];
+    }else{
+        //请求手机验证码
+        [AVUser requestMobilePhoneVerify:self.updNumberField.text withBlock:^(BOOL suc,NSError *error){
+            if (suc) {
+                VCLog(@"req smscode suc");
+                [SVProgressHUD showImage:nil status:@"已发送"];
+                secondsCountDowns = 60;//60秒倒计时
+                countDownTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timeFireMethod) userInfo:nil repeats:YES];
+                
+                [self.updSmsCodeBtn setEnabled:NO];
 
+            }else{
+                VCLog(@"req smscode error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
+                [SVProgressHUD showImage:nil status:[NSString stringWithFormat:@"%@",error.localizedDescription]];
+            }
+        }];
+        
+        
+        
+    }
     
-    secondsCountDowns = 60;//60秒倒计时
-    countDownTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timeFireMethod) userInfo:nil repeats:YES];
-    
-    [self.updSmsCodeBtn setEnabled:NO];
 }
 
 -(void)timeFireMethod{

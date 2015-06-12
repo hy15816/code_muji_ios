@@ -144,16 +144,34 @@
 #pragma mark -- 请求手机验证码
 - (IBAction)smsCodeClick:(UIButton *)sender {
     
-    //请求手机验证码
-    [AVOSCloud requestSmsCodeWithPhoneNumber:self.regNumberField.text callback:^(BOOL suc,NSError *error){
-        if (suc) {
-            NSLog(@"suc");
-            [SVProgressHUD showImage:nil status:@"已发送"];
-            
-        }else{
-            NSLog(@"reg error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
-        }
-    }];
+    if (self.regNumberField.text.length<11) {
+        [SVProgressHUD showImage:nil status:@"输入正确的手机号码"];
+        //self.smsCode.enabled  = NO;
+    }else{
+        self.smsCode.enabled  = YES;
+        //请求手机验证码
+        [AVOSCloud requestSmsCodeWithPhoneNumber:self.regNumberField.text callback:^(BOOL suc,NSError *error){
+            if (suc) {
+                NSLog(@"suc");
+                [SVProgressHUD showImage:nil status:@"已发送"];
+                [self.smsCode setEnabled:NO];
+                //========NSTimer
+                secondsCountDown = 60;//60秒倒计时
+                countDownTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timeFireMethod) userInfo:nil repeats:YES];
+                
+            }else{
+                NSLog(@"reg error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
+            }
+        }];
+        
+        
+        
+        
+        
+        
+    }
+    
+    
 
     /*
     //========GCD
@@ -191,12 +209,7 @@
     
     
     
-    //========NSTimer
-    
-    secondsCountDown = 60;//60秒倒计时
-    countDownTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timeFireMethod) userInfo:nil repeats:YES];
-    
-    [self.smsCode setEnabled:NO];
+   
     
 }
 

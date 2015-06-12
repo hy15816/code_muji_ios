@@ -832,19 +832,33 @@
                                     <constraints>
                                         <constraint firstItem="km6-ib-v83" firstAttribute="top" secondItem="IpG-HI-Jo4" secondAttribute="topMargin" id="1bH-yw-w9Z"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="Mhz-gQ-5Qu" secondAttribute="trailing" id="GnI-jy-uwD"/>
+                                        <constraint firstItem="pp1-0a-xYL" firstAttribute="leading" secondItem="IpG-HI-Jo4" secondAttribute="leadingMargin" constant="10" id="NNs-QI-ZUO"/>
                                         <constraint firstItem="Mhz-gQ-5Qu" firstAttribute="top" secondItem="pp1-0a-xYL" secondAttribute="bottom" constant="5" id="QWO-2K-DSn"/>
                                         <constraint firstItem="Mhz-gQ-5Qu" firstAttribute="bottom" secondItem="IpG-HI-Jo4" secondAttribute="bottomMargin" id="Rce-QL-yRT"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="km6-ib-v83" secondAttribute="trailing" id="bU6-YG-5Ur"/>
                                         <constraint firstItem="pp1-0a-xYL" firstAttribute="top" secondItem="IpG-HI-Jo4" secondAttribute="topMargin" id="c0j-3s-pCx"/>
+                                        <constraint firstItem="pp1-0a-xYL" firstAttribute="top" secondItem="IpG-HI-Jo4" secondAttribute="topMargin" id="eTB-HJ-cYb"/>
                                         <constraint firstItem="pp1-0a-xYL" firstAttribute="leading" secondItem="IpG-HI-Jo4" secondAttribute="leadingMargin" constant="10" id="jDW-Vw-Rfk"/>
                                         <constraint firstItem="Mhz-gQ-5Qu" firstAttribute="leading" secondItem="IpG-HI-Jo4" secondAttribute="leadingMargin" constant="10" id="s6J-VN-Xh5"/>
+                                        <constraint firstItem="Mhz-gQ-5Qu" firstAttribute="top" secondItem="pp1-0a-xYL" secondAttribute="bottom" constant="5" id="tK7-ez-aRV"/>
                                     </constraints>
+                                    <variation key="default">
+                                        <mask key="constraints">
+                                            <exclude reference="NNs-QI-ZUO"/>
+                                            <exclude reference="eTB-HJ-cYb"/>
+                                            <exclude reference="tK7-ez-aRV"/>
+                                        </mask>
+                                    </variation>
+                                    <variation key="widthClass=compact">
+                                        <mask key="constraints">
+                                            <include reference="NNs-QI-ZUO"/>
+                                            <include reference="eTB-HJ-cYb"/>
+                                            <exclude reference="jDW-Vw-Rfk"/>
+                                            <exclude reference="QWO-2K-DSn"/>
+                                            <include reference="tK7-ez-aRV"/>
+                                        </mask>
+                                    </variation>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <outlet property="contactsLabel" destination="pp1-0a-xYL" id="bqc-yw-0lH"/>
-                                    <outlet property="contentsLabel" destination="Mhz-gQ-5Qu" id="lGV-d6-1Ul"/>
-                                    <outlet property="dateLabel" destination="km6-ib-v83" id="TNi-Ea-CpM"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -1641,7 +1655,7 @@
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="输入密码" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="h3I-yI-1u1">
                                 <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" keyboardType="namePhonePad" secureTextEntry="YES"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Np6-gY-JKh">
                                 <rect key="frame" x="-23" y="-15" width="46" height="30"/>
@@ -2022,7 +2036,7 @@
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="请设置密码" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="3Zx-ey-d5t">
                                 <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <textInputTraits key="textInputTraits" keyboardType="namePhonePad" secureTextEntry="YES"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tvh-nJ-XqD">
                                 <rect key="frame" x="-23" y="-15" width="46" height="30"/>
@@ -2076,7 +2090,7 @@
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="确认密码" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="pv5-88-QGc">
                                 <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" keyboardType="namePhonePad" secureTextEntry="YES"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                                 <variation key="widthClass=compact" fixedFrame="YES">
                                     <rect key="frame" x="16" y="300" width="280" height="30"/>
                                 </variation>
@@ -2914,7 +2928,7 @@
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="请设置密码" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="ar6-qV-FJi">
                                 <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <textInputTraits key="textInputTraits" keyboardType="namePhonePad" secureTextEntry="YES"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JAP-8b-ggZ">
                                 <rect key="frame" x="-23" y="-15" width="46" height="30"/>
@@ -2968,7 +2982,7 @@
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="确认密码" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ame-UC-RK1">
                                 <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" keyboardType="namePhonePad" secureTextEntry="YES"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                                 <variation key="widthClass=compact" fixedFrame="YES">
                                     <rect key="frame" x="16" y="300" width="280" height="30"/>
                                 </variation>

@@ -147,28 +147,32 @@
     
     VCLog(@"%@,%@",self.numberField.text,self.pwdField.text);
     
-    [AVUser logInWithUsernameInBackground:self.numberField.text password:self.pwdField.text block:^(AVUser *user,NSError *error){
-        if (error) {
-            VCLog(@"login error.code%ld error:%@",(long)error.code,error.localizedDescription);
-            UIAlertView *al =[[UIAlertView alloc] initWithTitle:@"a" message:@"1" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-            //[al show];
-            [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@",@"登录失败"]];
-            self.pwdField.text = nil;
-            [self.pwdImg setImage:[UIImage imageNamed:@"login_key"] forState:UIControlStateNormal];
-        }else{
-            //登录成功，返回上一页面
-            
-            [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@",@"登录成功"]];
-            
-            [defaults setValue:@"1" forKey:LOGIN_STATE];
-            [defaults setValue:self.numberField.text forKey:CurrentUser];
-            VCLog(@"user:%@",user);
-            [self.navigationController popToRootViewControllerAnimated:YES];
-            
-            
-        }
+    if (self.numberField.text.length !=11 || self.pwdField.text.length<6) {
+        [SVProgressHUD showImage:nil status:@"请输入正确的账号密码"];
         
-    }];
+    }else{
+     
+        [AVUser logInWithUsernameInBackground:self.numberField.text password:self.pwdField.text block:^(AVUser *user,NSError *error){
+            if (error) {
+                VCLog(@"login error.code%ld error:%@",(long)error.code,error.localizedDescription);
+                [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@",@"用户名或密码错误"]];
+                self.pwdField.text = nil;
+                [self.pwdImg setImage:[UIImage imageNamed:@"login_key"] forState:UIControlStateNormal];
+            }else{
+                //登录成功，返回上一页面
+                
+                [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@",@"登录成功"]];
+                
+                [defaults setValue:@"1" forKey:LOGIN_STATE];
+                [defaults setValue:self.numberField.text forKey:CurrentUser];
+                VCLog(@"user:%@",user);
+                [self.navigationController popToRootViewControllerAnimated:YES];
+                
+                
+            }
+            
+        }];
+    }
     
 }
 

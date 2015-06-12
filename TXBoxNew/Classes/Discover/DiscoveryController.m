@@ -19,7 +19,7 @@
 static NSString *const kDataInCharaUUID = @"FF01";//kDataOutCharaUUID
 static NSString *const kDataOutCharaUUID = @"FF01";
 
-@interface DiscoveryController ()<PopViewDelegate,CBCentralManagerDelegate,CBPeripheralDelegate>
+@interface DiscoveryController ()<PopViewDelegate,CBCentralManagerDelegate,CBPeripheralDelegate,UIAlertViewDelegate>
 {
     NSUserDefaults *defaults;
   
@@ -102,10 +102,12 @@ static NSString *const kDataOutCharaUUID = @"FF01";
         
         // 回到主线程，显示提示框
         //dispatch_async(dispatch_get_main_queue(), ^{
-            
-            if ([str2 floatValue] != [str floatValue]) {
+    BOOL a = [[defaults valueForKey:@"versionSSSd"] intValue];
+            if (!a) {//[str2 floatValue] != [str floatValue]
                 
                 UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"不OK" otherButtonTitles:@"OK", nil];
+                atView.tag = 1005;
+                atView.delegate = self;
                 [atView show];
                 
                 // 显示更新
@@ -119,6 +121,12 @@ static NSString *const kDataOutCharaUUID = @"FF01";
         //});
     //});
 
+}
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (alertView.tag == 1005) {
+        [defaults setValue:@"1" forKey:@"versionSSSd"];
+    }
 }
 - (void)keyboardWasShow:(NSNotification*)aNotification{
     

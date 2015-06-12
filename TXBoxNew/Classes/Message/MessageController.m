@@ -179,7 +179,16 @@
 // tableViewcell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    MessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"messageCells" forIndexPath:indexPath];
+    static NSString *CellIdentifier = @"messageCellId";
+    
+    MessageCell *cell = (MessageCell*)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    
+    if (cell == nil){
+        //加载cell-xib
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"MessageCell" owner:self options:nil] objectAtIndex:0];
+        
+    }
+    //取消cell 选中背景色
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     //VCLog(@"self.dataArray:%@",self.dataArray);

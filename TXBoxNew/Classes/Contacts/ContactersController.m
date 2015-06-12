@@ -17,7 +17,7 @@
 #import "MsgDetailController.h"
 #import "TXData.h"
 
-@interface ContactersController ()<UISearchBarDelegate,UISearchResultsUpdating,BATableViewDelegate,ABNewPersonViewControllerDelegate,ABPersonViewControllerDelegate,UISearchControllerDelegate>
+@interface ContactersController ()<UISearchBarDelegate,UISearchResultsUpdating,BATableViewDelegate,ABNewPersonViewControllerDelegate,ABPersonViewControllerDelegate,UISearchControllerDelegate,UISearchBarDelegate>
 {
     NSMutableDictionary *sectionDic;    //sections数据
     NSMutableDictionary *phoneDic;      //同一个人的手机号码dic，
@@ -26,6 +26,8 @@
     TXData *msgdata;
     NSMutableArray *zzsArrar;
     UIView *footv;
+    NSMutableArray *contactsZZArray;
+    NSString *tempString;
 }
 
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
@@ -47,7 +49,8 @@
     phoneDic=[[NSMutableDictionary alloc] init];
     phoneArray = [[NSMutableArray alloc] init];
     msgdata = [[TXData alloc] init];
-    zzsArrar =[[NSMutableArray alloc] init];
+    contactsZZArray =[[NSMutableArray alloc] init];
+    tempString = [[NSString alloc ] init];
     
     [self createTableView];
     
@@ -118,6 +121,7 @@
     self.searchController.searchResultsUpdater = self;
     self.searchController.delegate = self;
     self.searchController.searchBar.frame = CGRectMake(0, 64, DEVICE_WIDTH, 44.0);
+    self.searchController.searchBar.delegate = self;
     self.contactTableView.tableView.tableHeaderView = self.searchController.searchBar;
     self.definesPresentationContext = YES;
     [self changedSearchBarCancel];
@@ -226,7 +230,7 @@
         //转拼音
         NSString *namePinYin = [name hanziTopinyin];
         NSString *nameNum = [namePinYin pinyinTrimIntNumber];
-        
+
         //获取电话号码，通用的，基本的,概括的
         ABMultiValueRef personPhone = ABRecordCopyValue(record, kABPersonPhoneProperty);
         //记录在底层数据库中的ID号。具有唯一性
@@ -240,6 +244,7 @@
             [phoneDic setObject:(__bridge id)(record) forKey:[NSString stringWithFormat:@"%@%d",phone,recordID]];
             [tempDic setObject:phone forKey:@"personTel"];//把每一条号码存为key:“personTel”的Value
             NSString *phoneNum = [NSString stringWithFormat:@"-%@",phone];
+
             [tempDic setObject:phoneNum forKey:@"personTelNum"];//-数字号码
             
         }
@@ -598,13 +603,22 @@
 //返回搜索结果
 -(void) updateSearchResultsForSearchController:(UISearchController *)searchController
 {
+    tempString = searchController.searchBar.text;
     
+    if (self.searchsArray!= nil) {
+        [self.searchsArray removeAllObjects];
+    }
     
+    NSString *numberInputString = [searchController.searchBar.text pinyinTrimIntNumber];
+    VCLog(@"numberInputString:%@",numberInputString);
     
+    NSString *AlastChar = [self.searchController.searchBar.text substringWithRange:NSMakeRange(self.searchController.searchBar.text.length-1, 1)];
+    NSString *inputStrings = [NSString stringWithFormat:@"-%@[0-9,A,B,C]*",AlastChar];
     
+    //连续输入
+    //[self ContactsZZStringAndArrayInputchar:inputStrings aChar:AlastChar];
     
-    
-    
+    //删除
     
     
     
@@ -613,11 +627,7 @@
     NSString *searchString = [self.searchController.searchBar text];
     //NSPredicate *preicate = [NSPredicate predicateWithFormat:@"(SELF.personName CONTAINS[c] %@) OR (SELF.personTel contains [c] %@)", searchString];
     NSPredicate *preicate = [NSPredicate predicateWithFormat:@"(SELF.personName CONTAINS[c] %@) or (self.personTel contains[c] %@)", searchString,searchString ];
-    
-    if (self.searchsArray!= nil) {
-        [self.searchsArray removeAllObjects];
-    }
-    
+
     //过滤数据
     self.searchsArray= [NSMutableArray arrayWithArray:[_dataList filteredArrayUsingPredicate:preicate]];
     VCLog(@"searchArray :%@",self.searchsArray);
@@ -629,81 +639,105 @@
     [self.contactTableView reloadData];
      
 }
-/*
-#pragma mark -- 用户退格输入时
--(void)deleteTextDidChanged:(NSNotification*)notifi{
-    NSString *lastChar = [[notifi userInfo] valueForKey:@"lastChar"];
-    
-    //退格
-    [self deleteCharWithLastinput:lastChar];
-    [self predictaeData];
-    
-}
-#pragma mark -- 用户增加输入时
--(void)inputTextDidChanged:(NSNotification*)notifi{
-    
-    NSString *searchText = [[notifi userInfo] valueForKey:@"searchBarText"];
-    NSString *lastChar = [searchText substringWithRange:NSMakeRange(searchText.length-1, 1)];
-    NSString *testString = [NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastChar];
-    if (zzArray.count <1) {
-        NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"%@",testString];
-        [zzArray addObject:mstring];
-    }
-    
-    NSString *inputString = [NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastChar];
-    
-    VCLog(@"lastchar:%@",lastChar);
-    VCLog(@"searchText:%@",searchText);
-    VCLog(@"inputstring:%@",inputString);
-    //生成zz表达式
-    //输入
-    if (searchText.length>1) {
-        [self zzStringAndArrayInputchar:inputString aChar:lastChar];
-    }
-    
-    [self predictaeData];
+-(void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope
+{
+    VCLog(@"xxw");
 }
 
--(void)predictaeData{
+//连续输入
+-(void)ContactsZZStringAndArrayInputchar:(NSString *)inputChar aChar:(NSString *)achar
+{
     
-    if (searchResault.count != 0) {
-        [searchResault removeAllObjects];
+    if (contactsZZArray.count <1) {
+        NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"-%@.*",achar];
+        [contactsZZArray addObject:mstring];
     }
     
+    NSMutableArray *latterArray = [[NSMutableArray alloc] init];
+    
+    if (self.searchController.searchBar.text.length>1) {
+        for (NSMutableString *sss in contactsZZArray) {
+            //-1.* -> -1.*-2[0-9].*
+            NSMutableString *str1 = [NSMutableString stringWithFormat:@"%@%@",sss,inputChar];
+            
+            //-1.* -> -12[0-9].*
+            if (sss.length <=14 ) {
+                [sss insertString:achar atIndex:sss.length-2];
+            }else{
+                [sss insertString:achar atIndex:sss.length-12];
+            }
+            
+            
+            [latterArray addObject:str1];
+            [latterArray addObject:sss];
+        }
+        
+        contactsZZArray =latterArray;
+    }
+    
+    
+    VCLog(@"contactsZZArray:%@",contactsZZArray);
+    
+}
+//退格
+-(void)ContactsDeleteCharWithLastinput:(NSString *)lastinput{
+    
+    NSMutableArray *lArray = [[NSMutableArray alloc] init];
+    if (contactsZZArray.count >1) {
+        
+        for (int i= 0; i<contactsZZArray.count; i++) {
+            if (i%2==0) {
+                NSString *sas = contactsZZArray[i];
+
+                NSString *zzs = [sas substringToIndex:sas.length-14];
+                if(![lArray containsObject:zzs])
+                    [lArray addObject:zzs];
+            }
+        }
+        
+        contactsZZArray = lArray;
+        VCLog(@"contactsZZArray:%@",contactsZZArray);
+    }
+    
+}
+
+-(void)contactsPredictaeDataWithState:(int)state{
+    
+    
     //过滤数据
-    for (NSMutableString *str in zzArray) {
+    for (NSMutableString *str in contactsZZArray) {
         NSPredicate *regextestcm = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", str];
-        for (NSDictionary *dict in mutPhoneArray) {
+        for (NSDictionary *dict in phoneArray) {
             //匹配姓名
             NSString *pnameNum = [dict valueForKey:@"personNameNum"];
+            
             if ([regextestcm evaluateWithObject:pnameNum]) {
-                [searchResault addObject:dict];
+                if (![self.searchsArray containsObject:dict]) {
+                    [self.searchsArray addObject:dict];
+                }
                 
             }
             //匹配号码
             NSString *phoneNum = [dict valueForKey:@"personTelNum"];
             if ([regextestcm evaluateWithObject:phoneNum]) {
-                [searchResault addObject:dict];
+                if (![self.searchsArray containsObject:dict]) {
+                    [self.searchsArray addObject:dict];
+                }
                 
             }
             
         }
     }
     
-    [self setModel];
-    VCLog(@"searchResault:%@",searchResault);
+    VCLog(@"searchsArray:%@",self.searchsArray);
     
-    //重新获取数据库获取通话记录
-    //NSMutableArray *array = [sqlite searchInfoFromTable:CALL_RECORDS_TABLE_NAME];
-    //排序
-    //CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
+    if (state == 0 && self.searchController.searchBar.text.length == 1) {
+        [contactsZZArray removeAllObjects];
+    }
     
-    //[self.tableView reloadData];
-    
+    //[self.contactTableView.tableView reloadData];
     
 }
-
-*/
 
 
 #pragma mark -- 新增联系人
