@@ -10,6 +10,7 @@
 #import "TXData.h"
 #import <sqlite3.h>
 #import "Common.h"
+#import "ContactsData.h"
 //#import "/usr/include/sqlite3.h"
 
 @interface TXSqliteOperate : NSObject
@@ -99,6 +100,36 @@
  *  @return NSMutableArray  元素类型TXData
  */
 -(NSMutableArray *)searchContentWithInputText:(NSString *)text fromTable:(NSString *)table withSql:(NSString *)sqlString;
+
+
+//=====================================//
+//        联系人查询(通讯录）             //
+//=====================================//
+
+/**
+ *  在contacts表里添加信息
+ *  @param contactsData data
+ *  @param table        表
+ *  @param sqlString    sql语句
+ */
+-(void)addInfo:(ContactsData *)contactsData inTable:(NSString *)table withSqlString:(NSString *)sqlString;//添加
+
+/**
+ *  @method 根据名字查号码
+ *  @param table     表
+ *  @param string    名字
+ *  @param sqlString sql语句
+ *  @return NSMutableArray
+ */
+-(NSMutableArray *)searchAcontacterInfoFrom:(NSString *)table hisName:(NSString *)string withSqlString:(NSString *)sqlString;
+/**
+ *  @method 根据号码查名字
+ *  @param table     表
+ *  @param string    号码
+ *  @param sqlString sql语句
+ *  @return NSMutableArray
+ */
+-(NSMutableArray *)searchAcontacterInfoFrom:(NSString *)table hisNumber:(NSString *)string withSqlString:(NSString *)sqlString;
 
 
 //=====================================//

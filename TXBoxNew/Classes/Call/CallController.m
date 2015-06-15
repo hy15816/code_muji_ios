@@ -23,6 +23,8 @@
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CoreTelephony/CTCarrier.h>
 #import "DiscoveryController.h"
+#import "ContactsData.h"
+#import <AVOSCloud/AVOSCloud.h>
 
 @interface CallController ()<UITextFieldDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate>
 {
@@ -45,6 +47,7 @@
     NSString *areaString;
     NSString *opeareString;
     
+    AVObject *userInfoObj;
 }
 
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
@@ -106,7 +109,24 @@
     //[sqlite openPhoneArearDatabase];
     areaString = [[NSString alloc] init];
     opeareString = [[NSString alloc] init];
+ 
+    //用户使用信息~时长
+    userInfoObj =[AVObject objectWithClassName: USER_SPORT_INFO];
+    /*
+    [userInfoObj setObject:@"12345678901" forKey:table_username];//username
+    [userInfoObj setObject:[NSNumber numberWithInt:1234] forKey:table_total_duration_call_transfer];//佩戴时长
+    [userInfoObj saveInBackgroundWithBlock:^(BOOL isSuc,NSError *error){
+        if (error) {
+            NSLog(@"addInfo error:%@",error.localizedDescription);
+        }else
+        {
+            NSLog(@"save succ");
+            
+        }
+    }];
+     */
     
+
 }
 
 //初始化
@@ -122,7 +142,6 @@
     singleton = [TXTelNumSingleton sharedInstance];
     searchResault = [[NSMutableArray alloc] init];
     
-    [defaults setValue:@"0" forKey:@"preState"];
 }
 
 -(void)callviewWillRefresh
@@ -523,27 +542,32 @@
 //呼转方法
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender
 {
-    //BOOL loginstate = [defaults valueForKey:LOGIN_STATE];
+    BOOL loginstate = [[defaults valueForKey:LOGIN_STATE] intValue];
     //是否登录？
-    
-    
-    //获取拇机号码,
-    NSString *phoneNumber = [defaults valueForKey:muji_bind_number];
-    
-    //已有number和email
-    if (phoneNumber.length>0 ) {
-        //获取呼转状态
-        [self getCallDivert];
-    }else
-    {   //没有则弹框提示
-        UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请到【发现】中【登录】,然后【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-        isNoMujiAlert.tag =1100;
-        [isNoMujiAlert show];
+    if (loginstate) {
+        //获取拇机号码,
+        NSString *phoneNumber = [defaults valueForKey:muji_bind_number];
         
-        
-        //[self addShadeAndAlertView];
-    }
+        //已有number和email
+        if (phoneNumber.length>0 ) {
+            //获取呼转状态
+            [self getCallDivert];
+        }else
+        {   //没有则弹框提示
+            UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请到【发现】中【登录】,然后【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+            isNoMujiAlert.tag =1100;
+            [isNoMujiAlert show];
+            
+        }
 
+    }else{
+        //没有登录则弹框提示
+        UIAlertView *isNoLoginAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请到【发现】中【登录】,然后【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+        isNoLoginAlert.tag =1101;
+        [isNoLoginAlert show];
+    }
+    
+    
 }
 
 -(void)getCallDivert
@@ -590,16 +614,21 @@
             time = [dfmt stringFromDate:date ];
             
             //计算时长
-            [self intervalFromStartDate:[defaults valueForKey:CallForwardStartTime] toTheEndDate:time];
-            
+            NSString *totalTime =  [self intervalFromStartDate:[defaults valueForKey:CallForwardStartTime] toTheEndDate:time];
+            NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+            NSNumber *number = [numberFormatter numberFromString:totalTime];
             //上传
-            
-            
-            
-            
-            
-            
-            
+            [userInfoObj setObject:[defaults valueForKey:CurrentUser] forKey:table_username];//username
+            [userInfoObj setObject:number forKey:table_total_duration_call_transfer];//佩戴时长
+            [userInfoObj saveInBackgroundWithBlock:^(BOOL isSuc,NSError *error){
+                if (error) {
+                    NSLog(@"add info error:%@",error);
+                }else
+                {
+                    NSLog(@"save succ");
+                    
+                }
+            }];
         }
     }
     
@@ -617,8 +646,8 @@
 
         }
     }
-    
-    if (alertView.tag == 1100) {
+    //跳转发现
+    if (alertView.tag == 1100 || alertView.tag == 1101) {
         if (buttonIndex == 0) {
             //跳转到-发现
             //disvyCtorl
@@ -820,6 +849,7 @@
         NSString *namePinYin = [name hanziTopinyin];
         NSString *nameNum = [namePinYin pinyinTrimIntNumber];//转数字
         
+        
         //获取电话号码，通用的，基本的,概括的
         ABMultiValueRef personPhone = ABRecordCopyValue(record, kABPersonPhoneProperty);
         //记录在底层数据库中的ID号。具有唯一性
@@ -836,6 +866,7 @@
             [tempDic setObject:phoneNum forKey:@"personTelNum"];//-数字号码
             //VCLog(@"phoneNum:%@",phoneNum);
             
+            
         }
         [tempDic setObject:name forKey:@"personName"];//把名字存为key:"personName"的Value
         [tempDic setObject:nameNum forKey:@"personNameNum"];//把数字名字保存
@@ -843,10 +874,10 @@
         //VCLog(@"tempDictemp：%@",tempDic);
         [mutPhoneArray addObject:tempDic];//把tempDic赋给phoneArray数组
         
+        
     }
     VCLog(@"mutPhoneArray：%@",mutPhoneArray);
     
-    //[self setModel];
     return mutPhoneArray;
     
 }
@@ -894,7 +925,8 @@
     {
         // 提示找不到联系人
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"Could not find %@",string] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
-        [alert show];
+        //[alert show];
+        [self.tableView reloadData];
         
     }
     

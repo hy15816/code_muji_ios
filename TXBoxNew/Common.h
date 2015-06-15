@@ -78,6 +78,15 @@
 #define SELECT_ALL_COINTENT_FROM_MSG @"select *from %@ where msgSender LIKE '%@' or msgAccepter LIKE '%@' or msgContent LIKE '%@' "
 
 //===================================//
+//保存联系人的数据库
+#define CONTACTS_TABLE_NAME @"CONTACTS_TABLE"
+#define CREATE_CONTACTS_TABLE_SQL @"create table if not exists %@(contacterId integer primary key AUTOINCREMENT,contactName text,contactNumber text)"
+#define CONTACTS_TABLE_ADDINFO_SQL @"insert into %@(contactName,contactNumber) values(?,?)"
+#define SELECT_NAME_FROM_NUMBER @"select contacterName from %@ where contacterNumber=%@"
+#define SELECT_NUMBER_FROM_NAME @"select contacterNumber from %@ where contacterName=%@"
+
+
+//===================================//
 // 首页输入框的view
 #define InputBoxView 50.f
 
@@ -132,3 +141,16 @@
 #define CONFIG_STATE @"configState"
 
 #define CurrentUser @"currentUser"
+
+//用户佩戴时长表
+#define USER_SPORT_INFO @"user_sport_info"
+//字段
+#define table_username @"username"  //NSString
+#define table_total_duration_call_transfer @"total_duration_call_transfer"  //NSNumber
+
+
+
+
+
+
+

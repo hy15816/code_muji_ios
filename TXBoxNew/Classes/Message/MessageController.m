@@ -4,7 +4,16 @@
 //
 //  Created by Naron on 15/4/21.
 //  Copyright (c) 2015年 playtime. All rights reserved.
-//
+/*
+//  搜索的结果。resaults{
+            contacts1{@“abc”,@"def",...},
+            contacts2{@“ahg”,@"dlp",...},
+            contacts3{@“ayu”,@"dmn",...},
+            ...
+}
+ 
+ *  找出所有匹配的contents和contacts，再根据contact分类
+ */
 
 #import "MessageController.h"
 #import "MessageCell.h"
@@ -20,7 +29,7 @@
 }
 @property (strong,nonatomic) NSMutableArray *dataArray;     //短信信息
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
-@property (strong,nonatomic) UITableViewController *searchVC;
+@property (strong,nonatomic) UITableViewController *tableViewController;
 @property (strong,nonatomic) NSMutableArray *searchsArray;          //搜索后的结果数组
 @property (strong,nonatomic) NSMutableArray *contactsArray;     //短信联系人
 
@@ -73,11 +82,6 @@
     
     txsqlite = [[TXSqliteOperate alloc] init];
     
-    
-    VCLog(@"%@",[NSString stringWithFormat:@"a '%@' b '%@' c '%@' ",@"%1%",@"%1%",@"%1%"]);
-    
-    
-    
 }
 -(void)aaddfootv
 {
@@ -95,17 +99,17 @@
 {
     //需要初始化一下UISearchController:
     // 创建出搜索使用的表示图控制器
-    self.searchVC = [[UITableViewController alloc] initWithStyle:UITableViewStylePlain];
-    self.searchVC.tableView.dataSource = self;
-    self.searchVC.tableView.delegate = self;
+    self.tableViewController = [[UITableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    self.tableViewController.tableView.dataSource = self;
+    self.tableViewController.tableView.delegate = self;
     
-    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchVC];
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.tableViewController];
     self.searchController.searchResultsUpdater = self;
     self.searchController.delegate = self;
     self.searchController.searchBar.frame = CGRectMake(0, 64, DEVICE_WIDTH, 44.0);
     self.tableView.tableHeaderView = self.searchController.searchBar;
     self.definesPresentationContext = YES;//输入时显示状态栏，
-    [self changedSearchBarCancel];
+    //[self changedSearchBarCancel];
     
 }
 //将SearchBar上"Cancel"按钮改为”取消“
@@ -142,7 +146,11 @@
         [self.searchsArray removeAllObjects];
     }
     //短信搜索
-    //根据短信联系人，搜索会话内容
+    //根据输入，搜索匹配的会话内容,找出sender
+    /**
+     *  sender  accepter content
+     *
+     */
     if (self.searchController.searchBar.text.length >=1) {
         self.searchsArray = [txsqlite searchContentWithInputText:searchString fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_ALL_COINTENT_FROM_MSG];
     }
@@ -151,7 +159,7 @@
     VCLog(@"self.searchsArray :%@",self.searchsArray);
     
     //刷新表格
-    //[self.searchVC.tableView reloadData];
+    [self.tableViewController.tableView reloadData];
     [self.tableView reloadData];
 }
 - (void)didReceiveMemoryWarning {
@@ -215,13 +223,23 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //传值，hisName,hisNumber,hisHome
-    TXData *data = [self.dataArray objectAtIndex:indexPath.row];
-    data.hisName = data.hisName;
-    data.hisNumber = [self.contactsArray objectAtIndex:indexPath.row];//data.msgSender;
-    data.hisHome = data.hisHome;//@"hisHome"
+    TXData *searchdata = [self.searchsArray objectAtIndex:indexPath.row];//搜索后
+    TXData *normaldata = [self.dataArray objectAtIndex:indexPath.row];
+    TXData *detaildata = [[TXData alloc] init];//传值data
     
+    if (self.searchController.active) {
+        
+        detaildata.hisName = searchdata.msgAccepter;
+        detaildata.hisNumber = searchdata.msgAccepter;
+        detaildata.hisHome = searchdata.hisHome;
+    }else{
+        
+        detaildata.hisName = normaldata.hisName;
+        detaildata.hisNumber = [self.contactsArray objectAtIndex:indexPath.row];//data.msgSender;
+        detaildata.hisHome = normaldata.hisHome;//@"hisHome"
+    }
     MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
-    DetailVC.datailDatas = data;
+    DetailVC.datailDatas = detaildata;
     
     [self.navigationController pushViewController:DetailVC animated:YES];
     
