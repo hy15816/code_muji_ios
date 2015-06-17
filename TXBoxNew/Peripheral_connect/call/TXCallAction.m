@@ -120,7 +120,7 @@
     NSString *strNunmber = [[NSString alloc] init];
     if (hisNumber.length>0) {
         
-        strNunmber  =hisNumber;
+        strNunmber  =[hisNumber purifyString];
     }else
     {
         strNunmber = @"";

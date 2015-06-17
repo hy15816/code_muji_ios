@@ -18,6 +18,8 @@
     TXSqliteOperate *txsqlite;
 }
 
+
+- (IBAction)disMissButton:(UIBarButtonItem *)sender;
 @property (weak, nonatomic) IBOutlet UITextField *hisNumber;
 @property (weak, nonatomic) IBOutlet UILabel *hisname;
 
@@ -63,7 +65,7 @@
     
     self.inputView.frame = containerFrame;
     
-    CGRect rect = [notif.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    //CGRect rect = [notif.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     //self.tableview.frame = CGRectMake(0,0 , DEVICE_WIDTH, DEVICE_HEIGHT-rect.size.height);//-rect.size.height
     
     [UIView commitAnimations];
@@ -109,12 +111,16 @@
     
     [self initNewMsgInputView];
 }
-
+/**
+ *  swipe手势
+ *  @param swipe swipe
+ */
 -(void)initSwipeRecognizer:(UISwipeGestureRecognizer *)swipe
 {
     [self.hisNumber resignFirstResponder];
     [self.textMsgView resignFirstResponder];
 }
+
 -(void) initNewMsgInputView
 {
     self.inputView = [[UIView alloc] init];
@@ -159,11 +165,13 @@
     
     
 }
-
+/**
+ *  发送数据
+ *  @param btn button
+ */
 -(void)sendNewMsgBtnClick:(UIButton *)btn
 {
     //保存发送的数据
-    
     NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
     NSDate *date = [NSDate date];
     fmt.dateFormat = @"yy/M/d HH:mm"; // @"yyyy-MM-dd HH:mm:ss"
@@ -204,7 +212,6 @@
 }
 
 #pragma mark - Table view data source
-
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     // Return the number of sections.
     return 1;
@@ -234,53 +241,9 @@
     return cell;
 }
 
-
-/*
- // Override to support conditional editing of the table view.
- - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
- // Return NO if you do not want the specified item to be editable.
- return YES;
- }
- */
-
-/*
- // Override to support editing the table view.
- - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
- if (editingStyle == UITableViewCellEditingStyleDelete) {
- // Delete the row from the data source
- [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
- } else if (editingStyle == UITableViewCellEditingStyleInsert) {
- // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
- }
- }
- */
-
-/*
- // Override to support rearranging the table view.
- - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
- }
- */
-
-/*
- // Override to support conditional rearranging of the table view.
- - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
- // Return NO if you do not want the item to be re-orderable.
- return YES;
- }
- */
-
-/*
- #pragma mark - Navigation
- 
- // In a storyboard-based application, you will often want to do a little preparation before navigation
- - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
- // Get the new view controller using [segue destinationViewController].
- // Pass the selected object to the new view controller.
- }
- */
-
-
-
-
-
+- (IBAction)disMissButton:(UIBarButtonItem *)sender {
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+    
+}
 @end

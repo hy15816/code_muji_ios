@@ -9,8 +9,9 @@
 #import "CallingController.h"
 #import "TXCallAction.h"
 #import <ImageIO/ImageIO.h>
+#import <AVFoundation/AVFoundation.h>
 
-@interface CallingController ()
+@interface CallingController ()<AVAudioPlayerDelegate>
 {
     TXCallAction *callAct;
     int times;
@@ -23,8 +24,12 @@
     size_t index; // gif动画播放开始的帧序号
     size_t count; // gif动画的总帧数
     NSTimer *timertimer; // 播放gif动画所使用的timer
-    
+    BOOL isLighter;
+    AVAudioPlayer *avplay;//播放音频
 }
+@property (strong, nonatomic) IBOutlet UIView *topView;
+@property (strong, nonatomic) IBOutlet UILabel *topViewLabel;
+@property (strong, nonatomic) IBOutlet UIImageView *backImageView;
 - (IBAction)packUpClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UIButton *packUp;
 @property (weak, nonatomic) IBOutlet UIView *gifView;
@@ -32,92 +37,6 @@
 
 @implementation CallingController
 @synthesize nameLabel,numberLabel,timeLength;
-
-
-
-- (void)viewDidLoad {
-    
-    [super viewDidLoad];
-    callAct = [[TXCallAction alloc] init];
-    defaults = [NSUserDefaults standardUserDefaults];
-    self.timeLength.text = NSLocalizedString(@"Calling", nil);
-    
-    times = 0;
-    
-    //加载gif
-    [self initWithGifFrame:CGRectMake(0, 0, 0, 0) filePath:[[NSBundle mainBundle] pathForResource:@"board" ofType:@"gif"]];
-    
-    //获取连接状态，是否接通
-    if (self.nameLabel.text.length ==0) {
-        tState = [NSTimer scheduledTimerWithTimeInterval:1.f target:self selector:@selector(getConnectState) userInfo:nil repeats:YES];
-        [tState fire];
-    }
-}
-
-//获取连接(打电话)状态
--(void) getConnectState
-{
-    
-    //返回为1，已接通
-    if ([callAct callOutAction:1]) {
-        
-        [defaults setValue:@"1"  forKey:@"isOrNotConnect"];
-        [tState invalidate];
-        tState = nil;
-        
-        //开始计时
-        
-        timer = [NSTimer scheduledTimerWithTimeInterval:1.f target:self selector:@selector(changedCount) userInfo:nil repeats:YES];
-        [timer fire];
-
-        
-    }else
-    {
-    
-        [defaults setValue:@"0" forKey:@"isOrNotConnect"];
-    }
-}
-
-
-//加载gif
-- (void)initWithGifFrame:(CGRect)frame filePath:(NSString *)filePath
-{
-    
-    NSDictionary *gifLoopCount = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:0] forKey:(NSString *)kCGImagePropertyGIFLoopCount];
-    
-    gifProperties = [NSDictionary dictionaryWithObject:gifLoopCount forKey:(NSString *)kCGImagePropertyGIFDictionary] ;
-    
-    gif = CGImageSourceCreateWithURL((CFURLRef)[NSURL fileURLWithPath:filePath], (CFDictionaryRef)gifProperties);
-    
-    count =CGImageSourceGetCount(gif);
-    
-    timertimer = [NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(playGif) userInfo:nil repeats:YES];
-    [timertimer fire];
-    
-}
-//开始动画
--(void)playGif
-{
-    index ++;
-    index = index%count;
-    CGImageRef ref = CGImageSourceCreateImageAtIndex(gif, index, (CFDictionaryRef)gifProperties);
-    self.gifView.layer.contents = (__bridge id)ref;
-    CFRelease(ref);
-}
-//stop定时器
--(void)stopTimer
-{
-    [timertimer invalidate];//停止计时器
-    timertimer = nil;   //置为nil
-    
-    [tState invalidate];
-    tState  = nil;
-    
-    [timer invalidate];
-    timer  = nil;
-    
-}
-
 
 -(void) viewWillAppear:(BOOL)animated
 {
@@ -138,7 +57,141 @@
     
 }
 
-//结束通话
+- (void)viewDidLoad {
+    
+    [super viewDidLoad];
+    callAct = [[TXCallAction alloc] init];
+    defaults = [NSUserDefaults standardUserDefaults];
+    self.timeLength.text = NSLocalizedString(@"Calling", nil);
+    times = 0;
+    
+    //加载gif
+    [self initWithGifFrame:CGRectMake(0, 0, 0, 0) filePath:[[NSBundle mainBundle] pathForResource:@"board" ofType:@"gif"]];
+    
+    //获取连接状态，是否接通
+    if (self.nameLabel.text.length ==0) {
+        tState = [NSTimer scheduledTimerWithTimeInterval:1.f target:self selector:@selector(getConnectState) userInfo:nil repeats:YES];
+        [tState fire];
+    }
+    
+    self.topView.hidden = YES;
+    
+}
+
+/**
+ *  获取连接(打电话)状态
+ */
+-(void) getConnectState
+{
+    
+    //返回为1，已接通
+    if ([callAct callOutAction:1]) {
+        
+        [defaults setValue:@"1"  forKey:@"isOrNotConnect"];
+        [tState invalidate];
+        tState = nil;
+        
+        //开始计时
+        timer = [NSTimer scheduledTimerWithTimeInterval:1.f target:self selector:@selector(changedCount) userInfo:nil repeats:YES];
+        [timer fire];
+        //do anything
+        [self playMusic];
+        
+    }else{//未接通
+        
+        [defaults setValue:@"0" forKey:@"isOrNotConnect"];
+    }
+}
+
+/**
+ *  播放音频
+ */
+-(void)playMusic{
+    
+    NSError *error;
+    avplay = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"你曾是少年" ofType:@"mp3"]]  error:&error];
+    avplay.delegate = self;
+    avplay.volume = .5;//音量
+    avplay.numberOfLoops = 3;//循环次数
+    avplay.currentTime = 10.;//指定任意位置播放
+    //[avplay prepareToPlay];//准备播放
+    
+    //[avplay play];//播放
+    //[avplay pause];//暂停
+    //[avplay stop];//停止
+}
+
+#pragma mark --AVAudioPlayer Delegate
+//播放完成后，
+-(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
+    avplay.currentTime = 10.;//指定任意位置播放
+    [avplay prepareToPlay];//准备播放
+    
+    [avplay play];//播放
+}
+//处理开始中断
+-(void)audioPlayerBeginInterruption:(AVAudioPlayer *)player{
+    
+}
+//解码出错
+-(void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error
+{
+    
+}
+//处理结束中断
+-(void)audioPlayerEndInterruption:(AVAudioPlayer *)player withOptions:(NSUInteger)flags
+{
+    
+    [avplay play];//继续播放
+}
+
+#pragma mark -- 加载gif
+- (void)initWithGifFrame:(CGRect)frame filePath:(NSString *)filePath
+{
+    
+    NSDictionary *gifLoopCount = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:0] forKey:(NSString *)kCGImagePropertyGIFLoopCount];
+    
+    gifProperties = [NSDictionary dictionaryWithObject:gifLoopCount forKey:(NSString *)kCGImagePropertyGIFDictionary] ;
+    
+    gif = CGImageSourceCreateWithURL((CFURLRef)[NSURL fileURLWithPath:filePath], (CFDictionaryRef)gifProperties);
+    
+    count =CGImageSourceGetCount(gif);
+    
+    timertimer = [NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(playGif) userInfo:nil repeats:YES];
+    [timertimer fire];
+    
+}
+/**
+ *  开始播放动画
+ */
+-(void)playGif
+{
+    index ++;
+    index = index%count;
+    CGImageRef ref = CGImageSourceCreateImageAtIndex(gif, index, (CFDictionaryRef)gifProperties);
+    self.gifView.layer.contents = (__bridge id)ref;
+    CFRelease(ref);
+}
+/**
+ *  stop定时器
+ */
+-(void)stopTimer
+{
+    [timertimer invalidate];//停止计时器
+    timertimer = nil;   //置为nil
+    
+    [tState invalidate];
+    tState  = nil;
+    
+    [timer invalidate];
+    timer  = nil;
+    [avplay stop];//停止播放歌曲
+}
+
+
+
+
+#pragma mark --  结束通话
 -(IBAction)cut:(UIButton *)sender;
 {
     
@@ -177,7 +230,9 @@
     
 }
 
-//计时，时长的改变
+/**
+ *  计时，时长的改变
+ */
 -(void) changedCount
 {
     times ++;
@@ -245,6 +300,21 @@
     }
 
     self.timeLength.text = [NSString stringWithFormat:@"%@%@:%@",hours,min,second];
+    self.topViewLabel.text =[NSString stringWithFormat:@"轻按此处返回 %@%@:%@",hours,min,second];
+    //使闪烁
+    if (isLighter) {
+        [UIView animateWithDuration:0.5f animations:^{
+            self.topViewLabel.alpha = .3;
+            isLighter = NO;
+        }];
+    }else{
+        [UIView animateWithDuration:0.5f animations:^{
+            self.topViewLabel.alpha = 1;
+            isLighter = YES;
+        }];
+    }
+    
+    
     VCLog(@"timeLength :%@",self.timeLength.text);
 }
 
@@ -260,47 +330,33 @@
     // Dispose of any resources that can be recreated.
 }
 
-//
+//展开
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [UIView beginAnimations:@"" context:@""];
-    [UIView setAnimationDuration:.9];
-    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-    //self.view.alpha = 0;
+    if (self.view.frame.size.height<100) {
+        [UIView animateWithDuration:.5 animations:^(){
+        
+            self.view.frame = CGRectMake(0, -5, DEVICE_WIDTH, DEVICE_HEIGHT+5);
+            self.topView.hidden = YES;
+            self.view.alpha = 1;
+            self.packUp.hidden = NO;
+        }];
+    }
     
-    [UIView setAnimationRepeatCount:0];
-    [UIView commitAnimations];
 }
 
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
+//收起
 - (IBAction)packUpClick:(UIButton *)sender {
     
-    [UIView beginAnimations:@"" context:@""];
-    [UIView setAnimationDuration:.9];
-    [UIView setAnimationCurve:
-     UIViewAnimationCurveEaseInOut];
-    /*
-    self.view.frame = CGRectMake(0, 0, DEVICE_WIDTH, 50);
-    [self.nameLabel removeFromSuperview];
-    [self.numberLabel removeFromSuperview];
-    [self.gifView removeFromSuperview];
-    [self.packUp removeFromSuperview];
-    //self.timeLength.frame = CGRectMake(<#CGFloat x#>, <#CGFloat y#>, <#CGFloat width#>, <#CGFloat height#>)
-    */
-    [UIView setAnimationRepeatCount:0];
-    [UIView commitAnimations];
+    //self.backImageView.hidden = YES;
     
-    
+    [UIView animateWithDuration:.5 animations:^{
+        self.view.frame = CGRectMake(0, -5, DEVICE_WIDTH, 45);
+        self.topViewLabel.textColor = [UIColor whiteColor];
+        self.packUp.hidden = YES;
+        self.topView.hidden = NO;
+        
+    }];
     
     
 }

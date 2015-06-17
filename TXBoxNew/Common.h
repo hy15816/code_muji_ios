@@ -46,7 +46,7 @@
 
 
 // =================通话记录表===========//
-#define CALL_RECORDS_TABLE_NAME @"CALL_RECORDS"
+#define CALL_RECORDS_TABLE_NAME @"CALL_RECORDSS"
 //创建通话记录表的sql语句
 #define CALL_RECORDS_CREATE_TABLE_SQL @"create table if not exists %@(tel_id integer primary key AUTOINCREMENT,hisName text,hisNumber text,callDirection text,callLength text,callBeginTime text,hisHome text,hisOperator text)"
 //添加call——records

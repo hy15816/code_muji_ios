@@ -196,18 +196,25 @@
     }else {
         //添加calling页面
         //是否登录？
-        //获取拇机号码,
-        NSString *phoneNumber =[defaults valueForKey:muji_bind_number];
-        
-        //已有number
-        if (phoneNumber.length>0 ) {
-            //获取呼转状态
-            //添加calling页面
-            [self addCallingView];
-            [self callingBtn:nil];
-        }else
-        {
-            [self isOrNotCallOut];
+        BOOL loginS=[[defaults valueForKey:LOGIN_STATE] intValue];
+        //是否登录？
+        if (loginS) {
+            //获取拇机号码,
+            NSString *phoneNumber =[defaults valueForKey:muji_bind_number];
+            
+            //已有number
+            if (phoneNumber.length>0 ) {
+                //获取呼转状态
+                //添加calling页面
+                [self addCallingView];
+                [self callingBtn:nil];
+            }else
+            {
+                [self isOrNotCallOutTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【绑定】"];
+            }
+
+        }else{//没有登录
+            [self isOrNotCallOutTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【登录】后【配置】"];
         }
         
         
@@ -264,21 +271,26 @@
     }
     //点击callBtn
     if ([notifi.name isEqualToString:kCallingBtnClick]) {
-        
+        BOOL loginS=[[defaults valueForKey:LOGIN_STATE] intValue];
         //是否登录？
-        //获取拇机号码,
-        NSString *phoneNumber = [defaults valueForKey:muji_bind_number];
-        
-        //已有number
-        if (phoneNumber.length>0 ) {
-            //获取呼转状态
-            //添加calling页面
-            [self addCallingView];
-            [self callingBtn:notifi];
-        }else
-        {
-            [self isOrNotCallOut];
+        if (loginS) {
+            //获取拇机号码,
+            NSString *phoneNumber = [defaults valueForKey:muji_bind_number];
+            
+            //已有number
+            if (phoneNumber.length>0 ) {
+                //获取呼转状态
+                //添加calling页面
+                [self addCallingView];
+                [self callingBtn:notifi];
+            }else
+            {
+                [self isOrNotCallOutTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【绑定】"];
+            }
+        }else{//没有登录
+            [self isOrNotCallOutTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【登录】后【配置】"];
         }
+        
         
         
     }
@@ -299,19 +311,12 @@
 
 
 //判断是否可以呼叫？
--(void)isOrNotCallOut
+-(void)isOrNotCallOutTitle:(NSString *)title message:(NSString *)message
 {
-    
     //没有则弹框提示
-    UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【绑定】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+    UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
     isNoMujiAlert.tag =1200;
     [isNoMujiAlert show];
-    
-    
-        
-    
-
-    
 }
 
 -(void) addCallingView
@@ -320,8 +325,9 @@
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     calling = [board instantiateViewControllerWithIdentifier:@"callingVC"];
     calling.view.alpha = 0.f;
-    calling.view.frame = CGRectMake(0, StatusBarHeight, DEVICE_WIDTH, DEVICE_HEIGHT-StatusBarHeight);
+    calling.view.frame = CGRectMake(0, -5, DEVICE_WIDTH, DEVICE_HEIGHT+5);
     [self.view addSubview:calling.view];
+    
 }
 
 //加载call out

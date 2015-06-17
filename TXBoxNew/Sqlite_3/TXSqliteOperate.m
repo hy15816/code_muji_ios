@@ -348,8 +348,6 @@
             NSString *accepter=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 4) encoding:NSUTF8StringEncoding];
             
             //VCLog(@"id = %d,date = %@",tid,date);
-            
-            
             data.peopleId = tid;
             data.msgSender=sender;
             data.msgTime=beginTime;

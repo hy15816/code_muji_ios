@@ -13,7 +13,6 @@
 #import "CallingController.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import "NSString+helper.h"
-#import "MsgDatas.h"
 #import "MsgDetailController.h"
 #import "TXNavgationController.h"
 #import "TXTelNumSingleton.h"
@@ -25,14 +24,14 @@
 #import "DiscoveryController.h"
 #import "ContactsData.h"
 #import <AVOSCloud/AVOSCloud.h>
+#import "GetAllContacts.h"
 
-@interface CallController ()<UITextFieldDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate>
+@interface CallController ()<UITextFieldDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate,GetContactsDelegate>
 {
     NSMutableArray *CallRecords;
     TXSqliteOperate *sqlite;
     CallingController *calling;
     
-    MsgDatas *msgdata;
     UIWebView *webView;
     NSUserDefaults *defaults;
     NSMutableArray *mutPhoneArray;
@@ -125,8 +124,15 @@
         }
     }];
      */
+    GetAllContacts *get = [[GetAllContacts alloc] init];
+    get.getContactsDelegate = self;
+    [get gets];
     
 
+}
+-(void)AllPeople:(NSMutableArray *)array
+{
+    VCLog(@"????:%@",array);
 }
 
 //初始化
@@ -137,7 +143,6 @@
     mutPhoneArray =[[NSMutableArray alloc] init];
     phoneDic = [[NSMutableDictionary alloc] init];
     sqlite = [[TXSqliteOperate alloc] init];
-    msgdata = [[MsgDatas alloc] init];
     defaults = [NSUserDefaults standardUserDefaults];
     singleton = [TXTelNumSingleton sharedInstance];
     searchResault = [[NSMutableArray alloc] init];
@@ -213,8 +218,7 @@
     [self setModel];
      VCLog(@"searchResault:%@",searchResault);
     
-    
-    
+    //输入的数字达到7个，且还没有结果时
     if (searchResault.count == 0) {
         if (singleton.singletonValue.length>=7) {
             areaString = [sqlite searchAreaWithHisNumber:[singleton.singletonValue substringToIndex:7]];
@@ -257,7 +261,11 @@
     //VCLog(@"arrayM-0:%@",[[arrayM objectAtIndex:0] valueForKey:@"personTel"]);
     
 }
-
+/**
+ *  增加输入时生成的zz表达式
+ *  @param inputChar 输入的串
+ *  @param achar     输入的最后一个字
+ */
 -(void)zzStringAndArrayInputchar:(NSString *)inputChar aChar:(NSString *)achar
 {
     
@@ -292,7 +300,10 @@
     VCLog(@"zzArray:%@",zzArray);
     
 }
-
+/**
+ *  删除操作时生成的zz表达式
+ *  @pragma lastinput 输入的最后一个字
+ */
 -(void)deleteCharWithLastinput:(NSString *)lastinput{
     
     
@@ -320,7 +331,7 @@
 
 #pragma mark - Table view data source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-
+    
     return 1;
 }
 
@@ -496,7 +507,7 @@
         //删除数据库的数据
         TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
 
-        [sqlite deleteContacterWithNumber:aRecord.hisNumber formTable:CALL_RECORDS_TABLE_NAME peopleId:nil withSql:DELETE_CALL_RECORD_SQL];
+        [sqlite deleteContacterWithNumber:[aRecord.hisNumber purifyString] formTable:CALL_RECORDS_TABLE_NAME peopleId:nil withSql:DELETE_CALL_RECORD_SQL];
         
         NSMutableArray *array = [ [ NSMutableArray alloc ] init ];
         [array addObject: indexPath];
@@ -569,7 +580,9 @@
     
     
 }
-
+/**
+ *  呼叫转移
+ */
 -(void)getCallDivert
 {
     NSString *number = [defaults valueForKey:muji_bind_number];
@@ -733,10 +746,13 @@
         str = [[NSMutableString alloc] initWithFormat:@"tel://*720"];
     }
 
-
+    
     return str;
 }
-
+/**
+ *  获取本机运营商
+ *  @return NSString 运营商
+ */
 - (NSString*)getCarrier
 {
     //获取本机运营商
@@ -876,7 +892,7 @@
         
         
     }
-    VCLog(@"mutPhoneArray：%@",mutPhoneArray);
+    //VCLog(@"mutPhoneArray：%@",mutPhoneArray);
     
     return mutPhoneArray;
     
@@ -885,7 +901,9 @@
 
 
 #pragma mark -- 跳转到添加联系人
-//跳转到add联系人
+/**
+ *  跳转到add联系人
+ */
 -(void)showAddperson
 {
     ABNewPersonViewController *newPerson = [[ABNewPersonViewController alloc]init];
@@ -901,7 +919,10 @@
 
 
 #pragma mark -- 跳转到编辑联系人
-//跳转到edit联系人
+/**
+ *  跳转到edit联系人
+ *  @pragma string name
+ */
 -(void)showPersonViewControllerWithName:(NSString *)string{
     CFStringRef name = (__bridge CFStringRef)string;
     //CFErrorRef *error;
@@ -924,7 +945,7 @@
     else
     {
         // 提示找不到联系人
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"Could not find %@",string] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
+        //UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"Could not find %@",string] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
         //[alert show];
         [self.tableView reloadData];
         

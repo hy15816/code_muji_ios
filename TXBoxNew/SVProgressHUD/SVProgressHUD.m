@@ -200,7 +200,8 @@ CGFloat SVProgressHUDRingThickness = 6;
     BOOL imageUsed = (self.imageView.image) || (self.imageView.hidden);
     
     if(string) {
-        CGSize stringSize = [string sizeWithFont:self.stringLabel.font constrainedToSize:CGSizeMake(200, 300)];
+        //CGSize stringSize = [string sizeWithFont:self.stringLabel.font constrainedToSize:CGSizeMake(200, 300)];
+        CGSize stringSize = [string boundingRectWithSize:CGSizeMake(200, 300) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:self.stringLabel.font} context:nil].size;
         stringWidth = stringSize.width;
         stringHeight = stringSize.height;
         if (imageUsed)
@@ -295,7 +296,7 @@ CGFloat SVProgressHUDRingThickness = 6;
 - (void)positionHUD:(NSNotification*)notification {
     
     CGFloat keyboardHeight;
-    double animationDuration;
+    double animationDuration = 0.0;
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     
@@ -361,7 +362,7 @@ CGFloat SVProgressHUDRingThickness = 6;
     
     if(notification) {
         SVProgressHUD *__weak weakSelf=self;
-        [UIView animateWithDuration:animationDuration 
+        [UIView animateWithDuration:animationDuration
                               delay:0 
                             options:UIViewAnimationOptionAllowUserInteraction 
                          animations:^{

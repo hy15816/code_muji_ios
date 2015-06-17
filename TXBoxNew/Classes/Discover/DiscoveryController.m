@@ -29,6 +29,7 @@ static NSString *const kDataOutCharaUUID = @"FF01";
     UIImageView *con_imgv;  //
     UIImageView *ble_imgv;  //蓝牙图片
     TXSqliteOperate *txsqlite;
+    BOOL isConnecting;
     
 }
 //label
@@ -94,11 +95,11 @@ static NSString *const kDataOutCharaUUID = @"FF01";
         //获取服务器版本号
         //NSURL *url = [NSURL URLWithString:@"http://car0.autoimg.cn/upload/spec/9579/u_20120110174805627264.jpg"];
         
-        NSString *str = [[NSString alloc] initWithFormat:@"1.2"];
+        //NSString *str = [[NSString alloc] initWithFormat:@"1.2"];
         
         //获取当前程序版本号
-        NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-        NSString *str2 = [infoDictionary objectForKey:@"CFBundleVersion"];
+        //NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+        //NSString *str2 = [infoDictionary objectForKey:@"CFBundleVersion"];
         
         // 回到主线程，显示提示框
         //dispatch_async(dispatch_get_main_queue(), ^{
@@ -511,7 +512,12 @@ static NSString *const kDataOutCharaUUID = @"FF01";
     }else{//没绑定
         //
         [self createBLECentralManager];
-        [defaults setObject:@"1" forKey:BIND_STATE];
+        //if (isConnecting) {
+            [defaults setObject:@"1" forKey:BIND_STATE];
+        //}else{
+            //[defaults setObject:@"0" forKey:BIND_STATE];
+        //}
+        
         
 
         
@@ -590,7 +596,7 @@ static NSString *const kDataOutCharaUUID = @"FF01";
 {
     VCLog(@"connect suc :%@",peripheral);
     //[self.connectTimer invalidate];//停止计时
-    
+    isConnecting = peripheral.state;
     peripheral.delegate = self;
     [central stopScan];//停止扫描
     [peripheral discoverServices:nil];// nil表示返回所有服务

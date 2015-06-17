@@ -17,7 +17,6 @@
 
 #import "MessageController.h"
 #import "MessageCell.h"
-#import "MsgDatas.h"
 #import "MsgDetailController.h"
 #import "TXBLEOperation.h"
 #import "TXSqliteOperate.h"
@@ -26,6 +25,7 @@
 @interface MessageController ()<UISearchResultsUpdating,UISearchControllerDelegate>
 {
     TXSqliteOperate *txsqlite;
+
 }
 @property (strong,nonatomic) NSMutableArray *dataArray;     //短信信息
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
@@ -46,28 +46,44 @@
     NSMutableArray *aa = [txsqlite searchInfoFromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
     for (TXData *d in aa) {
         NSString *accp = d.msgAccepter;
+        
         if (![self.contactsArray containsObject:accp]) {
             [self.contactsArray addObject:accp];
         }
     }
     
     VCLog(@"self.contactsArray:%@",self.contactsArray);
-    //根据某个number查询某个会话的最后一条记录
-    TXData *dd = [[TXData alloc] init];
-    for (NSString *num in self.contactsArray) {
-        dd =[txsqlite searchConversationFromtable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME hisNumber:num wihtSqlString:SELECT_A_LAST_MESSAGE_RECORDS];
-        if (![self.dataArray containsObject:dd]) {
-            [self.dataArray  addObject:dd];
-        }
-        
-    }
-    VCLog(@"self.dataArray:%@",self.dataArray);
     
+    [self searchLastMsgRecord];
+    
+    //tableFooterView
     if (self.contactsArray.count > 0 || self.searchsArray.count > 0) {
         [self aaddfootv];
     }
     
     [self.tableView reloadData];
+}
+
+/**
+ *  根据某个number查询某个会话的最后一条记录
+ */
+-(void)searchLastMsgRecord
+{
+    
+    TXData *dd = [[TXData alloc] init];
+    for (int i=0 ;i<self.contactsArray.count;i++) {
+        dd =[txsqlite searchConversationFromtable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME hisNumber:self.contactsArray[i] wihtSqlString:SELECT_A_LAST_MESSAGE_RECORDS];
+        if (self.dataArray.count>=self.contactsArray.count) {
+            [self.dataArray removeAllObjects];
+            
+        }
+        if (![self.dataArray containsObject:dd]) {
+            [self.dataArray  addObject:dd];
+            
+        }
+        
+    }
+    VCLog(@"self.dataArray:%@",self.dataArray);
 }
 
 - (void)viewDidLoad {
@@ -79,10 +95,13 @@
     self.contactsArray = [[NSMutableArray alloc] init];
     
     [self initSearchController];
-    
+
     txsqlite = [[TXSqliteOperate alloc] init];
     
 }
+/**
+ *  添加Table的footerView
+ */
 -(void)aaddfootv
 {
     UIView *foovt = [[UIView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, 30)];
@@ -94,7 +113,9 @@
     self.tableView.tableFooterView = foovt;
 }
 
-//searchController
+/**
+ *  初始化搜索控制器
+ */
 -(void) initSearchController
 {
     //需要初始化一下UISearchController:
@@ -223,17 +244,17 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //传值，hisName,hisNumber,hisHome
-    TXData *searchdata = [self.searchsArray objectAtIndex:indexPath.row];//搜索后
-    TXData *normaldata = [self.dataArray objectAtIndex:indexPath.row];
+    
+    
     TXData *detaildata = [[TXData alloc] init];//传值data
     
     if (self.searchController.active) {
-        
+        TXData *searchdata = [self.searchsArray objectAtIndex:indexPath.row];//搜索后
         detaildata.hisName = searchdata.msgAccepter;
         detaildata.hisNumber = searchdata.msgAccepter;
         detaildata.hisHome = searchdata.hisHome;
     }else{
-        
+        TXData *normaldata = [self.dataArray objectAtIndex:indexPath.row];
         detaildata.hisName = normaldata.hisName;
         detaildata.hisNumber = [self.contactsArray objectAtIndex:indexPath.row];//data.msgSender;
         detaildata.hisHome = normaldata.hisHome;//@"hisHome"

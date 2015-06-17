@@ -32,7 +32,7 @@
 
 
 
-#pragma mark-创建上下分割线
+#pragma mark-分割线
 - (void)drawRect:(CGRect)rect
 {
     for (int i =0; i<2; i++) {
