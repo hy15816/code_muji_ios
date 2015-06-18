@@ -116,11 +116,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TXBoxNew/Classes/Contacts/ContactersController.m"
-            timestampString = "456055094.898151"
+            timestampString = "456304731.538949"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "643"
-            endingLineNumber = "643"
+            startingLineNumber = "539"
+            endingLineNumber = "539"
             landmarkName = "-searchBar:selectedScopeButtonIndexDidChange:"
             landmarkType = "5">
          </BreakpointContent>

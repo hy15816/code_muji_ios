@@ -275,7 +275,7 @@
 {
     VCLog(@"data:%@",data);
     
-    NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    //NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     //调用BLEOperation
     [bleOP getMessageFromMuji:@"13322224444" msgContent:@"qw6g54erhg89e4h6sr4jsj64j4sf64h6erh46"];
     

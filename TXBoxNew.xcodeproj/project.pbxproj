@@ -43,12 +43,14 @@
 		637191971B1F01CF005C09C8 /* AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 637191921B1F01CF005C09C8 /* AKNumericFormatter.m */; };
 		637191981B1F01CF005C09C8 /* NSString+AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 637191941B1F01CF005C09C8 /* NSString+AKNumericFormatter.m */; };
 		637191991B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 637191961B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m */; };
-		637858371B310CA3006D5155 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 637858361B310CA3006D5155 /* AVOSCloud.framework */; };
 		637858471B317BEB006D5155 /* GetAllContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 637858461B317BEB006D5155 /* GetAllContacts.m */; };
 		637C29CE1AEB997400CD3DAF /* ContactersController.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29CD1AEB997400CD3DAF /* ContactersController.m */; };
 		637C29D51AEB9B0200CD3DAF /* BATableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29D11AEB9B0200CD3DAF /* BATableView.m */; };
 		637C29D61AEB9B0200CD3DAF /* BATableViewIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29D31AEB9B0200CD3DAF /* BATableViewIndex.m */; };
 		637C29D91AEB9FF200CD3DAF /* ContactsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 637C29D81AEB9FF200CD3DAF /* ContactsCell.xib */; };
+		637D27641B32A0DA00DFB122 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 637D27631B32A0DA00DFB122 /* AVOSCloud.framework */; };
+		637D27671B32A8BC00DFB122 /* BLEmanager.m in Sources */ = {isa = PBXBuildFile; fileRef = 637D27661B32A8BC00DFB122 /* BLEmanager.m */; };
+		637D276A1B32AEFD00DFB122 /* BLEPeripheral.m in Sources */ = {isa = PBXBuildFile; fileRef = 637D27691B32AEFD00DFB122 /* BLEPeripheral.m */; };
 		63806BEA1B1BFF8600ED301D /* LoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63806BE91B1BFF8600ED301D /* LoginController.m */; };
 		63806BED1B1C099F00ED301D /* RegisteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63806BEC1B1C099F00ED301D /* RegisteViewController.m */; };
 		638B955A1B2E7A1200399FAA /* ContactsData.m in Sources */ = {isa = PBXBuildFile; fileRef = 638B95591B2E7A1200399FAA /* ContactsData.m */; };
@@ -168,7 +170,6 @@
 		637191941B1F01CF005C09C8 /* NSString+AKNumericFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+AKNumericFormatter.m"; sourceTree = "<group>"; };
 		637191951B1F01CF005C09C8 /* UITextField+AKNumericFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+AKNumericFormatter.h"; sourceTree = "<group>"; };
 		637191961B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+AKNumericFormatter.m"; sourceTree = "<group>"; };
-		637858361B310CA3006D5155 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		637858451B317BEB006D5155 /* GetAllContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetAllContacts.h; sourceTree = "<group>"; };
 		637858461B317BEB006D5155 /* GetAllContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetAllContacts.m; sourceTree = "<group>"; };
 		637C29CC1AEB997400CD3DAF /* ContactersController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactersController.h; sourceTree = "<group>"; };
@@ -178,6 +179,11 @@
 		637C29D21AEB9B0200CD3DAF /* BATableViewIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BATableViewIndex.h; sourceTree = "<group>"; };
 		637C29D31AEB9B0200CD3DAF /* BATableViewIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BATableViewIndex.m; sourceTree = "<group>"; };
 		637C29D81AEB9FF200CD3DAF /* ContactsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactsCell.xib; sourceTree = "<group>"; };
+		637D27631B32A0DA00DFB122 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
+		637D27651B32A8BC00DFB122 /* BLEmanager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLEmanager.h; sourceTree = "<group>"; };
+		637D27661B32A8BC00DFB122 /* BLEmanager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLEmanager.m; sourceTree = "<group>"; };
+		637D27681B32AEFD00DFB122 /* BLEPeripheral.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLEPeripheral.h; sourceTree = "<group>"; };
+		637D27691B32AEFD00DFB122 /* BLEPeripheral.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLEPeripheral.m; sourceTree = "<group>"; };
 		63806BE81B1BFF8600ED301D /* LoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginController.h; sourceTree = "<group>"; };
 		63806BE91B1BFF8600ED301D /* LoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginController.m; sourceTree = "<group>"; };
 		63806BEB1B1C099F00ED301D /* RegisteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisteViewController.h; sourceTree = "<group>"; };
@@ -250,7 +256,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				637858371B310CA3006D5155 /* AVOSCloud.framework in Frameworks */,
+				637D27641B32A0DA00DFB122 /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -407,6 +413,10 @@
 			children = (
 				637005C21AE4C1D000B8BAFD /* TXBLEOperation.h */,
 				637005C31AE4C1D000B8BAFD /* TXBLEOperation.m */,
+				637D27651B32A8BC00DFB122 /* BLEmanager.h */,
+				637D27661B32A8BC00DFB122 /* BLEmanager.m */,
+				637D27681B32AEFD00DFB122 /* BLEPeripheral.h */,
+				637D27691B32AEFD00DFB122 /* BLEPeripheral.m */,
 			);
 			path = bluetooth;
 			sourceTree = "<group>";
@@ -536,7 +546,7 @@
 		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
 			isa = PBXGroup;
 			children = (
-				637858361B310CA3006D5155 /* AVOSCloud.framework */,
+				637D27631B32A0DA00DFB122 /* AVOSCloud.framework */,
 				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
 				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
 				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
@@ -824,6 +834,7 @@
 				639132401B21778B00F61E04 /* ShowContactsController.m in Sources */,
 				63DEA68B1B0095F7003343A7 /* BLEDevicesController.m in Sources */,
 				635299831ADE3AF7006840AC /* TXKeyView.m in Sources */,
+				637D27671B32A8BC00DFB122 /* BLEmanager.m in Sources */,
 				637005CB1AE4C1D000B8BAFD /* TXCallAction.m in Sources */,
 				63BAEACD1B297260006004D7 /* SVProgressHUD.m in Sources */,
 				63947F1B1B1D7B7800555479 /* UpdatePwdController.m in Sources */,
@@ -834,6 +845,7 @@
 				63806BEA1B1BFF8600ED301D /* LoginController.m in Sources */,
 				6352996A1ADE372E006840AC /* CustomTabBarBtn.m in Sources */,
 				637005CC1AE4C1D000B8BAFD /* TXMessageProcessing.m in Sources */,
+				637D276A1B32AEFD00DFB122 /* BLEPeripheral.m in Sources */,
 				63FB5FD51ADBB58700A1A92B /* main.m in Sources */,
 				637C29CE1AEB997400CD3DAF /* ContactersController.m in Sources */,
 				63DEA67D1B0094FB003343A7 /* MsgFrame.m in Sources */,
@@ -920,7 +932,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "c9a09711-faa1-4612-8dcd-fc3bdfa6dc74";
+				PROVISIONING_PROFILE = "8e18f814-64f3-4aff-b7fa-511e6f3c0abb";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -959,7 +971,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "c9a09711-faa1-4612-8dcd-fc3bdfa6dc74";
+				PROVISIONING_PROFILE = "8e18f814-64f3-4aff-b7fa-511e6f3c0abb";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -968,7 +980,7 @@
 		63FB5FF31ADBB58800A1A92B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "LaunchImage-1";
 				CODE_SIGN_IDENTITY = "iPhone Distribution: ShenZhen WanShi Technology Co.,Ltd (FUNQN7N5RS)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: ShenZhen WanShi Technology Co.,Ltd (FUNQN7N5RS)";
@@ -981,6 +993,8 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
@@ -1041,7 +1055,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "0159fdde-c1b0-4f4b-9695-4b9a104d4db6";
+				PROVISIONING_PROFILE = "8e18f814-64f3-4aff-b7fa-511e6f3c0abb";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1049,7 +1063,7 @@
 		63FB5FF41ADBB58800A1A92B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "LaunchImage-1";
 				CODE_SIGN_IDENTITY = "iPhone Distribution: ShenZhen WanShi Technology Co.,Ltd (FUNQN7N5RS)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: ShenZhen WanShi Technology Co.,Ltd (FUNQN7N5RS)";
@@ -1062,6 +1076,8 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
@@ -1122,7 +1138,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "0159fdde-c1b0-4f4b-9695-4b9a104d4db6";
+				PROVISIONING_PROFILE = "8e18f814-64f3-4aff-b7fa-511e6f3c0abb";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

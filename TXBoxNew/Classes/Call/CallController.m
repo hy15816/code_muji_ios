@@ -89,9 +89,16 @@
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    //获取联系人数据
+    //获取联系人数据#pragma mark-- 获取通讯录联系人
     [self loadContacts];
 }
+
+-(void)loadContacts{
+    GetAllContacts *contacts = [[GetAllContacts alloc] init];
+    contacts.getContactsDelegate = self;
+    [contacts getContacts];
+}
+
 - (void)viewDidLoad {
     
     [super viewDidLoad];
@@ -111,28 +118,13 @@
  
     //用户使用信息~时长
     userInfoObj =[AVObject objectWithClassName: USER_SPORT_INFO];
-    /*
-    [userInfoObj setObject:@"12345678901" forKey:table_username];//username
-    [userInfoObj setObject:[NSNumber numberWithInt:1234] forKey:table_total_duration_call_transfer];//佩戴时长
-    [userInfoObj saveInBackgroundWithBlock:^(BOOL isSuc,NSError *error){
-        if (error) {
-            NSLog(@"addInfo error:%@",error.localizedDescription);
-        }else
-        {
-            NSLog(@"save succ");
-            
-        }
-    }];
-     */
-    GetAllContacts *get = [[GetAllContacts alloc] init];
-    get.getContactsDelegate = self;
-    [get gets];
     
-
 }
--(void)AllPeople:(NSMutableArray *)array
+#pragma mark -- getContacts Delegate
+-(void)getAllPhoneArray:(NSMutableArray *)array SectionDict:(NSMutableDictionary *)sDict PhoneDict:(NSMutableDictionary *)pDict
 {
-    VCLog(@"????:%@",array);
+    mutPhoneArray = array;
+    VCLog(@"mutPhoneArray:%@",array);
 }
 
 //初始化
@@ -791,112 +783,6 @@
     return @"Unknown";
 }
 
-
-#pragma mark-- 获取通讯录联系人
--(NSMutableArray*)loadContacts
-{
-    [mutPhoneArray removeAllObjects];
-    [phoneDic   removeAllObjects];
-    
-    //初始化电话簿
-    ABAddressBookRef myAddressBook = nil;
-    CFErrorRef *error = nil;
-    
-    //判断ios版本，6.0+需获取权限
-    if (IOS_DEVICE_VERSION>=6.0) {
-        
-        myAddressBook=ABAddressBookCreateWithOptions(NULL, error);
-        dispatch_semaphore_t sema=dispatch_semaphore_create(0);
-        ABAddressBookRequestAccessWithCompletion(myAddressBook, ^(bool greanted, CFErrorRef error){
-            dispatch_semaphore_signal(sema);
-        });
-        
-        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-        
-    }
-    else
-    {
-        //6.0以下直接获取
-        
-        myAddressBook = ABAddressBookCreateWithOptions(nil, error);
-        //myAddressBook =ABAddressBookCreate();
-    }
-    
-    if (myAddressBook==nil) {
-        return nil;
-    };
-    
-    //取得本地所有联系人记录
-    CFArrayRef results = ABAddressBookCopyArrayOfAllPeople(myAddressBook);
-    //VCLog(@"results：%@",results);
-    
-    CFMutableArrayRef mresults=CFArrayCreateMutableCopy(kCFAllocatorDefault,CFArrayGetCount(results),results);
-    
-    //将结果按照拼音排序，将结果放入mresults数组中
-    
-    CFArraySortValues(mresults,
-                      CFRangeMake(0, CFArrayGetCount(results)),
-                      (CFComparatorFunction) ABPersonComparePeopleByName,
-                      ((void*)ABPersonGetSortOrdering()));
-    
-    //遍历所有联系人
-    for (int k=0;k<CFArrayGetCount(mresults);k++) {
-        NSMutableDictionary *tempDic = [[NSMutableDictionary alloc] init];
-        //管理地址簿中条目的基类对象是 ABRecord,可以表示一个人 或者一个群体 ABGroup。ABRecord 的指针，标示为 ABRecordRef
-        ABRecordRef record=CFArrayGetValueAtIndex(mresults,k);
-        //返回个人或群体完整名称
-        //NSString *personname = (__bridge NSString *)ABRecordCopyCompositeName(record);
-        
-        NSString *firstName =(__bridge NSString *)ABRecordCopyValue(record, kABPersonSortByFirstName);  //返回个人名字
-        NSString *lastName =(__bridge NSString *)ABRecordCopyValue(record, kABPersonSortByLastName);    //返回个人姓
-        NSString *name;
-        if (firstName.length>0 && lastName.length>0) {
-            name = [[NSString alloc] initWithFormat:@"%@ %@",firstName,lastName];
-        }else if (firstName.length == 0 && lastName.length>0){
-            name = [[NSString alloc] initWithFormat:@"%@",lastName];
-        }else if (firstName.length >0 && lastName.length==0){
-            name = [[NSString alloc] initWithFormat:@"%@",firstName];
-        }else
-        {
-            name = [[NSString alloc] initWithFormat:NSLocalizedString(@"Unknow", nil)];
-        }
-        
-        
-        NSString *namePinYin = [name hanziTopinyin];
-        NSString *nameNum = [namePinYin pinyinTrimIntNumber];//转数字
-        
-        
-        //获取电话号码，通用的，基本的,概括的
-        ABMultiValueRef personPhone = ABRecordCopyValue(record, kABPersonPhoneProperty);
-        //记录在底层数据库中的ID号。具有唯一性
-        ABRecordID recordID=ABRecordGetRecordID(record);
-        //循环取出详细的每条号码记录
-        for (int k = 0; k<ABMultiValueGetCount(personPhone); k++)
-        {
-            NSString * phone = (__bridge NSString*)ABMultiValueCopyValueAtIndex(personPhone, k);
-            //加入phoneDic中
-            [phoneDic setObject:(__bridge id)(record) forKey:[NSString stringWithFormat:@"%@%d",phone,recordID]];
-            [tempDic setObject:phone forKey:@"personTel"];//把每一条号码存为key:“personTel”的Value
-            
-            NSString *phoneNum = [NSString stringWithFormat:@"-%@",phone];
-            [tempDic setObject:phoneNum forKey:@"personTelNum"];//-数字号码
-            //VCLog(@"phoneNum:%@",phoneNum);
-            
-            
-        }
-        [tempDic setObject:name forKey:@"personName"];//把名字存为key:"personName"的Value
-        [tempDic setObject:nameNum forKey:@"personNameNum"];//把数字名字保存
-        
-        //VCLog(@"tempDictemp：%@",tempDic);
-        [mutPhoneArray addObject:tempDic];//把tempDic赋给phoneArray数组
-        
-        
-    }
-    //VCLog(@"mutPhoneArray：%@",mutPhoneArray);
-    
-    return mutPhoneArray;
-    
-}
 
 
 

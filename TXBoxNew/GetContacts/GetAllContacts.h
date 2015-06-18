@@ -9,10 +9,10 @@
 #import <Foundation/Foundation.h>
 @protocol GetContactsDelegate <NSObject>
 
--(void)AllPeople:(NSMutableArray *)array;
+-(void)getAllPhoneArray:(NSMutableArray *)array SectionDict:(NSMutableDictionary *)sDict PhoneDict:(NSMutableDictionary *)pDict;
 
 @end
 @interface GetAllContacts : NSObject
--(void)gets;
+-(void)getContacts;
 @property(assign,nonatomic) id<GetContactsDelegate> getContactsDelegate;
 @end

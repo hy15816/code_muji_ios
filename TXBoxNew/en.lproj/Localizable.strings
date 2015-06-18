@@ -12,7 +12,7 @@
  *  NSLocalizedStringFromTable(@"label", @"InfoPlist", nil);
  */
 
-CFBundleDisplayName ="TXBoxNew";//这个是应用名称
+CFBundleDisplayName ="muji";//这个是应用名称
 
 "Phone" = "Phone";//电话
 "Message" = "Message";//

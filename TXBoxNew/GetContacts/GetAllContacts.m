@@ -33,7 +33,7 @@
     return self;
 }
 
--(NSMutableArray *)loadAllContacts{
+-(void)loadAllContacts{
     
     [phonesArray removeAllObjects];
     [sectionDicts removeAllObjects];
@@ -72,7 +72,7 @@
     }
     
     if (myAddressBook==nil) {
-        return nil;
+        return ;
     };
     
     //取得本地所有联系人记录
@@ -112,7 +112,7 @@
         
         //转拼音
         NSString *namePinYin = [name hanziTopinyin];
-        NSString *nameNum = [namePinYin pinyinTrimIntNumber];
+        //NSString *nameNum = [namePinYin pinyinTrimIntNumber];
         
         //获取电话号码，通用的，基本的,概括的
         ABMultiValueRef personPhone = ABRecordCopyValue(record, kABPersonPhoneProperty);
@@ -137,18 +137,22 @@
         [phonesArray addObject:tempDic];//把tempDic赋给phoneArray数组
         
     }
-    VCLog(@"phoneArray：%@",phonesArray);
+    //VCLog(@"phoneArray：%@",phonesArray);
+    //return phonesArray;
     
-    return phonesArray;
-    
+    /***
+     *  __bridge               arc显式转换。 与__unsafe_unretained 关键字一样 只是引用。
+     *  __bridge_retained      类型被转换时，其对象的所有权也将被变换后变量所持有
+     *  __bridge_transfer      本来拥有对象所有权的变量，在类型转换后，让其释放原先所有权 就相当于__bridge_retained后，原对像执行了release操作
+     */
     
     
 }
 
--(void)gets
+-(void)getContacts
 {
     [self loadAllContacts];
-    [self.getContactsDelegate AllPeople:phonesArray];
+    [self.getContactsDelegate getAllPhoneArray:phonesArray SectionDict:sectionDicts PhoneDict:phoneDicts];
 }
 
 @end
