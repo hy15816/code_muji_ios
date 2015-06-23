@@ -8,7 +8,6 @@
 
 #import "TXBLEOperation.h"
 #import "TXSqliteOperate.h"
-#import "TXGeneral+helper.h"
 
 @implementation TXBLEOperation
 @synthesize manager;

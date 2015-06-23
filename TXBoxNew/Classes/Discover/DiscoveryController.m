@@ -11,15 +11,15 @@
 #import "PopView.h"
 #import <ImageIO/ImageIO.h>
 #import "LoginController.h"
-#import <CoreBluetooth/CoreBluetooth.h>
 #import "TXSqliteOperate.h"
 #import <AVOSCloud/AVOSCloud.h>
+#import "BLEmanager.h"
 
-#define UUIDSTR_TEST_SERVICE @"FFE0"
-static NSString *const kDataInCharaUUID = @"FF01";//kDataOutCharaUUID
-static NSString *const kDataOutCharaUUID = @"FF01";
+#define UUIDSTR_TEST_SERVICE @"000056ef 00001000 80000080 5f9b34fb"
+static NSString *kWriteCharacteristicUUIDString = @"000034E1-0000-1000-8000-00805F9B34FB";//kDataOutCharaUUID
+static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-00805F9B34FB";
 
-@interface DiscoveryController ()<PopViewDelegate,CBCentralManagerDelegate,CBPeripheralDelegate,UIAlertViewDelegate>
+@interface DiscoveryController ()<PopViewDelegate,UIAlertViewDelegate,BLEmanagerDelegate>
 {
     NSUserDefaults *defaults;
   
@@ -30,6 +30,8 @@ static NSString *const kDataOutCharaUUID = @"FF01";
     UIImageView *ble_imgv;  //蓝牙图片
     TXSqliteOperate *txsqlite;
     BOOL isConnecting;
+    
+    BLEmanager *bleManage;
     
 }
 //label
@@ -60,13 +62,6 @@ static NSString *const kDataOutCharaUUID = @"FF01";
 @property (weak, nonatomic) IBOutlet UIButton *isAppVersion;
 @property (weak, nonatomic) IBOutlet UIButton *isFirmwareVersion;
 
-
-//连接外设
-@property (strong,nonatomic) CBCentralManager *manager;
-@property (strong,nonatomic) NSMutableArray *peripheralArray;
-@property (strong,nonatomic) CBPeripheral *peripheral;
-@property (strong,nonatomic) CBCharacteristic *readCharacteristic;
-@property (strong,nonatomic) CBCharacteristic *writeCharacteristic;
 @end
 
 @implementation DiscoveryController
@@ -76,7 +71,6 @@ static NSString *const kDataOutCharaUUID = @"FF01";
     [super viewWillAppear:animated];
     
     //键盘活动  键盘出现时
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disvViewDidShow:) name:KRefreshDisvView object:nil];
     
@@ -86,6 +80,11 @@ static NSString *const kDataOutCharaUUID = @"FF01";
     [self initButtons];
     
     [self isOrNotUpdateVersion];
+    
+    //初始化蓝牙
+    bleManage = [BLEmanager sharedInstance];
+    bleManage.managerDelegate = self;
+    
 }
 
 -(void)isOrNotUpdateVersion
@@ -158,6 +157,7 @@ static NSString *const kDataOutCharaUUID = @"FF01";
     
 }
 
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     defaults = [NSUserDefaults standardUserDefaults];
@@ -190,8 +190,6 @@ static NSString *const kDataOutCharaUUID = @"FF01";
     footv.alpha = .3;
     self.tableView.tableFooterView = footv;
     
-    //数组保存找到的设备
-    self.peripheralArray = [[NSMutableArray alloc] init];
 }
 
 #pragma mark - Table view
@@ -511,194 +509,102 @@ static NSString *const kDataOutCharaUUID = @"FF01";
         
     }else{//没绑定
         //
-        [self createBLECentralManager];
-        //if (isConnecting) {
+        [self scanPeripheral];
+        if (isConnecting) {
             [defaults setObject:@"1" forKey:BIND_STATE];
-        //}else{
-            //[defaults setObject:@"0" forKey:BIND_STATE];
-        //}
-        
-        
-
-        
-    }
-    [self initButtons];
-    
-    
-}
-
-
-#pragma mark --创建central并扫描外设
-//1.创建CBCentralManager
--(void)createBLECentralManager
-{
-    self.manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
-    [self scanForPeripherals];
-}
-
-//2.本机蓝牙状态
-- (void)centralManagerDidUpdateState:(CBCentralManager *)central;
-{
-    NSString *state = nil;
-    
-    switch ([central state])
-    {
-        case CBCentralManagerStateUnsupported:
-            state = @"The platform/hardware doesn't support Bluetooth Low Energy.";
-            break;
-        case CBCentralManagerStateUnauthorized:
-            state = @"The app is not authorized to use Bluetooth Low Energy.";
-            break;
-        case CBCentralManagerStatePoweredOff:
-            state = @"Bluetooth is currently powered off.";
-            break;
-        case CBCentralManagerStatePoweredOn:
-            state = @"work";//可用
-            break;
-        case CBCentralManagerStateUnknown:
-        default:
-            ;
-    }
-    
-    VCLog(@"Central manager state: %@", state);
-    
-}
-
-
-//3.扫描外设
--(void)scanForPeripherals
-{
-    [self.manager scanForPeripheralsWithServices:nil options:nil]; //Services 为nil表示扫描所有外设
-}
-
-//4.发现蓝牙设备，返回设备参数
--(void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
-{
-    //若数组里没有，则添加
-    if(![self.peripheralArray containsObject:peripheral.name])
-        [self.peripheralArray addObject:peripheral.name];
-    
-    VCLog(@"peripheralArray:%@", self.peripheralArray);
-    
-    VCLog(@"设备名：%@ 广告数据：%@ 信号强度：%@ ",peripheral.name,advertisementData,RSSI);
-    
-    [self connectPeripheral];
-}
-
-// 5.1连接设备
--(void)connectPeripheral
-{
-    //假设连接第一个
-    [self.manager connectPeripheral:[self.peripheralArray firstObject]  options:nil];
-}
-// 5.2连接成功
--(void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
-{
-    VCLog(@"connect suc :%@",peripheral);
-    //[self.connectTimer invalidate];//停止计时
-    isConnecting = peripheral.state;
-    peripheral.delegate = self;
-    [central stopScan];//停止扫描
-    [peripheral discoverServices:nil];// nil表示返回所有服务
-    //
-    [self.peripheral discoverServices:@[[CBUUID UUIDWithString:UUIDSTR_TEST_SERVICE]]];
-    [defaults setObject:@"1" forKey:BIND_STATE];
-    [self initButtons];
-}
-
-//发现外设-服务，
--(void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error
-{
-    if (error) {
-        VCLog(@"didDiscoverServices error:%@",error);
-    }else{
-        VCLog(@"已发现外设服务:%@",peripheral.services);
-        
-        for (CBService *service in peripheral.services) {
-            NSLog(@"发现UUID=%@的服务;并开始检测这个服务的特征码...",service.UUID);
-            
-            if ([service.UUID isEqual:[CBUUID UUIDWithString:UUIDSTR_TEST_SERVICE]]) {
-                
-                [peripheral discoverCharacteristics:nil forService:service];
-            } 
+        }else{
+            [defaults setObject:@"0" forKey:BIND_STATE];
         }
         
         
-    }
 
-}
-
-//如果一个特征被检测到
-- (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error {
-    
-    if (error) {
         
-        VCLog(@"%s,%@",__PRETTY_FUNCTION__,error);
-        
-    } else {
-        if ([service.UUID isEqual:[CBUUID UUIDWithString:UUIDSTR_TEST_SERVICE]]) {
-            
-            VCLog(@"-------service charactristics is %@\n=========================",service.characteristics);
-            
-            for (CBCharacteristic *characteristic in service.characteristics) {
-                
-                VCLog(@"发现特征的服务:%@ (%@)",service.UUID.data,service.UUID);
-                
-                if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:kDataInCharaUUID]]) {
-                    //主机端通过该 Characteristic 给从机端(BLE 透传模块)发送数据
-                    
-                    _writeCharacteristic = characteristic;
-                    
-                    [self.peripheral setNotifyValue:YES
-                                  forCharacteristic:_writeCharacteristic];//设定写特征
-                    
-                    //服务给设备发送数据 
-                    //[self sendDataInCharaUUID];
-                    
-                }else if([characteristic.UUID isEqual:[CBUUID UUIDWithString:kDataOutCharaUUID]]){ 
-                    
-                    
-                }//else if([characteristic.UUID isEqual:[CBUUID UUIDWithString:kBaudRateCharaUUID]]){
-                    
-                //}
-            } 
-        } 
-    } 
-}
-
-//若特征值更新，此方法收到通知
--(void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
-{
-    VCLog(@"characteristic:%@",characteristic);
-}
-
-//主机发送数据给从机者
-- (void)sendDataInCharaUUID {
-    
-    NSString* sendDataInString = @"~200141410000FDB3";
-    unsigned char dataTailString = 0x0D;
-    NSData* data = [NSData dataWithBytes:&dataTailString length:1.0];
-    NSString* string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSString * tatalString = [sendDataInString stringByAppendingString:string];
-    NSData* sendDataIn = [tatalString dataUsingEncoding:NSUTF8StringEncoding];
-    
-    NSLog(@"sendData is %@ characteristic is %@",sendDataIn,_writeCharacteristic);
-    
-    [_peripheral writeValue:sendDataIn forCharacteristic:_writeCharacteristic type:CBCharacteristicWriteWithoutResponse];
-}
-
-//断开连接
--(void)disConnect
-{
-    if (self.peripheral != nil) {
-        VCLog(@"is disConnect");
-        [self.manager cancelPeripheralConnection:self.peripheral];
     }
+    [self initButtons];
+    
+    
+}
+//扫描
+-(void)scanPeripheral
+{
+    [bleManage.centralManager scanForPeripheralsWithServices:nil options:nil];
+
+}
+
+#pragma mark -- managerDelegate
+-(CBPeripheral *)searchedPeripheral:(NSArray *)peripArray
+{
+    if (peripArray.count >=1) {
+        [bleManage.centralManager stopScan];
+        //连接第一个
+        [bleManage.centralManager connectPeripheral:peripArray[0] options:nil];
+    }
+    
+    return peripArray[0];
+}
+
+-(void)managerConnectedPeripheral:(BOOL)isConnect
+{
+    isConnecting = isConnect;
+    //连接成功
+    if (isConnect == YES) {
+        [bleManage.centralManager stopScan];
+    }
+}
+//是否断线重连
+-(BOOL)mangerDisConnectedPeripheral:(CBPeripheral *)peripheral
+{
+    return YES;
+}
+
+//是否监听特征
+-(BOOL)managerSetNotifyValue
+{
+    return NO;
+}
+
+//发送数据
+-(BLEPeripheral *)getPeripheralInfo
+{
+    BLEPeripheral *perip = [[BLEPeripheral alloc] init];
+    perip.characteristicWriteType = CBCharacteristicWriteWithResponse;
+    perip.writeData = [self getData];
+    return perip;
+}
+
+-(NSData *)getData
+{
+    Byte data[20];
+    for (int i=0; i<kByte_count; i++) {
+        data[i] = 0x00;
+    }
+    //查询固件版本
+    data[0]  = 0x5A;//strtoul([@"0x5A" UTF8String],0,16);//发送方
+    data[1]  = 0x10;
+    
+    NSData * myData = [NSData dataWithBytes:&data length:sizeof(data)];
+    return myData;
+}
+//接收到的数据
+-(void)mangerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic
+{
+    VCLog(@"data:%@",data);
+    VCLog(@"hexString:%@",hexString);
+    //VCLog(@"curC:     %@",curCharacteristic);
+    
+}
+//返回读和写特征值的string
+-(NSDictionary *)peripheralChacteristicString
+{
+    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:kWriteCharacteristicUUIDString,keyWriteChc,kreadCharacteristicUUIDString,keyReadChc, nil];
+    return dict;
 }
 
 -(void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
+    bleManage.managerDelegate = nil;
+    
     
 }
 

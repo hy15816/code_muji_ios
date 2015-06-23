@@ -8,11 +8,19 @@
 
 #import <Foundation/Foundation.h>
 @protocol GetContactsDelegate <NSObject>
-
+@optional
+/**
+ *  返回获取的联系人
+ *  @param array phoneArray
+ *  @param sDict sectionDict
+ *  @param pDict phoneDict
+ */
 -(void)getAllPhoneArray:(NSMutableArray *)array SectionDict:(NSMutableDictionary *)sDict PhoneDict:(NSMutableDictionary *)pDict;
 
 @end
 @interface GetAllContacts : NSObject
--(void)getContacts;
+
+-(void)getContacts;//获取所有联系人
 @property(assign,nonatomic) id<GetContactsDelegate> getContactsDelegate;
+
 @end

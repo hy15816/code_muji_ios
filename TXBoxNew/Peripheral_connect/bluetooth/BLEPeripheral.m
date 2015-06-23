@@ -9,7 +9,8 @@
 #import "BLEPeripheral.h"
 
 @implementation BLEPeripheral
-@synthesize peripDelegate;
+@synthesize writeData,characteristicWriteType;
+
 -(id)init
 {
     if ((self = [super init])) {
@@ -22,4 +23,5 @@
     
     return self;
 }
+
 @end

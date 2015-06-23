@@ -10,8 +10,9 @@
 #import "TXCallAction.h"
 #import <ImageIO/ImageIO.h>
 #import <AVFoundation/AVFoundation.h>
+#import "BLEmanager.h"
 
-@interface CallingController ()<AVAudioPlayerDelegate>
+@interface CallingController ()<AVAudioPlayerDelegate,BLEmanagerDelegate>
 {
     TXCallAction *callAct;
     int times;
@@ -25,7 +26,9 @@
     size_t count; // gif动画的总帧数
     NSTimer *timertimer; // 播放gif动画所使用的timer
     BOOL isLighter;
+    BOOL isOrNotConnect;
     AVAudioPlayer *avplay;//播放音频
+    BLEmanager *blemanagerc;
 }
 @property (strong, nonatomic) IBOutlet UIView *topView;
 @property (strong, nonatomic) IBOutlet UILabel *topViewLabel;
@@ -62,6 +65,8 @@
     [super viewDidLoad];
     callAct = [[TXCallAction alloc] init];
     defaults = [NSUserDefaults standardUserDefaults];
+    blemanagerc = [BLEmanager sharedInstance];
+    blemanagerc.managerDelegate = self;
     self.timeLength.text = NSLocalizedString(@"Calling", nil);
     times = 0;
     
@@ -75,6 +80,13 @@
     }
     
     self.topView.hidden = YES;
+    
+}
+
+#pragma mark -- BLEManagerDelegate
+-(void)managerConnectedPeripheral:(BOOL)isConnect
+{
+    isOrNotConnect = isConnect;
     
 }
 
@@ -301,7 +313,7 @@
 
     self.timeLength.text = [NSString stringWithFormat:@"%@%@:%@",hours,min,second];
     self.topViewLabel.text =[NSString stringWithFormat:@"轻按此处返回 %@%@:%@",hours,min,second];
-    //使闪烁
+    //使文字闪烁
     if (isLighter) {
         [UIView animateWithDuration:0.5f animations:^{
             self.topViewLabel.alpha = .3;

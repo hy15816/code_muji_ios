@@ -9,13 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
-@protocol PeripDelegate <NSObject>
-
--(void)writeData:(NSData *)data toCharacteristic:(CBCharacteristic *)c type:(CBCharacteristicWriteType)type;
-
-@end
-
-@interface BLEPeripheral : NSObject
+@interface BLEPeripheral : NSObject<CBPeripheralDelegate>
 
 @property(nonatomic,strong) CBPeripheral *peri;
 @property(nonatomic,strong) NSString *periIdentifier;
@@ -24,6 +18,7 @@
 @property(nonatomic,strong) NSNumber *periRSSI;
 @property(nonatomic,assign) NSInteger  periServices;
 
-@property (assign,nonatomic) id<PeripDelegate> peripDelegate;
+@property (nonatomic,strong) NSData *writeData;
+@property (nonatomic,assign) CBCharacteristicWriteType characteristicWriteType;
 
 @end

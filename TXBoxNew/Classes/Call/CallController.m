@@ -108,8 +108,7 @@
     self.selectedIndexPath = nil;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;//tableview分割线
     
-    [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@",[self getCarrier]]];
-    
+    //[SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@",[self getCarrier]]];
     
     zzArray =[[NSMutableArray alloc] init];
     //[sqlite openPhoneArearDatabase];

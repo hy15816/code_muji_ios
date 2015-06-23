@@ -148,7 +148,10 @@
 #define table_username @"username"  //NSString
 #define table_total_duration_call_transfer @"total_duration_call_transfer"  //NSNumber
 
-
+//发送给设备蓝牙的数据长度
+#define kByte_count   20//数据长度
+#define keyWriteChc @"writeChc"//
+#define keyReadChc  @"readChc"
 
 
 

@@ -7,7 +7,6 @@
 //
 
 #import "TXCallAction.h"
-#import "TXGeneral+helper.h"
 #import "NSString+helper.h"
 
 @implementation TXCallAction
@@ -91,20 +90,6 @@
     //开始时间
     NSString *strDate = [dateFormate stringFromDate:date];//sreDate:如1503261130
     
-    /*
-    //开始时间
-    [dateFormate setDateFormat:@"HH:mm:ss"];
-    NSString *strDate2 = [dateFormate stringFromDate:date];//sreDate2:如113059
-    
-    //结束时间
-    NSDate *endDate = [NSDate date];
-    [dateFormate setDateFormat:@"HH:mm:ss"];
-    NSString *strEndDate =[dateFormate stringFromDate:endDate];//strEndDate:如113559
-    
-    //计算之间时间
-    NSString *strCallLength = [self intervalFromLastDate:strDate2 toTheDate:strEndDate];
-    */
-    
     //通话时长
     NSString *strCallLength = times;
     //姓名
@@ -128,7 +113,7 @@
     
     //运营商
     NSString *strOperators = [[NSString alloc] init];
-    strOperators = [TXGeneral_helper isMobileNumber:hisNumber];
+    strOperators = [hisNumber isMobileNumberWhoOperation];
     
     //归属地
     NSString *strAddress = [[NSString alloc] init];

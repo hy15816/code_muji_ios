@@ -509,7 +509,7 @@
     NSString *numberInputString = [searchController.searchBar.text pinyinTrimIntNumber];
     VCLog(@"numberInputString:%@",numberInputString);
     
-    NSString *AlastChar = [self.searchController.searchBar.text substringWithRange:NSMakeRange(self.searchController.searchBar.text.length-1, 1)];
+    //NSString *AlastChar = [self.searchController.searchBar.text substringWithRange:NSMakeRange(self.searchController.searchBar.text.length-1, 1)];
     //NSString *inputStrings = [NSString stringWithFormat:@"-%@[0-9,A,B,C]*",AlastChar];
     
     //连续输入
