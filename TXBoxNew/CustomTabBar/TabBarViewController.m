@@ -10,8 +10,10 @@
 #import "TXTelNumSingleton.h"
 #import "TXCallAction.h"
 #import "CallingController.h"
+#import "GuideView.h"
+//#import "Guides.h"
 
-@interface TabBarViewController ()<tabBarViewDelegate,UIAlertViewDelegate>
+@interface TabBarViewController ()<tabBarViewDelegate,UIAlertViewDelegate,GuideViewDelegate>
 {
     CustomTabBarView *tabBarView;
     CustomTabBarBtn *previousBtn;
@@ -31,9 +33,17 @@
 {
     [super viewWillAppear:animated];
 
-    //显示
+    //显示tabBar
     tabBarView.hidden = NO;
-    
+    //第一次，则加载引导页
+    if (![defaults valueForKey:@"firstLaunch"]) {
+        
+        GuideView *gview = [[GuideView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT)];
+        gview.guideDelegate = self;
+        [self.view addSubview:gview];
+        [defaults setValue:@"1" forKey:@"firstLaunch"];
+        
+    }
 }
 
 - (void)viewDidLoad {
@@ -81,18 +91,24 @@
     swipe.direction = UISwipeGestureRecognizerDirectionDown;
     [self.view addGestureRecognizer:swipe];
     
-    
-    
     //
     //接收所有通知
     if([self respondsToSelector:@selector(cutomKeyboradAndTabViewHide:)]) {
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cutomKeyboradAndTabViewHide:) name:nil object:nil];
     }
-    
 
 }
 
+#pragma mark -- GuideView Delegate
+-(Guides *)getInfo
+{
+    Guides *gds = [[Guides alloc] init];
+    NSArray *imageArray = [NSArray arrayWithObjects:@"lch_0_568h", nil];
+    gds.imageArray =imageArray;
+    
+    return gds;
+}
 
 
 //处理swipe
@@ -247,7 +263,6 @@
 }
 
 #pragma mark -- 通知
-
 -(void) cutomKeyboradAndTabViewHide:(NSNotification *)notifi
 {
     if ([notifi.name isEqual:kKeyboardAndTabViewHide]) {
@@ -319,6 +334,7 @@
     [isNoMujiAlert show];
 }
 
+#pragma mark -- 加载Calling view
 -(void) addCallingView
 {
     //添加calling页面
@@ -361,15 +377,7 @@
     
 }
 
--(void) viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    
-    //移除通知
-    //[[NSNotificationCenter defaultCenter] removeObserver:self name:ktextChangeNotify object:nil];
-    
-}
-
+#pragma mark -- AlertView delegate
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (alertView.tag == 1200) {
@@ -403,6 +411,14 @@
     }
 }
 
+-(void) viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    //移除通知
+    //[[NSNotificationCenter defaultCenter] removeObserver:self name:ktextChangeNotify object:nil];
+    
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

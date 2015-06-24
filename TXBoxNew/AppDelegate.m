@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "TXSqliteOperate.h"
 
+
 @interface AppDelegate ()<UIAlertViewDelegate>
 
 @end
@@ -46,7 +47,7 @@
     
     */
     
-    
+    //
     return YES;
 }
 

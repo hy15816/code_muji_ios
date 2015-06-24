@@ -125,4 +125,19 @@
     // Configure the view for the selected state
 }
 
+-(void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    if (self.selected)
+    {
+        self.contentView.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = [UIColor clearColor]; //
+        //self.cellRockImageView.backgroundColor = [UIColor clearColor];
+        
+    }
+    
+    
+}
+
 @end

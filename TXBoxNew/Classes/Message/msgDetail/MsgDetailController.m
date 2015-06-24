@@ -20,6 +20,7 @@
     EditView *editView;
     NSMutableArray *selectArray;
     NSMutableArray *indexpathArray;
+    NSMutableDictionary *deleteDict;
 }
 @property (strong, nonatomic) NSMutableArray *detailArray;
 @property (strong, nonatomic) NSMutableArray *allMsgFrame;
@@ -63,6 +64,7 @@
     self.detailArray = [[NSMutableArray alloc] init];
     selectArray = [[NSMutableArray alloc] init];
     indexpathArray = [[NSMutableArray alloc] init];
+    deleteDict = [[NSMutableDictionary alloc] init];
     VCLog(@"datailDatas:%@",self.datailDatas);
     
     // 显示左边按钮
@@ -160,25 +162,28 @@
 {
     //删除选中的条目
     //数据库
+    
     for (NSArray *arr in selectArray) {
         [txsqlite deleteContacterWithNumber:arr[0] formTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME peopleId:arr[1] withSql:DELETE_MESSAGE_RECORD_SQL];
     }
     //重新获取数据
     self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
-    //取消选中
+    
+    
+    /*
+    [self.detailArray removeObjectsInArray:[deleteDict allKeys]];
+    [self.tableview deleteRowsAtIndexPaths:[NSArray arrayWithArray:[deleteDict allValues]] withRowAnimation:UITableViewRowAnimationFade];
+    */
     [self cancelCheckCell];
-    //
-    //[self.tableview beginUpdates];
-    //[self.tableview endUpdates];
-    
-    [self.tableview reloadData];
-    
 }
 
 //
 -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [indexpathArray removeLastObject];
+    //移除再次选中的
+    [deleteDict removeObjectForKey:[self.detailArray[indexPath.row] msgSender]];
+    //[selectArray removeLastObject];
+    
     if (indexpathArray.count <= 0) {
         [editView.copysButton setEnabled:NO];
         [editView.sharesButton setEnabled:NO];
@@ -202,6 +207,9 @@
     [selectArray addObject:checkDatas];
     [indexpathArray addObject:indexPath];
     
+    //
+    [deleteDict setObject:indexPath forKey:msgsender];
+    
     if (indexpathArray.count >0) {
         [editView.copysButton setEnabled:YES];
         [editView.sharesButton setEnabled:YES];
@@ -212,27 +220,6 @@
     
     
 }
-// 允许编辑
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    /*
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        
-        
-        
-        
-        NSMutableArray *array = [ [ NSMutableArray alloc ] init ];
-        
-        [ array addObject: indexPath];
-        
-        [self.detailArray removeObjectAtIndex:indexPath.row];//移除数组的元素
-        
-        
-        [tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];
-    }
-     */
-}
-
 
 -(void)setArearLabelTitle
 {

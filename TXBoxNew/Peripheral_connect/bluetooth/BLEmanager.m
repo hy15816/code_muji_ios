@@ -135,12 +135,12 @@ static BLEmanager *sharedBLEmanger=nil;
 {
     VCLog(@"connect suc p.name:%@",peripheral.name);
     cPeripheral = peripheral;
-    //代理
+    
     //8.1读取外设的所有服务UUID
     cPeripheral.delegate = self;
     [cPeripheral discoverServices:nil];
     
-    //代理
+    //代理,连接成功
     [managerDelegate managerConnectedPeripheral:YES];
 }
 
@@ -224,7 +224,7 @@ static BLEmanager *sharedBLEmanger=nil;
         
         //接收到的值传出去
         NSData *receiveData = characteristic.value;
-        [managerDelegate mangerReceiveDataPeripheralData:receiveData toHexString:[self hexadecimalString:receiveData] fromCharacteristic:characteristic];
+        [managerDelegate managerReceiveDataPeripheralData:receiveData toHexString:[self hexadecimalString:receiveData] fromCharacteristic:characteristic];
     }
     
     
@@ -242,7 +242,7 @@ static BLEmanager *sharedBLEmanger=nil;
     if ([[characteristic UUID] isEqual:[CBUUID UUIDWithString:[chcDict valueForKey:keyReadChc]]]) {
         //接收到的值传出去
         NSData *receiveData = characteristic.value;
-        [managerDelegate mangerReceiveDataPeripheralData:receiveData toHexString:[self hexadecimalString:receiveData] fromCharacteristic:characteristic];
+        [managerDelegate managerReceiveDataPeripheralData:receiveData toHexString:[self hexadecimalString:receiveData] fromCharacteristic:characteristic];
     }
     
 }
@@ -272,14 +272,16 @@ static BLEmanager *sharedBLEmanger=nil;
     //前提是 原已经连接上的
     VCLog(@"conncet error:%@",error.localizedDescription);
     
-    if (error == nil) {
-        //
-    }else{
+    if (error) {
+        
+        [managerDelegate managerConnectedPeripheral:NO];
         //断线重新连接当前外设
-        if ([managerDelegate mangerDisConnectedPeripheral:peripheral]) {
-            [managerDelegate mangerDisConnectedPeripheral:peripheral];
+        BOOL isdisCon = [managerDelegate managerDisConnectedPeripheral:peripheral];
+        if (isdisCon) {
+            [centralManager connectPeripheral:cPeripheral options:nil];
         }
         
+    }else{
         
     }
     
@@ -290,7 +292,7 @@ static BLEmanager *sharedBLEmanger=nil;
     VCLog(@"fail to conncet p error:%@",error.localizedDescription);
     
     //代理
-    [managerDelegate mangerDisConnectedPeripheral:peripheral];
+    [managerDelegate managerConnectedPeripheral:NO];
     
 }
 #pragma mark -- [peripheral readRSSI]方法回调

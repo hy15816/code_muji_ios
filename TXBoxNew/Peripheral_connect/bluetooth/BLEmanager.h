@@ -24,7 +24,7 @@
  *  @param peripheral 当前外设
  *  @return YES是, NO否
  */
--(BOOL)mangerDisConnectedPeripheral :(CBPeripheral *)peripheral;
+-(BOOL)managerDisConnectedPeripheral :(CBPeripheral *)peripheral;
 
 /**
  *  返回蓝牙接收到的值
@@ -32,7 +32,7 @@
  *  @param hexString         16进制string
  *  @param curCharacteristic 当前特征
  */
--(void)mangerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic;
+-(void)managerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic;
 
 /**
  *  @method 是否监听值

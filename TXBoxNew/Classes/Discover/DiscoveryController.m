@@ -32,7 +32,7 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     BOOL isConnecting;
     
     BLEmanager *bleManage;
-    
+    CBPeripheral *currentPerip;
 }
 //label
 @property (weak, nonatomic) IBOutlet UILabel *phoneNumber;
@@ -77,8 +77,8 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     //通知显示tabBar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
     
-    [self initButtons];
-    
+    [self initLoginAndConfigButtons];
+    [self refreshBindButton];
     [self isOrNotUpdateVersion];
     
     //初始化蓝牙
@@ -147,16 +147,15 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
 }
 -(void)disvViewDidShow:(NSNotification *)notifi
 {
-    [self initButtons];
+    [self initLoginAndConfigButtons];
+    [self refreshBindButton];
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     
-    
 }
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -168,8 +167,6 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     
     //(self.configureButton.frame.origin.x-self.loginButton.frame.origin.x+45)/2
     [self.bindButton setFrame:CGRectMake(50, self.loginButton.frame.origin.y, 45, 23)];
-    
-    
     
     self.phoneNumber.hidden = YES;
     self.mujiNumber.hidden = YES;
@@ -183,7 +180,6 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     self.loginButton.layer.cornerRadius = 13;
     self.configureButton.layer.cornerRadius = 13;
     self.bindButton.layer.cornerRadius = 13;
-    
     
     UILabel *footv =[[UILabel alloc] initWithFrame:CGRectMake(15, 0, DEVICE_HEIGHT, 1)];
     footv.backgroundColor = [UIColor grayColor];
@@ -227,10 +223,9 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     VCLog(@"x");
 }
 #pragma mark -- 初始化btn
--(void)initButtons{
+-(void)initLoginAndConfigButtons{
     
     BOOL loginState = [[defaults valueForKey:LOGIN_STATE] intValue];
-    BOOL bindState = [[defaults valueForKey:BIND_STATE] intValue];
     BOOL configState = [[defaults valueForKey:CONFIG_STATE] intValue];
     
     if (loginState) {//已登录
@@ -284,6 +279,13 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
         
     }
     
+    
+    
+}
+
+-(void)refreshBindButton
+{
+    BOOL bindState = [[defaults valueForKey:BIND_STATE] intValue];
     if (bindState) {//已绑定
         [self.bindButton setTitle:@"  解绑  " forState:UIControlStateNormal];
         [self.bindButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];//ble_connect
@@ -304,8 +306,8 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
         [self.bindButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
         
     }
-    
 }
+
 #pragma mark -- 加载gif图片
 -(void)initAnimatedWithFileName :(NSString *)fileName andType:(NSString *)type view:(UIView *)vview
 {
@@ -442,7 +444,7 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
         }
     }
     
-    [self initButtons];
+    [self initLoginAndConfigButtons];
 }
 
 
@@ -478,7 +480,7 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
         [self loginOut];
         [defaults setValue:@"0" forKey:LOGIN_STATE];
         [defaults setValue:@"0" forKey:CONFIG_STATE];
-        [self initButtons];
+        [self initLoginAndConfigButtons];
     }else
     {
         VCLog(@"11");
@@ -506,31 +508,42 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     BOOL bstate = [[defaults valueForKey:BIND_STATE] intValue];
     if (bstate) {
         [defaults setObject:@"0" forKey:BIND_STATE];
-        
+        //断开蓝牙连接
+        [self cutConnectperipheral];
     }else{//没绑定
-        //
+        
+        [SVProgressHUD showWithStatus:@"匹配中..." maskType:SVProgressHUDMaskTypeNone];
+        //查找外设
         [self scanPeripheral];
-        if (isConnecting) {
-            [defaults setObject:@"1" forKey:BIND_STATE];
-        }else{
-            [defaults setObject:@"0" forKey:BIND_STATE];
+        if (!isConnecting) {
+            [self performSelector:@selector(dismissSvp) withObject:nil afterDelay:15];//扫描外设时间
         }
         
-        
-
-        
     }
-    [self initButtons];
-    
+    [self refreshBindButton];
     
 }
+
+-(void)dismissSvp
+{
+    [SVProgressHUD showImage:nil status:@"连接超时"];
+    [bleManage.centralManager stopScan];
+    [SVProgressHUD dismiss];
+}
+
 //扫描
 -(void)scanPeripheral
 {
     [bleManage.centralManager scanForPeripheralsWithServices:nil options:nil];
 
 }
-
+-(void)cutConnectperipheral
+{
+    if (currentPerip) {
+        [bleManage.centralManager cancelPeripheralConnection:currentPerip];
+    }
+    
+}
 #pragma mark -- managerDelegate
 -(CBPeripheral *)searchedPeripheral:(NSArray *)peripArray
 {
@@ -539,20 +552,27 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
         //连接第一个
         [bleManage.centralManager connectPeripheral:peripArray[0] options:nil];
     }
-    
+    currentPerip = peripArray[0];
     return peripArray[0];
 }
 
 -(void)managerConnectedPeripheral:(BOOL)isConnect
 {
     isConnecting = isConnect;
+    if (isConnecting) {
+        [defaults setObject:@"1" forKey:BIND_STATE];
+    }else{
+        [defaults setObject:@"0" forKey:BIND_STATE];
+    }
+    [self refreshBindButton];
     //连接成功
     if (isConnect == YES) {
         [bleManage.centralManager stopScan];
+        [SVProgressHUD dismiss];
     }
 }
 //是否断线重连
--(BOOL)mangerDisConnectedPeripheral:(CBPeripheral *)peripheral
+-(BOOL)managerDisConnectedPeripheral:(CBPeripheral *)peripheral
 {
     return YES;
 }
@@ -586,7 +606,7 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     return myData;
 }
 //接收到的数据
--(void)mangerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic
+-(void)managerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic
 {
     VCLog(@"data:%@",data);
     VCLog(@"hexString:%@",hexString);
@@ -596,15 +616,16 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
 //返回读和写特征值的string
 -(NSDictionary *)peripheralChacteristicString
 {
-    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:kWriteCharacteristicUUIDString,keyWriteChc,kreadCharacteristicUUIDString,keyReadChc, nil];
+    //dict =  {value,key};
+    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:kWriteCharacteristicUUIDString,keyWriteChc,
+                                                                      kreadCharacteristicUUIDString,keyReadChc, nil];
     return dict;
 }
 
 -(void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    bleManage.managerDelegate = nil;
-    
+    //bleManage.managerDelegate = nil;
     
 }
 

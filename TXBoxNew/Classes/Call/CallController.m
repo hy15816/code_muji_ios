@@ -26,6 +26,7 @@
 #import <AVOSCloud/AVOSCloud.h>
 #import "GetAllContacts.h"
 
+
 @interface CallController ()<UITextFieldDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate,GetContactsDelegate>
 {
     NSMutableArray *CallRecords;
@@ -83,6 +84,11 @@
     CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
     [self.tableView reloadData];
     //VCLog(@"int max:%i",INT_MAX);
+    
+    
+    
+    
+    
 }
 
 
