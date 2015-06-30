@@ -15,10 +15,6 @@
 #import <AVOSCloud/AVOSCloud.h>
 #import "BLEmanager.h"
 
-#define UUIDSTR_TEST_SERVICE @"000056ef 00001000 80000080 5f9b34fb"
-static NSString *kWriteCharacteristicUUIDString = @"000034E1-0000-1000-8000-00805F9B34FB";//kDataOutCharaUUID
-static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-00805F9B34FB";
-
 @interface DiscoveryController ()<PopViewDelegate,UIAlertViewDelegate,BLEmanagerDelegate>
 {
     NSUserDefaults *defaults;
@@ -34,33 +30,39 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     BLEmanager *bleManage;
     CBPeripheral *currentPerip;
 }
+
+@property (strong, nonatomic) IBOutlet UIImageView *firstImageView;
+@property (strong, nonatomic) IBOutlet UIImageView *secondImageView;
+
 //label
-@property (weak, nonatomic) IBOutlet UILabel *phoneNumber;
-@property (weak, nonatomic) IBOutlet UILabel *mujiNumber;
-@property (weak, nonatomic) IBOutlet UILabel *connectNumber;
-//
-@property (weak, nonatomic) IBOutlet UIButton *phoneButton;
-@property (weak, nonatomic) IBOutlet UIButton *mujiButton;
-@property (weak, nonatomic) IBOutlet UIButton *connectButton;
+@property (weak, nonatomic) IBOutlet UILabel *phoneNumber;//本机号码
+@property (weak, nonatomic) IBOutlet UILabel *mujiNumber;//拇机号码
 
 //静态图片
-@property (weak, nonatomic) IBOutlet UIView *BLEView;
-@property (weak, nonatomic) IBOutlet UIView *connectView;
+@property (weak, nonatomic) IBOutlet UIView *BLEView;//蓝牙
+@property (weak, nonatomic) IBOutlet UIView *connectView;//通讯
+@property (strong, nonatomic) IBOutlet UIImageView *callAnotherImgView;//呼转
+@property (strong, nonatomic) IBOutlet UIImageView *callingImgView;//来电
 
 //gif图
-@property (weak, nonatomic) IBOutlet UIView *BLEgifView;
-@property (weak, nonatomic) IBOutlet UIView *connectGifView;
+@property (weak, nonatomic) IBOutlet UIView *BLEgifView;//蓝牙
+@property (weak, nonatomic) IBOutlet UIView *connectGifView;//通讯
 
 //button
-@property (weak, nonatomic) IBOutlet UIButton *loginButton;
+@property (strong, nonatomic) IBOutlet UIButton *callAnotherButton;//呼转
+@property (weak, nonatomic) IBOutlet UIButton *loginButton;//登录
+@property (weak, nonatomic) IBOutlet UIButton *bindButton;//控制
+@property (weak, nonatomic) IBOutlet UIButton *configureButton;//配置
+
+//button action
+- (IBAction)callAnotherButtonClick:(UIButton *)sender;
 - (IBAction)loginButtonClick:(UIButton *)sender;
-@property (weak, nonatomic) IBOutlet UIButton *bindButton;
 - (IBAction)bindButtonClick:(UIButton *)sender;
-@property (weak, nonatomic) IBOutlet UIButton *configureButton;
 - (IBAction)configureButtonClick:(UIButton *)sender;
+
 //版本
-@property (weak, nonatomic) IBOutlet UIButton *isAppVersion;
-@property (weak, nonatomic) IBOutlet UIButton *isFirmwareVersion;
+@property (weak, nonatomic) IBOutlet UIButton *isAppVersion;//app版本
+@property (weak, nonatomic) IBOutlet UIButton *isFirmwareVersion;//固件版本
 
 @end
 
@@ -105,7 +107,7 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     BOOL a = [[defaults valueForKey:@"versionSSSd"] intValue];
             if (!a) {//[str2 floatValue] != [str floatValue]
                 
-                UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"不OK" otherButtonTitles:@"OK", nil];
+                UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
                 atView.tag = 1005;
                 atView.delegate = self;
                 [atView show];
@@ -125,8 +127,28 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (alertView.tag == 1005) {
-        [defaults setValue:@"1" forKey:@"versionSSSd"];
+        if (buttonIndex == 0) {
+            [defaults setValue:@"1" forKey:@"versionSSSd"];
+        }
+        
     }
+    
+    if (alertView.tag == 1110) {//已登录，请先配置
+        if (buttonIndex == 0) {
+            [self configureButtonClick:nil];
+        }
+        
+    }
+    
+    if (alertView.tag == 1111) {//先登录
+        if (buttonIndex == 0) {
+            [self loginButtonClick:nil];
+        }
+        
+    }
+    
+    
+    
 }
 - (void)keyboardWasShow:(NSNotification*)aNotification{
     
@@ -162,21 +184,34 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     defaults = [NSUserDefaults standardUserDefaults];
     txsqlite = [[TXSqliteOperate alloc] init];
     
+    self.firstImageView.layer.borderWidth = .5;
+    //self.firstImageView.layer.borderColor = (__bridge CGColorRef)([UIColor grayColor]);
+    self.firstImageView.layer.cornerRadius = 8;
+    
+    self.secondImageView.layer.borderWidth = .5;
+    self.secondImageView.layer.borderColor = [UIColor blackColor].CGColor;
+    self.secondImageView.layer.cornerRadius = 8;
+    
+    
+    //textView的背景
+    UIImage *rawEntryBackground = [UIImage imageNamed:@"disc_NodeBkg"];
+    UIImage *entryBackground = [rawEntryBackground stretchableImageWithLeftCapWidth:13 topCapHeight:12];
+    UIImageView *entryImageView = [[UIImageView alloc] initWithImage:entryBackground];
+    //self.firstImageView.image = entryBackground;
+    
+    
     con_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 42, 23)];
     ble_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 42, 23)];
     
-    //(self.configureButton.frame.origin.x-self.loginButton.frame.origin.x+45)/2
-    [self.bindButton setFrame:CGRectMake(50, self.loginButton.frame.origin.y, 45, 23)];
-    
+    //隐藏号码
     self.phoneNumber.hidden = YES;
     self.mujiNumber.hidden = YES;
-    self.connectNumber.hidden = YES;
     
     [self.isAppVersion setTitle:@"v1.0" forState:UIControlStateNormal];
     self.isAppVersion.enabled = YES;
-    
     self.isFirmwareVersion.hidden = YES;
     
+    self.callAnotherButton.layer.cornerRadius = 13;
     self.loginButton.layer.cornerRadius = 13;
     self.configureButton.layer.cornerRadius = 13;
     self.bindButton.layer.cornerRadius = 13;
@@ -227,6 +262,7 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     
     BOOL loginState = [[defaults valueForKey:LOGIN_STATE] intValue];
     BOOL configState = [[defaults valueForKey:CONFIG_STATE] intValue];
+    BOOL callState = [[defaults valueForKey:CALL_ANOTHER_STATE] intValue];
     
     if (loginState) {//已登录
         self.phoneNumber.hidden = NO;
@@ -244,7 +280,6 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
         [self.configureButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];
         self.mujiNumber.hidden = NO;
         self.mujiNumber.text = [defaults valueForKey:muji_bind_number];
-        self.connectNumber.hidden = NO;
         //
         
         self.connectView.hidden = YES;
@@ -260,7 +295,7 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
         }
         
         
-        self.connectNumber.text = [NSString stringWithFormat:@"%@ %@",home,operation];//拇机
+        //self.connectNumber.text = [NSString stringWithFormat:@"%@ %@",home,operation];//拇机
         
         //显示gif图片
         [self initAnimatedWithFileName:@"phone_connect" andType:@"gif" view:self.connectGifView];
@@ -274,10 +309,18 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
         [self.configureButton setTitle:@"  配置  " forState:UIControlStateNormal];
         [self.configureButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
         self.mujiNumber.hidden = YES;
-        self.connectNumber.hidden = NO;
-        self.connectNumber.text = @" ";
         
     }
+    
+    if (callState) {
+        [self.callAnotherButton setTitle:@"  取消  " forState:UIControlStateNormal];
+        self.callAnotherImgView.image = [UIImage imageNamed:@"callAnother_light"];
+        
+    }else{
+        [self.callAnotherButton setTitle:@"  呼转  " forState:UIControlStateNormal];
+        self.callAnotherImgView.image = [UIImage imageNamed:@"callAnother_gray"];
+    }
+    
     
     
     
@@ -287,7 +330,7 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
 {
     BOOL bindState = [[defaults valueForKey:BIND_STATE] intValue];
     if (bindState) {//已绑定
-        [self.bindButton setTitle:@"  解绑  " forState:UIControlStateNormal];
+        [self.bindButton setTitle:@"  解除  " forState:UIControlStateNormal];
         [self.bindButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];//ble_connect
         self.BLEView.hidden = YES;
         self.BLEgifView.hidden = NO;
@@ -302,7 +345,7 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
         
         ble_imgv.image = [UIImage imageNamed:@"flow_ble"];
         [self.BLEView addSubview:ble_imgv];
-        [self.bindButton setTitle:@"  绑定  " forState:UIControlStateNormal];
+        [self.bindButton setTitle:@"  控制  " forState:UIControlStateNormal];
         [self.bindButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
         
     }
@@ -447,6 +490,58 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     [self initLoginAndConfigButtons];
 }
 
+#pragma mark -- 呼转 & 取消
+- (IBAction)callAnotherButtonClick:(UIButton *)sender {
+    BOOL loginState = [[defaults valueForKey:LOGIN_STATE] intValue];
+    if (loginState) {
+        //获取拇机号码,
+        NSString *phoneNumber = [defaults valueForKey:muji_bind_number];
+        
+        //已有number和email
+        if (phoneNumber.length>0 ) {
+            //获取呼转状态
+            [self getCallDiverts];
+        }else
+        {   //没有则弹框提示
+            UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请先【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+            isNoMujiAlert.tag =1110;
+            [isNoMujiAlert show];
+            
+        }
+
+    }else{
+        //没有登录则弹框提示
+        UIAlertView *isNoLoginAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请先【登录】,然后【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+        isNoLoginAlert.tag =1111;
+        [isNoLoginAlert show];
+    }
+    
+    
+    
+}
+
+-(void)getCallDiverts
+{
+    NSString *number = [defaults valueForKey:muji_bind_number];
+    if ([[defaults valueForKey:CALL_ANOTHER_STATE] intValue]) {
+        //已呼转,弹框提示，到拇机123456789321的呼转取消？
+        
+        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Cancel_Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
+        aliert.delegate = self;
+        aliert.tag =1112;
+        [aliert show];
+        
+    }else{
+        //未呼转,弹框提示，手机呼转到拇机123456789321？
+        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
+        aliert.delegate = self;
+        aliert.tag =1113;
+        [aliert show];
+    }
+    
+}
+
+
 
 #pragma mark -- 配置 & 修改
 - (IBAction)configureButtonClick:(UIButton *)sender {
@@ -485,7 +580,6 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     {
         VCLog(@"11");
         //添加calling页面
-        
         UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         LoginController *loginview = [board instantiateViewControllerWithIdentifier:@"loginVCIdentity"];
         [self.navigationController pushViewController:loginview animated:YES];
@@ -499,10 +593,7 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     //[AVUser logOut];
 }
 
-
-
-
-#pragma mark -- 绑定 & 解绑
+#pragma mark -- 控制 & 解除
 - (IBAction)bindButtonClick:(UIButton *)sender {
     
     BOOL bstate = [[defaults valueForKey:BIND_STATE] intValue];
@@ -534,7 +625,7 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
 //扫描
 -(void)scanPeripheral
 {
-    [bleManage.centralManager scanForPeripheralsWithServices:nil options:nil];
+    //[bleManage.centralManager scanForPeripheralsWithServices:nil options:nil];
 
 }
 -(void)cutConnectperipheral
@@ -613,14 +704,7 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     //VCLog(@"curC:     %@",curCharacteristic);
     
 }
-//返回读和写特征值的string
--(NSDictionary *)peripheralChacteristicString
-{
-    //dict =  {value,key};
-    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:kWriteCharacteristicUUIDString,keyWriteChc,
-                                                                      kreadCharacteristicUUIDString,keyReadChc, nil];
-    return dict;
-}
+
 
 -(void)viewDidDisappear:(BOOL)animated
 {
@@ -633,4 +717,5 @@ static NSString *kreadCharacteristicUUIDString  = @"000034E2-0000-1000-8000-0080
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 @end

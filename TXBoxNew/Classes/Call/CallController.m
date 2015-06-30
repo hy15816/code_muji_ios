@@ -583,7 +583,7 @@
 -(void)getCallDivert
 {
     NSString *number = [defaults valueForKey:muji_bind_number];
-    if ([[defaults valueForKey:call_divert_state] intValue]) {
+    if ([[defaults valueForKey:CALL_ANOTHER_STATE] intValue]) {
         //已呼转,弹框提示，到拇机123456789321的呼转取消？
         
         UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Cancel_Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
@@ -619,7 +619,7 @@
             str = [self cancelCallFrowardingWithNumber: [defaults valueForKey:muji_bind_number]];
             
             //设置状态为0
-            [defaults setValue:@"0" forKey:call_divert_state];
+            [defaults setValue:@"0" forKey:CALL_ANOTHER_STATE];
             //设定呼转结束时间
             time = [dfmt stringFromDate:date ];
             
@@ -649,7 +649,7 @@
             //设置呼转,
             str = [self setCallForwardingWithNumber:[defaults valueForKey:muji_bind_number]];
             //设置状态为1
-            [defaults setValue:@"1" forKey:call_divert_state];
+            [defaults setValue:@"1" forKey:CALL_ANOTHER_STATE];
             //设定呼转开始时间
             time = [dfmt stringFromDate:date ];
             [defaults setValue:time forKey:CallForwardStartTime];

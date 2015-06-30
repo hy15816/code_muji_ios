@@ -117,8 +117,7 @@
 // 邮箱和拇机号码
 #define email_number @"e_mail_number"
 #define muji_bind_number @"muji_bind_number"
-// 呼转状态
-#define call_divert_state @"call_divert_state"
+
 // window窗口
 #define WINDOW  [[UIApplication sharedApplication]keyWindow]
 
@@ -135,10 +134,11 @@
 
 #define CallForwardStartTime @"CallForwardStartTime"
 #define CallForwardEndTime @"CallForwardEndTime"
-//登录状态
+//状态
 #define LOGIN_STATE @"loginState"
 #define BIND_STATE @"bindState"
 #define CONFIG_STATE @"configState"
+#define CALL_ANOTHER_STATE @"callAnotherState"
 
 #define CurrentUser @"currentUser"
 

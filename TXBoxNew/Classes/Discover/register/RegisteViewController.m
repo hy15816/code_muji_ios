@@ -117,7 +117,7 @@
                 if (error) {
                     VCLog(@"reg - error");
                     
-                    UIAlertView *regAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"用户名已存在" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                    UIAlertView *regAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"%@",error.localizedDescription] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
                     [regAlert show];
                     self.regNumberField.text = nil;
                     //self.regPwdField.text = nil;

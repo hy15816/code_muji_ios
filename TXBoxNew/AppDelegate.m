@@ -27,7 +27,7 @@
     //缓存当前用户
     AVUser *currentUser = [AVUser currentUser];
     if (currentUser == nil) {
-        [usDefaults setValue:@"0" forKey:call_divert_state];//呼转状态
+        [usDefaults setValue:@"0" forKey:CALL_ANOTHER_STATE];//呼转状态
         [usDefaults setValue:@"0" forKey:LOGIN_STATE];//登录状态
         [usDefaults setValue:@"0" forKey:CONFIG_STATE];//配置状态
         //[usDefaults setValue:@"0" forKey:@"opstate"];

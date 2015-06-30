@@ -35,9 +35,9 @@ CFBundleDisplayName ="通信盒子";
 "My_device" = "我的设备";
 "Device" = "设备";//设备
 
-"Sure" = "确定";//确定
-"Yes" = "是";  //是
-"No" = "否";    //否
+"Sure" = "OK";//确定
+"Yes" = "OK";  //是
+"No" = "不OK";    //否
 "Cancel" = "取消";//取消
 "Alerts" = "提示";//提示
 "Call_Forwarding" = "呼转到";//呼转到...
