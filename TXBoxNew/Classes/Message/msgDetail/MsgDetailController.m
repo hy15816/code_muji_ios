@@ -19,8 +19,7 @@
     UILongPressGestureRecognizer *longPress;
     EditView *editView;
     NSMutableArray *selectArray;
-    NSMutableArray *indexpathArray;
-    NSMutableDictionary *deleteDict;
+    NSMutableDictionary *selectDict;
 }
 @property (strong, nonatomic) NSMutableArray *detailArray;
 @property (strong, nonatomic) NSMutableArray *allMsgFrame;
@@ -63,8 +62,7 @@
     txsqlite =[[TXSqliteOperate alloc] init];
     self.detailArray = [[NSMutableArray alloc] init];
     selectArray = [[NSMutableArray alloc] init];
-    indexpathArray = [[NSMutableArray alloc] init];
-    deleteDict = [[NSMutableDictionary alloc] init];
+    selectDict = [[NSMutableDictionary alloc] init];
     VCLog(@"datailDatas:%@",self.datailDatas);
     
     // 显示左边按钮
@@ -162,29 +160,44 @@
 {
     //删除选中的条目
     //数据库
-    
+    /*
     for (NSArray *arr in selectArray) {
         [txsqlite deleteContacterWithNumber:arr[0] formTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME peopleId:arr[1] withSql:DELETE_MESSAGE_RECORD_SQL];
     }
     //重新获取数据
     self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
+    */
+    
     
     
     /*
-    [self.detailArray removeObjectsInArray:[deleteDict allKeys]];
-    [self.tableview deleteRowsAtIndexPaths:[NSArray arrayWithArray:[deleteDict allValues]] withRowAnimation:UITableViewRowAnimationFade];
+    VCLog(@"self.detailArray:%@ ,allValues:%@",self.detailArray,[selectDict allValues]);
+    [self.detailArray removeObjectsInArray:[selectDict allValues]];
+    VCLog(@"allKeys:%@",[selectDict allKeys]);
+    //[self.tableview deleteRowsAtIndexPaths:[NSArray arrayWithArray:[selectDict allKeys]] withRowAnimation:UITableViewRowAnimationFade];
+    
+    [self.tableview deleteRowsAtIndexPaths:[NSArray arrayWithArray:[selectDict allKeys]] withRowAnimation:UITableViewRowAnimationFade];
     */
+    
     [self cancelCheckCell];
 }
 
+#pragma mark -- TableView select Rows
 //
 -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //移除再次选中的
-    [deleteDict removeObjectForKey:[self.detailArray[indexPath.row] msgSender]];
-    //[selectArray removeLastObject];
-    
-    if (indexpathArray.count <= 0) {
+    if ([self.arearLabel.text isEqualToString:@"取消"]) {
+        [selectDict removeObjectForKey:indexPath];
+        
+        if ([selectArray containsObject:indexPath]) {
+            [selectArray removeObject:indexPath];
+        }
+    }
+
+    VCLog(@"selectDict:%@",selectDict);
+    VCLog(@"selectArray:%@",selectArray);
+    if (selectArray.count <= 0) {
         [editView.copysButton setEnabled:NO];
         [editView.sharesButton setEnabled:NO];
         [editView.deleteButton setEnabled:NO];
@@ -197,28 +210,30 @@
 //选中cell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    VCLog(@"indepath.row:%ld",(long)indexPath.row);
-    
     //获取选中的数据
     NSString *msgsender = [self.detailArray[indexPath.row] msgSender];
     NSString *peopleId = [NSString stringWithFormat:@"%d",[self.detailArray[indexPath.row] peopleId]];
     NSArray *checkDatas=[[NSArray alloc] initWithObjects:msgsender,peopleId, nil];
     
-    [selectArray addObject:checkDatas];
-    [indexpathArray addObject:indexPath];
-    
+    //[selectArray addObject:checkDatas];
     //
-    [deleteDict setObject:indexPath forKey:msgsender];
+    if ([self.arearLabel.text isEqualToString:@"取消"]) {
+        VCLog(@"self.detailArray:%@",self.detailArray);
+        [selectDict setObject:[self.detailArray objectAtIndex:indexPath.row] forKey:indexPath];
+        if (![selectArray containsObject:indexPath]) {
+            [selectArray addObject:indexPath];
+        }
+    }
+    VCLog(@"selectDict:%@",selectDict);
+    VCLog(@"selectArray:%@",selectArray);
     
-    if (indexpathArray.count >0) {
+    if (selectArray.count >0) {
         [editView.copysButton setEnabled:YES];
         [editView.sharesButton setEnabled:YES];
         [editView.deleteButton setEnabled:YES];
 
     }
-    
-    
-    
+
 }
 
 -(void)setArearLabelTitle
@@ -435,7 +450,7 @@
     
     [self.callOutBtn setImage:[UIImage imageNamed:@"actionbar_call_hub32"]];
     [self.callOutBtn setEnabled:YES];
-    if (indexpathArray.count <= 0) {
+    if (selectArray.count <= 0) {
         [editView.copysButton setEnabled:NO];
         [editView.sharesButton setEnabled:NO];
         [editView.deleteButton setEnabled:NO];

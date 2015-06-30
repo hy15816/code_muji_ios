@@ -26,7 +26,6 @@
 		6359D09D1AE62CF800592201 /* CallingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6359D09C1AE62CF800592201 /* CallingController.m */; };
 		635B1A3E1AEC968B003F37B5 /* UIImage+helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B1A3D1AEC968B003F37B5 /* UIImage+helper.m */; };
 		635F817D1B3A771200A7A7D1 /* GuideView.m in Sources */ = {isa = PBXBuildFile; fileRef = 635F817C1B3A771200A7A7D1 /* GuideView.m */; };
-		635F817F1B3A7A1800A7A7D1 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 635F817E1B3A7A1800A7A7D1 /* AVOSCloud.framework */; };
 		635F81811B3A851300A7A7D1 /* ff.gif in Resources */ = {isa = PBXBuildFile; fileRef = 635F81801B3A851300A7A7D1 /* ff.gif */; };
 		635F81841B3A8BCB00A7A7D1 /* PlayAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 635F81831B3A8BCB00A7A7D1 /* PlayAnimation.m */; };
 		635F81871B3A917200A7A7D1 /* Guides.m in Sources */ = {isa = PBXBuildFile; fileRef = 635F81861B3A917200A7A7D1 /* Guides.m */; };
@@ -49,6 +48,7 @@
 		637191981B1F01CF005C09C8 /* NSString+AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 637191941B1F01CF005C09C8 /* NSString+AKNumericFormatter.m */; };
 		637191991B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 637191961B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m */; };
 		637858471B317BEB006D5155 /* GetAllContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 637858461B317BEB006D5155 /* GetAllContacts.m */; };
+		637901B01B42667300290C83 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 637901AF1B42667300290C83 /* AVOSCloud.framework */; };
 		637C29CE1AEB997400CD3DAF /* ContactersController.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29CD1AEB997400CD3DAF /* ContactersController.m */; };
 		637C29D51AEB9B0200CD3DAF /* BATableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29D11AEB9B0200CD3DAF /* BATableView.m */; };
 		637C29D61AEB9B0200CD3DAF /* BATableViewIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 637C29D31AEB9B0200CD3DAF /* BATableViewIndex.m */; };
@@ -140,7 +140,6 @@
 		635B1A3D1AEC968B003F37B5 /* UIImage+helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+helper.m"; sourceTree = "<group>"; };
 		635F817B1B3A771200A7A7D1 /* GuideView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuideView.h; sourceTree = "<group>"; };
 		635F817C1B3A771200A7A7D1 /* GuideView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GuideView.m; sourceTree = "<group>"; };
-		635F817E1B3A7A1800A7A7D1 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		635F81801B3A851300A7A7D1 /* ff.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = ff.gif; sourceTree = "<group>"; };
 		635F81821B3A8BCB00A7A7D1 /* PlayAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayAnimation.h; sourceTree = "<group>"; };
 		635F81831B3A8BCB00A7A7D1 /* PlayAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayAnimation.m; sourceTree = "<group>"; };
@@ -182,6 +181,7 @@
 		637191961B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+AKNumericFormatter.m"; sourceTree = "<group>"; };
 		637858451B317BEB006D5155 /* GetAllContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetAllContacts.h; sourceTree = "<group>"; };
 		637858461B317BEB006D5155 /* GetAllContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetAllContacts.m; sourceTree = "<group>"; };
+		637901AF1B42667300290C83 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		637C29CC1AEB997400CD3DAF /* ContactersController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactersController.h; sourceTree = "<group>"; };
 		637C29CD1AEB997400CD3DAF /* ContactersController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactersController.m; sourceTree = "<group>"; };
 		637C29D01AEB9B0200CD3DAF /* BATableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BATableView.h; sourceTree = "<group>"; };
@@ -263,7 +263,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				635F817F1B3A7A1800A7A7D1 /* AVOSCloud.framework in Frameworks */,
+				637901B01B42667300290C83 /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -591,7 +591,7 @@
 		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
 			isa = PBXGroup;
 			children = (
-				635F817E1B3A7A1800A7A7D1 /* AVOSCloud.framework */,
+				637901AF1B42667300290C83 /* AVOSCloud.framework */,
 				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
 				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
 				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
@@ -1086,6 +1086,12 @@
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
@@ -1120,6 +1126,12 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
