@@ -49,7 +49,7 @@ CFBundleDisplayName ="muji";//这个是应用名称
 "Call_Forwarding" = "Call forwarding to";//呼转到...
 "Cancel_Call_Forwarding" = "Cancel call forwarding to";//取消呼转到...
 "The_Call_Forwarding_was_get_info" = "We need to do to get your call forwarding information!please fill out this card";//获取呼转信息
-"Please_enter_the_correct_info" = "Please enter the correct e-mail and MuJi-Number!";//输入正确的邮箱和号码
+"Please_enter_the_correct_info" = "Please enter the correct MuJi-Number!";//输入正确的邮箱和号码
 
 "Please_enter_the_correct_number" = "Please enter the correct number!";//输入正确的号码
 

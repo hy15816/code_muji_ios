@@ -11,14 +11,16 @@
 
 #import "ShowContactsController.h"
 #import "ShowContactsCell.h"
-#import <AddressBook/AddressBook.h>
 #import "GetAllContacts.h"
 @interface ShowContactsController ()<GetContactsDelegate>
 
 {
     NSMutableArray *mutPhoneArr;
     NSMutableDictionary *phoneDic;      //同一个人的手机号码dic
+    
     NSMutableArray *selectArray;
+    NSMutableDictionary *selectDict;
+    
 }
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *cancelBtn;
 
@@ -40,7 +42,7 @@
     mutPhoneArr = [[NSMutableArray alloc] init];
     phoneDic = [[NSMutableDictionary alloc] init];
     selectArray = [[NSMutableArray alloc] init];
-    
+    selectDict = [[NSMutableDictionary alloc] init];
     
 }
 
@@ -110,8 +112,16 @@
 {
     UITableViewCell *cell = [self.tableView
                              cellForRowAtIndexPath: indexPath ];
+    [selectDict setObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]forKey:indexPath];
     
+    NSLog(@"ssss:%p",[selectDict objectForKey:indexPath]);
+    if ([selectDict objectForKey:indexPath] != nil) {
+        cell.accessoryType =UITableViewCellAccessoryCheckmark;
+    }else{
+        cell.accessoryType =UITableViewCellAccessoryNone;
+    }
     
+    /*
     if (cell.accessoryType ==UITableViewCellAccessoryNone){
         cell.accessoryType =UITableViewCellAccessoryCheckmark;
         //选中，如果数组里没有，则add
@@ -132,18 +142,30 @@
         
         //VCLog(@"selectArray:%@",selectArray);
     }
-    
+    */
     if (selectArray.count >0) {
         [self.cancelBtn setTitle:@"取消"];
     }else{
         [self.cancelBtn setTitle:@""];
     }
     
-    VCLog(@"selectArray:%@",selectArray);
+    VCLog(@"selectDict:%@",selectDict);
     //[self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-
+-(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
+    UITableViewCell *cell = [self.tableView
+                             cellForRowAtIndexPath: indexPath ];
+    [selectDict removeObjectForKey:indexPath];
+    
+    if ([selectDict valueForKey:[NSString stringWithFormat:@"%@",indexPath]] != nil) {
+        cell.accessoryType =UITableViewCellAccessoryCheckmark;
+    }else{
+        cell.accessoryType =UITableViewCellAccessoryNone;
+    }
+    
+    VCLog(@"selectDict:%@",selectDict);
+}
 
 #pragma mark-- 获取通讯录联系人
 -(void)loadContacts

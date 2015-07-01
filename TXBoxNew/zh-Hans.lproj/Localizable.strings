@@ -38,12 +38,12 @@ CFBundleDisplayName ="通信盒子";
 "Sure" = "OK";//确定
 "Yes" = "OK";  //是
 "No" = "不OK";    //否
-"Cancel" = "取消";//取消
+"Cancel" = "不OK";//取消
 "Alerts" = "提示";//提示
 "Call_Forwarding" = "呼转到";//呼转到...
 "Cancel_Call_Forwarding" = "取消呼转到";//取消呼转到...
 "The_Call_Forwarding_was_get_info" = "呼叫转移需要拇机号码等配置信息，请填写";
-"Please_enter_the_correct_info" = "请输入正确的邮箱和号码";//
+"Please_enter_the_correct_info" = "请输入正确的拇机号码";//
 
 
 "Add_Ctontacts" = "添加联系人";//添加联系人

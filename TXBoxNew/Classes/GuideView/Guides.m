@@ -2,7 +2,7 @@
 //  Guides.m
 //  TXBoxNew
 //
-//  Created by Naron on 15/6/24.
+//  Created by Naron on 15/7/1.
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 
@@ -10,6 +10,5 @@
 
 @implementation Guides
 
-@synthesize imageArray,imageType,animationImage,showView;
-
+@synthesize imageArray;
 @end

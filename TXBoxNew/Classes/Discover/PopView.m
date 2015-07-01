@@ -55,6 +55,7 @@
     self.secondField.keyboardType = UIKeyboardTypeNumberPad;
     self.secondField.borderStyle = UITextBorderStyleRoundedRect;
     self.secondField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.secondField.delegate = self;
     [self.secondField becomeFirstResponder];
     //设置格式化输入
     self.secondField.numericFormatter = [AKNumericFormatter formatterWithMask:@"*** **** ****" placeholderCharacter:'*'];
@@ -89,6 +90,10 @@
     [self.imgv addSubview:line];
     
     [self addSubview:self.imgv];
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField{
+    [self.delegate hideThisView];
 }
 
 -(void)buttonClicks:(UIButton *)btn

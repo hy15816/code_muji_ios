@@ -40,7 +40,7 @@
 
 
 // =================数据库==============//
-#define DB_NAME @"txbox.sqlite"
+#define DB_NAME @"txboxSecond.sqlite"
 #define DB_PHONE_AREAR_NAME @"PhoneArea.db"
 #define SELECT_ALL_SQL @"select *from %@"
 
@@ -153,7 +153,7 @@
 #define keyWriteChc @"writeChc"//
 #define keyReadChc  @"readChc"
 
-
+#define userDefaults [NSUserDefaults standardUserDefaults]
 
 
 

@@ -352,6 +352,11 @@
             self.topView.hidden = YES;
             self.view.alpha = 1;
             self.packUp.hidden = NO;
+            self.nameLabel.hidden = NO;
+            if (self.nameLabel.text.length == 0) {
+                self.numberLabel.hidden = NO;
+            }
+            
         }];
     }
     
@@ -367,6 +372,8 @@
         self.topViewLabel.textColor = [UIColor whiteColor];
         self.packUp.hidden = YES;
         self.topView.hidden = NO;
+        self.nameLabel.hidden = YES;
+        self.numberLabel.hidden = YES;
         
     }];
     

@@ -14,8 +14,9 @@
 #import "TXSqliteOperate.h"
 #import <AVOSCloud/AVOSCloud.h>
 #import "BLEmanager.h"
+#import "CallAndDivert.h"
 
-@interface DiscoveryController ()<PopViewDelegate,UIAlertViewDelegate,BLEmanagerDelegate>
+@interface DiscoveryController ()<PopViewDelegate,UIAlertViewDelegate,BLEmanagerDelegate,CallAndDivertDelegate>
 {
     NSUserDefaults *defaults;
   
@@ -29,6 +30,9 @@
     
     BLEmanager *bleManage;
     CBPeripheral *currentPerip;
+    float animationtimes;
+    CallAndDivert *callAndDivert;
+    UIWebView *dwebView;
 }
 
 @property (strong, nonatomic) IBOutlet UIImageView *firstImageView;
@@ -73,7 +77,7 @@
     [super viewWillAppear:animated];
     
     //键盘活动  键盘出现时
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disvViewDidShow:) name:KRefreshDisvView object:nil];
     
     //通知显示tabBar
@@ -89,119 +93,32 @@
     
 }
 
--(void)isOrNotUpdateVersion
-{
-    //APP版本,检测本地版本，与最新版本比较
-    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        //获取服务器版本号
-        //NSURL *url = [NSURL URLWithString:@"http://car0.autoimg.cn/upload/spec/9579/u_20120110174805627264.jpg"];
-        
-        //NSString *str = [[NSString alloc] initWithFormat:@"1.2"];
-        
-        //获取当前程序版本号
-        //NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-        //NSString *str2 = [infoDictionary objectForKey:@"CFBundleVersion"];
-        
-        // 回到主线程，显示提示框
-        //dispatch_async(dispatch_get_main_queue(), ^{
-    BOOL a = [[defaults valueForKey:@"versionSSSd"] intValue];
-            if (!a) {//[str2 floatValue] != [str floatValue]
-                
-                UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-                atView.tag = 1005;
-                atView.delegate = self;
-                [atView show];
-                
-                // 显示更新
-                self.isFirmwareVersion.hidden = NO;
-            }else {
-                self.isFirmwareVersion.hidden = YES;
-            }
-            
-            
-            
-        //});
-    //});
-
-}
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (alertView.tag == 1005) {
-        if (buttonIndex == 0) {
-            [defaults setValue:@"1" forKey:@"versionSSSd"];
-        }
-        
-    }
-    
-    if (alertView.tag == 1110) {//已登录，请先配置
-        if (buttonIndex == 0) {
-            [self configureButtonClick:nil];
-        }
-        
-    }
-    
-    if (alertView.tag == 1111) {//先登录
-        if (buttonIndex == 0) {
-            [self loginButtonClick:nil];
-        }
-        
-    }
-    
-    
-    
-}
-- (void)keyboardWasShow:(NSNotification*)aNotification{
-    
-    NSDictionary* info = [aNotification userInfo];
-    /*
-     NSNumber *duration = [info objectForKey:UIKeyboardAnimationDurationUserInfoKey];
-     VCLog(@"duration:%@",duration);
-     CGRect beginRect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-     */
-    
-    CGRect endRect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    //VCLog(@"·······%f",endRect.size.height);
-    [UIView beginAnimations:@"" context:nil];
-    popview.frame =  CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, DEVICE_HEIGHT-PopViewHeight-endRect.size.height-10, PopViewWidth, PopViewHeight);
-    [UIView setAnimationDuration:.25];
-    [UIView commitAnimations];
-    
-}
--(void)disvViewDidShow:(NSNotification *)notifi
-{
-    [self initLoginAndConfigButtons];
-    [self refreshBindButton];
-}
-
--(void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     defaults = [NSUserDefaults standardUserDefaults];
     txsqlite = [[TXSqliteOperate alloc] init];
+    callAndDivert = [[CallAndDivert alloc] init];
+    dwebView = [[UIWebView alloc] init];
+    animationtimes = 0.25f;
+    self.tableView.separatorStyle =UITableViewCellSeparatorStyleNone;
     
-    self.firstImageView.layer.borderWidth = .5;
-    //self.firstImageView.layer.borderColor = (__bridge CGColorRef)([UIColor grayColor]);
-    self.firstImageView.layer.cornerRadius = 8;
+    //self.firstImageView的背景
+    UIImage *rawEntryBackground = [UIImage imageNamed:@"NodeBkg"];
+    UIImage *entryBackground = [rawEntryBackground stretchableImageWithLeftCapWidth:10 topCapHeight:10];
+    self.firstImageView.image = entryBackground;
+    //self.secondImageView
+    self.secondImageView.layer.borderWidth = .3;
+    self.secondImageView.layer.borderColor = [UIColor grayColor].CGColor;
+    self.secondImageView.layer.cornerRadius = 4;
     
-    self.secondImageView.layer.borderWidth = .5;
-    self.secondImageView.layer.borderColor = [UIColor blackColor].CGColor;
-    self.secondImageView.layer.cornerRadius = 8;
+    //静态图
+    con_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 40, 23)];
+    ble_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 40, 23)];
+    ble_imgv.image = [UIImage imageNamed:@"flow_ble"];
+    con_imgv.image = [UIImage imageNamed:@"flow_phone"];
     
-    
-    //textView的背景
-    UIImage *rawEntryBackground = [UIImage imageNamed:@"disc_NodeBkg"];
-    UIImage *entryBackground = [rawEntryBackground stretchableImageWithLeftCapWidth:13 topCapHeight:12];
-    UIImageView *entryImageView = [[UIImageView alloc] initWithImage:entryBackground];
-    //self.firstImageView.image = entryBackground;
-    
-    
-    con_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 42, 23)];
-    ble_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 42, 23)];
+    [self.BLEView addSubview:ble_imgv];
+    [self.connectView addSubview:con_imgv];
     
     //隐藏号码
     self.phoneNumber.hidden = YES;
@@ -216,18 +133,97 @@
     self.configureButton.layer.cornerRadius = 13;
     self.bindButton.layer.cornerRadius = 13;
     
-    UILabel *footv =[[UILabel alloc] initWithFrame:CGRectMake(15, 0, DEVICE_HEIGHT, 1)];
+    UILabel *footv =[[UILabel alloc] initWithFrame:CGRectMake(0, 0, DEVICE_HEIGHT, 1)];
     footv.backgroundColor = [UIColor grayColor];
     footv.alpha = .3;
-    self.tableView.tableFooterView = footv;
+    //self.tableView.tableFooterView = footv;
+    
+}
+#pragma mark -- notify
+- (void)keyboardWasShow:(NSNotification*)aNotification{
+    
+    NSDictionary* info = [aNotification userInfo];
+    
+    /*
+     NSNumber *duration = [info objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+     VCLog(@"duration:%@",duration);
+     CGRect beginRect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+     */
+    
+    CGRect endRect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    if (DEVICE_HEIGHT-PopViewHeight-endRect.size.height< endRect.size.height) {
+        [UIView animateWithDuration:0.15 animations:^{
+            popview.alpha = 1.0;
+            popview.frame = CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, DEVICE_HEIGHT-PopViewHeight-endRect.size.height-10, PopViewWidth, PopViewHeight);
+        }];
+    }
+    
+    //VCLog(@"·······%f",endRect.size.height);
+    
+}
+-(void)disvViewDidShow:(NSNotification *)notifi
+{
+    [self initLoginAndConfigButtons];
+    [self refreshBindButton];
+}
+
+
+#pragma mark -- 检测版本
+-(void)isOrNotUpdateVersion
+{
+    //APP版本,检测本地版本，与最新版本比较
+    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    //获取服务器版本号
+    //NSURL *url = [NSURL URLWithString:@"http://car0.autoimg.cn/upload/spec/9579/u_20120110174805627264.jpg"];
+    
+    //NSString *str = [[NSString alloc] initWithFormat:@"1.2"];
+    
+    //获取当前程序版本号
+    //NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    //NSString *str2 = [infoDictionary objectForKey:@"CFBundleVersion"];
+    
+    // 回到主线程，显示提示框
+    //dispatch_async(dispatch_get_main_queue(), ^{
+    BOOL a = [[defaults valueForKey:@"versionSSSd"] intValue];
+    if (!a) {//[str2 floatValue] != [str floatValue]
+        
+        UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"不OK" otherButtonTitles:@"OK", nil];
+        atView.tag = 1005;
+        atView.delegate = self;
+        [atView show];
+        
+        // 显示更新
+        self.isFirmwareVersion.hidden = NO;
+    }else {
+        self.isFirmwareVersion.hidden = YES;
+    }
+    
+    
+    
+    //});
+    //});
     
 }
 
-#pragma mark - Table view
+#pragma mark --AlertView delegate
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (alertView.tag == 1005) {
+        if (buttonIndex == 1) {
+            [defaults setValue:@"1" forKey:@"versionSSSd"];
+        }
+        
+    }
+    
+    
+    [self initLoginAndConfigButtons];
+    
+}
 
+#pragma mark -- Table view
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     // Return the number of sections.
-    return 2;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -235,9 +231,17 @@
     if (section == 0) {
         return 1;
     }
-    return 2;
+    return 0;
 }
-
+/*
+-(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    
+    if (section == 1) {
+        return 0;
+    }
+    return @"配置信息";
+}
+ */
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == 1) {
@@ -257,7 +261,7 @@
     
     VCLog(@"x");
 }
-#pragma mark -- 初始化btn
+#pragma mark -- 初始化login config callState
 -(void)initLoginAndConfigButtons{
     
     BOOL loginState = [[defaults valueForKey:LOGIN_STATE] intValue];
@@ -273,6 +277,8 @@
         self.phoneNumber.hidden = YES;
         [self.loginButton setTitle:@"  登录  " forState:UIControlStateNormal];
         [self.loginButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
+        self.connectGifView.hidden = YES;
+        self.connectView.hidden = NO;
     }
     
     if (configState) {//已配置
@@ -280,52 +286,44 @@
         [self.configureButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];
         self.mujiNumber.hidden = NO;
         self.mujiNumber.text = [defaults valueForKey:muji_bind_number];
-        //
-        
-        self.connectView.hidden = YES;
-        self.connectGifView.hidden = NO;
-        NSString *home;
-        NSString *operation;
-        if ([[defaults valueForKey:muji_bind_number] length] <=0) {
-            home=@"";
-            operation = @"";
-        }else{
-            home = [txsqlite searchAreaWithHisNumber:[[defaults valueForKey:muji_bind_number] substringToIndex:7]];
-            operation = [[defaults valueForKey:muji_bind_number] isMobileNumberWhoOperation];
-        }
-        
-        
-        //self.connectNumber.text = [NSString stringWithFormat:@"%@ %@",home,operation];//拇机
         
         //显示gif图片
-        [self initAnimatedWithFileName:@"phone_connect" andType:@"gif" view:self.connectGifView];
+        if (loginState) {
+            self.connectView.hidden = YES;
+            [self initAnimatedWithFileName:@"phone_connect" andType:@"gif" view:self.connectGifView];
+        }else {
+            self.connectGifView.hidden = YES;
+            self.connectView.hidden = NO;
+        }
+        
     }else{
+        
         //显示静态图片
-
         self.connectView.hidden = NO;
         self.connectGifView.hidden = YES;
-        con_imgv.image = [UIImage imageNamed:@"flow_phone"];
-        [self.connectView addSubview:con_imgv];
+
         [self.configureButton setTitle:@"  配置  " forState:UIControlStateNormal];
         [self.configureButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
         self.mujiNumber.hidden = YES;
         
     }
     
+    //呼转
     if (callState) {
         [self.callAnotherButton setTitle:@"  取消  " forState:UIControlStateNormal];
+        [self.callAnotherButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];
         self.callAnotherImgView.image = [UIImage imageNamed:@"callAnother_light"];
         
     }else{
         [self.callAnotherButton setTitle:@"  呼转  " forState:UIControlStateNormal];
         self.callAnotherImgView.image = [UIImage imageNamed:@"callAnother_gray"];
+        [self.callAnotherButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
     }
-    
-    
     
     
 }
 
+//button-控制
 -(void)refreshBindButton
 {
     BOOL bindState = [[defaults valueForKey:BIND_STATE] intValue];
@@ -343,8 +341,6 @@
         self.BLEView.hidden = NO;
         self.BLEgifView.hidden = YES;
         
-        ble_imgv.image = [UIImage imageNamed:@"flow_ble"];
-        [self.BLEView addSubview:ble_imgv];
         [self.bindButton setTitle:@"  控制  " forState:UIControlStateNormal];
         [self.bindButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
         
@@ -400,6 +396,29 @@
 
 }
 
+#pragma mark -- hide popView
+-(void)hideShadeAndPopView{
+    [UIView animateWithDuration:animationtimes animations:^{
+        
+        shadeView.alpha = 0;
+        popview.alpha=0.5;
+        popview.frame = CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, -PopViewHeight, PopViewWidth, PopViewHeight);
+        
+    }];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(animationtimes * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [shadeView removeFromSuperview];
+        [popview removeFromSuperview];
+    });
+}
+//recognizer tap
+-(void)shadeViewTap:(UIGestureRecognizer *)recongnizer
+{
+    
+    [self hideShadeAndPopView];
+    
+}
+
 #pragma mark -- show popView
 -(void)addShadeAndAlertViewWithNumber:(NSString *)mujiNumber
 {
@@ -413,43 +432,42 @@
     tap.numberOfTapsRequired = 1;
     [shadeView addGestureRecognizer:tap];
     
-    
     //pop
-    popview = [[PopView alloc] initWithFrame:CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, DEVICE_HEIGHT-PopViewHeight-220, PopViewWidth, PopViewHeight)];
+    popview = [[PopView alloc] initWithFrame:CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, -PopViewHeight, PopViewWidth, PopViewHeight)];
+    popview.alpha = 0.5;
     popview.delegate = self;
+    [self.view.window addSubview:popview];
+    
     
     if (mujiNumber.length>0) {
-        [popview initWithTitle:@"修改拇机号码信息:" label:@"拇机号码" cancelButtonTitle:@"OK" otherButtonTitles:@"不OK"];
+        [popview initWithTitle:@"修改拇机号码信息:" label:@"拇机号码" cancelButtonTitle:@"不OK" otherButtonTitles:@"OK"];
         popview.secondField.text = mujiNumber;
     }else{
-        [popview initWithTitle:@"呼叫转移需要配置拇机号码信息:" label:@"拇机号码" cancelButtonTitle:@"OK" otherButtonTitles:@"不OK"];
+        [popview initWithTitle:@"呼叫转移需要配置拇机号码信息:" label:@"拇机号码" cancelButtonTitle:@"不OK" otherButtonTitles:@"OK"];
     }
     
-    [self.view.window addSubview:popview];
-}
-
--(void)shadeViewTap:(UIGestureRecognizer *)recongnizer
-{
-    VCLog(@"-------tap");
     
-    [shadeView removeFromSuperview];
-    [popview removeFromSuperview];
 }
 
 #pragma mark-- popView delegate
+-(void)hideThisView{
+    
+    [self hideShadeAndPopView];
+}
+
+
 -(void)resaultsButtonClick:(UIButton *)button  textField:(UITextField *)sfield;
 {
     //获取输入的text
     NSString *number = [sfield.text trimOfString];
     //取消
-    if (button.tag == 1) {
+    if (button.tag == 0) {
         
-        [shadeView removeFromSuperview];
-        [popview removeFromSuperview];
-        
+        //[self hideShadeAndPopView];
+        [sfield resignFirstResponder];
     }
     //sure按钮
-    if (button.tag == 0) {
+    if (button.tag == 1) {
         if ( number.length<=0 || ![number isValidateMobile:number]) {
             //创建提醒对话框
             UIAlertView *malertView = [[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"Please_enter_the_correct_info", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"Sure", nil) otherButtonTitles:nil, nil];
@@ -481,9 +499,7 @@
             [self.configureButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];
             
             VCLog(@"save-->number:%@",number);
-            [shadeView removeFromSuperview];
-            [popview removeFromSuperview];
-            
+            [sfield resignFirstResponder];
         }
     }
     
@@ -492,77 +508,80 @@
 
 #pragma mark -- 呼转 & 取消
 - (IBAction)callAnotherButtonClick:(UIButton *)sender {
-    BOOL loginState = [[defaults valueForKey:LOGIN_STATE] intValue];
-    if (loginState) {
-        //获取拇机号码,
-        NSString *phoneNumber = [defaults valueForKey:muji_bind_number];
-        
-        //已有number和email
-        if (phoneNumber.length>0 ) {
-            //获取呼转状态
-            [self getCallDiverts];
-        }else
-        {   //没有则弹框提示
-            UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请先【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-            isNoMujiAlert.tag =1110;
-            [isNoMujiAlert show];
-            
+    
+    callAndDivert.divertDelegate = self;
+    [callAndDivert isOrNotCallDivert];
+    
+}
+#pragma mark -- CallAndDivert Delegate
+-(void)hasNotLogin{
+    [self loginButtonClick:nil];
+}
+
+-(void)hasNotConfig{
+    [self configureButtonClick:nil];
+}
+
+-(void)openOrCloseCallDivertState:(CallDivertState)state number:(NSString *)number{
+    
+    if (number.length>0) {
+        // 呼叫
+        // 不要将webView添加到self.view，如果添加会遮挡原有的视图
+        if (dwebView == nil) {
+            dwebView = [[UIWebView alloc] init];
         }
-
-    }else{
-        //没有登录则弹框提示
-        UIAlertView *isNoLoginAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请先【登录】,然后【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-        isNoLoginAlert.tag =1111;
-        [isNoLoginAlert show];
-    }
-    
-    
-    
-}
-
--(void)getCallDiverts
-{
-    NSString *number = [defaults valueForKey:muji_bind_number];
-    if ([[defaults valueForKey:CALL_ANOTHER_STATE] intValue]) {
-        //已呼转,弹框提示，到拇机123456789321的呼转取消？
         
-        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Cancel_Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
-        aliert.delegate = self;
-        aliert.tag =1112;
-        [aliert show];
+        NSURL *url = [NSURL URLWithString:number];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
         
-    }else{
-        //未呼转,弹框提示，手机呼转到拇机123456789321？
-        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
-        aliert.delegate = self;
-        aliert.tag =1113;
-        [aliert show];
+        [dwebView loadRequest:request];
+        VCLog(@"calloutNumber:%@",number);
+        [self initLoginAndConfigButtons];
     }
-    
+    if (state == OpenDivert) {
+        VCLog(@"open d");
+    }else{
+        VCLog(@"close d");
+    }
 }
-
-
 
 #pragma mark -- 配置 & 修改
 - (IBAction)configureButtonClick:(UIButton *)sender {
-    BOOL loginState = [[defaults valueForKey:LOGIN_STATE] intValue];
-    
-    if (loginState) {
-        VCLog(@"pz");
-        BOOL conState = [[defaults valueForKey:CONFIG_STATE] intValue];
-        if (conState) {
+    //是否配置
+    BOOL conState = [[defaults valueForKey:CONFIG_STATE] intValue];
+    if (conState) {//配置1
+        //是否登录
+        BOOL loginState = [[defaults valueForKey:LOGIN_STATE] intValue];
+        if (loginState) {//登录1
+            
             //已配置，修改
             [self addShadeAndAlertViewWithNumber:[defaults valueForKey:muji_bind_number]];
+            
         }else{
-            //配置
-            [self addShadeAndAlertViewWithNumber:nil];
+            //提示登录
+            UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"想【修改】拇机号码？请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+            [configAlert show];
         }
         
-    }else{
-        //提示登录
-        UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"想【配置】拇机号码？请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [configAlert show];
+    }else{//配置0
+        
+        BOOL loginState = [[defaults valueForKey:LOGIN_STATE] intValue];
+        if (loginState) {//登录1
+            
+            //配置
+            [self addShadeAndAlertViewWithNumber:nil];
+            
+        }else{
+            //提示登录
+            UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"想【配置】拇机号码？请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+            [configAlert show];
+        }
+
+        
+        
     }
+    
+    
 
     
 }
@@ -574,12 +593,14 @@
     if (loginstate) {
         [self loginOut];
         [defaults setValue:@"0" forKey:LOGIN_STATE];
-        [defaults setValue:@"0" forKey:CONFIG_STATE];
+        //[defaults setValue:@"0" forKey:CONFIG_STATE];
+        self.connectGifView.hidden = YES;
+        
         [self initLoginAndConfigButtons];
     }else
     {
         VCLog(@"11");
-        //添加calling页面
+        //添加login页面
         UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         LoginController *loginview = [board instantiateViewControllerWithIdentifier:@"loginVCIdentity"];
         [self.navigationController pushViewController:loginview animated:YES];

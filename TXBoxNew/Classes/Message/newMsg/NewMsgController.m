@@ -184,26 +184,25 @@
     txdata.msgAccepter = self.hisNumber.text;
     txdata.msgStates = @"0";
     
-    [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
+    if (self.textMsgView.text.length > 0 && self.hisNumber.text.length > 7) {
+        [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
+        
+        
+        //跳转到信息detail页面
+        //传值，hisName,hisNumber,hisHome
+        txdata.hisName = self.hisNumber.text;
+        txdata.hisNumber = self.hisNumber.text;//data.msgSender;
+        txdata.hisHome = [txsqlite searchAreaWithHisNumber:[[self.hisNumber.text purifyString] substringToIndex:7]];//@"hisHome"
+        
+        MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
+        DetailVC.datailDatas = txdata;
+        [SVProgressHUD showImage:nil status:@"已发送"];
+        [self.navigationController pushViewController:DetailVC animated:YES];
+    }else{
+        [SVProgressHUD showImage:nil status:@"收件人不能为空!"];
+    }
     
-
-    //跳转到信息detail页面
-    //传值，hisName,hisNumber,hisHome
-    txdata.hisName = self.hisNumber.text;
-    txdata.hisNumber = self.hisNumber.text;//data.msgSender;
-    txdata.hisHome = [txsqlite searchAreaWithHisNumber:[[self.hisNumber.text purifyString] substringToIndex:7]];//@"hisHome"
     
-    MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
-    DetailVC.datailDatas = txdata;
-    
-    [self.navigationController pushViewController:DetailVC animated:YES];
-    
-    
-    UIAlertView *a = [[UIAlertView alloc] initWithTitle:nil message:@"已发送" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-    //[a show];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [a resignFirstResponder];
-    });
 }
 
 - (void)idReceiveMemoryWarning {

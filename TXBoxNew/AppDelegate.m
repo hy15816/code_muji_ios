@@ -29,11 +29,18 @@
     if (currentUser == nil) {
         [usDefaults setValue:@"0" forKey:CALL_ANOTHER_STATE];//呼转状态
         [usDefaults setValue:@"0" forKey:LOGIN_STATE];//登录状态
-        [usDefaults setValue:@"0" forKey:CONFIG_STATE];//配置状态
+        
         //[usDefaults setValue:@"0" forKey:@"opstate"];
         [usDefaults setValue:@"0" forKey:BIND_STATE];
     }
-
+    
+    if ([[usDefaults valueForKey:muji_bind_number] length] >0 ) {
+        [usDefaults setValue:@"1" forKey:CONFIG_STATE];
+    }else{
+        [usDefaults setValue:@"0" forKey:CONFIG_STATE];
+    }
+    
+    
     
     //创建数据库-和表
     TXSqliteOperate *sqlite = [[TXSqliteOperate alloc] init];

@@ -11,7 +11,6 @@
 #import "TXCallAction.h"
 #import "CallingController.h"
 #import "GuideView.h"
-//#import "Guides.h"
 
 @interface TabBarViewController ()<tabBarViewDelegate,UIAlertViewDelegate,GuideViewDelegate>
 {
@@ -329,7 +328,7 @@
 -(void)isOrNotCallOutTitle:(NSString *)title message:(NSString *)message
 {
     //没有则弹框提示
-    UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+    UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"不OK" otherButtonTitles:@"OK", nil];
     isNoMujiAlert.tag =1200;
     [isNoMujiAlert show];
 }
@@ -381,7 +380,7 @@
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (alertView.tag == 1200) {
-        if (buttonIndex ==0) {
+        if (buttonIndex ==1) {
             //跳转到-发现
             //disvyCtorl
             //

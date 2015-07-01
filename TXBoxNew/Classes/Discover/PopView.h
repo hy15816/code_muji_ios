@@ -11,7 +11,7 @@
 @protocol PopViewDelegate <NSObject>
 //点击按钮动作
 -(void)resaultsButtonClick:(UIButton *)button  textField:(UITextField *)sfield;
-
+-(void)hideThisView;
 @end
 
 @interface PopView : UIView<UITextFieldDelegate>

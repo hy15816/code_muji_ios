@@ -14,20 +14,13 @@
 #import <AddressBookUI/AddressBookUI.h>
 #import "NSString+helper.h"
 #import "MsgDetailController.h"
-#import "TXNavgationController.h"
 #import "TXTelNumSingleton.h"
-#import "TXKeyView.h"
-#import "CustomTabBarView.h"
 #import "Records.h"
-#import <CoreTelephony/CTTelephonyNetworkInfo.h>
-#import <CoreTelephony/CTCarrier.h>
 #import "DiscoveryController.h"
-#import "ContactsData.h"
-#import <AVOSCloud/AVOSCloud.h>
 #import "GetAllContacts.h"
+#import "CallAndDivert.h"
 
-
-@interface CallController ()<UITextFieldDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,UIAlertViewDelegate,GetContactsDelegate>
+@interface CallController ()<UITextFieldDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,GetContactsDelegate,CallAndDivertDelegate>
 {
     NSMutableArray *CallRecords;
     TXSqliteOperate *sqlite;
@@ -47,7 +40,8 @@
     NSString *areaString;
     NSString *opeareString;
     
-    AVObject *userInfoObj;
+    
+    CallAndDivert *callDivert;
 }
 
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
@@ -86,11 +80,7 @@
     //VCLog(@"int max:%i",INT_MAX);
     
     
-    
-    
-    
 }
-
 
 -(void)viewDidAppear:(BOOL)animated
 {
@@ -113,17 +103,16 @@
     
     self.selectedIndexPath = nil;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;//tableview分割线
+    self.tableView.tableFooterView = [[UIView alloc] init];
     
     //[SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@",[self getCarrier]]];
     
     zzArray =[[NSMutableArray alloc] init];
-    //[sqlite openPhoneArearDatabase];
     areaString = [[NSString alloc] init];
     opeareString = [[NSString alloc] init];
  
-    //用户使用信息~时长
-    userInfoObj =[AVObject objectWithClassName: USER_SPORT_INFO];
     
+    callDivert =[[CallAndDivert alloc] init];
 }
 #pragma mark -- getContacts Delegate
 -(void)getAllPhoneArray:(NSMutableArray *)array SectionDict:(NSMutableDictionary *)sDict PhoneDict:(NSMutableDictionary *)pDict
@@ -326,7 +315,7 @@
 }
 
 
-#pragma mark - Table view data source
+#pragma mark -- Table view data source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     
     return 1;
@@ -475,15 +464,12 @@
 //设置cell高度
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    
         if ([indexPath isEqual:self.selectedIndexPath]) {
             
             return 50 + 50;
         }
         
         return 50;
-    
-    
     
 }
 
@@ -546,250 +532,62 @@
     [tableView endUpdates];
 }
 
-#pragma mark -- 呼转
-//呼转方法
-- (IBAction)callAnotherPelple:(UIBarButtonItem *)sender
-{
-    BOOL loginstate = [[defaults valueForKey:LOGIN_STATE] intValue];
-    //是否登录？
-    if (loginstate) {
-        //获取拇机号码,
-        NSString *phoneNumber = [defaults valueForKey:muji_bind_number];
-        
-        //已有number和email
-        if (phoneNumber.length>0 ) {
-            //获取呼转状态
-            [self getCallDivert];
-        }else
-        {   //没有则弹框提示
-            UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请到【发现】中【登录】,然后【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-            isNoMujiAlert.tag =1100;
-            [isNoMujiAlert show];
-            
-        }
-
-    }else{
-        //没有登录则弹框提示
-        UIAlertView *isNoLoginAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请到【发现】中【登录】,然后【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-        isNoLoginAlert.tag =1101;
-        [isNoLoginAlert show];
-    }
+#pragma mark --callDivert Delegate
+-(void)hasNotLogin{
+    //VCLog(@"hasNotLogin");
+    [self jumpToDiscoveryCtrol];
     
     
 }
-/**
- *  呼叫转移
- */
--(void)getCallDivert
-{
-    NSString *number = [defaults valueForKey:muji_bind_number];
-    if ([[defaults valueForKey:CALL_ANOTHER_STATE] intValue]) {
-        //已呼转,弹框提示，到拇机123456789321的呼转取消？
-        
-        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Cancel_Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
-        aliert.delegate = self;
-        aliert.tag =1000;
-        [aliert show];
-        
-    }else{
-        //未呼转,弹框提示，手机呼转到拇机123456789321？
-        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
-        aliert.delegate = self;
-        aliert.tag =1001;
-        [aliert show];
-    }
-
+-(void)hasNotConfig{
+    [self jumpToDiscoveryCtrol];
+    //VCLog(@"hasNotConfig");
 }
 
+-(void)jumpToDiscoveryCtrol{
+    //跳转到-发现
+    //disvyCtorl
+    UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    discoveryCtrol = [board instantiateViewControllerWithIdentifier:@"disvyCtorl"];
+    
+    [self.navigationController pushViewController:discoveryCtrol animated:YES];
+    
+    //隐藏tabbar
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
+}
 
-
-#pragma mark -- AlertView Delegate
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    NSMutableString *str;
-    NSDate *date = [NSDate date];
-    NSDateFormatter *dfmt = [[NSDateFormatter alloc] init];
-    dfmt.dateFormat = @"MMddHHmmss";
-    NSString *time;
-
-    /****/
-    if (alertView.tag == 1000) {
-        if (buttonIndex == 1) {
-            //取消呼转
-            str = [self cancelCallFrowardingWithNumber: [defaults valueForKey:muji_bind_number]];
-            
-            //设置状态为0
-            [defaults setValue:@"0" forKey:CALL_ANOTHER_STATE];
-            //设定呼转结束时间
-            time = [dfmt stringFromDate:date ];
-            
-            //计算时长
-            NSString *totalTime =  [self intervalFromStartDate:[defaults valueForKey:CallForwardStartTime] toTheEndDate:time];
-            NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-            NSNumber *number = [numberFormatter numberFromString:totalTime];
-            //上传
-            [userInfoObj setObject:[defaults valueForKey:CurrentUser] forKey:table_username];//username
-            [userInfoObj setObject:number forKey:table_total_duration_call_transfer];//佩戴时长
-            [userInfoObj saveInBackgroundWithBlock:^(BOOL isSuc,NSError *error){
-                if (error) {
-                    NSLog(@"add info error:%@",error);
-                }else
-                {
-                    NSLog(@"save succ");
-                    
-                }
-            }];
-        }
-    }
+//是否呼转，开OR关
+-(void)openOrCloseCallDivertState:(CallDivertState)state number:(NSString *)number{
     
-    
-    /****/
-    if (alertView.tag == 1001) {
-        if (buttonIndex == 1) {
-            //设置呼转,
-            str = [self setCallForwardingWithNumber:[defaults valueForKey:muji_bind_number]];
-            //设置状态为1
-            [defaults setValue:@"1" forKey:CALL_ANOTHER_STATE];
-            //设定呼转开始时间
-            time = [dfmt stringFromDate:date ];
-            [defaults setValue:time forKey:CallForwardStartTime];
-
-        }
-    }
-    //跳转发现
-    if (alertView.tag == 1100 || alertView.tag == 1101) {
-        if (buttonIndex == 0) {
-            //跳转到-发现
-            //disvyCtorl
-            UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-            discoveryCtrol = [board instantiateViewControllerWithIdentifier:@"disvyCtorl"];
-            
-            [self.navigationController pushViewController:discoveryCtrol animated:YES];
-            
-            //隐藏tabbar
-            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
-            
-            
-        }
-    }
-    
-    
-    
-    if (str.length>0) {
+    if (number.length>0) {
         // 呼叫
         // 不要将webView添加到self.view，如果添加会遮挡原有的视图
         if (webView == nil) {
             webView = [[UIWebView alloc] init];
         }
         
-        NSURL *url = [NSURL URLWithString:str];
+        NSURL *url = [NSURL URLWithString:number];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         
         [webView loadRequest:request];
-        VCLog(@"anotherNumber:%@",str);
+        VCLog(@"calloutNumber:%@",number);
+    }
+    if (state == OpenDivert) {
+        VCLog(@"open d");
+    }else{
+        VCLog(@"close d");
     }
     
 }
-//计算两个点时间差
-- (NSString *)intervalFromStartDate:(NSString *)sDate toTheEndDate:(NSString *)endDate
+
+
+#pragma mark -- 呼转Button
+- (IBAction)callAnotherPelple:(UIBarButtonItem *)sender
 {
-    NSString *string;
-    int startTime = [sDate intValue];//max 1231235959
-    int endTime = [endDate intValue];
+    callDivert.divertDelegate = self;
+    [callDivert isOrNotCallDivert];
     
-    int duringTime = endTime - startTime;
-    
-    string = [NSString stringWithFormat:@"%d",duringTime];
-    
-    VCLog(@"string:%@",string);
-    //VCLog(@"int max:%i",INT_MAX);//2147483647
-    return string;
 }
-
-//设置开通呼转短号
--(NSMutableString *)setCallForwardingWithNumber:(NSString *)string
-{
-    NSMutableString *str;
-    //cmcc
-    if ([[self getCarrier] isEqualToString:China_Mobile]) {
-        str = [[NSMutableString alloc] initWithFormat:@"**21*tel://%@#",string];
-    }
-    //unicom
-    if ([[self getCarrier] isEqualToString:China_Unicom]) {
-        str = [[NSMutableString alloc] initWithFormat:@"**21*tel://%@*11#",[defaults valueForKey:muji_bind_number]];
-    }
-    //telecom
-    if ([[self getCarrier] isEqualToString:China_Telecom]) {
-        str = [[NSMutableString alloc] initWithFormat:@"*72tel://%@",[defaults valueForKey:muji_bind_number]];
-    }
-    
-    return str;
-}
-
-//设置取消呼转短号
--(NSMutableString *)cancelCallFrowardingWithNumber:(NSString *)string
-{
-    NSMutableString *str;
-    //cmcc
-    if ([[self getCarrier] isEqualToString:China_Mobile]) {
-        str = [[NSMutableString alloc] initWithFormat:@"tel://##21#"];
-    }
-    //unicom
-    if ([[self getCarrier] isEqualToString:China_Unicom]) {
-        str = [[NSMutableString alloc] initWithFormat:@"tel://##21#"];
-    }
-    //telecom
-    if ([[self getCarrier] isEqualToString:China_Telecom]) {
-        str = [[NSMutableString alloc] initWithFormat:@"tel://*720"];
-    }
-
-    
-    return str;
-}
-/**
- *  获取本机运营商
- *  @return NSString 运营商
- */
-- (NSString*)getCarrier
-{
-    //获取本机运营商
-    CTTelephonyNetworkInfo *tInfo = [[CTTelephonyNetworkInfo alloc] init];
-    CTCarrier *carrier = [tInfo subscriberCellularProvider];
-    NSString * mcc = [carrier mobileCountryCode];//国家码406
-    NSString * mnc = [carrier mobileNetworkCode];//网络码
-    if (mnc == nil || mnc.length <1 || [mnc isEqualToString:@"SIM Not Inserted"] ) {
-        return @"Unknown";
-    }else {
-        if ([mcc isEqualToString:@"460"]) {
-            NSInteger MNC = [mnc intValue];
-            switch (MNC) {
-                case 00:
-                case 02:
-                case 07:
-                    return China_Mobile;
-                    break;
-                case 01:
-                case 06:
-                    return China_Unicom;
-                    break;
-                case 03:
-                case 05:
-                    return China_Telecom;
-                    break;
-                case 20:
-                    return China_TieTong;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    
-    return @"Unknown";
-}
-
-
-
 
 #pragma mark -- 跳转到添加联系人
 /**

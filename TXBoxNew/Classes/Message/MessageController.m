@@ -56,11 +56,6 @@
     
     [self searchLastMsgRecord];
     
-    //tableFooterView
-    if (self.contactsArray.count > 0 || self.searchsArray.count > 0) {
-        [self aaddfootv];
-    }
-    
     [self.tableView reloadData];
 }
 
@@ -97,21 +92,9 @@
     [self initSearchController];
 
     txsqlite = [[TXSqliteOperate alloc] init];
-    
+    //self.tableView.tableFooterView = [[UIView alloc] init];
 }
-/**
- *  添加Table的footerView
- */
--(void)aaddfootv
-{
-    UIView *foovt = [[UIView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, 30)];
-    UILabel *lline = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, DEVICE_WIDTH, 1)];
-    lline.backgroundColor = [UIColor blackColor];
-    lline.alpha = .1;
-    [foovt addSubview:lline];
-    
-    self.tableView.tableFooterView = foovt;
-}
+
 
 /**
  *  初始化搜索控制器
