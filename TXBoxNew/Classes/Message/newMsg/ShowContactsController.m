@@ -20,6 +20,8 @@
     
     NSMutableArray *selectArray;
     NSMutableDictionary *selectDict;
+    UIImageView *checkImg;
+    UIImageView *disCheckImg;
     
 }
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *cancelBtn;
@@ -43,7 +45,9 @@
     phoneDic = [[NSMutableDictionary alloc] init];
     selectArray = [[NSMutableArray alloc] init];
     selectDict = [[NSMutableDictionary alloc] init];
-    
+    checkImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CellBlueSelected"]];
+    disCheckImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CellNotSelected"]];
+    self.cancelBtn.enabled = NO;
 }
 
 -(void)addFootview
@@ -93,78 +97,57 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     ShowContactsCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ShowContactsCellID" forIndexPath:indexPath];
     
-    if (cell.selected ==YES) {
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    }else{
-        cell.accessoryType = UITableViewCellAccessoryNone;
-    }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
-    
-    
+    cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CellBlueSelected"]];;
     cell.name.text = [[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personName];
     cell.number.text = [[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel];
+    cell.checkImgv.hidden = YES;
+    cell.accessoryView.hidden = YES;
     
     return cell;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [self.tableView
-                             cellForRowAtIndexPath: indexPath ];
-    [selectDict setObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]forKey:indexPath];
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath: indexPath ];
     
-    NSLog(@"ssss:%p",[selectDict objectForKey:indexPath]);
-    if ([selectDict objectForKey:indexPath] != nil) {
-        cell.accessoryType =UITableViewCellAccessoryCheckmark;
-    }else{
-        cell.accessoryType =UITableViewCellAccessoryNone;
-    }
-    
-    /*
-    if (cell.accessoryType ==UITableViewCellAccessoryNone){
-        cell.accessoryType =UITableViewCellAccessoryCheckmark;
+    if (cell.accessoryView.hidden == YES){
         //选中，如果数组里没有，则add
-        if (![selectArray containsObject:[mutPhoneArr objectAtIndex:indexPath.row]]) {
-            [selectArray addObject:[mutPhoneArr objectAtIndex:indexPath.row]];
-        }
-        //VCLog(@"selectArray:%@",selectArray);
-        
-        
-    }
-    else{
-        
-        cell.accessoryType =UITableViewCellAccessoryNone;
-        //如果数组里有，则remove
-        if ([selectArray containsObject:[mutPhoneArr objectAtIndex:indexPath.row]]) {
-            [selectArray removeObject:[mutPhoneArr objectAtIndex:indexPath.row]];
-        }
-        
-        //VCLog(@"selectArray:%@",selectArray);
-    }
-    */
-    if (selectArray.count >0) {
-        [self.cancelBtn setTitle:@"取消"];
-    }else{
-        [self.cancelBtn setTitle:@""];
-    }
-    
-    VCLog(@"selectDict:%@",selectDict);
-    //[self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
+        if (![selectArray containsObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personName]]) {
+            if ([[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]) {
+                [selectDict setObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]forKey:indexPath];
+            }else{
+                return;
+            }
+            
+            [selectArray addObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personName]];
 
--(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
-    UITableViewCell *cell = [self.tableView
-                             cellForRowAtIndexPath: indexPath ];
-    [selectDict removeObjectForKey:indexPath];
+            cell.accessoryView.hidden = NO;
+        }
     
-    if ([selectDict valueForKey:[NSString stringWithFormat:@"%@",indexPath]] != nil) {
-        cell.accessoryType =UITableViewCellAccessoryCheckmark;
     }else{
-        cell.accessoryType =UITableViewCellAccessoryNone;
+        
+        //如果数组里有，则remove
+        if ([selectArray containsObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personName]]) {
+            [selectDict removeObjectForKey:indexPath];
+            [selectArray removeObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personName]];
+
+            cell.accessoryView.hidden = YES;
+        }
+        
+    }
+
+    if (selectArray.count > 0) {
+        self.cancelBtn.enabled = YES;
+        [self.cancelBtn setTitle:@"确定"];
+    }else{
+        self.cancelBtn.enabled = NO;
     }
     
+    
     VCLog(@"selectDict:%@",selectDict);
+    VCLog(@"selectArray:%@",selectArray);
+    //[self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark-- 获取通讯录联系人
@@ -216,23 +199,38 @@
 }
 */
 
-/*
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
+    
+    if (sender != self.cancelBtn) {
+        return;
+    }
+    if (selectArray.count >0) {
+        self.selectContacts = [[ShowContacts alloc] init];
+        self.selectContacts.mmutArray = selectArray;
+    }
+
+    
 }
-*/
+
 - (IBAction)cancelClick:(UIBarButtonItem *)sender {
     
-    if ([self.cancelBtn.title isEqualToString:@"取消"]) {
+   
         //取消选中
         
         //移除数组
+    /*
+        [selectArray removeAllObjects];
+        [selectDict removeAllObjects];
         
-    }
+        [self.tableView reloadData];
+        
+    */
     //[self dismissViewControllerAnimated:YES completion:nil];
     
     

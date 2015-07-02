@@ -11,8 +11,10 @@
 #import "TXCallAction.h"
 #import "CallingController.h"
 #import "GuideView.h"
+#import "CallingView.h"
 
-@interface TabBarViewController ()<tabBarViewDelegate,UIAlertViewDelegate,GuideViewDelegate>
+
+@interface TabBarViewController ()<tabBarViewDelegate,UIAlertViewDelegate,GuideViewDelegate,CallingDelegate>
 {
     CustomTabBarView *tabBarView;
     CustomTabBarBtn *previousBtn;
@@ -21,6 +23,8 @@
     TXTelNumSingleton *singleton;
     BOOL flag;
     NSUserDefaults *defaults;
+    float heightb;
+    CallingView *cView;
 }
 @end
 
@@ -55,7 +59,13 @@
     flag = NO;
     
     //2.重新定制tabBar
-    [self initTabBar];
+    tabBarView = [[CustomTabBarView alloc] init];
+    tabBarView.frame=CGRectMake(0, DEVICE_HEIGHT-49, DEVICE_WIDTH, 49);
+    tabBarView.delegate = self;
+    tabBarView.userInteractionEnabled = YES;
+    tabBarView.backgroundColor = RGBACOLOR(245, 245, 246, 1);
+    self.tabBar.hidden = YES;
+    //[self initTabBar];
     [self.view addSubview:tabBarView];
     
     
@@ -129,15 +139,12 @@
 
 
 #pragma mark -- 重写tabBar
-
 -(void) initTabBar
 {
     //创建TabBar
-    tabBarView = [[CustomTabBarView alloc] initWithFrame:CGRectMake(0, DEVICE_HEIGHT-49, DEVICE_WIDTH, 49)];
-    tabBarView.delegate = self;
-    tabBarView.userInteractionEnabled = YES;
-    tabBarView.backgroundColor = RGBACOLOR(245, 245, 246, 1);
-    self.tabBar.hidden = YES;
+    VCLog(@"height:%f",self.view.frame.size.height);
+    tabBarView.frame=CGRectMake(0, heightb-49, DEVICE_WIDTH, 49);
+    
     
 }
 
@@ -186,6 +193,11 @@
 
         [UIView setAnimationRepeatCount:0];
         [UIView commitAnimations];
+
+       
+        
+        
+        
         
     }else
     {
@@ -193,6 +205,8 @@
         [self customKeyboardHide];
         
     }
+    
+    
     
 }
 
@@ -340,10 +354,12 @@
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     calling = [board instantiateViewControllerWithIdentifier:@"callingVC"];
     calling.view.alpha = 0.f;
+
     calling.view.frame = CGRectMake(0, -5, DEVICE_WIDTH, DEVICE_HEIGHT+5);
     [self.view addSubview:calling.view];
     
 }
+
 
 //加载call out
 -(void) callingBtn:(NSNotification *)notification

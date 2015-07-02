@@ -3505,6 +3505,26 @@
                                                 </mask>
                                             </variation>
                                         </label>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="CellNotSelected" translatesAutoresizingMaskIntoConstraints="NO" id="YwL-HT-FMk">
+                                            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="20" id="1Sf-Vi-bA8"/>
+                                                <constraint firstAttribute="width" constant="20" id="liC-Ca-oZw"/>
+                                            </constraints>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="1Sf-Vi-bA8"/>
+                                                    <exclude reference="liC-Ca-oZw"/>
+                                                </mask>
+                                            </variation>
+                                            <variation key="widthClass=compact" ambiguous="YES" misplaced="YES">
+                                                <rect key="frame" x="345" y="7" width="20" height="20"/>
+                                                <mask key="constraints">
+                                                    <include reference="1Sf-Vi-bA8"/>
+                                                    <include reference="liC-Ca-oZw"/>
+                                                </mask>
+                                            </variation>
+                                        </imageView>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="trailingMargin" secondItem="r5e-31-rmd" secondAttribute="trailing" constant="100" id="6hb-kr-gR3"/>
@@ -3524,6 +3544,7 @@
                                         <mask key="subviews">
                                             <exclude reference="Zaf-5R-QFf"/>
                                             <exclude reference="r5e-31-rmd"/>
+                                            <exclude reference="YwL-HT-FMk"/>
                                         </mask>
                                         <mask key="constraints">
                                             <exclude reference="Q9D-jS-go4"/>
@@ -3540,6 +3561,7 @@
                                         <mask key="subviews">
                                             <include reference="Zaf-5R-QFf"/>
                                             <include reference="r5e-31-rmd"/>
+                                            <include reference="YwL-HT-FMk"/>
                                         </mask>
                                         <mask key="constraints">
                                             <include reference="Q9D-jS-go4"/>
@@ -3554,6 +3576,7 @@
                                     </variation>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="checkImgv" destination="YwL-HT-FMk" id="1Lj-iT-s6C"/>
                                     <outlet property="name" destination="Zaf-5R-QFf" id="96t-Xn-9M8"/>
                                     <outlet property="number" destination="r5e-31-rmd" id="SBe-Ia-DTb"/>
                                 </connections>
@@ -3565,9 +3588,10 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="联系人" id="6nb-iQ-u6m">
-                        <barButtonItem key="rightBarButtonItem" title="取消" id="6En-2b-dan">
+                        <barButtonItem key="rightBarButtonItem" title="确定" id="6En-2b-dan">
                             <connections>
                                 <action selector="cancelClick:" destination="a7w-hu-YqK" id="2iX-EU-qS6"/>
+                                <segue destination="Fuk-to-uze" kind="unwind" unwindAction="doSomethingDidSegue:" id="UWm-pH-XKy"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -3576,8 +3600,9 @@
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yiQ-sL-c9H" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="Fuk-to-uze" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="4722" y="1948"/>
+            <point key="canvasLocation" x="4731" y="1944"/>
         </scene>
         <!--Navgation Controller-->
         <scene sceneID="ros-74-QSe">
@@ -4021,6 +4046,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="CellNotSelected" width="18" height="18"/>
         <image name="button_red" width="35" height="21"/>
         <image name="callAnother_gray" width="49" height="30"/>
         <image name="call_another60_selected" width="30" height="30"/>

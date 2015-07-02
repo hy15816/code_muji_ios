@@ -12,6 +12,7 @@
 #import "TXSqliteOperate.h"
 #import "MsgDetailController.h"
 #import "NSString+helper.h"
+#import "ShowContacts.h"
 
 @interface NewMsgController ()<UITextViewDelegate,UITextFieldDelegate,HPGrowingTextViewDelegate>
 {
@@ -33,6 +34,23 @@
 
 
 @implementation NewMsgController
+
+-(IBAction)doSomethingDidSegue:(UIStoryboardSegue *)sender{
+    
+    ShowContactsController *thisViewController = [sender sourceViewController];
+    ShowContacts *showcs = thisViewController.selectContacts;
+    
+    NSString *string = [[NSString alloc] init];
+    for (NSString *s in showcs.mmutArray) {
+        string = [NSString stringWithFormat:@"%@,%@",string,s];
+    }
+    
+    
+    self.hisNumber.text = string;
+    
+    
+}
+
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];

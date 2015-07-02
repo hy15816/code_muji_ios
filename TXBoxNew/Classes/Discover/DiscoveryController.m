@@ -28,8 +28,10 @@
     TXSqliteOperate *txsqlite;
     BOOL isConnecting;
     
+    CBPeripheral *currentPeripheral;    //当前外设
+    NSMutableArray *peripheralArray;
     BLEmanager *bleManage;
-    CBPeripheral *currentPerip;
+    
     float animationtimes;
     CallAndDivert *callAndDivert;
     UIWebView *dwebView;
@@ -627,9 +629,9 @@
         [SVProgressHUD showWithStatus:@"匹配中..." maskType:SVProgressHUDMaskTypeNone];
         //查找外设
         [self scanPeripheral];
-        if (!isConnecting) {
-            [self performSelector:@selector(dismissSvp) withObject:nil afterDelay:15];//扫描外设时间
-        }
+        
+        [self performSelector:@selector(dismissSvp) withObject:nil afterDelay:15];//扫描外设时间
+        
         
     }
     [self refreshBindButton];
@@ -638,55 +640,68 @@
 
 -(void)dismissSvp
 {
-    [SVProgressHUD showImage:nil status:@"连接超时"];
-    [bleManage.centralManager stopScan];
-    [SVProgressHUD dismiss];
+    if (!isConnecting) {
+    
+        [SVProgressHUD showErrorWithStatus:@"未找到设备!"];
+        [bleManage.centralManager stopScan];
+    }
+    
+    //[SVProgressHUD dismiss];
 }
 
 //扫描
 -(void)scanPeripheral
 {
-    //[bleManage.centralManager scanForPeripheralsWithServices:nil options:nil];
+    [bleManage.centralManager scanForPeripheralsWithServices:nil options:nil];
 
 }
 -(void)cutConnectperipheral
 {
-    if (currentPerip) {
-        [bleManage.centralManager cancelPeripheralConnection:currentPerip];
+    if (currentPeripheral !=nil) {
+        [bleManage.centralManager cancelPeripheralConnection:currentPeripheral];
+        
+        currentPeripheral = nil;
+        //查找
+        //[bleManage.centralManager scanForPeripheralsWithServices:nil options:0];
+        
     }
     
 }
 #pragma mark -- managerDelegate
--(CBPeripheral *)searchedPeripheral:(NSArray *)peripArray
-{
-    if (peripArray.count >=1) {
-        [bleManage.centralManager stopScan];
-        //连接第一个
-        [bleManage.centralManager connectPeripheral:peripArray[0] options:nil];
-    }
-    currentPerip = peripArray[0];
-    return peripArray[0];
-}
-
--(void)managerConnectedPeripheral:(BOOL)isConnect
+-(void)managerConnectedPeripheral:(CBPeripheral *)peripheral connect:(BOOL)isConnect
 {
     isConnecting = isConnect;
     if (isConnecting) {
         [defaults setObject:@"1" forKey:BIND_STATE];
+        currentPeripheral = peripheral;
     }else{
         [defaults setObject:@"0" forKey:BIND_STATE];
     }
     [self refreshBindButton];
     //连接成功
     if (isConnect == YES) {
+        [SVProgressHUD showErrorWithStatus:@"连接成功!"];
         [bleManage.centralManager stopScan];
-        [SVProgressHUD dismiss];
+        //[SVProgressHUD dismiss];
     }
+    
+    
+    
 }
+
+-(void)searchedPeripheral:(NSMutableArray *)peripArray
+{
+    [bleManage.centralManager stopScan];
+    //连接第一个
+    [bleManage.centralManager connectPeripheral:peripArray[0] options:nil];
+    
+    //return currentPeripheral;
+}
+
 //是否断线重连
 -(BOOL)managerDisConnectedPeripheral:(CBPeripheral *)peripheral
 {
-    return YES;
+    return NO;
 }
 
 //是否监听特征
@@ -695,36 +710,6 @@
     return NO;
 }
 
-//发送数据
--(BLEPeripheral *)getPeripheralInfo
-{
-    BLEPeripheral *perip = [[BLEPeripheral alloc] init];
-    perip.characteristicWriteType = CBCharacteristicWriteWithResponse;
-    perip.writeData = [self getData];
-    return perip;
-}
-
--(NSData *)getData
-{
-    Byte data[20];
-    for (int i=0; i<kByte_count; i++) {
-        data[i] = 0x00;
-    }
-    //查询固件版本
-    data[0]  = 0x5A;//strtoul([@"0x5A" UTF8String],0,16);//发送方
-    data[1]  = 0x10;
-    
-    NSData * myData = [NSData dataWithBytes:&data length:sizeof(data)];
-    return myData;
-}
-//接收到的数据
--(void)managerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic
-{
-    VCLog(@"data:%@",data);
-    VCLog(@"hexString:%@",hexString);
-    //VCLog(@"curC:     %@",curCharacteristic);
-    
-}
 
 
 -(void)viewDidDisappear:(BOOL)animated

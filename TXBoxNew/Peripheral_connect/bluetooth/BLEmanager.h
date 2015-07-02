@@ -8,16 +8,16 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
-#import "BLEPeripheral.h"
 
 @protocol BLEmanagerDelegate <NSObject>
 
 @optional
 /**
  *  是否连接成功
+ *  @param peripheral 当前连接的设备
  *  @param isConnect BOOL类型
  */
--(void)managerConnectedPeripheral:(BOOL)isConnect;
+-(void)managerConnectedPeripheral:(CBPeripheral *)peripheral connect:(BOOL)isConnect;
 
 /**
  *  是否断线重连
@@ -35,29 +35,14 @@
 -(void)managerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic;
 
 /**
- *  @method 是否监听值
- *  @return YES是, NO否
- */
--(BOOL)managerSetNotifyValue;
-
-/**
- *  获取要发送的数据和数据类型
- *  @return BLEPeripheral类
- */
--(BLEPeripheral *)getPeripheralInfo;
-
-/**
  *  扫描到的所有外设并返回当前连接的哪一个
  *  @param pArray 所有外设
- *  @return 当前连接的
+ *  
  */
--(CBPeripheral *)searchedPeripheral:(NSArray *)peripArray;
+-(void)searchedPeripheral:(NSMutableArray *)peripArray;
 
-/**
- *  返回服务的特征值
- *  @return dict：{writeChc = "",readChc = ""};
- */
--(NSDictionary *)peripheralChacteristicString;
+
+-(void)showAlertView;
 @end
 
 @interface BLEmanager : NSObject<CBCentralManagerDelegate,CBPeripheralDelegate>
@@ -65,6 +50,9 @@
     NSDictionary *chcDict;
     CBPeripheral *cPeripheral;          //外设
     NSMutableArray *peripheralArray;   //外设数组
+    NSMutableArray *chacteristicArray;  //特征
+    CBCharacteristic *currentWriteChacteristic;
+    CBCharacteristic *currentReadChacteristic;
 }
 
 +(BLEmanager *)sharedInstance;
@@ -72,5 +60,7 @@
 @property (assign,nonatomic) id<BLEmanagerDelegate> managerDelegate;
 
 -(void)initCentralManager;
+-(void)writeDatas:(NSData *)data;// type:(CBCharacteristicWriteType)type;
+-(void)isOrNotSetNotify:(BOOL)setNotify;
 
 @end

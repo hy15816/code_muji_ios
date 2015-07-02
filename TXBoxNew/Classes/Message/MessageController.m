@@ -18,7 +18,7 @@
 #import "MessageController.h"
 #import "MessageCell.h"
 #import "MsgDetailController.h"
-#import "TXBLEOperation.h"
+#import "BLEOperation.h"
 #import "TXSqliteOperate.h"
 #import "TXData.h"
 
@@ -91,6 +91,10 @@
     
     [self initSearchController];
 
+    
+    self.tableView.delegate =  nil;
+    self.tableView.dataSource = nil;
+    
     txsqlite = [[TXSqliteOperate alloc] init];
     //self.tableView.tableFooterView = [[UIView alloc] init];
 }

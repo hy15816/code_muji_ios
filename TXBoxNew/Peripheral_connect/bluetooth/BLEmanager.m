@@ -8,31 +8,12 @@
 
 #define kCBAdvDataServiceUUIDs  @"kCBAdvDataServiceUUIDs"   //key-所有服务
 #define kCBAdvDataLocalName     @"kCBAdvDataLocalName"      //key-广播名称
-
+#define kByte_count 20
 
 #import "BLEmanager.h"
-#import "BLEPeripheral.h"
-
 
 @implementation BLEmanager
 @synthesize centralManager,managerDelegate;
-
-
-//单例
-#undef	AS_SINGLETON
-#define AS_SINGLETON( __class ) \
-+ (__class *)sharedInstance;
-
-#undef	DEF_SINGLETON
-
-#define DEF_SINGLETON( __class ) \
-+ (__class *)sharedInstance \
-{ \
-static dispatch_once_t once; \
-static __class * __singleton__; \
-dispatch_once( &once, ^{ __singleton__ = [[__class alloc] init]; } ); \
-return __singleton__; \
-}
 
 static BLEmanager *sharedBLEmanger=nil;
 
@@ -44,6 +25,11 @@ static BLEmanager *sharedBLEmanger=nil;
             centralManager =[[CBCentralManager alloc] initWithDelegate:self queue:dispatch_get_main_queue()];
             peripheralArray = [[NSMutableArray alloc] init];
             
+            currentWriteChacteristic = [[CBCharacteristic alloc] init];
+            currentReadChacteristic = [[CBCharacteristic alloc] init];
+            
+            chacteristicArray = [[NSMutableArray alloc] init];
+            
         }
     }
     return self;
@@ -51,13 +37,24 @@ static BLEmanager *sharedBLEmanger=nil;
 
 +(BLEmanager *)sharedInstance
 {
-    @synchronized(self){
+    //@synchronized(self){
         if (sharedBLEmanger == nil) {
-            sharedBLEmanger = [[self alloc]init];
+            sharedBLEmanger = [[super allocWithZone:nil] init];
         }
-    }
+    //}
     return sharedBLEmanger;
 }
+
++ (id) allocWithZone:(struct _NSZone *)zone
+{
+    return [self sharedInstance];
+}
+
+- (id) copyWithZone:(NSZone *) zone
+{
+    return self;
+}
+
 //初始化central
 -(void)initCentralManager
 {
@@ -94,9 +91,14 @@ static BLEmanager *sharedBLEmanger=nil;
             return false;
     }
     
-    VCLog(@"Central manager currentState: %@", currentState);
+    NSLog(@"Central manager currentState: %@", currentState);
+    [managerDelegate showAlertView];
+    
+    
+    /*
     UIAlertView *bleAlert=[[UIAlertView alloc] initWithTitle:nil message:currentState delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
     [bleAlert show];
+     */
     return false;
 }
 #pragma mark -- 5.2 查找到外设后，响应函数
@@ -105,35 +107,48 @@ static BLEmanager *sharedBLEmanger=nil;
     
     NSString *advName=[advertisementData valueForKeyPath:kCBAdvDataLocalName];//广播名称
     //NSArray *serviceArray = [advertisementData valueForKey:kCBAdvDataServiceUUIDs];//所有服务
-    VCLog(@"%@,%@,%@,%@,%@",peripheral.name,peripheral.identifier.UUIDString,advName,RSSI,advertisementData);
+    NSLog(@"%@,%@,%@,%@,%@",peripheral.name,peripheral.identifier.UUIDString,advName,RSSI,advertisementData);
     
-    //BOOL isExist = [self comparePeripheralisEqual:peripheral RSSI:RSSI];
-    //if (!isExist) {
-        /*
-        BLEPeripheral *perip = [[BLEPeripheral alloc] init];
-        perip.peri              = peripheral;
-        perip.periIdentifier    = peripheral.identifier.UUIDString;
-        perip.periLocaName      = advName;
-        perip.periName          = peripheral.name;
-        perip.periRSSI          = RSSI;
-        perip.periServices      = serviceArray.count;
-        */
-        
-    //}
     
     //添加到pArray中
     if (![peripheralArray containsObject:peripheral]) {
         [peripheralArray addObject:peripheral];
+        
+        //保存到缓存目录
+        
+        //[self savePeriphToCaches];
+    }
+    /*
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSArray *array  =[];
+    
+    if (<#condition#>) {
+        <#statements#>
+    }
+    */
+    
+    if (peripheralArray.count >0) {
+        [managerDelegate searchedPeripheral:peripheralArray];
     }
     
+}
+
+-(void)savePeriphToCaches{
+
+    NSArray *pathCaches = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *stringC = [pathCaches objectAtIndex:0];
     
-    [managerDelegate searchedPeripheral:peripheralArray];
+     NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:stringC])  {
+        [fileManager createFileAtPath:stringC contents:nil attributes:nil ];
+    }
+    [peripheralArray writeToURL:[NSURL URLWithString:stringC] atomically:YES];
 }
 
 #pragma mark -- 7.2 连接成功后响应此方法
 -(void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
 {
-    VCLog(@"connect suc p.name:%@",peripheral.name);
+    NSLog(@"connect suc p.name:%@",peripheral.name);
     cPeripheral = peripheral;
     
     //8.1读取外设的所有服务UUID
@@ -141,73 +156,85 @@ static BLEmanager *sharedBLEmanger=nil;
     [cPeripheral discoverServices:nil];
     
     //代理,连接成功
-    [managerDelegate managerConnectedPeripheral:YES];
+    [managerDelegate managerConnectedPeripheral:cPeripheral connect:YES];
 }
 
 #pragma mark -- 8.2 读取外设的所有服务UUID成功后,响应此方法
 -(void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error
 {
     if (error) {
-        VCLog(@"Discover Services error:%@",error.localizedDescription);
+        NSLog(@"Discover Services error:%@",error.localizedDescription);
         return;
     }
     
     //9.1 读取当前CBService里面的特征值UUID
+    NSMutableArray *sArray = [[NSMutableArray alloc] init];
     for (CBService *s in peripheral.services) {
         
         [cPeripheral discoverCharacteristics:nil forService:s];
+        [sArray addObject:s];
     }
+    NSLog(@"s:%@",sArray);
 }
 
 #pragma mark -- 9.2 读取当前CBService里面的特征值UUID成功后,响应此方法（写入数据）
 -(void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
 {
     if (error) {
-        VCLog(@"Discover Chc error:%@",error.localizedDescription);
+        NSLog(@"Discover Chc error:%@",error.localizedDescription);
         return;
     }
-
-    //发送数据
-    BLEPeripheral *perip = [managerDelegate getPeripheralInfo];
-    chcDict = [managerDelegate peripheralChacteristicString];//读取值，特征
     
     for (CBCharacteristic * characteristic in service.characteristics)
     {
-        if( [characteristic.UUID isEqual:[CBUUID UUIDWithString:[chcDict valueForKey:keyWriteChc]]])
-        {
-            //VCLog(@"1-chc.uuid:%@",[characteristic UUID]);
-            //给蓝牙发数据
-            [cPeripheral writeValue:perip.writeData forCharacteristic:characteristic type:perip.characteristicWriteType];
-        }
+        [chacteristicArray addObject:characteristic];
+        
     }
+    NSLog(@"cArray:%@",chacteristicArray);
     
-    //是否监听
-    for (CBCharacteristic * characteristic in service.characteristics)
-    {
-        if( [characteristic.UUID isEqual:[CBUUID UUIDWithString:[chcDict valueForKey:keyReadChc]]])
-        {
-            //VCLog(@"2-chc.uuid:%@",[characteristic UUID]);
-            //读取值
-            [cPeripheral readValueForCharacteristic:characteristic];
-            //监听值
-            BOOL value = [managerDelegate managerSetNotifyValue];
-            if (value) {
-                [cPeripheral setNotifyValue:value forCharacteristic:characteristic];
-            }
+}
+
+//设置是否监听
+-(void)isOrNotSetNotify:(BOOL)setNotify
+{
+    if (setNotify == YES) {
+
+        [cPeripheral setNotifyValue:YES forCharacteristic:currentReadChacteristic];
+    }else{
+        [cPeripheral setNotifyValue:NO forCharacteristic:currentReadChacteristic];
+    }
+}
+
+//写数据
+-(void)writeDatas:(NSData *)data{
+    
+    NSLog(@"write data:%@",data);
+    if (currentWriteChacteristic.UUID.UUIDString != nil) {
+    [cPeripheral writeValue:data forCharacteristic:currentWriteChacteristic type:CBCharacteristicWriteWithResponse];
+    }else{
+        for (CBCharacteristic *chc in chacteristicArray) {
+            [cPeripheral writeValue:data forCharacteristic:chc type:CBCharacteristicWriteWithResponse];//循环写入，找到真正的写特征
+            [cPeripheral setNotifyValue:YES forCharacteristic:chc];//设置所有特征监听为YES，有数据返回的读特征
             
         }
     }
-    
+    //监听
+
+    [cPeripheral setNotifyValue:YES forCharacteristic:currentReadChacteristic];
+
 }
+
 //发送数据后回调
 -(void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
     if (error) {
-        VCLog(@"writeValue error:%@",error.localizedDescription);
+        NSLog(@"writeValue error:%@",error.localizedDescription);
         
         return;
     }else{
-        VCLog(@"writeValue suc UUID:%@\n",characteristic.UUID);
+        currentWriteChacteristic = characteristic;
+        NSLog(@"writeValue suc currentWriteChacteristic:%@",currentWriteChacteristic.UUID.UUIDString);
+        //return;
         
     }
 }
@@ -216,17 +243,23 @@ static BLEmanager *sharedBLEmanger=nil;
 -(void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
     
     if (error) {
-        VCLog(@"readValue error: %@",error.localizedDescription);
+        NSLog(@"readValue error: %@",error.localizedDescription);
         return;
     }
-    //VCLog(@"3-chc.uuid:%@",[characteristic UUID]);
-    if ([[characteristic UUID] isEqual:[CBUUID UUIDWithString:[chcDict valueForKey:keyReadChc]]]) {
+    
+    if (characteristic.value != nil) {
+        currentReadChacteristic = characteristic;
+        NSLog(@"currentReadChacteristic:%@",currentReadChacteristic.UUID.UUIDString);
         
         //接收到的值传出去
         NSData *receiveData = characteristic.value;
         [managerDelegate managerReceiveDataPeripheralData:receiveData toHexString:[self hexadecimalString:receiveData] fromCharacteristic:characteristic];
+        return;
     }
-    
+    //把不是读特征的监听置为NO
+    if (!currentWriteChacteristic) {
+        [cPeripheral setNotifyValue:NO forCharacteristic:characteristic];
+    }
     
 }
 
@@ -235,16 +268,19 @@ static BLEmanager *sharedBLEmanger=nil;
     //VCLog(@"c.value:%@",characteristic.value);
     
     if (error) {
-        VCLog(@"readValue error: %@",error.localizedDescription);;
+        NSLog(@"notifyValue error: %@",error.localizedDescription);;
         return;
     }
-    
-    if ([[characteristic UUID] isEqual:[CBUUID UUIDWithString:[chcDict valueForKey:keyReadChc]]]) {
-        //接收到的值传出去
-        NSData *receiveData = characteristic.value;
-        [managerDelegate managerReceiveDataPeripheralData:receiveData toHexString:[self hexadecimalString:receiveData] fromCharacteristic:characteristic];
-    }
-    
+    /*
+     if (characteristic.value != nil) {
+     currentRedeChacteristic = characteristic;
+     //接收到的值传出去
+     NSData *receiveData = characteristic.value;
+     [managerDelegate managerReceiveDataPeripheralData:receiveData toHexString:[self hexadecimalString:receiveData] fromCharacteristic:characteristic];
+     return;
+     }
+
+    */
 }
 
 //将传入的NSData类型转换成NSString并返回
@@ -257,7 +293,7 @@ static BLEmanager *sharedBLEmanger=nil;
     if(!dataBuffer){
         return nil;
     }
-    NSUInteger dataLength = kByte_count;//[data length];
+    NSUInteger dataLength = [data length];//kByte_count;
     NSMutableString* hexString = [NSMutableString stringWithCapacity:(dataLength * 2)];
     for(int i = 0; i < dataLength; i++){
         [hexString appendString:[NSString stringWithFormat:@"%02lx ", (unsigned long)dataBuffer[i]]];
@@ -270,11 +306,11 @@ static BLEmanager *sharedBLEmanger=nil;
 #pragma mark -- 连接上的两个设备突然断开了，会自动回调下面的方法
 -(void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
     //前提是 原已经连接上的
-    VCLog(@"conncet error:%@",error.localizedDescription);
+    NSLog(@"conncet error:%@",error.localizedDescription);
     
     if (error) {
         
-        [managerDelegate managerConnectedPeripheral:NO];
+        [managerDelegate managerConnectedPeripheral:cPeripheral connect:NO];
         //断线重新连接当前外设
         BOOL isdisCon = [managerDelegate managerDisConnectedPeripheral:peripheral];
         if (isdisCon) {
@@ -289,30 +325,16 @@ static BLEmanager *sharedBLEmanger=nil;
 
 #pragma mark -- 连接的两个设备未能完成连接，
 -(void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
-    VCLog(@"fail to conncet p error:%@",error.localizedDescription);
+    NSLog(@"fail to conncet p error:%@",error.localizedDescription);
     
     //代理
-    [managerDelegate managerConnectedPeripheral:NO];
+    [managerDelegate managerConnectedPeripheral:nil connect:NO];
     
 }
 #pragma mark -- [peripheral readRSSI]方法回调
 -(void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(NSNumber *)RSSI error:(NSError *)error
 {
-    VCLog(@"RSSI:%@",RSSI);
-}
-
--(BOOL) comparePeripheralisEqual :(CBPeripheral *)disCoverPeripheral RSSI:(NSNumber *)RSSI
-{
-    if ([peripheralArray count]>0) {
-        for (int i=0;i<[peripheralArray count];i++) {
-            BLEPeripheral *mperi = [peripheralArray objectAtIndex:i];
-            if ([disCoverPeripheral isEqual:mperi.peri]) {
-                mperi.periRSSI = RSSI;
-                return YES;
-            }
-        }
-    }
-    return NO;
+    NSLog(@"RSSI:%@",RSSI);
 }
 
 @end

@@ -11,5 +11,6 @@
 @interface ShowContactsCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *name;
 @property (weak, nonatomic) IBOutlet UILabel *number;
+@property (strong, nonatomic) IBOutlet UIImageView *checkImgv;
 
 @end
