@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "CustomTabBarBtn.h"
-#import "TXKeyView.h"
 
 @protocol tabBarViewDelegate <NSObject>
 
@@ -19,14 +18,9 @@
 
 
 @interface CustomTabBarView : UIView
-{
-    CustomTabBarBtn *previousBtn;
-    BOOL flag;
-}
 
 @property (assign,nonatomic) id<tabBarViewDelegate> delegate;
 
-@property (strong,nonatomic) TXKeyView *keyView;
 @property (nonatomic,strong) UIButton *callBtn;
 
 

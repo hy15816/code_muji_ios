@@ -41,9 +41,10 @@
  */
 -(void)searchedPeripheral:(NSMutableArray *)peripArray;
 
-
+-(void)systemBLEState:(CBCentralManagerState)state;
 -(void)showAlertView;
 @end
+
 
 @interface BLEmanager : NSObject<CBCentralManagerDelegate,CBPeripheralDelegate>
 {

@@ -48,7 +48,7 @@
         int y = i/3;
         int x = i%3;
         //VCLog(@"%D",x);
-        [self addKeyWithIcon:icon selectedIcon:sicon rectbg:CGRectMake(x*keyWidth, y*keyHight+InputBoxView,keyWidth , keyHight) tag:i];
+        [self addKeyWithIcon:icon selectedIcon:sicon rectbg:CGRectMake(x*keyWidth, y*keyHeight+InputBoxView,keyWidth , keyHeight) tag:i];
         
     }
 

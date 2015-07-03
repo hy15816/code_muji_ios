@@ -29,10 +29,11 @@
 {
     //初始化button
     CustomTabBarBtn *button = [CustomTabBarBtn buttonWithType:UIButtonTypeCustom];
+    button.backgroundColor = [UIColor clearColor];
     button.exclusiveTouch = YES;
     button.highlighted = NO;
     button.tag = index;
-    
+   
     //设置frame
     CGFloat buttonW = self.frame.size.width / 4.f;
     CGFloat buttonH = self.frame.size.height;
@@ -61,17 +62,13 @@
 {
     
     //防止按钮快速点击造成多次响应
-    if (button.tag == 0) {
-        [[self class] cancelPreviousPerformRequestsWithTarget:self selector:@selector(todoSomething:) object:button];
-        [self performSelector:@selector(todoSomething:) withObject:button afterDelay:0.2f];
-    }else
-    {
+//    if (button.tag == 0) {
+//        [[self class] cancelPreviousPerformRequestsWithTarget:self selector:@selector(todoSomething:) object:button];
+//        [self performSelector:@selector(todoSomething:) withObject:button afterDelay:0.1f];
+//    }else
+//    {
         [self.delegate changeViewController:button];
-    }
-    
-    
-    
-    
+//    }
 }
 
 -(void)todoSomething:(CustomTabBarBtn *)button

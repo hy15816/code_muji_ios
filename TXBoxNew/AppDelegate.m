@@ -20,6 +20,10 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     usDefaults = [NSUserDefaults standardUserDefaults];
+    enterbgView =  [[UIImageView alloc] initWithFrame:self.window.bounds];
+    enterbgView.image = [UIImage imageNamed:@"lch_0_568h"];
+    enterbgView.alpha = 0;
+    
     
     //leanCloud 服务器
     [AVOSCloud setApplicationId:@"85m0pvb0vv1iluti5sk0xsou1mkftzn06a3f1ompvza9xc7z" clientKey:@"orluh89ufnpvl773b68w5gcdk4dxfrahzwaahz7c46ettn44"];
@@ -27,7 +31,7 @@
     //缓存当前用户
     AVUser *currentUser = [AVUser currentUser];
     if (currentUser == nil) {
-        [usDefaults setValue:@"0" forKey:CALL_ANOTHER_STATE];//呼转状态
+        //[usDefaults setValue:@"0" forKey:CALL_ANOTHER_STATE];//呼转状态
         [usDefaults setValue:@"0" forKey:LOGIN_STATE];//登录状态
         
         //[usDefaults setValue:@"0" forKey:@"opstate"];
@@ -112,18 +116,33 @@
      
      */
 }
-
+//挂起状态
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-}
+    
+    
+    enterbgView.alpha = 0;
+    [self.window addSubview:enterbgView];
+    [UIView animateWithDuration:.3 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        
+        enterbgView.alpha = 1;
+    } completion:^(BOOL isfinsh){if(isfinsh)VCLog(@"is ra");}];
 
+    
+    
+}
+//程序进入后台
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     
     
-    [self beingBackgroundUpdateTask];
+    //[self beingBackgroundUpdateTask];
     // 在这里加上你需要长久运行的代码
-    [self endBackgroundUpdateTask];
+    //[self endBackgroundUpdateTask];
+    
+    
+    
+    
 }
 
 - (void)beingBackgroundUpdateTask
@@ -139,26 +158,43 @@
     self.backgroundUpdateTask = UIBackgroundTaskInvalid;
 }
 
+//进入前景
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     //VCLog(@"x2");
+    [self removeEnterbgView];
 }
 
+//程序成为活动的
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     
+    [self removeEnterbgView];
     VCLog(@"x");
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     //
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:KRefreshDisvView object:self]];
-    
-    
-    
+
 }
 
+-(void)removeEnterbgView{
+    if (enterbgView) {
+        [UIView animateWithDuration:.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            
+            enterbgView.alpha = 0;
+            [enterbgView removeFromSuperview];
+        } completion:^(BOOL isfinsh){if(isfinsh)VCLog(@"is b a");}];
+    }
+}
+
+#pragma warning 退出程序时
 - (void)applicationWillTerminate:(UIApplication *)application {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    //保存isSetting状态
-    [usDefaults setValue:@"1" forKey:@"isSetting"];
+    //控制为否
+    [userDefaults setValue:@"0" forKey:BIND_STATE];
+    [userDefaults setValue:@"0" forKey:LOGIN_STATE];
+    AVUser *currentUser = [AVUser currentUser];
+    if (currentUser) {
+        currentUser =nil;
+    }
 }
 
 @end

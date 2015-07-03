@@ -29,8 +29,8 @@
 		635F818B1B3AAB5900A7A7D1 /* line.gif in Resources */ = {isa = PBXBuildFile; fileRef = 635F818A1B3AAB5900A7A7D1 /* line.gif */; };
 		6363DA681B2AD369005EF820 /* MessageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6363DA671B2AD369005EF820 /* MessageCell.xib */; };
 		6367B0B61B16E1AE0005F4B0 /* EditView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6367B0B51B16E1AE0005F4B0 /* EditView.m */; };
+		636B2BE51B46234C0007BA35 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 636B2BE41B46234C0007BA35 /* AVOSCloud.framework */; };
 		636FDE981B452DC50056F241 /* ShowContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 636FDE971B452DC50056F241 /* ShowContacts.m */; };
-		636FDE9A1B4531520056F241 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 636FDE991B4531520056F241 /* AVOSCloud.framework */; };
 		636FDE9D1B453BD40056F241 /* BLEmanager.m in Sources */ = {isa = PBXBuildFile; fileRef = 636FDE9C1B453BD40056F241 /* BLEmanager.m */; };
 		637005CA1AE4C1D000B8BAFD /* BLEOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 637005C31AE4C1D000B8BAFD /* BLEOperation.m */; };
 		637005CB1AE4C1D000B8BAFD /* TXCallAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 637005C61AE4C1D000B8BAFD /* TXCallAction.m */; };
@@ -143,9 +143,9 @@
 		6363DA671B2AD369005EF820 /* MessageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessageCell.xib; sourceTree = "<group>"; };
 		6367B0B41B16E1AE0005F4B0 /* EditView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditView.h; sourceTree = "<group>"; };
 		6367B0B51B16E1AE0005F4B0 /* EditView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditView.m; sourceTree = "<group>"; };
+		636B2BE41B46234C0007BA35 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		636FDE961B452DC50056F241 /* ShowContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowContacts.h; sourceTree = "<group>"; };
 		636FDE971B452DC50056F241 /* ShowContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowContacts.m; sourceTree = "<group>"; };
-		636FDE991B4531520056F241 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		636FDE9B1B453BD40056F241 /* BLEmanager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLEmanager.h; sourceTree = "<group>"; };
 		636FDE9C1B453BD40056F241 /* BLEmanager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLEmanager.m; sourceTree = "<group>"; };
 		637005C21AE4C1D000B8BAFD /* BLEOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLEOperation.h; sourceTree = "<group>"; };
@@ -264,7 +264,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				636FDE9A1B4531520056F241 /* AVOSCloud.framework in Frameworks */,
+				636B2BE51B46234C0007BA35 /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -615,7 +615,7 @@
 		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
 			isa = PBXGroup;
 			children = (
-				636FDE991B4531520056F241 /* AVOSCloud.framework */,
+				636B2BE41B46234C0007BA35 /* AVOSCloud.framework */,
 				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
 				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
 				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
@@ -1124,6 +1124,10 @@
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
@@ -1158,6 +1162,10 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,

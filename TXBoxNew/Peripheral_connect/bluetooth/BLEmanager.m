@@ -66,6 +66,7 @@ static BLEmanager *sharedBLEmanger=nil;
 //central蓝牙当前状态
 -(void)centralManagerDidUpdateState:(CBCentralManager *)central{
     
+    [managerDelegate systemBLEState:centralManager.state];
     [self isLECapableHaedware];
     
 }
@@ -92,13 +93,8 @@ static BLEmanager *sharedBLEmanger=nil;
     }
     
     NSLog(@"Central manager currentState: %@", currentState);
-    [managerDelegate showAlertView];
+    //[managerDelegate showAlertView];
     
-    
-    /*
-    UIAlertView *bleAlert=[[UIAlertView alloc] initWithTitle:nil message:currentState delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-    [bleAlert show];
-     */
     return false;
 }
 #pragma mark -- 5.2 查找到外设后，响应函数

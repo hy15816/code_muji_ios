@@ -79,6 +79,9 @@
     [self.tableView reloadData];
     //VCLog(@"int max:%i",INT_MAX);
     
+//    UIView *wv = [[UIView alloc] initWithFrame:CGRectMake(0, 200, 200, 40)];
+//    wv.backgroundColor = [UIColor redColor];
+//    [self.view.window addSubview:wv];
     
 }
 
@@ -111,8 +114,10 @@
     areaString = [[NSString alloc] init];
     opeareString = [[NSString alloc] init];
  
-    
     callDivert =[[CallAndDivert alloc] init];
+    
+    
+    
 }
 #pragma mark -- getContacts Delegate
 -(void)getAllPhoneArray:(NSMutableArray *)array SectionDict:(NSMutableDictionary *)sDict PhoneDict:(NSMutableDictionary *)pDict

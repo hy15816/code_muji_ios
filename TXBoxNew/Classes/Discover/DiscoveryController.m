@@ -30,6 +30,7 @@
     
     CBPeripheral *currentPeripheral;    //当前外设
     NSMutableArray *peripheralArray;
+    CBCentralManagerState managerState;
     BLEmanager *bleManage;
     
     float animationtimes;
@@ -189,7 +190,7 @@
     BOOL a = [[defaults valueForKey:@"versionSSSd"] intValue];
     if (!a) {//[str2 floatValue] != [str floatValue]
         
-        UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"不OK" otherButtonTitles:@"OK", nil];
+        UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
         atView.tag = 1005;
         atView.delegate = self;
         [atView show];
@@ -211,7 +212,7 @@
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (alertView.tag == 1005) {
-        if (buttonIndex == 1) {
+        if (buttonIndex == 0) {
             [defaults setValue:@"1" forKey:@"versionSSSd"];
         }
         
@@ -626,11 +627,19 @@
         [self cutConnectperipheral];
     }else{//没绑定
         
-        [SVProgressHUD showWithStatus:@"匹配中..." maskType:SVProgressHUDMaskTypeNone];
-        //查找外设
-        [self scanPeripheral];
+        if (managerState == CBCentralManagerStatePoweredOn) {
+            
+            [SVProgressHUD showWithStatus:@"匹配中..." maskType:SVProgressHUDMaskTypeNone];
+            //查找外设
+            [self scanPeripheral];
+            
+            [self performSelector:@selector(dismissSvp) withObject:nil afterDelay:15];//扫描外设时间
+        }else{
+            UIAlertView *atv=[[UIAlertView alloc] initWithTitle:@"需要打开蓝牙" message:@"是否打开蓝牙？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+            atv.tag = 1993;
+            [atv show];
+        }
         
-        [self performSelector:@selector(dismissSvp) withObject:nil afterDelay:15];//扫描外设时间
         
         
     }
@@ -668,6 +677,12 @@
     
 }
 #pragma mark -- managerDelegate
+-(void)systemBLEState:(CBCentralManagerState)state {
+    
+    managerState = state;
+    NSLog(@"state:%ld",(long)state);
+    
+}
 -(void)managerConnectedPeripheral:(CBPeripheral *)peripheral connect:(BOOL)isConnect
 {
     isConnecting = isConnect;
@@ -711,7 +726,10 @@
 }
 
 
-
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    
+}
 -(void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];

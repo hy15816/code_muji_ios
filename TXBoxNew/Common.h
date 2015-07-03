@@ -6,8 +6,8 @@
 #define iPhone4s ([UIScreen mainScreen].bounds.size.height == 480)
 
 // dock（customTabbar） 高度
-#define kDockHeight 49
-#define TXNavigationHeight 44
+#define kTabBarHeight 49
+#define kNavgHeight 44
 // 通知
 #define ktextChangeNotify @"textChangeNotification"//输入文本时，显示callBtn
 #define kCallingBtnClick @"callingBtnClick"     //点击callBtn
@@ -25,7 +25,7 @@
 #define kCallViewReloadData @"callViewReloadData"
 // custom键盘高宽
 #define keyWidth DEVICE_WIDTH/3.f
-#define keyHight keyWidth/3.f
+#define keyHeight keyWidth/3.f
 
 // 颜色
 #define RGBACOLOR(r,g,b,a) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:(a)/1.f]

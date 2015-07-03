@@ -45,13 +45,13 @@
             [self getDivertState:number];
             
         }else{//未配置
-            UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请先【配置】拇机号码" delegate:self cancelButtonTitle:@"不OK" otherButtonTitles:@"OK", nil];
+            UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请先【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
             isNoMujiAlert.tag =1900;
             [isNoMujiAlert show];
         }
         
     }else{//未登录
-        UIAlertView *isNoLoginAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请先【登录】,然后【配置】拇机号码" delegate:self cancelButtonTitle:@"不OK" otherButtonTitles:@"OK", nil];
+        UIAlertView *isNoLoginAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请先【登录】,然后【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
         isNoLoginAlert.tag =1901;
         [isNoLoginAlert show];
     }
@@ -68,7 +68,7 @@
     if ([[userDefaults valueForKey:CALL_ANOTHER_STATE] intValue]) {//已呼转
         
         //提示，到拇机123456789321的呼转取消？
-        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Cancel_Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
+        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Cancel_Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"Yes", nil) otherButtonTitles:NSLocalizedString(@"No", nil), nil];
         aliert.delegate = self;
         aliert.tag =1902;
         [aliert show];
@@ -77,7 +77,7 @@
     }else{//未呼转
         
         //提示，手机呼转到拇机123456789321？
-        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
+        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"Yes", nil) otherButtonTitles:NSLocalizedString(@"No", nil), nil];
         aliert.delegate = self;
         aliert.tag =1903;
         [aliert show];
@@ -99,7 +99,7 @@
     switch (alertView.tag) {
         case 1900:
         {
-            if (buttonIndex == 1) {//未配置
+            if (buttonIndex == 0) {//未配置
                 [divertDelegate hasNotConfig];
             }
         }
@@ -107,20 +107,20 @@
             break;
         case 1901:
         {
-            if (buttonIndex == 1) {
+            if (buttonIndex == 0) {
                 [divertDelegate hasNotLogin];
             }
         }
             break;
         case 1902:
-            if (buttonIndex == 1) {
+            if (buttonIndex == 0) {
                 [userDefaults setValue:@"0" forKey:CALL_ANOTHER_STATE];
                 [divertDelegate openOrCloseCallDivertState:CloseDivert number:[self setCancelCallFrowardingWithNumber:mujiNumber]];//确认取消
                 [self getCallDivertTimeLengthWithCurrTime:time];//计算时长
             }
             break;
         case 1903:
-            if (buttonIndex == 1) {
+            if (buttonIndex == 0) {
                 [userDefaults setValue:@"1" forKey:CALL_ANOTHER_STATE];
                 [divertDelegate openOrCloseCallDivertState:OpenDivert number:[self setCallForwardingWithNumber:mujiNumber]];//确认呼转
                 [userDefaults setValue:time forKey:CallForwardStartTime];;//保存开始呼转的时间

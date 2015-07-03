@@ -8,23 +8,17 @@
 
 #import "TabBarViewController.h"
 #import "TXTelNumSingleton.h"
-#import "TXCallAction.h"
 #import "CallingController.h"
 #import "GuideView.h"
-#import "CallingView.h"
 
-
-@interface TabBarViewController ()<tabBarViewDelegate,UIAlertViewDelegate,GuideViewDelegate,CallingDelegate>
+@interface TabBarViewController ()<tabBarViewDelegate,UIAlertViewDelegate,GuideViewDelegate>
 {
     CustomTabBarView *tabBarView;
     CustomTabBarBtn *previousBtn;
-    TXCallAction *callAct;
     CallingController *calling;
     TXTelNumSingleton *singleton;
-    BOOL flag;
-    NSUserDefaults *defaults;
-    float heightb;
-    CallingView *cView;
+    BOOL showKeyboard;
+
 }
 @end
 
@@ -39,12 +33,12 @@
     //显示tabBar
     tabBarView.hidden = NO;
     //第一次，则加载引导页
-    if (![defaults valueForKey:@"firstLaunch"]) {
+    if (![userDefaults valueForKey:@"firstLaunch"]) {
         
         GuideView *gview = [[GuideView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT)];
         gview.guideDelegate = self;
         [self.view addSubview:gview];
-        [defaults setValue:@"1" forKey:@"firstLaunch"];
+        [userDefaults setValue:@"1" forKey:@"firstLaunch"];
         
     }
 }
@@ -52,55 +46,23 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    //1.添加数字键盘
-    self.keyView = [[TXKeyView alloc]initWithFrame:CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHight*5.f+InputBoxView)];
+    //添加数字键盘
+    self.keyView = [[TXKeyView alloc]initWithFrame:CGRectMake(0,DEVICE_HEIGHT-kTabBarHeight-4*keyHeight-NaviBarHeight-InputBoxView, DEVICE_WIDTH, keyHeight*5.f+InputBoxView)];
     self.keyView.backgroundColor = [UIColor whiteColor];//键盘背景色
     [self.view addSubview:self.keyView];
-    flag = NO;
+    showKeyboard = YES;
     
-    //2.重新定制tabBar
-    tabBarView = [[CustomTabBarView alloc] init];
-    tabBarView.frame=CGRectMake(0, DEVICE_HEIGHT-49, DEVICE_WIDTH, 49);
-    tabBarView.delegate = self;
-    tabBarView.userInteractionEnabled = YES;
-    tabBarView.backgroundColor = RGBACOLOR(245, 245, 246, 1);
-    self.tabBar.hidden = YES;
-    //[self initTabBar];
-    [self.view addSubview:tabBarView];
-    
-    
-    /** 通知 **
-     *  1.在TXKeyView中创建通知
-     *  2.在需要的地方发送通知
-     *  3.在需要接收的通知处，注册通知
-     *  4.移除通知
-     *  *.名字必须相同
-     */
-    
-    /*
-    //.注册(接收)单个通知(指定名字的)（在keyView中发送的通知）
-    if([self respondsToSelector:@selector(btnChanged:)]) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(btnChanged:) name:ktextChangeNotify object:nil];
-    }
-    */
-    
-    
-    //calling.view.frame = CGRectMake(0, StatusBarHeight, DEVICE_WIDTH, DEVICE_HEIGHT-StatusBarHeight);
-    //calling.view.alpha = 0;
-    //[self.view addSubview:calling.view];
+    //init tabBar
+    [self initTabBar];
     
     //初始化单例
     singleton = [TXTelNumSingleton sharedInstance];
-    //call action
-    callAct = [[TXCallAction alloc] init];
-    defaults =[NSUserDefaults standardUserDefaults];
     
     //注册手势
     UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(initRecognizer:)];
     swipe.direction = UISwipeGestureRecognizerDirectionDown;
     [self.view addGestureRecognizer:swipe];
     
-    //
     //接收所有通知
     if([self respondsToSelector:@selector(cutomKeyboradAndTabViewHide:)]) {
         
@@ -119,31 +81,31 @@
     return gds;
 }
 
-
 //处理swipe
 -(void) initRecognizer:(UIGestureRecognizer *)recognizer
 {
+    [UIView animateWithDuration:.27 animations:^{
+        //隐藏键盘，
+        self.keyView.frame=CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
+        showKeyboard = NO;
+        //隐藏call按钮
+        tabBarView.callBtn.hidden = YES;
+        
+    }];
     
-    
-    [UIView beginAnimations:@"" context:@""];
-    [UIView setAnimationDuration:.37];
-    //隐藏键盘，
-    self.keyView.frame=CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHight*5.f+InputBoxView);
-    flag = NO;
-    //隐藏call按钮
-    tabBarView.callBtn.hidden = YES;
-    
-    [UIView setAnimationRepeatCount:0];
-    [UIView commitAnimations];
 }
-
 
 #pragma mark -- 重写tabBar
 -(void) initTabBar
 {
     //创建TabBar
-    VCLog(@"height:%f",self.view.frame.size.height);
-    tabBarView.frame=CGRectMake(0, heightb-49, DEVICE_WIDTH, 49);
+    tabBarView = [[CustomTabBarView alloc] init];
+    tabBarView.frame=CGRectMake(0, DEVICE_HEIGHT-kTabBarHeight, DEVICE_WIDTH, kTabBarHeight);
+    tabBarView.delegate = self;
+    tabBarView.userInteractionEnabled = YES;
+    tabBarView.backgroundColor = RGBACOLOR(245, 245, 246, 1);
+    self.tabBar.hidden = YES;
+    [self.view addSubview:tabBarView];
     
     
 }
@@ -167,47 +129,35 @@
     if (button.tag == 0) {
         
         //显示or隐藏键盘状态
-        flag = !flag;
-        [UIView beginAnimations:@"" context:@""];
-        [UIView setAnimationDuration:.37];
-        if (flag) {
-            //弹出键盘
-            self.keyView .frame=CGRectMake(0,DEVICE_HEIGHT-49-4*keyHight-NaviBarHeight-InputBoxView, DEVICE_WIDTH, keyHight*4.f+InputBoxView);
-            flag = YES;
-            [button setImage:[UIImage imageNamed:@"icon_up"] forState:UIControlStateSelected];
-            //若已输入号码，显示callBtn
-            if (singleton.singletonValue.length>0) {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.38f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    tabBarView.callBtn.hidden = NO;
-                });
+        showKeyboard = !showKeyboard;
+        [UIView animateWithDuration:.27 animations:^{
+            if (showKeyboard) {
+                //弹出键盘
+                self.keyView .frame=CGRectMake(0,DEVICE_HEIGHT-kTabBarHeight-4*keyHeight-NaviBarHeight-InputBoxView, DEVICE_WIDTH, keyHeight*4.f+InputBoxView);
+                showKeyboard = YES;
+                [button setImage:[UIImage imageNamed:@"icon_up"] forState:UIControlStateSelected];
+                //若已输入号码，显示callBtn
+                if (singleton.singletonValue.length>0) {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.38f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        tabBarView.callBtn.hidden = NO;
+                    });
+                }
+                
+            }else{
+                //隐藏键盘，隐藏call按钮
+                showKeyboard = NO;
+                [self customKeyboardHide];
+                //
+                [button setImage:[UIImage imageNamed:@"icon_down"] forState:UIControlStateSelected];
             }
             
-        }else
-        {
-            //隐藏键盘，隐藏call按钮
-            flag = NO;
-            [self customKeyboardHide];
-            //
-            [button setImage:[UIImage imageNamed:@"icon_down"] forState:UIControlStateSelected];
-        }
-
-        [UIView setAnimationRepeatCount:0];
-        [UIView commitAnimations];
-
-       
+        }];
         
-        
-        
-        
-    }else
-    {
+    }else{
         //隐藏键盘，隐藏call按钮
         [self customKeyboardHide];
         
     }
-    
-    
-    
 }
 
 //呼叫事件
@@ -225,11 +175,11 @@
     }else {
         //添加calling页面
         //是否登录？
-        BOOL loginS=[[defaults valueForKey:LOGIN_STATE] intValue];
+        BOOL loginS=[[userDefaults valueForKey:LOGIN_STATE] intValue];
         //是否登录？
         if (loginS) {
             //获取拇机号码,
-            NSString *phoneNumber =[defaults valueForKey:muji_bind_number];
+            NSString *phoneNumber =[userDefaults valueForKey:muji_bind_number];
             
             //已有number
             if (phoneNumber.length>0 ) {
@@ -245,9 +195,7 @@
         }else{//没有登录
             [self isOrNotCallOutTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【登录】后【配置】"];
         }
-        
-        
-        
+                
     }
 
     VCLog(@"call str:%@",strHis);
@@ -259,17 +207,17 @@
 {
     //VCLog(@"alert");
     
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:NSLocalizedString(@"Please_enter_the_correct_number", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"No", nil) otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:NSLocalizedString(@"Please_enter_the_correct_number", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"Yes", nil) otherButtonTitles:NSLocalizedString(@"No", nil), nil];
     alert.delegate = self;
     [alert show];
     
 }
 
-//custom 隐藏键盘隐藏call按钮
+//custom键盘隐藏call按钮
 -(void) customKeyboardHide
 {
     //隐藏键盘，
-    self.keyView.frame=CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHight*5.f+InputBoxView);
+    self.keyView.frame=CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
     //隐藏call按钮
     tabBarView.callBtn.hidden = YES;
     
@@ -282,14 +230,14 @@
         
         tabBarView.hidden = YES;
         //隐藏键盘，
-        self.keyView.frame=CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHight*5.f+InputBoxView);
+        self.keyView.frame=CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
         //隐藏call按钮
         tabBarView.callBtn.hidden = YES;
     }
     
     if ([notifi.name isEqualToString:kCustomKeyboardHide]) {
         //隐藏键盘，
-        self.keyView.frame=CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHight*5.f+InputBoxView);
+        self.keyView.frame=CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
         //隐藏call按钮
         tabBarView.callBtn.hidden = YES;
     }
@@ -299,11 +247,11 @@
     }
     //点击callBtn
     if ([notifi.name isEqualToString:kCallingBtnClick]) {
-        BOOL loginS=[[defaults valueForKey:LOGIN_STATE] intValue];
+        BOOL loginS=[[userDefaults valueForKey:LOGIN_STATE] intValue];
         //是否登录？
         if (loginS) {
             //获取拇机号码,
-            NSString *phoneNumber = [defaults valueForKey:muji_bind_number];
+            NSString *phoneNumber = [userDefaults valueForKey:muji_bind_number];
             
             //已有number
             if (phoneNumber.length>0 ) {
@@ -342,7 +290,7 @@
 -(void)isOrNotCallOutTitle:(NSString *)title message:(NSString *)message
 {
     //没有则弹框提示
-    UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"不OK" otherButtonTitles:@"OK", nil];
+    UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
     isNoMujiAlert.tag =1200;
     [isNoMujiAlert show];
 }
@@ -396,7 +344,7 @@
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (alertView.tag == 1200) {
-        if (buttonIndex ==1) {
+        if (buttonIndex ==0) {
             //跳转到-发现
             //disvyCtorl
             //
