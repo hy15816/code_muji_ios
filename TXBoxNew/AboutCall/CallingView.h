@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 @protocol CallingDelegate <NSObject>
-
+@optional
 /**
  *  获取当前界面的高度
  *  @param height 当前界面的高度
@@ -16,11 +16,16 @@
  */
 -(void)tabBarOrginHeight:(CGFloat)height;
 
--(void)changedTopViewHeight:(CGFloat)height;
+-(void)showTimesbuttonClick:(UIButton *)button;
 
+-(void)disMissCallingView;
 
 @end
 @interface CallingView : UIView
+
+@property (strong,nonatomic) UIImageView *imgv;
+@property (strong,nonatomic) UIImageView *topView;
+
 @property (assign,nonatomic) id<CallingDelegate> delegateCalling;
--(void)addCallingView;
+
 @end

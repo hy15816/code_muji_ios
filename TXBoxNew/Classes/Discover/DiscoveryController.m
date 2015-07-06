@@ -142,6 +142,25 @@
     //self.tableView.tableFooterView = footv;
     
 }
+
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    //自动登录
+    //缓存当前用户
+    
+    AVUser *currentUser = [AVUser currentUser];
+    if (currentUser != nil) {
+        //[usDefaults setValue:@"0" forKey:CALL_ANOTHER_STATE];//呼转状态
+        //[usDefaults setValue:@"0" forKey:LOGIN_STATE];//登录状态
+        
+        //[usDefaults setValue:@"0" forKey:@"opstate"];
+        //[usDefaults setValue:@"0" forKey:BIND_STATE];
+    }else{//提示登录
+        
+    }
+    
+}
+
 #pragma mark -- notify
 - (void)keyboardWasShow:(NSNotification*)aNotification{
     
@@ -595,7 +614,7 @@
     BOOL loginstate = [[defaults valueForKey:LOGIN_STATE] intValue];
     if (loginstate) {
         [self loginOut];
-        [defaults setValue:@"0" forKey:LOGIN_STATE];
+        //[defaults setValue:@"0" forKey:LOGIN_STATE];
         //[defaults setValue:@"0" forKey:CONFIG_STATE];
         self.connectGifView.hidden = YES;
         
@@ -614,7 +633,10 @@
 
 -(void)loginOut
 {
-    //[AVUser logOut];
+    [AVUser logOut];
+    [userDefaults setValue:@"0" forKey:LOGIN_STATE];
+    [userDefaults setValue:@"0" forKey:CONFIG_STATE];
+
 }
 
 #pragma mark -- 控制 & 解除
@@ -728,6 +750,9 @@
 
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
+    if (bleManage.centralManager) {
+        [bleManage.centralManager stopScan];
+    }
     
 }
 -(void)viewDidDisappear:(BOOL)animated

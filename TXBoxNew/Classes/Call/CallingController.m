@@ -65,8 +65,8 @@
     [super viewDidLoad];
     callAct = [[TXCallAction alloc] init];
     defaults = [NSUserDefaults standardUserDefaults];
-    blemanagerc = [BLEmanager sharedInstance];
-    blemanagerc.managerDelegate = self;
+    //blemanagerc = [BLEmanager sharedInstance];
+    //blemanagerc.managerDelegate = self;
     self.timeLength.text = NSLocalizedString(@"Calling", nil);
     times = 0;
     
@@ -121,7 +121,7 @@
 -(void)playMusic{
     
     NSError *error;
-    avplay = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"你曾是少年" ofType:@"mp3"]]  error:&error];
+    //avplay = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"你曾是少年" ofType:@"mp3"]]  error:&error];
     avplay.delegate = self;
     avplay.volume = .5;//音量
     avplay.numberOfLoops = 3;//循环次数

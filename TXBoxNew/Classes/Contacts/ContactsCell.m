@@ -39,16 +39,18 @@
 #pragma mark-创建上下分割线
 - (void)drawRect:(CGRect)rect
 {
-    for (int i =0; i<2; i++) {
-        self.imgView = [[UIImageView alloc]initWithFrame:CGRectMake(20, i*kCellHeight, self.contentView.frame.size.width-30, 1)];
+    
+    for (int i =1; i<2; i++) {
+        self.imgView = [[UIImageView alloc]initWithFrame:CGRectMake(15, i*kCellHeight+1, self.contentView.frame.size.width-15, .1)];
         //VCLog(@"h:%F",rect.size.height-1);
         //VCLog(@"w:%f",self.contentView.frame.size.width);
-        self.imgView.image = [UIImage imageNamed:@"test.png"];
-
+        //self.imgView.image = [UIImage imageNamed:@"test.png"];
+        self.imgView.backgroundColor = [UIColor greenColor];
     }
     
     
     [self.contentView addSubview:self.imgView];
+    
 }
 
 

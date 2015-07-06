@@ -27,16 +27,7 @@
     
     //leanCloud 服务器
     [AVOSCloud setApplicationId:@"85m0pvb0vv1iluti5sk0xsou1mkftzn06a3f1ompvza9xc7z" clientKey:@"orluh89ufnpvl773b68w5gcdk4dxfrahzwaahz7c46ettn44"];
-    //自动登录
-    //缓存当前用户
-    AVUser *currentUser = [AVUser currentUser];
-    if (currentUser == nil) {
-        //[usDefaults setValue:@"0" forKey:CALL_ANOTHER_STATE];//呼转状态
-        [usDefaults setValue:@"0" forKey:LOGIN_STATE];//登录状态
-        
-        //[usDefaults setValue:@"0" forKey:@"opstate"];
-        [usDefaults setValue:@"0" forKey:BIND_STATE];
-    }
+
     
     if ([[usDefaults valueForKey:muji_bind_number] length] >0 ) {
         [usDefaults setValue:@"1" forKey:CONFIG_STATE];
@@ -123,7 +114,7 @@
     
     
     enterbgView.alpha = 0;
-    [self.window addSubview:enterbgView];
+    //[self.window addSubview:enterbgView];
     [UIView animateWithDuration:.3 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
         
         enterbgView.alpha = 1;
@@ -168,8 +159,8 @@
 //程序成为活动的
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     
-    [self removeEnterbgView];
-    VCLog(@"x");
+    //[self removeEnterbgView];
+    //VCLog(@"x");
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     //
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:KRefreshDisvView object:self]];
@@ -177,6 +168,7 @@
 }
 
 -(void)removeEnterbgView{
+    
     if (enterbgView) {
         [UIView animateWithDuration:.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             

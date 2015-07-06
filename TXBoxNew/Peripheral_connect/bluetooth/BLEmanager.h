@@ -40,7 +40,7 @@
  *  
  */
 -(void)searchedPeripheral:(NSMutableArray *)peripArray;
-
+@optional
 -(void)systemBLEState:(CBCentralManagerState)state;
 -(void)showAlertView;
 @end

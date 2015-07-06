@@ -44,7 +44,7 @@
         
         [sectionDicts setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'A'+i]];
     }
-    [sectionDicts setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'#']];
+    [sectionDicts setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'~']];
     
     
     //初始化电话簿
@@ -112,7 +112,7 @@
         
         //转拼音
         NSString *namePinYin = [name hanziTopinyin];
-        //NSString *nameNum = [namePinYin pinyinTrimIntNumber];
+        NSString *nameNum = [namePinYin pinyinTrimIntNumber];
         
         //获取电话号码，通用的，基本的,概括的
         ABMultiValueRef personPhone = ABRecordCopyValue(record, kABPersonPhoneProperty);
@@ -132,7 +132,7 @@
             
         }
         [tempDic setObject:name forKey:@"personName"];//把名字存为key:"personName"的Value
-        [tempDic setObject:namePinYin forKey:@"personNameNum"];
+        [tempDic setObject:nameNum forKey:@"personNameNum"];
         //VCLog(@"tempDictemp：%@",tempDic);
         [phonesArray addObject:tempDic];//把tempDic赋给phoneArray数组
         

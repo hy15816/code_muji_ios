@@ -10,8 +10,6 @@
 
 @interface CallingView ()
 
-@property (strong,nonatomic) UIImageView *imgv;
-@property (strong,nonatomic) UIView *topView;
 
 @end
 
@@ -19,54 +17,103 @@
 
 -(void)drawRect:(CGRect)rect{
     
-    //[self addCallingView];
     [self addTopView];
+    [self addCallingView];
+    self.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"calling_bg"]];
 }
 
 -(void)addTopView{
+    _topView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, 40)];
+    _topView.userInteractionEnabled = YES;
+    _topView.image = [UIImage imageNamed:@"calling_bg"];
+    _topView.backgroundColor = [UIColor greenColor];
     
+    UIButton *showTimesBut = [UIButton buttonWithType:UIButtonTypeCustom];
+    [showTimesBut setTitle:@"轻按此处返回 00:00" forState:UIControlStateNormal];
+    showTimesBut.titleLabel.font = [UIFont systemFontOfSize:12];
+    [showTimesBut setBackgroundColor:[UIColor clearColor]];
+    [showTimesBut setFrame:CGRectMake(0, _topView.frame.size.height-16, DEVICE_WIDTH, 15)];
+    [showTimesBut addTarget:self action:@selector(showTimesButClick:) forControlEvents:UIControlEventTouchUpInside];
+    [_topView addSubview:showTimesBut];
+
+    [self addSubview:_topView];
     
 }
 
 -(void)addCallingView{
     
-    //_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT)];
-    //_imgv.image = [UIImage imageNamed:@"calling_bg"];
+    _imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT)];
+    _imgv.backgroundColor = [UIColor greenColor];
+    _imgv.image = [UIImage imageNamed:@"calling_bg"];
+    _imgv.userInteractionEnabled = YES;
     
-    _topView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, 40)];
-    _topView.backgroundColor = [UIColor redColor];
+    UISwipeGestureRecognizer *sswipe =[[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(sswipes:)];
+    sswipe.direction = UISwipeGestureRecognizerDirectionUp;
     
-    UIButton *but = [UIButton buttonWithType:UIButtonTypeCustom];
-    [but setTitle:@"123" forState:UIControlStateNormal];
-    [but setBackgroundColor:[UIColor clearColor]];
-    but.layer.borderWidth = .5;
-    but.layer.cornerRadius = 3;
-    but.layer.borderColor = [UIColor whiteColor].CGColor;
-    [but setFrame:CGRectMake(DEVICE_WIDTH/4, _topView.frame.size.height-25, DEVICE_WIDTH/2, 25)];
-    [but addTarget:self action:@selector(butClick:) forControlEvents:UIControlEventTouchUpInside];
-    [_topView addSubview:but];
     
-    //[self addGestureRecognizer:tap];
-    [self addSubview:_topView];
+    UIButton *cutbut = [UIButton buttonWithType:UIButtonTypeCustom];
+    [cutbut setTitle:@"cut" forState:UIControlStateNormal];
+    [cutbut setBackgroundColor:[UIColor clearColor]];
+    cutbut.layer.borderWidth = .5;
+    cutbut.layer.cornerRadius = 3;
+    cutbut.layer.borderColor = [UIColor whiteColor].CGColor;
+    [cutbut setFrame:CGRectMake(DEVICE_WIDTH/4, _imgv.frame.size.height-125, DEVICE_WIDTH/2, 35)];
+    [cutbut addTarget:self action:@selector(cutButClick:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+    
+    
+    
+    UIButton *packUpbut = [UIButton buttonWithType:UIButtonTypeCustom];
+    [packUpbut setTitle:@"packup" forState:UIControlStateNormal];
+    [packUpbut setBackgroundColor:[UIColor clearColor]];
+    packUpbut.layer.borderWidth = .5;
+    packUpbut.layer.cornerRadius = 3;
+    packUpbut.layer.borderColor = [UIColor whiteColor].CGColor;
+    [packUpbut setFrame:CGRectMake(DEVICE_WIDTH/4, _imgv.frame.size.height-35, DEVICE_WIDTH/2, 35)];
+    [packUpbut addTarget:self action:@selector(packUpButClick:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+    
+    
+    
+    
+    [_imgv addGestureRecognizer:sswipe];
+    [_imgv addSubview:cutbut];
+    [_imgv addSubview:packUpbut];
+    
+    
+    
     [self addSubview:_imgv];
     
-    [self changed];
+    //[self changed];
+}
+-(void)sswipes:(UISwipeGestureRecognizer *)sp{
+    
+    [self.delegateCalling showTimesbuttonClick:nil];
+    
 }
 
-
-
--(void)butClick:(UIButton *)button{
-    VCLog(@"click");
-}
-
--(void)changed{
-    if (self.alpha ==1) {
-        [self.delegateCalling tabBarOrginHeight:DEVICE_HEIGHT-40];
-    }
-    if (self.alpha <1) {
+-(void)showTimesButClick:(UIButton *)button{
+    VCLog(@"height:%f",self.frame.size.height);
+    if (self.frame.size.height>40) {
+        [self.delegateCalling showTimesbuttonClick:button];
+        [self.delegateCalling tabBarOrginHeight:DEVICE_HEIGHT-10];
+    }else{
         [self.delegateCalling tabBarOrginHeight:DEVICE_HEIGHT];
     }
+    
 }
 
+-(void)cutButClick:(UIButton *)button{
+    
+    [self.delegateCalling disMissCallingView];
+    
+    
+}
+-(void)packUpButClick:(UIButton *)button{
+
+    [self.delegateCalling showTimesbuttonClick:button];
+}
 
 @end

@@ -14,7 +14,6 @@
 {
 
     TXTelNumSingleton *singleton;
-    NSNotification *notification;
 }
 @end
 @implementation TXKeyView
@@ -29,7 +28,7 @@
     [self addInputBox];
     
     //1.创建一个通知对象
-    notification = [NSNotification notificationWithName:ktextChangeNotify object:self];
+    
     
     [self endEditing:YES];
     
@@ -143,18 +142,19 @@
 -(void)del
 {
     
-    if (self.textsearch.text.length){
+    if (self.textsearch.text.length>0){
         
-        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:[self.textsearch.text substringWithRange:NSMakeRange(self.textsearch.text.length-1, 1)],@"lastChar", nil];
+        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:[self.textsearch.text substringToIndex:self.textsearch.text.length-1],@"searchBarText",[self.textsearch.text substringWithRange:NSMakeRange(self.textsearch.text.length-1, 1)],@"lastChar", nil];
+        
+        //NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:[self.textsearch.text substringWithRange:NSMakeRange(self.textsearch.text.length-1, 1)],@"lastChar", nil];
         
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kDeleteCharNoti object:self userInfo:dict]];
         
         self.textsearch.text = [self.textsearch.text stringByReplacingCharactersInRange:NSMakeRange(textsearch.text.length-1, 1) withString:@""];
     }
     singleton.singletonValue = self.textsearch.text;
+    [self.keyDelegate inputTextLength:self.textsearch.text];
     
-    //2.通过通知中心发送通知
-    [[NSNotificationCenter defaultCenter] postNotification:notification];
 }
 #pragma mark 监听item点击
 - (void)itemClick:(UIButton *)item
@@ -186,8 +186,9 @@
     NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:self.textsearch.text ,@"searchBarText", nil];
     //2.通过通知中心发送通知
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
-        
-    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    if (self.textsearch.text.length>=3) {
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:ktextChangeNotify object:self]];
+    }
     
 }
 

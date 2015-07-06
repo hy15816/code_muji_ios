@@ -42,6 +42,8 @@
     
     
     CallAndDivert *callDivert;
+    NSString *searcherString;
+
 }
 
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
@@ -79,15 +81,14 @@
     [self.tableView reloadData];
     //VCLog(@"int max:%i",INT_MAX);
     
-//    UIView *wv = [[UIView alloc] initWithFrame:CGRectMake(0, 200, 200, 40)];
-//    wv.backgroundColor = [UIColor redColor];
-//    [self.view.window addSubview:wv];
+    
     
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
     //获取联系人数据#pragma mark-- 获取通讯录联系人
     [self loadContacts];
 }
@@ -106,24 +107,21 @@
     
     self.selectedIndexPath = nil;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;//tableview分割线
-    self.tableView.tableFooterView = [[UIView alloc] init];
-    
-    //[SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@",[self getCarrier]]];
+    //self.tableView.tableFooterView = [[UIView alloc] init];
     
     zzArray =[[NSMutableArray alloc] init];
     areaString = [[NSString alloc] init];
     opeareString = [[NSString alloc] init];
  
     callDivert =[[CallAndDivert alloc] init];
-    
-    
-    
+   
 }
+
 #pragma mark -- getContacts Delegate
 -(void)getAllPhoneArray:(NSMutableArray *)array SectionDict:(NSMutableDictionary *)sDict PhoneDict:(NSMutableDictionary *)pDict
 {
     mutPhoneArray = array;
-    VCLog(@"mutPhoneArray:%@",array);
+    //VCLog(@"mutPhoneArray:%@",array);
 }
 
 //初始化
@@ -142,13 +140,14 @@
 
 -(void)callviewWillRefresh
 {
-    [self.tableView reloadData];
+    //[self.tableView reloadData];
 }
 
 #pragma mark -- 用户退格输入时
 -(void)deleteTextDidChanged:(NSNotification*)notifi{
     NSString *lastChar = [[notifi userInfo] valueForKey:@"lastChar"];
-    
+    NSString *searchText = [[notifi userInfo] valueForKey:@"searchBarText"];
+    searcherString = searchText;
     //退格
     [self deleteCharWithLastinput:lastChar];
     [self predictaeDataWithState:0];
@@ -158,6 +157,7 @@
 -(void)inputTextDidChanged:(NSNotification*)notifi{
     
     NSString *searchText = [[notifi userInfo] valueForKey:@"searchBarText"];
+    searcherString = searchText;
     NSString *lastChar = [searchText substringWithRange:NSMakeRange(searchText.length-1, 1)];
     //NSString *testString = [NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastChar];
     
@@ -210,12 +210,10 @@
      VCLog(@"searchResault:%@",searchResault);
     
     //输入的数字达到7个，且还没有结果时
-    if (searchResault.count == 0) {
-        if (singleton.singletonValue.length>=7) {
-            areaString = [sqlite searchAreaWithHisNumber:[singleton.singletonValue substringToIndex:7]];
-            VCLog(@"areaString:%@",areaString);
-        }
+    if (searchResault.count == 0 && searcherString.length >= 7) {
         
+        areaString = [sqlite searchAreaWithHisNumber:[singleton.singletonValue substringToIndex:7]];
+        VCLog(@"areaString:%@",areaString);
         opeareString = [singleton.singletonValue isMobileNumberWhoOperation];
         
     }
@@ -226,11 +224,14 @@
     
     [self.tableView reloadData];
     
-    //重新获取数据库获取通话记录
-    NSMutableArray *array = [sqlite searchInfoFromTable:CALL_RECORDS_TABLE_NAME];
-    //排序
-    CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
-    [self.tableView reloadData];
+    if (searcherString.length <= 0) {
+        //重新获取数据库获取通话记录
+        NSMutableArray *array = [sqlite searchInfoFromTable:CALL_RECORDS_TABLE_NAME];
+        //排序
+        CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
+        [self.tableView reloadData];
+    }
+    
     
 }
 
@@ -334,11 +335,9 @@
     }
     */
     
-    if (searchResault.count > 0 && singleton.singletonValue.length>=1) {
+    if (searcherString.length > 0) {
         return searchResault.count;
-    }
-    
-    if (searchResault.count <= 0) {
+    }else{
         return [CallRecords count];
     }
     
@@ -353,8 +352,8 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     
-        //用户输入时
-    if (searchResault.count > 0 && singleton.singletonValue.length>=1 ) {
+    //用户输入时
+    if (searcherString.length > 0 ) {
         Records *record = dataList[indexPath.row];
         cell.hisName.text = record.personName;
         cell.hisNumber.hidden = YES;
@@ -363,7 +362,9 @@
         cell.callBeginTime.text = record.personTel;
         cell.hisHome.hidden = YES;
         cell.hisOperator.hidden = YES;
-    }/* if (searchResault.count == 0 && singleton.singletonValue.length>=7) {
+    }
+    
+    if (searchResault.count == 0 && searcherString.length >= 7) {
         cell.hisName.text = singleton.singletonValue;
         cell.callBeginTime.text =[NSString stringWithFormat:@"%@ %@",areaString,opeareString] ;
         cell.hisNumber.hidden = YES;
@@ -371,9 +372,9 @@
         cell.callLength.hidden = YES;
         cell.hisOperator.hidden = YES;
         cell.hisHome.hidden = YES;
-    }*/
+    }
     //未输入，显示通话记录
-    if(searchResault.count <= 0 ) {
+    if(searcherString.length <= 0 ) {
         
         //VCLog(@"CallRecords:%@,indexPath.row:%lu",CallRecords,indexPath.row);
         TXData *aRecord  = [CallRecords objectAtIndex:indexPath.row];
@@ -417,7 +418,7 @@
     return nil;
 }
 
-#pragma mark -- 3个按钮的跳转
+#pragma mark -- 按钮的跳转
 -(void)CallButtonClick:(UIButton *)btn
 {
     VCLog(@"callbtn click");
@@ -589,6 +590,11 @@
 #pragma mark -- 呼转Button
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender
 {
+    /*
+    UIView *wv = [[UIView alloc] initWithFrame:self.view.frame];
+    wv.backgroundColor = [UIColor grayColor];
+    [self.view.window addSubview:wv];
+    */
     callDivert.divertDelegate = self;
     [callDivert isOrNotCallDivert];
     
@@ -659,7 +665,6 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
     //移除通知
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kInputCharNoti object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kDeleteCharNoti object:nil];

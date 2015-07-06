@@ -129,7 +129,9 @@
                     [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@",@"注册成功"]];
                     //[self.cancelBtn setTitle:@"完成"];
                     
-
+                    [userDefaults setValue:self.regNumberField.text forKey:muji_bind_number];
+                    [userDefaults setValue:@"1" forKey:LOGIN_STATE];
+                    [self.navigationController popToRootViewControllerAnimated:YES];
                 }
             }];
             

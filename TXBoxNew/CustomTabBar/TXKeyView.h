@@ -9,9 +9,17 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol KeyViewDelegate <NSObject>
+
+-(void)inputTextLength:(NSString *)text;
+
+@end
 
 @interface TXKeyView : UIView
 
 
 @property (strong,nonatomic) UISearchBar *textsearch;
+
+@property (assign,nonatomic) id<KeyViewDelegate> keyDelegate;
+
 @end
