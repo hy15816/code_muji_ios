@@ -68,7 +68,7 @@
     if ([[userDefaults valueForKey:CALL_ANOTHER_STATE] intValue]) {//已呼转
         
         //提示，到拇机123456789321的呼转取消？
-        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Cancel_Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"Yes", nil) otherButtonTitles:NSLocalizedString(@"No", nil), nil];
+        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"取消呼转到 %@?",number] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
         aliert.delegate = self;
         aliert.tag =1902;
         [aliert show];
@@ -77,7 +77,7 @@
     }else{//未呼转
         
         //提示，手机呼转到拇机123456789321？
-        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alerts", nil) message:[NSString stringWithFormat:@"%@ %@?",NSLocalizedString(@"Call_Forwarding", nil),number] delegate:self cancelButtonTitle:NSLocalizedString(@"Yes", nil) otherButtonTitles:NSLocalizedString(@"No", nil), nil];
+        UIAlertView *aliert = [[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"呼转到 %@?",number] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
         aliert.delegate = self;
         aliert.tag =1903;
         [aliert show];

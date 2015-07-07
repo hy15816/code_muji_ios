@@ -104,7 +104,7 @@
 #define SliderWidth 200
 
 // 其它
-#define OtherNumber NSLocalizedString(@"Other", nil)
+#define OtherNumber @"其它"
 
 // 状态栏高度 默认20
 #define StatusBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height

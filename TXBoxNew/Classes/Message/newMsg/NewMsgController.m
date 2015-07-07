@@ -13,10 +13,13 @@
 #import "MsgDetailController.h"
 #import "NSString+helper.h"
 #import "ShowContacts.h"
+#import "BLEmanager.h"
 
-@interface NewMsgController ()<UITextViewDelegate,UITextFieldDelegate,HPGrowingTextViewDelegate>
+@interface NewMsgController ()<UITextViewDelegate,UITextFieldDelegate,HPGrowingTextViewDelegate,BLEmanagerDelegate>
 {
     TXSqliteOperate *txsqlite;
+    BLEmanager *bmanager;
+    
 }
 
 
@@ -45,9 +48,7 @@
         string = [NSString stringWithFormat:@"%@,%@",string,s];
     }
     
-    
-    self.hisNumber.text = string;
-    
+    self.hisNumber.text = [string substringFromIndex:1];
     
 }
 
@@ -115,12 +116,19 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = NSLocalizedString(@"New_Msg", nil);
+    
+    bmanager = [BLEmanager sharedInstance];
+    bmanager.managerDelegate = self;
+    
+    
+    self.title = @"新信息";
     txsqlite = [[TXSqliteOperate alloc] init];
     //输入收件人
     self.hisNumber.delegate =self;
     self.hisNumber.contentMode = UIViewContentModeTopLeft;
-    
+    if ([[userDefaults valueForKey:@"HEHE"] length]>0) {
+        self.hisNumber.text = [userDefaults valueForKey:@"HEHE"];
+    }
     
     //注册手势
     UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(initSwipeRecognizer:)];
@@ -144,6 +152,7 @@
     self.inputView = [[UIView alloc] init];
     self.inputView.backgroundColor = RGBACOLOR(240, 240, 240, 1);
     self.inputView.frame = CGRectMake(0, DEVICE_HEIGHT-40, DEVICE_WIDTH, 40);
+    
     //self.inputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
     
     self.textMsgView = [[HPGrowingTextView alloc] initWithFrame:CGRectMake(5, 4, DEVICE_WIDTH*.8f, 40)];
@@ -151,7 +160,10 @@
     self.textMsgView.minNumberOfLines = 1;
     self.textMsgView.maxNumberOfLines = 6;//最大伸缩行数
     self.textMsgView.font = [UIFont systemFontOfSize:14.0f];
-    self.textMsgView.placeholder = NSLocalizedString(@"Message", nil);
+    self.textMsgView.placeholder = @"信息";
+    if ([[userDefaults valueForKey:@"MEME"] length] > 0) {
+        self.textMsgView.text = [userDefaults valueForKey:@"MEME"];
+    }
     
     //textView的背景
     UIImage *rawEntryBackground = [UIImage imageNamed:@"msg_textView_bg"];
@@ -168,7 +180,7 @@
     
     self.sendMsgBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     self.sendMsgBtn.frame = CGRectMake(DEVICE_WIDTH-50, 0, 30, 40);
-    [self.sendMsgBtn setTitle:NSLocalizedString(@"Send", nil) forState:UIControlStateNormal];
+    [self.sendMsgBtn setTitle:@"发送" forState:UIControlStateNormal];
     [self.sendMsgBtn addTarget:self action:@selector(sendNewMsgBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
     
@@ -201,31 +213,57 @@
     txdata.msgContent = self.textMsgView.text;
     txdata.msgAccepter = self.hisNumber.text;
     txdata.msgStates = @"0";
+    BOOL connect = [[userDefaults valueForKey:BIND_STATE] intValue];
+    if (!connect) {
+        [userDefaults setValue:self.hisNumber.text forKey:@"HEHE"];
+        [userDefaults setValue:self.textMsgView.text forKey:@"MEME"];
+        [SVProgressHUD showImage:nil status:@"请先连接蓝牙!"];
+        return;
+    }
+    BOOL ismobile = [[self.hisNumber.text purifyString] isMobileNumber:[self.hisNumber.text purifyString]];
     
-    if (self.textMsgView.text.length > 0 && self.hisNumber.text.length > 7) {
-        [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
+    if (self.textMsgView.text.length > 0 && ismobile ) {
         
+        //向蓝牙发送信息
+        [bmanager writeDatas:[self getdata]];
+        BOOL senderSuc = YES;
+        if (senderSuc) {
+            //保存到本地
+            [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
+            
+            //跳转到信息detail页面
+            //传值，hisName,hisNumber,hisHome
+            txdata.hisName = self.hisNumber.text;
+            txdata.hisNumber = self.hisNumber.text;//data.msgSender;
+            txdata.hisHome = [txsqlite searchAreaWithHisNumber:[[self.hisNumber.text purifyString] substringToIndex:7]];//@"hisHome"
+            
+            MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
+            DetailVC.datailDatas = txdata;
+            
+            [userDefaults setValue:@"" forKey:@"HEHE"];
+            [userDefaults setValue:@"" forKey:@"MEME"];
+            [SVProgressHUD showImage:nil status:@"已发送"];
+            [self.navigationController pushViewController:DetailVC animated:YES];
+        }else{
+            [SVProgressHUD showImage:nil status:@"发送失败"];
+        }
         
-        //跳转到信息detail页面
-        //传值，hisName,hisNumber,hisHome
-        txdata.hisName = self.hisNumber.text;
-        txdata.hisNumber = self.hisNumber.text;//data.msgSender;
-        txdata.hisHome = [txsqlite searchAreaWithHisNumber:[[self.hisNumber.text purifyString] substringToIndex:7]];//@"hisHome"
-        
-        MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
-        DetailVC.datailDatas = txdata;
-        [SVProgressHUD showImage:nil status:@"已发送"];
-        [self.navigationController pushViewController:DetailVC animated:YES];
     }else{
         [SVProgressHUD showImage:nil status:@"收件人不能为空!"];
     }
     
     
 }
-
-- (void)idReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+-(NSData *)getdata{
+    Byte data[20];
+    for (int i=0; i<kByte_count; i++) {
+        data[i] = 0x00;
+    }
+    
+    data[0]  = 0x5A;//发送方
+    data[1]  = 0x10;
+    NSData * myData = [NSData dataWithBytes:&data length:sizeof(data)];
+    return myData;
 }
 
 #pragma mark - Table view data source
@@ -262,5 +300,9 @@
     
     [self dismissViewControllerAnimated:YES completion:nil];
     
+}
+- (void)idReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
 }
 @end

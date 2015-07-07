@@ -10,14 +10,18 @@
 @protocol CallingDelegate <NSObject>
 @optional
 /**
- *  获取当前界面的高度
- *  @param height 当前界面的高度
- *
+ *  改变window的位置
  */
--(void)tabBarOrginHeight:(CGFloat)height;
+-(void)changeWindowfram;
 
--(void)showTimesbuttonClick:(UIButton *)button;
+/**
+ *  收起view
+ */
+-(void)packUpCallingView;
 
+/**
+ *  展开view
+ */
 -(void)disMissCallingView;
 
 @end
@@ -26,6 +30,10 @@
 @property (strong,nonatomic) UIImageView *imgv;
 @property (strong,nonatomic) UIImageView *topView;
 
-@property (assign,nonatomic) id<CallingDelegate> delegateCalling;
+@property (strong,nonatomic) NSString *hisNames;    //姓名
+@property (strong,nonatomic) NSString *hisNumbers;  //号码
 
+
+@property (assign,nonatomic) id<CallingDelegate> delegateCalling;
+-(void)startTimeLengthTimer;
 @end

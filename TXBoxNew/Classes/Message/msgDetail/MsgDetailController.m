@@ -362,7 +362,7 @@
     self.textView.minNumberOfLines = 1;
     self.textView.maxNumberOfLines = 6;//最大伸缩行数
     self.textView.font = [UIFont systemFontOfSize:14.0f];
-    self.textView.placeholder = NSLocalizedString(@"Message", nil);
+    self.textView.placeholder = @"信息";
     
     //textView的背景
     UIImage *rawEntryBackground = [UIImage imageNamed:@"msg_textView_bg"];
@@ -379,7 +379,7 @@
     
     self.sendMsgBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     self.sendMsgBtn.frame = CGRectMake(DEVICE_WIDTH-50, 0, 30, 40);
-    [self.sendMsgBtn setTitle:NSLocalizedString(@"Send", nil) forState:UIControlStateNormal];
+    [self.sendMsgBtn setTitle:@"发送" forState:UIControlStateNormal];
     [self.sendMsgBtn addTarget:self action:@selector(sendMsgBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
     

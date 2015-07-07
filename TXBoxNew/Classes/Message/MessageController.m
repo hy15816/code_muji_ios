@@ -21,6 +21,7 @@
 #import "BLEOperation.h"
 #import "TXSqliteOperate.h"
 #import "TXData.h"
+#import "NSString+helper.h"
 
 @interface MessageController ()<UISearchResultsUpdating,UISearchControllerDelegate>
 {
@@ -84,17 +85,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = NSLocalizedString(@"Message", nil);
+    self.title = @"信息";
     
     self.dataArray = [[NSMutableArray alloc] init];
     self.searchsArray = [[NSMutableArray alloc] init];
     self.contactsArray = [[NSMutableArray alloc] init];
     
     [self initSearchController];
-
-    
-    self.tableView.delegate =  nil;
-    self.tableView.dataSource = nil;
     
     txsqlite = [[TXSqliteOperate alloc] init];
     //self.tableView.tableFooterView = [[UIView alloc] init];
@@ -121,6 +118,7 @@
     //[self changedSearchBarCancel];
     
 }
+/*
 //将SearchBar上"Cancel"按钮改为”取消“
 -(void)changedSearchBarCancel
 {
@@ -140,7 +138,7 @@
     }
     
 }
-
+*/
 #pragma mark -- searchController 协议方法
 //返回搜索结果
 -(void) updateSearchResultsForSearchController:(UISearchController *)searchController
@@ -281,7 +279,7 @@
         
         //删除数据库数据,整个会话
         NSString *hisNumbers = [self.contactsArray objectAtIndex:indexPath.row];
-        [txsqlite deleteContacterWithNumber:hisNumbers formTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME peopleId:@"" withSql:DELETE_MESSAGE_RECORD_CONVERSATION_SQL];
+        [txsqlite deleteContacterWithNumber:[hisNumbers purifyString] formTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME peopleId:@"" withSql:DELETE_MESSAGE_RECORD_CONVERSATION_SQL];
         
         //删除数组
         [self.dataArray removeObjectAtIndex:indexPath.row];//移除数组的元素
@@ -294,9 +292,7 @@
 
 -(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return NSLocalizedString(@"Delete", nil);
+    return @"删除";
 }
-
-
 
 @end

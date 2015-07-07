@@ -102,7 +102,7 @@
 - (void)viewDidLoad {
     
     [super viewDidLoad];
-    self.title = NSLocalizedString(@"Phone", nil);
+    self.title = @"电话";
     [self loadCallRecords];
     
     self.selectedIndexPath = nil;
@@ -298,15 +298,12 @@
  */
 -(void)deleteCharWithLastinput:(NSString *)lastinput{
     
-    
     NSMutableArray *lArray = [[NSMutableArray alloc] init];
     if (zzArray.count >1) {
         
         for (int i= 0; i<zzArray.count; i++) {
             if (i%2==0) {
                 NSString *sas = zzArray[i];
-                
-                //NSString *zzs = [sas stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"-%@[0-9,A,B,C]*",lastinput] withString:@""];
                 NSString *zzs = [sas substringToIndex:sas.length-14];
                 if(![lArray containsObject:zzs])
                     [lArray addObject:zzs];
@@ -513,7 +510,7 @@
 /*改变删除按钮的text*/
 -(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return NSLocalizedString(@"Delete", nil);
+    return @"删除";
 }
 
 //样式--删除
@@ -608,7 +605,7 @@
 {
     ABNewPersonViewController *newPerson = [[ABNewPersonViewController alloc]init];
     newPerson.newPersonViewDelegate=self;
-    newPerson.title = NSLocalizedString(@"Add_Ctontacts", nil);
+    newPerson.title = @"添加联系人";
     [self.navigationController pushViewController:newPerson animated:YES];
 }
 #pragma mark --new person

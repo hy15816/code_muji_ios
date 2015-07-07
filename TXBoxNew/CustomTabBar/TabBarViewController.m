@@ -6,9 +6,11 @@
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 
+#define WindowDownHeight 20.f
+#define CallingViewPackUpheight 45.f
+
 #import "TabBarViewController.h"
 #import "TXTelNumSingleton.h"
-#import "CallingController.h"
 #import "GuideView.h"
 #import "NSString+helper.h"
 #import "CallingView.h"
@@ -17,10 +19,10 @@
 {
     CustomTabBarView *tabBarView;
     CustomTabBarBtn *previousBtn;
-    CallingController *calling;
     TXTelNumSingleton *singleton;
     BOOL showKeyboard;
     CallingView *cv;
+    CGFloat deviceHeight;
 }
 @end
 
@@ -47,9 +49,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    deviceHeight = DEVICE_HEIGHT;
     //添加数字键盘
-    self.keyView = [[TXKeyView alloc]initWithFrame:CGRectMake(0,DEVICE_HEIGHT-kTabBarHeight-4*keyHeight-NaviBarHeight-InputBoxView, DEVICE_WIDTH, keyHeight*5.f+InputBoxView)];
+    self.keyView = [[TXKeyView alloc]init];
+    self.keyView.frame = CGRectMake(0,deviceHeight-kTabBarHeight-4*keyHeight-NaviBarHeight-InputBoxView, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
     self.keyView.backgroundColor = [UIColor whiteColor];//键盘背景色
     self.keyView.keyDelegate = self;
     [self.view addSubview:self.keyView];
@@ -67,9 +70,9 @@
     [self.view addGestureRecognizer:swipe];
     
     //接收所有通知
-    if([self respondsToSelector:@selector(cutomKeyboradAndTabViewHide:)]) {
+    if([self respondsToSelector:@selector(customKeyboradAndTabViewHide:)]) {
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cutomKeyboradAndTabViewHide:) name:nil object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(customKeyboradAndTabViewHide:) name:nil object:nil];
     }
     [self respondsToSelector:@selector(changeViewController:)];
 }
@@ -89,7 +92,7 @@
 {
     [UIView animateWithDuration:.27 animations:^{
         //隐藏键盘，
-        self.keyView.frame=CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
+        self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
         
         showKeyboard = NO;
         //隐藏call按钮
@@ -104,7 +107,6 @@
 {
     //创建TabBar
     tabBarView = [[CustomTabBarView alloc] init];
-    //tabBarView.frame=CGRectMake(0, DEVICE_HEIGHT-kTabBarHeight, DEVICE_WIDTH, kTabBarHeight);
     [self getTabbarHeight:DEVICE_HEIGHT];
     tabBarView.delegate = self;
     tabBarView.userInteractionEnabled = YES;
@@ -118,6 +120,7 @@
 -(void)getTabbarHeight:(CGFloat)height{
     
     tabBarView.frame=CGRectMake(0, height-kTabBarHeight, DEVICE_WIDTH, kTabBarHeight);
+    deviceHeight = height;
 }
 
 #pragma mark -- tabbarView delegate
@@ -125,99 +128,100 @@
 -(void) changeViewController:(CustomTabBarBtn *)button
 {
     self.selectedIndex = button.tag; //切换不同控制器的界面
-    
      button.selected = YES;//选中
-
      if (previousBtn != button) {
-    
          previousBtn.selected = NO;
-    
          }
-
      previousBtn = button;
     
     if (button.tag == 0) {
         
-        //显示or隐藏键盘状态
-        showKeyboard = !showKeyboard;
-        [UIView animateWithDuration:.27 animations:^{
-            if (showKeyboard) {
-                //弹出键盘
-                self.keyView .frame=CGRectMake(0,DEVICE_HEIGHT-kTabBarHeight-4*keyHeight-NaviBarHeight-InputBoxView, DEVICE_WIDTH, keyHeight*4.f+InputBoxView);
-                showKeyboard = YES;
-                [button setImage:[UIImage imageNamed:@"icon_up"] forState:UIControlStateSelected];
-                //若已输入号码，显示callBtn
-                if (singleton.singletonValue.length>=3) {
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.38f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                        tabBarView.callBtn.hidden = NO;
-                    });
-                }else{
-                    tabBarView.callBtn.hidden = YES;
-                }
-
-            }else{
-                //隐藏键盘，隐藏call按钮
-                showKeyboard = NO;
-                [self customKeyboardHide];
-                //
-                [button setImage:[UIImage imageNamed:@"icon_down"] forState:UIControlStateSelected];
-
-            }
-            
-        }];
-        
+        [self showOrHideKeyborad:button];
     }else{
         //隐藏键盘，隐藏call按钮
-        [self customKeyboardHide];
+        [self customKeyboardHides];
     }
     
-    if (button.tag == 2) {
-        cv = [[CallingView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT)];
-        cv.topView.hidden = YES;
-        cv.imgv.hidden = NO;
-        cv.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"calling_bg"]];
-        cv.alpha = 0;
-        cv.delegateCalling = self;
-        
-        //self.view.window.frame = CGRectMake(0, 10, DEVICE_WIDTH, DEVICE_HEIGHT);
-        [self.view.window addSubview:cv];
-        
-        [UIView animateWithDuration:.4 animations:^{
-            cv.alpha = 1;
-        }];
-        
-    }
+}
+//显示or隐藏键盘
+-(void) showOrHideKeyborad:(UIButton *)button{
+    
+    showKeyboard = !showKeyboard;
+    [UIView animateWithDuration:.27 animations:^{
+        if (showKeyboard) {
+            //弹出键盘
+            self.keyView .frame=CGRectMake(0,deviceHeight-kTabBarHeight-4*keyHeight-NaviBarHeight-InputBoxView, DEVICE_WIDTH, keyHeight*4.f+InputBoxView);
+            showKeyboard = YES;
+            [button setImage:[UIImage imageNamed:@"icon_up"] forState:UIControlStateSelected];
+            //若已输入号码，显示callBtn
+            if (singleton.singletonValue.length>=3) {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.38f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    tabBarView.callBtn.hidden = NO;
+                });
+            }else{
+                tabBarView.callBtn.hidden = YES;
+            }
+            
+        }else{
+            //隐藏键盘，隐藏call按钮
+            showKeyboard = NO;
+            [self customKeyboardHides];
+            [button setImage:[UIImage imageNamed:@"icon_down"] forState:UIControlStateSelected];
+        }
+    }];
 }
 
-#pragma mark -- calling delegate
--(void)showTimesbuttonClick:(UIButton *)b{
-    VCLog(@"-----------------");
+-(void) customKeyboardHides
+{
+    //隐藏键盘，
+    self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
+    //隐藏call按钮
+    tabBarView.callBtn.hidden = YES;
+    
+}
+
+#pragma mark -- calling View
+-(void)createCallingView{
+    cv = [[CallingView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT)];
+    cv.topView.hidden = NO;
+    cv.imgv.hidden = NO;
+    cv.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"calling_bg"]];
+    cv.alpha = 0;
+    cv.delegateCalling = self;
+    
+    [self.view.window addSubview:cv];
     
     [UIView animateWithDuration:.4 animations:^{
-        self.view.window.frame = CGRectMake(0, 10, DEVICE_WIDTH, DEVICE_HEIGHT-10);
-        [self getTabbarHeight:DEVICE_HEIGHT-10];
-        cv.frame = CGRectMake(0, -10, DEVICE_WIDTH, 40);
+        cv.alpha = 1;
+    }];
+    
+    
+}
+
+//收起
+-(void)packUpCallingView{
+    
+    [UIView animateWithDuration:.4 animations:^{
+        self.view.window.frame = CGRectMake(0, WindowDownHeight, DEVICE_WIDTH, DEVICE_HEIGHT-WindowDownHeight);
+        [self getTabbarHeight:DEVICE_HEIGHT-WindowDownHeight];
+        cv.frame = CGRectMake(0, -WindowDownHeight, DEVICE_WIDTH, CallingViewPackUpheight);
         cv.topView.hidden = NO;
         cv.imgv.hidden = YES;
     }];
     
 }
--(void)tabBarOrginHeight:(CGFloat)height{
-    
-    VCLog(@"+++++++++++++++++");
-    
-    
+//展开
+-(void)changeWindowfram{
     
     [UIView animateWithDuration:.4 animations:^{
-        cv.frame = CGRectMake(0, -10, DEVICE_WIDTH, DEVICE_HEIGHT);
+        cv.frame = CGRectMake(0, -WindowDownHeight, DEVICE_WIDTH, DEVICE_HEIGHT);
         
         cv.topView.hidden = YES;
         cv.imgv.hidden = NO;
     }];
     
-    
 }
-
+//消失
 -(void)disMissCallingView{
     
     [UIView animateWithDuration:.4 animations:^{
@@ -227,6 +231,17 @@
         cv.topView.hidden = YES;
         cv.imgv.hidden = YES;
     }];
+}
+
+//赋值
+-(void) callingViewsValue:(NSNotification *)notification
+{
+    cv.hisNames =[[notification userInfo] objectForKey:@"hisName"];
+    cv.hisNumbers = [[notification userInfo] objectForKey:@"hisNumber"];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [cv startTimeLengthTimer];
+    });
 }
 
 #pragma mark -- keyView delegate
@@ -240,8 +255,7 @@
 //呼叫事件
 -(void) eventCallBtn:(UIButton *)button
 {
-    //利用单例获取输入的号码
-    //获取输入号码
+    //获取输入的号码
     NSString *strHis =  singleton.singletonValue;
     //判断号码
     if (strHis.length>20 || strHis.length <3){
@@ -250,29 +264,7 @@
         return;
         
     }else {
-        //添加calling页面
-        //是否登录？
-        BOOL loginS=[[userDefaults valueForKey:LOGIN_STATE] intValue];
-        //是否登录？
-        if (loginS) {
-            //获取拇机号码,
-            NSString *phoneNumber =[userDefaults valueForKey:muji_bind_number];
-            
-            //已有number
-            if (phoneNumber.length>0 ) {
-                //获取呼转状态
-                //添加calling页面
-                [self addCallingView];
-                [self callingBtn:nil];
-            }else
-            {
-                [self isOrNotCallOutTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【绑定】"];
-            }
-
-        }else{//没有登录
-            [self isOrNotCallOutTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【登录】后【配置】"];
-        }
-                
+        [self callingButtonClick:nil];
     }
 
     VCLog(@"call str:%@",strHis);
@@ -288,33 +280,18 @@
     
 }
 
-//custom键盘隐藏call按钮
--(void) customKeyboardHide
-{
-    //隐藏键盘，
-    self.keyView.frame=CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
-    //隐藏call按钮
-    tabBarView.callBtn.hidden = YES;
-    
-}
-
 #pragma mark -- 通知
--(void) cutomKeyboradAndTabViewHide:(NSNotification *)notifi
+-(void) customKeyboradAndTabViewHide:(NSNotification *)notifi
 {
     if ([notifi.name isEqual:kKeyboardAndTabViewHide]) {
-        
         tabBarView.hidden = YES;
-        //隐藏键盘，
-        self.keyView.frame=CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
-        //隐藏call按钮
-        tabBarView.callBtn.hidden = YES;
+        self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);//隐藏键盘，
+        tabBarView.callBtn.hidden = YES;//隐藏call按钮
     }
     
     if ([notifi.name isEqualToString:kCustomKeyboardHide]) {
-        //隐藏键盘，
-        self.keyView.frame=CGRectMake(0,DEVICE_HEIGHT, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
-        //隐藏call按钮
-        tabBarView.callBtn.hidden = YES;
+        self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);//隐藏键盘，
+        tabBarView.callBtn.hidden = YES;//隐藏call按钮
     }
     //显示callBtn
     if ([notifi.name isEqualToString:ktextChangeNotify]) {
@@ -322,27 +299,7 @@
     }
     //点击callBtn
     if ([notifi.name isEqualToString:kCallingBtnClick]) {
-        BOOL loginS=[[userDefaults valueForKey:LOGIN_STATE] intValue];
-        //是否登录？
-        if (loginS) {
-            //获取拇机号码,
-            NSString *phoneNumber = [userDefaults valueForKey:muji_bind_number];
-            
-            //已有number
-            if (phoneNumber.length>0 ) {
-                //获取呼转状态
-                //添加calling页面
-                [self addCallingView];
-                [self callingBtn:notifi];
-            }else
-            {
-                [self isOrNotCallOutTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【绑定】"];
-            }
-        }else{//没有登录
-            [self isOrNotCallOutTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【登录】后【配置】"];
-        }
-        
-        
+        [self callingButtonClick:notifi];
         
     }
     //显示tabBarView
@@ -359,7 +316,28 @@
     
 }
 
+-(void)callingButtonClick:(NSNotification *)notifi{
+    BOOL loginS=[[userDefaults valueForKey:LOGIN_STATE] intValue];
+    //是否登录？
+    if (loginS) {
+        //获取拇机号码,
+        NSString *phoneNumber = [userDefaults valueForKey:muji_bind_number];
+        
+        //已有number
+        if (phoneNumber.length>0 ) {
+            //获取呼转状态
+            //添加calling页面
+            [self createCallingView];
+            [self callingViewsValue:notifi];
+        }else
+        {
+            [self isOrNotCallOutTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【绑定】"];
+        }
+    }else{//没有登录
+        [self isOrNotCallOutTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【登录】后【配置】"];
+    }
 
+}
 
 //判断是否可以呼叫？
 -(void)isOrNotCallOutTitle:(NSString *)title message:(NSString *)message
@@ -370,81 +348,22 @@
     [isNoMujiAlert show];
 }
 
-#pragma mark -- 加载Calling view
--(void) addCallingView
-{
-    //添加calling页面
-    UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    calling = [board instantiateViewControllerWithIdentifier:@"callingVC"];
-    calling.view.alpha = 0.f;
-
-    calling.view.frame = CGRectMake(0, -5, DEVICE_WIDTH, DEVICE_HEIGHT+5);
-    [self.view addSubview:calling.view];
-    
-}
-
-
-//加载call out
--(void) callingBtn:(NSNotification *)notification
-{
-    //
-    [UIView beginAnimations:@"" context:@""];
-    [UIView setAnimationDuration:.9];
-    calling.view.alpha = 1.f;
-    //获取notification传值
-    calling.nameLabel.text = [[notification userInfo] objectForKey:@"hisName"];
-    calling.numberLabel.text = [[notification userInfo] objectForKey:@"hisNumber"];
-    
-    if (calling.nameLabel.text.length > 0) {
-        calling.nameLabel.hidden = NO;
-        calling.numberLabel.hidden = YES;
-    }else if (calling.numberLabel.text.length > 0)
-    {
-        calling.nameLabel.hidden = YES;
-        calling.numberLabel.hidden = NO;
-    }else
-    {
-        calling.nameLabel.hidden = YES;
-        calling.numberLabel.hidden = NO;
-        calling.numberLabel.text = singleton.singletonValue;//输入的号码
-    }
-    
-    [UIView setAnimationRepeatCount:0];
-    [UIView commitAnimations];
-    VCLog(@"is calling");
-    
-}
-
 #pragma mark -- AlertView delegate
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (alertView.tag == 1200) {
         if (buttonIndex ==0) {
             //跳转到-发现
-            //disvyCtorl
-            //
-            //self.selectedIndex  =3;
             CustomTabBarBtn *button = [[CustomTabBarBtn alloc] init];
             button.tag =3;
             self.selectedIndex = button.tag; //切换不同控制器的界面
-            
             button.selected = YES;//选中
             
             if (previousBtn != button) {
-                
                 previousBtn.selected = NO;
-                
             }
-            
-            //previousBtn = button;
-            
-            //[self changeViewController:button];
-            //[previousBtn setImage:[UIImage imageNamed:@"icon_discover_selected"] forState:UIControlStateNormal];
-            
-            
             //隐藏tabbar
             [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCustomKeyboardHide object:self]];
-
         }
     }
 }

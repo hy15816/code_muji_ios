@@ -15,10 +15,10 @@
 - (void)drawRect:(CGRect)rect {
     
     //添加4个button
-    [self creatButtonWithNormalName:@"icon_call"andSelectName:@"icon_up"andTitle:NSLocalizedString(@"Phone", nil) andIndex:0];
-    [self creatButtonWithNormalName:@"icon_message"andSelectName:@"icon_message_selected"andTitle:NSLocalizedString(@"Message", nil)andIndex:1];
-    [self creatButtonWithNormalName:@"icon_person"andSelectName:@"icon_person_selected"andTitle:NSLocalizedString(@"Contacts", nil)andIndex:2];
-    [self creatButtonWithNormalName:@"icon_discover"andSelectName:@"icon_discover_selected"andTitle:NSLocalizedString(@"Discovery", nil)andIndex:3];
+    [self creatButtonWithNormalName:@"icon_call"andSelectName:@"icon_up"andTitle:@"电话" andIndex:0];
+    [self creatButtonWithNormalName:@"icon_message"andSelectName:@"icon_message_selected"andTitle:@"信息" andIndex:1];
+    [self creatButtonWithNormalName:@"icon_person"andSelectName:@"icon_person_selected"andTitle:@"通讯录" andIndex:2];
+    [self creatButtonWithNormalName:@"icon_discover"andSelectName:@"icon_discover_selected"andTitle:@"发现" andIndex:3];
     //添加呼叫button
     [self addCallBtn];
     

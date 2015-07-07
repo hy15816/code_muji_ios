@@ -492,7 +492,7 @@
     if (button.tag == 1) {
         if ( number.length<=0 || ![number isValidateMobile:number]) {
             //创建提醒对话框
-            UIAlertView *malertView = [[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"Please_enter_the_correct_info", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"Sure", nil) otherButtonTitles:nil, nil];
+            UIAlertView *malertView = [[UIAlertView alloc] initWithTitle:nil message:@"请输入正确的号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
             [malertView show];
             //malertView.delegate = self;
             //[malertView textFieldAtIndex:0];//获取输入框，在UIAlertViewStyle -> input模式
@@ -649,18 +649,18 @@
         [self cutConnectperipheral];
     }else{//没绑定
         
-        if (managerState == CBCentralManagerStatePoweredOn) {
+        //if (managerState == CBCentralManagerStatePoweredOn) {
             
             [SVProgressHUD showWithStatus:@"匹配中..." maskType:SVProgressHUDMaskTypeNone];
             //查找外设
             [self scanPeripheral];
             
             [self performSelector:@selector(dismissSvp) withObject:nil afterDelay:15];//扫描外设时间
-        }else{
+       // }else{
             UIAlertView *atv=[[UIAlertView alloc] initWithTitle:@"需要打开蓝牙" message:@"是否打开蓝牙？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
             atv.tag = 1993;
-            [atv show];
-        }
+            //[atv show];
+        //}
         
         
         
@@ -717,7 +717,7 @@
     [self refreshBindButton];
     //连接成功
     if (isConnect == YES) {
-        [SVProgressHUD showErrorWithStatus:@"连接成功!"];
+        [SVProgressHUD showSuccessWithStatus:@"连接成功!"];
         [bleManage.centralManager stopScan];
         //[SVProgressHUD dismiss];
     }

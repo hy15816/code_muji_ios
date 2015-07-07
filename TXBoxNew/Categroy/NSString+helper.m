@@ -310,17 +310,17 @@
     NSString *str = [[NSString alloc] init];
     
     if([regextestcm evaluateWithObject:mobileNum] == YES) {
-        str = NSLocalizedString(@"Communication_Corp", nil);
-        VCLog(@"China Mobile");
+        str = @"移动";//NSLocalizedString(@"Communication_Corp", nil);
+        //VCLog(@"China Mobile");
     } else if([regextestct evaluateWithObject:mobileNum] == YES) {
-        str =  NSLocalizedString(@"Unicom", nil);
-        VCLog(@"China Telecom");
+        str = @"联通";//  NSLocalizedString(@"Unicom", nil);
+        //VCLog(@"China Telecom");
     } else if ([regextestcu evaluateWithObject:mobileNum] == YES) {
-        str =  NSLocalizedString(@"Telecom", nil);
-        VCLog(@"China Unicom");
+        str = @"电信";//  NSLocalizedString(@"Telecom", nil);
+        //VCLog(@"China Unicom");
     } else {
-        str  = NSLocalizedString(@"Other", nil);
-        VCLog(@"Unknow");
+        str  = @"其它";// NSLocalizedString(@"Other", nil);
+        //VCLog(@"Unknow");
     }
     
     
@@ -380,24 +380,24 @@
         || ([regextestcu evaluateWithObject:mobileNum] == YES))
     {
         if([regextestcm evaluateWithObject:mobileNum] == YES) {
-            str = NSLocalizedString(@"Communication_Corp", nil);
-            VCLog(@"China Mobile");
+            str = @"移动";//NSLocalizedString(@"Communication_Corp", nil);
+            //VCLog(@"China Mobile");
         } else if([regextestct evaluateWithObject:mobileNum] == YES) {
-            str =  NSLocalizedString(@"Unicom", nil);
-            VCLog(@"China Telecom");
+            str =  @"联通";//NSLocalizedString(@"Unicom", nil);
+            //VCLog(@"China Telecom");
         } else if ([regextestcu evaluateWithObject:mobileNum] == YES) {
-            str =  NSLocalizedString(@"Telecom", nil);
-            VCLog(@"China Unicom");
+            str =  @"电信";//NSLocalizedString(@"Telecom", nil);
+            //VCLog(@"China Unicom");
         } else {
-            str  = NSLocalizedString(@"Other", nil);;
-            VCLog(@"Unknow");
+            str  = @"其它";//NSLocalizedString(@"Other", nil);;
+            //VCLog(@"Unknow");
         }
         
         return str;
     }
     else
     {
-        return NSLocalizedString(@"Other", nil);
+        return @"其它";
     }
 }
 

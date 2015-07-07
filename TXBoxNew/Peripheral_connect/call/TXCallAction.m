@@ -42,9 +42,13 @@
     startDate = [NSDate date];
     
     if (myNumber.length >0) {
+        NSDateFormatter *dateFormate = [[NSDateFormatter alloc] init];
+        [dateFormate setDateFormat:@"yy/M/d HH:mm"];
+        [dateFormate setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"]];//中国
+        //开始时间
+        NSString *strDate = [dateFormate stringFromDate:startDate];
         
-        
-        VCLog(@"call out 1");
+        VCLog(@"call out date %@",strDate);
         return 1;
 
         

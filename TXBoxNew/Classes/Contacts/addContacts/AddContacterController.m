@@ -19,7 +19,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = NSLocalizedString(@"New_Person", nil);
+    self.title = @"新增";
     
     newPerson = [[ABNewPersonViewController alloc] init];
     newPerson.newPersonViewDelegate = self;

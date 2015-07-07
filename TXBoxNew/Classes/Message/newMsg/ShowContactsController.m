@@ -113,14 +113,14 @@
     
     if (cell.accessoryView.hidden == YES){
         //选中，如果数组里没有，则add
-        if (![selectArray containsObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personName]]) {
+        if (![selectArray containsObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]]) {
             if ([[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]) {
                 [selectDict setObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]forKey:indexPath];
             }else{
                 return;
             }
             
-            [selectArray addObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personName]];
+            [selectArray addObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]];
 
             cell.accessoryView.hidden = NO;
         }
@@ -128,9 +128,9 @@
     }else{
         
         //如果数组里有，则remove
-        if ([selectArray containsObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personName]]) {
+        if ([selectArray containsObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]]) {
             [selectDict removeObjectForKey:indexPath];
-            [selectArray removeObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personName]];
+            [selectArray removeObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]];
 
             cell.accessoryView.hidden = YES;
         }

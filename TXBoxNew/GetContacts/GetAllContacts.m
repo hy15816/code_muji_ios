@@ -107,7 +107,7 @@
             name = [[NSString alloc] initWithFormat:@"%@",firstName];
         }else
         {
-            name = [[NSString alloc] initWithFormat:NSLocalizedString(@"Unknow", nil)];
+            name = [[NSString alloc] initWithFormat:@"未知"];
         }
         
         //转拼音
