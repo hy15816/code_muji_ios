@@ -10,10 +10,7 @@
 #import <AVOSCloud/AVOSCloud.h>
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
-{
-    NSUserDefaults *usDefaults;
-    UIImageView *enterbgView;
-}
+
 @property (strong, nonatomic) UIWindow *window;
 @property (assign, nonatomic) UIBackgroundTaskIdentifier backgroundUpdateTask;
 

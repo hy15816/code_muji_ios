@@ -5,6 +5,7 @@
 //  Created by Naron on 15/4/21.
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
+#define textinputHeight 35
 
 #import "MsgDetailController.h"
 #import "Message.h"
@@ -12,14 +13,18 @@
 #import "MsgDetailCell.h"
 #import "TXSqliteOperate.h"
 #import "EditView.h"
+#import "TextViewInput.h"
 
-@interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate,ChangeRightMarginDelegate>
+@interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate,ChangeRightMarginDelegate,TextInputDelegate>
 {
     TXSqliteOperate *txsqlite;
     UILongPressGestureRecognizer *longPress;
     EditView *editView;
     NSMutableArray *selectArray;
     NSMutableDictionary *selectDict;
+    
+    TextViewInput *textInput;
+    CGFloat kHeight;
 }
 @property (strong, nonatomic) NSMutableArray *detailArray;
 @property (strong, nonatomic) NSMutableArray *allMsgFrame;
@@ -36,11 +41,6 @@
 @property (nonatomic,strong) UITableView *tableview;
 @property (nonatomic,strong) NSMutableArray *resultArray;
 
-@property (strong, nonatomic)  UIView *inputView;
-@property (strong, nonatomic)  UIButton *sendMsgBtn;
-@property (strong,nonatomic) HPGrowingTextView *textView;
-
-
 @end
 
 @implementation MsgDetailController
@@ -56,7 +56,44 @@
     [self getResouce];
     [self jumpToLastRow];
     [self.tableview reloadData];
+    [self initKeyBoardNotif];
 }
+#pragma mark - 键盘action
+-(void)initKeyBoardNotif{
+    //键盘显示消息
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowNotif:) name:UIKeyboardWillShowNotification object:nil];
+    //键盘隐藏消息
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardwillHiddenNotif:) name:UIKeyboardWillHideNotification object:nil];
+    
+}
+
+-(void)keyboardWillShowNotif:(NSNotification*)notif{
+    
+    NSNumber *duration = [notif.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    //获取键盘高度
+    NSValue *keyboardObject = [[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGRect keyboardRect;
+    [keyboardObject getValue:&keyboardRect];
+    kHeight = keyboardRect.size.height;
+    textInput.frame = CGRectMake(0, DEVICE_HEIGHT-TabBarHeight-textinputHeight-kHeight, DEVICE_WIDTH, textinputHeight);
+    [UIView animateWithDuration:[duration doubleValue] animations:^{
+        
+        CGRect rect = [notif.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+        self.tableview.frame = CGRectMake(0,0 , DEVICE_WIDTH, DEVICE_HEIGHT-rect.size.height);//-rect.size.height
+        [self jumpToLastRow];
+    }];
+    
+}
+
+
+//键盘隐藏
+-(void)keyboardwillHiddenNotif:(NSNotification*)notif{
+    self.tableview.frame = CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT);
+    
+    kHeight = 0;
+    textInput.frame = CGRectMake(0, DEVICE_HEIGHT-textinputHeight, DEVICE_WIDTH, textinputHeight);
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     txsqlite =[[TXSqliteOperate alloc] init];
@@ -110,7 +147,7 @@
     [self.view addSubview:_tableview];
     
     [self initInputView];
-    [self initKeyBoardNotif];
+    
     
     
     //编辑时显示
@@ -119,10 +156,62 @@
     editView.delegate  =self;
     [self.view addSubview:editView];
     
+}
+#pragma mark -- input view
+-(void) initInputView
+{
+    textInput =[[TextViewInput alloc] initWithFrame:CGRectMake(0, DEVICE_HEIGHT-textinputHeight, DEVICE_WIDTH, textinputHeight)];
+    textInput.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"abcd"]];
+    textInput.inputDelegate = self;
+    textInput.textview.font = [UIFont systemFontOfSize:16];
+    textInput.maxHeight = 110;
+    textInput.rigBtnTitle = @"发送";
+    [self.view addSubview:textInput];
     
 }
+#warning ====================================
+-(CGFloat)getKeyBoradHeight{
+    return kHeight;
+}
 
-
+-(void)changedFrame:(CGRect)rect{
+    textInput.frame = rect;
+}
+-(void)rightButtonClick:(UIButton *)button{
+    
+    [SVProgressHUD showImage:nil status:@"click"];
+    if (textInput.textview.text.length>0) {
+        
+        NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
+        NSDate *date = [NSDate date];
+        fmt.dateFormat = @"yy/M/d HH:mm"; // @"yyyy-MM-dd HH:mm:ss"
+        NSString *time = [fmt stringFromDate:date];
+        [self addMessageWithContent:textInput.textview.text time:time];
+        
+        //关闭键盘
+        [textInput.textview resignFirstResponder];
+        
+        //保存到数据库
+        TXData *txdata =  [[TXData alloc] init];
+        txdata.msgSender = @"1";
+        txdata.msgTime = time;
+        txdata.msgContent = textInput.textview.text;
+        txdata.msgAccepter = self.datailDatas.hisNumber;
+        txdata.msgStates = @"0";
+        
+        [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
+        //self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
+        
+    }
+    textInput.textview.text = nil;
+    
+    [self jumpToLastRow];
+    [self.tableview reloadData];
+    
+}
+-(void)initMsgSwipeRecognizer:(UISwipeGestureRecognizer*)swipe{
+    [textInput.textview resignFirstResponder];
+}
 
 -(BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
@@ -288,141 +377,9 @@
     [self.allMsgFrame addObject:mf];
 }
 
--(void)initKeyBoardNotif{
-    //键盘显示消息
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowNotif:) name:UIKeyboardWillShowNotification object:nil];
-    //键盘隐藏消息
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardHiddenNotif:) name:UIKeyboardWillHideNotification object:nil];
-    
-}
 
 
-#pragma mark - 键盘显示响应函数
--(void)keyboardWillShowNotif:(NSNotification*)notif{
-    
-    CGRect keyboardBounds;
-    
-    [[notif.userInfo valueForKey:UIKeyboardFrameEndUserInfoKey] getValue: &keyboardBounds];
-    NSNumber *duration = [notif.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
-    //NSNumber *curve = [notif.userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey];
-    
-    keyboardBounds = [self.view convertRect:keyboardBounds toView:nil];
-    
-    CGRect containerFrame = self.inputView.frame;
-    containerFrame.origin.y = self.view.bounds.size.height - (keyboardBounds.size.height + containerFrame.size.height);
 
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-    [UIView setAnimationDuration:[duration doubleValue]];
-    //[UIView setAnimationCurve:[curve intValue]];
-    
-    self.inputView.frame = containerFrame;
-    
-    CGRect rect = [notif.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    self.tableview.frame = CGRectMake(0,0 , DEVICE_WIDTH, DEVICE_HEIGHT-rect.size.height);//-rect.size.height
-    [self jumpToLastRow];
-    
-    [UIView commitAnimations];
-    
-}
-
-
-#pragma mark - 键盘隐藏响应函数
--(void)keyboardHiddenNotif:(NSNotification*)notif{
-    
-    
-    NSNumber *duration = [notif.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
-    NSNumber *curve = [notif.userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey];
-    
-    CGRect containerFrame = self.inputView.frame;
-    containerFrame.origin.y = self.view.bounds.size.height - containerFrame.size.height;
-    
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-    [UIView setAnimationDuration:[duration doubleValue]];
-    [UIView setAnimationCurve:[curve intValue]];
-    
-    self.tableview.frame = CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT);
-    self.inputView.frame = containerFrame;
-
-    [UIView commitAnimations];
-
-}
-
-
--(void) initInputView
-{
-    self.inputView = [[UIView alloc] init];
-    self.inputView.backgroundColor = RGBACOLOR(240, 240, 240, 1);
-    self.inputView.frame = CGRectMake(0, DEVICE_HEIGHT-40, DEVICE_WIDTH, 40);
-    //self.inputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-    
-    self.textView = [[HPGrowingTextView alloc] initWithFrame:CGRectMake(5, 4, DEVICE_WIDTH*.8f, 40)];
-    self.textView.delegate = self;
-    self.textView.minNumberOfLines = 1;
-    self.textView.maxNumberOfLines = 6;//最大伸缩行数
-    self.textView.font = [UIFont systemFontOfSize:14.0f];
-    self.textView.placeholder = @"信息";
-    
-    //textView的背景
-    UIImage *rawEntryBackground = [UIImage imageNamed:@"msg_textView_bg"];
-    UIImage *entryBackground = [rawEntryBackground stretchableImageWithLeftCapWidth:13 topCapHeight:22];
-    UIImageView *entryImageView = [[UIImageView alloc] initWithImage:entryBackground];
-    entryImageView.frame = CGRectMake(5, 0, DEVICE_WIDTH*.8f, 40);
-    entryImageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    //inputView的bgImg
-    UIImage *rawBackground = [UIImage imageNamed:@"msg_inputView_bg"];
-    UIImage *background = [rawBackground stretchableImageWithLeftCapWidth:13 topCapHeight:22];
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:background];
-    imageView.frame = CGRectMake(0, 0, self.inputView.frame.size.width, self.inputView.frame.size.height);
-    imageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    
-    self.sendMsgBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.sendMsgBtn.frame = CGRectMake(DEVICE_WIDTH-50, 0, 30, 40);
-    [self.sendMsgBtn setTitle:@"发送" forState:UIControlStateNormal];
-    [self.sendMsgBtn addTarget:self action:@selector(sendMsgBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-    
-    
-    [self.view addSubview:self.inputView];
-    [self.inputView addSubview:imageView];
-    
-    
-    [self.inputView addSubview:self.textView];
-    [self.inputView addSubview:entryImageView];
-    [self.inputView addSubview:self.sendMsgBtn];
-    
-    
-    
-}
-
--(void)jumpToLastRow
-{
-    if (self.allMsgFrame.count>5) {
-        //滚动到当前信息
-        NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:self.detailArray.count-1 inSection:0];
-        [self.tableview scrollToRowAtIndexPath:lastIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-    }else{
-        return;
-    }
-    
-    
-}
-
-#pragma mark -- HPGrowingTextView Delegate
--(void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height
-{
-    float diff = (growingTextView.frame.size.height - height);
-    
-    CGRect r = self.inputView.frame;
-    r.size.height -= diff;
-    r.origin.y += diff;
-    self.inputView.frame = r;
-}
-//处理swipe
--(void) initMsgSwipeRecognizer:(UIGestureRecognizer *)recognizer
-{
-    [self.textView resignFirstResponder];
-}
 
 //返回上一层界面
 -(void)arearBtnClick:(UIGestureRecognizer *)recognizer
@@ -434,7 +391,6 @@
     }else{
         [self.navigationController popToRootViewControllerAnimated:YES];
     }
-    
     
 }
 
@@ -501,7 +457,18 @@
     [cell.contentBtn addGestureRecognizer:longPress];
     return cell;
 }
-
+-(void)jumpToLastRow
+{
+    if (self.allMsgFrame.count>5) {
+        //滚动到当前信息
+        NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:self.detailArray.count-1 inSection:0];
+        [self.tableview scrollToRowAtIndexPath:lastIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    }else{
+        return;
+    }
+    
+    
+}
 #pragma mark - -changerightMargin delegate
 -(CGFloat)changeRightMargin
 {
@@ -561,44 +528,7 @@
     
 }
 
-//导航栏左边按钮-返回
-- (IBAction)ContactsInfo:(UIBarButtonItem *)sender {
-   
-    [self.navigationController popToRootViewControllerAnimated:YES];
-    
-}
 
-//发送信息
-- (void)sendMsgBtnClick:(UIButton *)sender {
-    
-    if (self.textView.text.length>0) {
-        
-        NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
-        NSDate *date = [NSDate date];
-        fmt.dateFormat = @"yy/M/d HH:mm"; // @"yyyy-MM-dd HH:mm:ss"
-        NSString *time = [fmt stringFromDate:date];
-        [self addMessageWithContent:self.textView.text time:time];
-        
-        //关闭键盘
-        [self.textView resignFirstResponder];
-        
-        //保存到数据库
-        TXData *txdata =  [[TXData alloc] init];
-        txdata.msgSender = @"1";
-        txdata.msgTime = time;
-        txdata.msgContent = self.textView.text;
-        txdata.msgAccepter = self.datailDatas.hisNumber;
-        txdata.msgStates = @"0";
-        
-        [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
-        //self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
-        
-    }
-    self.textView.text = nil;
-    
-    [self jumpToLastRow];
-    [self.tableview reloadData];
-}
 
 /*
 -(void)viewWillDisappear:(BOOL)animated{

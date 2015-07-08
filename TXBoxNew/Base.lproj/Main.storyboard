@@ -464,7 +464,7 @@
                                     </constraint>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <state key="normal" backgroundImage="B608FDF6-0886-476E-9BA2-4D5A47429A58"/>
+                                <state key="normal" backgroundImage="7D05E423-A787-4BD4-BDDF-A66862DCFAD6"/>
                                 <variation key="default">
                                     <mask key="constraints">
                                         <exclude reference="AY4-a9-0Xl"/>
@@ -683,7 +683,7 @@
         <!--短信-->
         <scene sceneID="m4b-ex-zJy">
             <objects>
-                <tableViewController id="ydx-dq-noO" customClass="MessageController" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="messageVCID" useStoryboardIdentifierAsRestorationIdentifier="YES" id="ydx-dq-noO" customClass="MessageController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="efa-eD-u9e">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -3083,6 +3083,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="disMissBtn" destination="EGP-VE-BrO" id="Gq1-2e-BRk"/>
                         <outlet property="hisNumber" destination="gbg-En-CiH" id="Kww-hx-Pj7"/>
                         <outlet property="hisname" destination="M08-n1-ijt" id="dG9-Rv-aSb"/>
                     </connections>
@@ -3645,7 +3646,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="B608FDF6-0886-476E-9BA2-4D5A47429A58" width="67" height="67">
+        <image name="7D05E423-A787-4BD4-BDDF-A66862DCFAD6" width="67" height="67">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw

@@ -50,7 +50,7 @@
     [self.imgv addSubview:labela];
     
     //textField
-    self.secondField = [[UITextField alloc] initWithFrame:CGRectMake(5, 65,SELF_WIDTH-10, 30)];
+    self.secondField = [[UITextField alloc] initWithFrame:CGRectMake(5, 65,SELF_WIDTH-10, 35)];
     self.secondField.placeholder = @"138 1380 0000";
     self.secondField.keyboardType = UIKeyboardTypeNumberPad;
     self.secondField.borderStyle = UITextBorderStyleRoundedRect;
@@ -67,10 +67,12 @@
         [button setTitleColor:RGBACOLOR(0, 103, 255, 1) forState:UIControlStateNormal];
         button.frame = CGRectMake(SELF_WIDTH/2*i, self.frame.size.height-40, SELF_WIDTH/2, 40);
         [button setTitle:sureTitle forState:UIControlStateNormal];
-        button.titleLabel.font = [UIFont systemFontOfSize:18];
+        button.titleLabel.font = [UIFont systemFontOfSize:18 weight:.1];
         button.tag = i;
         if (i == 0) {
             [button setTitle:cancelTitle forState:UIControlStateNormal];
+            button.selected = YES;
+            button.titleLabel.font = [UIFont systemFontOfSize:18 weight:.2];
         }
         
         [button addTarget:self action:@selector(buttonClicks:) forControlEvents:UIControlEventTouchUpInside];

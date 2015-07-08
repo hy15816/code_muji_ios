@@ -15,22 +15,18 @@
 #import "ShowContacts.h"
 #import "BLEmanager.h"
 
-@interface NewMsgController ()<UITextViewDelegate,UITextFieldDelegate,HPGrowingTextViewDelegate,BLEmanagerDelegate>
+@interface NewMsgController ()<UITextViewDelegate,UITextFieldDelegate,BLEmanagerDelegate>
 {
     TXSqliteOperate *txsqlite;
     BLEmanager *bmanager;
     
 }
 
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *disMissBtn;
 
 - (IBAction)disMissButton:(UIBarButtonItem *)sender;
 @property (weak, nonatomic) IBOutlet UITextField *hisNumber;
 @property (weak, nonatomic) IBOutlet UILabel *hisname;
-
-@property (strong, nonatomic)  UIView *inputView;
-@property (strong, nonatomic)  UIButton *sendMsgBtn;
-@property (strong,nonatomic) HPGrowingTextView *textMsgView;
-
 
 
 @end
@@ -122,10 +118,12 @@
     
     
     self.title = @"新信息";
+    self.disMissBtn.enabled = YES;
     txsqlite = [[TXSqliteOperate alloc] init];
     //输入收件人
     self.hisNumber.delegate =self;
     self.hisNumber.contentMode = UIViewContentModeTopLeft;
+    self.hisNumber.keyboardType = UIKeyboardTypeNamePhonePad;
     if ([[userDefaults valueForKey:@"HEHE"] length]>0) {
         self.hisNumber.text = [userDefaults valueForKey:@"HEHE"];
     }
@@ -144,53 +142,11 @@
 -(void)initSwipeRecognizer:(UISwipeGestureRecognizer *)swipe
 {
     [self.hisNumber resignFirstResponder];
-    [self.textMsgView resignFirstResponder];
+    //[self.textMsgView resignFirstResponder];
 }
 
 -(void) initNewMsgInputView
 {
-    self.inputView = [[UIView alloc] init];
-    self.inputView.backgroundColor = RGBACOLOR(240, 240, 240, 1);
-    self.inputView.frame = CGRectMake(0, DEVICE_HEIGHT-40, DEVICE_WIDTH, 40);
-    
-    //self.inputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-    
-    self.textMsgView = [[HPGrowingTextView alloc] initWithFrame:CGRectMake(5, 4, DEVICE_WIDTH*.8f, 40)];
-    self.textMsgView.delegate = self;
-    self.textMsgView.minNumberOfLines = 1;
-    self.textMsgView.maxNumberOfLines = 6;//最大伸缩行数
-    self.textMsgView.font = [UIFont systemFontOfSize:14.0f];
-    self.textMsgView.placeholder = @"信息";
-    if ([[userDefaults valueForKey:@"MEME"] length] > 0) {
-        self.textMsgView.text = [userDefaults valueForKey:@"MEME"];
-    }
-    
-    //textView的背景
-    UIImage *rawEntryBackground = [UIImage imageNamed:@"msg_textView_bg"];
-    UIImage *entryBackground = [rawEntryBackground stretchableImageWithLeftCapWidth:13 topCapHeight:22];
-    UIImageView *entryImageView = [[UIImageView alloc] initWithImage:entryBackground];
-    entryImageView.frame = CGRectMake(5, 0, DEVICE_WIDTH*.8f, 40);
-    entryImageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    //inputView的bgImg
-    UIImage *rawBackground = [UIImage imageNamed:@"msg_inputView_bg"];
-    UIImage *background = [rawBackground stretchableImageWithLeftCapWidth:13 topCapHeight:22];
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:background];
-    imageView.frame = CGRectMake(0, 0, self.inputView.frame.size.width, self.inputView.frame.size.height);
-    imageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    
-    self.sendMsgBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.sendMsgBtn.frame = CGRectMake(DEVICE_WIDTH-50, 0, 30, 40);
-    [self.sendMsgBtn setTitle:@"发送" forState:UIControlStateNormal];
-    [self.sendMsgBtn addTarget:self action:@selector(sendNewMsgBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-    
-    
-    [self.view addSubview:self.inputView];
-    [self.inputView addSubview:imageView];
-    
-    
-    [self.inputView addSubview:self.textMsgView];
-    [self.inputView addSubview:entryImageView];
-    [self.inputView addSubview:self.sendMsgBtn];
     
     
     
@@ -210,9 +166,10 @@
     TXData *txdata =  [[TXData alloc] init];
     txdata.msgSender = @"1";
     txdata.msgTime = time;
-    txdata.msgContent = self.textMsgView.text;
+    //txdata.msgContent = self.textMsgView.text;
     txdata.msgAccepter = self.hisNumber.text;
     txdata.msgStates = @"0";
+    /*
     BOOL connect = [[userDefaults valueForKey:BIND_STATE] intValue];
     if (!connect) {
         [userDefaults setValue:self.hisNumber.text forKey:@"HEHE"];
@@ -220,12 +177,13 @@
         [SVProgressHUD showImage:nil status:@"请先连接蓝牙!"];
         return;
     }
+     */
     BOOL ismobile = [[self.hisNumber.text purifyString] isMobileNumber:[self.hisNumber.text purifyString]];
     
-    if (self.textMsgView.text.length > 0 && ismobile ) {
+    if (/*self.textMsgView.text.length > 0 && */ismobile ) {
         
         //向蓝牙发送信息
-        [bmanager writeDatas:[self getdata]];
+        //[bmanager writeDatas:[self getdata]];
         BOOL senderSuc = YES;
         if (senderSuc) {
             //保存到本地
@@ -243,17 +201,28 @@
             [userDefaults setValue:@"" forKey:@"HEHE"];
             [userDefaults setValue:@"" forKey:@"MEME"];
             [SVProgressHUD showImage:nil status:@"已发送"];
-            [self.navigationController pushViewController:DetailVC animated:YES];
+            self.title = [self.hisNumber.text purifyString];
+            self.navigationItem.leftBarButtonItem =[[UIBarButtonItem alloc] initWithTitle:@"返回" style:UIBarButtonItemStyleDone target:self action:@selector(backAgoView:)];
+            self.disMissBtn.enabled = NO;
+            //[self.navigationController pushViewController:DetailVC animated:YES];
         }else{
             [SVProgressHUD showImage:nil status:@"发送失败"];
+            self.disMissBtn.enabled = YES;
         }
         
     }else{
         [SVProgressHUD showImage:nil status:@"收件人不能为空!"];
+        self.disMissBtn.enabled = YES;
     }
     
+}
+
+-(void)backAgoView:(UIBarButtonItem *)item{
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
     
 }
+
 -(NSData *)getdata{
     Byte data[20];
     for (int i=0; i<kByte_count; i++) {
@@ -290,8 +259,6 @@
             [cellView removeFromSuperview];
         }
     }
-    
-    
     
     return cell;
 }

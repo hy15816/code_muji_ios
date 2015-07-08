@@ -36,6 +36,8 @@
     float animationtimes;
     CallAndDivert *callAndDivert;
     UIWebView *dwebView;
+
+    AVObject *avobj;
 }
 
 @property (strong, nonatomic) IBOutlet UIImageView *firstImageView;
@@ -88,7 +90,7 @@
     
     [self initLoginAndConfigButtons];
     [self refreshBindButton];
-    [self isOrNotUpdateVersion];
+    //[self isOrNotUpdateVersion];
     
     //初始化蓝牙
     bleManage = [BLEmanager sharedInstance];
@@ -103,6 +105,8 @@
     callAndDivert = [[CallAndDivert alloc] init];
     dwebView = [[UIWebView alloc] init];
     animationtimes = 0.25f;
+
+    avobj = [AVObject objectWithClassName:@"User"];
     self.tableView.separatorStyle =UITableViewCellSeparatorStyleNone;
     
     //self.firstImageView的背景
@@ -420,6 +424,7 @@
 
 #pragma mark -- hide popView
 -(void)hideShadeAndPopView{
+    [popview.secondField resignFirstResponder];
     [UIView animateWithDuration:animationtimes animations:^{
         
         shadeView.alpha = 0;
@@ -462,10 +467,10 @@
     
     
     if (mujiNumber.length>0) {
-        [popview initWithTitle:@"修改拇机号码信息:" label:@"拇机号码" cancelButtonTitle:@"不OK" otherButtonTitles:@"OK"];
+        [popview initWithTitle:@"修改拇机号码信息:" label:@"拇机号码" cancelButtonTitle:@"OK" otherButtonTitles:@"不OK"];
         popview.secondField.text = mujiNumber;
     }else{
-        [popview initWithTitle:@"呼叫转移需要配置拇机号码信息:" label:@"拇机号码" cancelButtonTitle:@"不OK" otherButtonTitles:@"OK"];
+        [popview initWithTitle:@"呼叫转移需要配置拇机号码信息:" label:@"拇机号码" cancelButtonTitle:@"OK" otherButtonTitles:@"不OK"];
     }
     
     
@@ -482,14 +487,29 @@
 {
     //获取输入的text
     NSString *number = [sfield.text trimOfString];
+    if (![number isEqualToString:[userDefaults valueForKey:muji_bind_number]]) {
+        //拇机号码上传到服务器
+        
+        [avobj setObject:number forKey:@"mujiphone"];
+        [avobj saveInBackgroundWithBlock:^(BOOL isSuc,NSError *error){
+            if (error) {
+                NSLog(@"save mujiphone error:%@",error.localizedDescription);
+            }else
+            {
+                NSLog(@"save mujiphone succ");
+                
+            }
+        }];
+    }
+    
     //取消
-    if (button.tag == 0) {
+    if (button.tag == 1) {
         
         //[self hideShadeAndPopView];
         [sfield resignFirstResponder];
     }
     //sure按钮
-    if (button.tag == 1) {
+    if (button.tag == 0) {
         if ( number.length<=0 || ![number isValidateMobile:number]) {
             //创建提醒对话框
             UIAlertView *malertView = [[UIAlertView alloc] initWithTitle:nil message:@"请输入正确的号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
@@ -501,20 +521,6 @@
             //本地保存数据
             [defaults setValue:number forKey:muji_bind_number];
             
-            //上传到服务器
-            /*
-            ^(BOOL suc,NSError *error){
-             
-             if (suc) {
-             VCLog(@"sign suc");
-             }else{
-             VCLog(@"reg error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
-             UIAlertView *alert =[[UIAlertView alloc] initWithTitle:error.localizedDescription message:nil delegate:self cancelButtonTitle:@"是" otherButtonTitles:nil, nil];
-             alert.delegate = self;
-             [alert show];
-             }
-             }];
-             */
             [defaults setValue:@"1" forKey:CONFIG_STATE];
             //
             [self.configureButton setTitle:@"  修改  " forState:UIControlStateNormal];
@@ -526,6 +532,8 @@
     }
     
     [self initLoginAndConfigButtons];
+    
+    
 }
 
 #pragma mark -- 呼转 & 取消
@@ -621,7 +629,6 @@
         [self initLoginAndConfigButtons];
     }else
     {
-        VCLog(@"11");
         //添加login页面
         UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         LoginController *loginview = [board instantiateViewControllerWithIdentifier:@"loginVCIdentity"];
@@ -635,7 +642,7 @@
 {
     [AVUser logOut];
     [userDefaults setValue:@"0" forKey:LOGIN_STATE];
-    [userDefaults setValue:@"0" forKey:CONFIG_STATE];
+    //[userDefaults setValue:@"0" forKey:CONFIG_STATE];
 
 }
 

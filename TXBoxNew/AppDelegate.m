@@ -18,21 +18,15 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
-    usDefaults = [NSUserDefaults standardUserDefaults];
-    enterbgView =  [[UIImageView alloc] initWithFrame:self.window.bounds];
-    enterbgView.image = [UIImage imageNamed:@"lch_0_568h"];
-    enterbgView.alpha = 0;
-    
     
     //leanCloud 服务器
     [AVOSCloud setApplicationId:@"85m0pvb0vv1iluti5sk0xsou1mkftzn06a3f1ompvza9xc7z" clientKey:@"orluh89ufnpvl773b68w5gcdk4dxfrahzwaahz7c46ettn44"];
 
     
-    if ([[usDefaults valueForKey:muji_bind_number] length] >0 ) {
-        [usDefaults setValue:@"1" forKey:CONFIG_STATE];
+    if ([[userDefaults valueForKey:muji_bind_number] length] >0 ) {
+        [userDefaults setValue:@"1" forKey:CONFIG_STATE];
     }else{
-        [usDefaults setValue:@"0" forKey:CONFIG_STATE];
+        [userDefaults setValue:@"0" forKey:CONFIG_STATE];
     }
     
     
@@ -143,17 +137,6 @@
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-    
-    
-    enterbgView.alpha = 0;
-    //[self.window addSubview:enterbgView];
-    [UIView animateWithDuration:.3 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-        
-        enterbgView.alpha = 1;
-    } completion:^(BOOL isfinsh){if(isfinsh)VCLog(@"is ra");}];
-
-    
-    
 }
 //程序进入后台
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -186,7 +169,7 @@
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     //VCLog(@"x2");
     [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];//进入前台取消应用消息图标
-    [self removeEnterbgView];
+    //[self removeEnterbgView];
 }
 
 //程序成为活动的
@@ -200,6 +183,7 @@
 
 }
 
+/*
 -(void)removeEnterbgView{
     
     if (enterbgView) {
@@ -210,7 +194,7 @@
         } completion:^(BOOL isfinsh){if(isfinsh)VCLog(@"is b a");}];
     }
 }
-
+*/
 #pragma warning 退出程序时
 - (void)applicationWillTerminate:(UIApplication *)application {
     //控制为否

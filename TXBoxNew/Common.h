@@ -106,12 +106,12 @@
 // 其它
 #define OtherNumber @"其它"
 
-// 状态栏高度 默认20
+// 状态栏高度
 #define StatusBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
 
-// tabBar高度 默认49
+// tabBar高度
 #define  TabBarHeight self.tabBarController.tabBar.frame.size.height
-// 导航栏高度 默认44
+// 导航栏高度 
 #define NaviBarHeight self.navigationController.navigationBar.frame.size.height
 
 // 邮箱和拇机号码
@@ -121,7 +121,7 @@
 // window窗口
 #define WINDOW  [[UIApplication sharedApplication]keyWindow]
 
-#define PopViewHeight 140   //弹出框高度
+#define PopViewHeight 145   //弹出框高度
 #define PopViewWidth 0.9*DEVICE_WIDTH    //弹出框宽度
 
 #define China_Mobile @"China Mobile"

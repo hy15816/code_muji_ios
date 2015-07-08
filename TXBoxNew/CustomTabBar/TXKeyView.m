@@ -32,13 +32,18 @@
     
     [self endEditing:YES];
     
-
+    UILabel *line =[[UILabel alloc] initWithFrame:CGRectMake(0, 50, rect.size.width, .5)];
+    line.backgroundColor=[UIColor grayColor];
+    line.alpha=.5;
+    [self addSubview:line];
 }
 
 
 #pragma mark --添加键盘按键
 -(void) drawKeyBorad {
 
+    
+    
     for (int i=0; i<=11; i++) {
         
         NSString *icon = [[NSString alloc] initWithFormat:@"dial_num_%d.png",i+1];
@@ -57,6 +62,10 @@
 //设置按钮图片，frame，tag值
 - (void)addKeyWithIcon:(NSString *)icon selectedIcon:(NSString *)selected rectbg:(CGRect)rectbg tag:(NSInteger )tag
 {
+    UILongPressGestureRecognizer *longPress=[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressKey:)];
+    //longPress.numberOfTouchesRequired
+    longPress.minimumPressDuration = 1;
+    
     // 1.创建item
     UIButton *itembg = [[UIButton alloc] init];
     
@@ -69,6 +78,9 @@
     
     // 监听item的点击
     [itembg addTarget:self action:@selector(itemClick:) forControlEvents:UIControlEventTouchUpInside];
+    if (itembg.tag ==11) {
+        [itembg addGestureRecognizer:longPress];
+    }
     // 2.添加item
     [self addSubview:itembg];
 
@@ -84,7 +96,7 @@
     [self.textsearch setPlaceholder:@"输入数字或拼音模糊搜索"];//NSLocalizedString(@"Please_enter_number_or_letter_of_fuzzy_search", nil)
     
     self.textsearch.returnKeyType = UIReturnKeyDefault;
-    //[textsearch becomeFirstResponder];
+    [textsearch resignFirstResponder];
     [self layoutSubviews];
     self.textsearch.delegate = self;
     
@@ -93,18 +105,15 @@
     
     //删除（退格）按钮
     UIButton *delBtn = [[UIButton alloc] init];
-    delBtn.frame = CGRectMake(DEVICE_WIDTH-keyWidth, 5, keyWidth, 44);
+    delBtn.frame = CGRectMake(DEVICE_WIDTH-80, 5, 46, 44);
     [delBtn setImage:[UIImage imageNamed:@"aio_face_delete"] forState:UIControlStateNormal];
     [delBtn setImage:[UIImage imageNamed:@"aio_face_delete_pressed"] forState:UIControlStateSelected];
         [delBtn addTarget:self action:@selector(del) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:delBtn];
 
-    
     singleton = [TXTelNumSingleton sharedInstance];
-    
    
 }
-
 
 #pragma mark 对searchbar的修改
 -(void)layoutSubviews
@@ -186,12 +195,18 @@
     NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:self.textsearch.text ,@"searchBarText", nil];
     //2.通过通知中心发送通知
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
-    if (self.textsearch.text.length>=3) {
+    if (self.textsearch.text.length>=1) {
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:ktextChangeNotify object:self]];
     }
     
 }
-
+-(void)longPressKey:(UITapGestureRecognizer*)tap{
+    
+    NSString *text = self.textsearch.text;
+    self.textsearch.text = [NSString stringWithFormat:@"%@+",text];
+    
+    
+}
 
 //取消系统键盘弹出
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar

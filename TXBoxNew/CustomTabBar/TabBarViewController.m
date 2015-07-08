@@ -93,7 +93,6 @@
     [UIView animateWithDuration:.27 animations:^{
         //隐藏键盘，
         self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
-        
         showKeyboard = NO;
         //隐藏call按钮
         tabBarView.callBtn.hidden = YES;
@@ -110,10 +109,9 @@
     [self getTabbarHeight:DEVICE_HEIGHT];
     tabBarView.delegate = self;
     tabBarView.userInteractionEnabled = YES;
-    tabBarView.backgroundColor = RGBACOLOR(245, 245, 246, 1);
+    tabBarView.backgroundColor = [UIColor whiteColor] ;//RGBACOLOR(245, 245, 246, 1);
     self.tabBar.hidden = YES;
     [self.view addSubview:tabBarView];
-    
     
 }
 
@@ -140,6 +138,7 @@
     }else{
         //隐藏键盘，隐藏call按钮
         [self customKeyboardHides];
+        
     }
     
 }
@@ -154,7 +153,7 @@
             showKeyboard = YES;
             [button setImage:[UIImage imageNamed:@"icon_up"] forState:UIControlStateSelected];
             //若已输入号码，显示callBtn
-            if (singleton.singletonValue.length>=3) {
+            if (singleton.singletonValue.length>=1) {
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.38f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                     tabBarView.callBtn.hidden = NO;
                 });
@@ -194,7 +193,6 @@
     [UIView animateWithDuration:.4 animations:^{
         cv.alpha = 1;
     }];
-    
     
 }
 
@@ -247,7 +245,7 @@
 #pragma mark -- keyView delegate
 -(void)inputTextLength:(NSString *)text{
     
-    if (text.length<3) {
+    if (text.length<1) {
         tabBarView.callBtn.hidden = YES;
     }
 }
@@ -258,7 +256,7 @@
     //获取输入的号码
     NSString *strHis =  singleton.singletonValue;
     //判断号码
-    if (strHis.length>20 || strHis.length <3){
+    if (strHis.length>20 || strHis.length <1){
         
         [self initAlertView];
         return;
