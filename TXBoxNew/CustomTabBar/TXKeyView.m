@@ -24,6 +24,11 @@
     //self.backgroundColor = RGBACOLOR(201, 201, 201, 1);//键盘背景色
     self.backgroundColor = [UIColor whiteColor];
     
+    UILabel *line =[[UILabel alloc] initWithFrame:CGRectMake(0, 50, rect.size.width, .1)];
+    line.backgroundColor=[UIColor blackColor];
+//    line.alpha=.8;
+    [self addSubview:line];
+    
     [self drawKeyBorad];
     [self addInputBox];
     
@@ -32,10 +37,7 @@
     
     [self endEditing:YES];
     
-    UILabel *line =[[UILabel alloc] initWithFrame:CGRectMake(0, 50, rect.size.width, .5)];
-    line.backgroundColor=[UIColor grayColor];
-    line.alpha=.5;
-    [self addSubview:line];
+    
 }
 
 
@@ -106,8 +108,8 @@
     //删除（退格）按钮
     UIButton *delBtn = [[UIButton alloc] init];
     delBtn.frame = CGRectMake(DEVICE_WIDTH-80, 5, 46, 44);
-    [delBtn setImage:[UIImage imageNamed:@"aio_face_delete"] forState:UIControlStateNormal];
-    [delBtn setImage:[UIImage imageNamed:@"aio_face_delete_pressed"] forState:UIControlStateSelected];
+    [delBtn setImage:[UIImage imageNamed:@"com_Keyboard_Backspace"] forState:UIControlStateNormal];
+    //[delBtn setImage:[UIImage imageNamed:@"com_Keyboard_Backspace"] forState:UIControlStateSelected];
         [delBtn addTarget:self action:@selector(del) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:delBtn];
 
@@ -129,7 +131,8 @@
                 //去掉放大镜
                 textField2.leftView = nil;
                 textField2.clearButtonMode  = UITextFieldViewModeNever;
-                
+                textField2.textAlignment = NSTextAlignmentCenter;
+                textField2.font = [UIFont systemFontOfSize:16];
                 break;
             }
             //去掉背景

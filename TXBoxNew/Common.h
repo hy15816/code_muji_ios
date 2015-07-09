@@ -16,6 +16,7 @@
 #define kHideCusotomTabBar @"hideCustomTabBar"//隐藏自定tabbar
 #define kShowCusotomTabBar @"showCustomTabBar"//显示自定tabbar
 #define kHideTabBarAndCallBtn @"hideTabBarAndCallBtn" //隐藏tabbar和callBtn
+#define kJumptoDiscoeryView @"jumptodiscoveryVC" //跳转到discv
 #define kShowValueToMsgDetail @"showValue"
 #define KRefreshDisvView @"KrefreshDisvView"
 
@@ -56,7 +57,7 @@
 
 
 //===================信息表=============//
-#define MESSAGE_RECEIVE_RECORDS_TABLE_NAME @"MESSAGE_RECORDS"
+#define MESSAGE_RECEIVE_RECORDS_TABLE_NAME @"MESSAGE_RECORDS7_9_1"
 //创建d短信记录表的sql语句
 #define MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL  @"create table if not exists %@(peopleId integer primary key AUTOINCREMENT,msgSender text,msgTime text,msgContent text,msgAccepter text,msgState text)"
 //添加msg记录
@@ -108,7 +109,7 @@
 
 // 状态栏高度
 #define StatusBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
-
+#define textinputHeight 35 //短信输入框
 // tabBar高度
 #define  TabBarHeight self.tabBarController.tabBar.frame.size.height
 // 导航栏高度 

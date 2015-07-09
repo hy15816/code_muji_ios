@@ -21,6 +21,7 @@
 
 @property (assign,nonatomic) id<tabBarViewDelegate> delegate;
 
+@property (nonatomic,strong) CustomTabBarBtn *cusBtnExtern;
 @property (nonatomic,strong) UIButton *callBtn;
 
 

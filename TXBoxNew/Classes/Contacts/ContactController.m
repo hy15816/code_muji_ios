@@ -17,6 +17,7 @@
 #import "MsgDetailController.h"
 #import "TXData.h"
 #import "GetAllContacts.h"
+#import "TXSqliteOperate.h"
 
 @interface ContactController ()<UISearchResultsUpdating,UISearchControllerDelegate,ABNewPersonViewControllerDelegate,ABPersonViewControllerDelegate,GetContactsDelegate>
 {
@@ -25,6 +26,7 @@
     NSMutableArray *cphoneArray;         //联系人({name:@"",tel:@""},{name:@"",tel:@""})
     NSArray *sortedArray;               //排序后的数组
     TXData *msgdata;
+    TXSqliteOperate *txsql;
 }
 
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
@@ -37,6 +39,13 @@
 
 @implementation ContactController
 
+-(void)viewWillAppear:(BOOL)animated{
+
+    [super viewWillAppear:animated];
+    //显示tabbar
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
+    //[self.tableView reloadData];
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"通讯录";
@@ -45,7 +54,7 @@
     cphoneArray = [[NSMutableArray alloc] init];
     sortedArray = [[NSArray alloc] init];
     msgdata = [[TXData alloc] init];
-    
+    txsql=[[TXSqliteOperate alloc] init];
     //self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     //索引相关
     self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
@@ -302,13 +311,24 @@
     
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
+    NSMutableArray *persons;
+    if (self.searchController.active) {
+        
+        Records *record = self.searchsArray[indexPath.row];
+        msgdata.hisName = record.personName;
+        msgdata.hisNumber = record.personTel;
+        if (msgdata.hisNumber.length >=7) {
+            msgdata.hisHome = [txsql searchAreaWithHisNumber:[record.personTel substringToIndex:7]];
+        }else{msgdata.hisHome = @"";}
+    }else{
+        persons=[sectionDicty objectForKey:key];
+        msgdata.hisName = [[persons objectAtIndex:indexPath.row] objectForKey:@"personName"];
+        msgdata.hisNumber = [[[persons objectAtIndex:indexPath.row] objectForKey:@"personTel"] purifyString];
+        if (msgdata.hisNumber.length >=7) {
+            msgdata.hisHome = [txsql searchAreaWithHisNumber:[msgdata.hisNumber substringToIndex:7]];
+        }else{msgdata.hisHome = @"";}
+    }
     
-    NSMutableArray *persons=[sectionDicty objectForKey:key];
-    
-    
-    msgdata.hisName = [[persons objectAtIndex:indexPath.row] objectForKey:@"personName"];
-    msgdata.hisNumber = [[[persons objectAtIndex:indexPath.row] objectForKey:@"personTel"] purifyString];
-    msgdata.hisHome = @"home";
     msgDetail.datailDatas =msgdata;
     [self.navigationController pushViewController:msgDetail animated:YES];
     
@@ -322,7 +342,13 @@
     NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
     
     NSMutableArray *persons=[sectionDicty objectForKey:key];
-    NSString *name = [[persons objectAtIndex:indexPath.row] objectForKey:@"personName"];
+    NSString *name;
+    if (self.searchController.active) {
+        Records *record = self.searchsArray[indexPath.row];
+        name = record.personName;
+    }else{
+        name = [[persons objectAtIndex:indexPath.row] objectForKey:@"personName"];
+    }
     
     [self showPersonViewControllerWithName:name];
 }

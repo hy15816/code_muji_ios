@@ -59,7 +59,8 @@
     //定义本地通知对象
     UILocalNotification *notification=[[UILocalNotification alloc]init];
     //设置调用时间
-    notification.fireDate=[NSDate dateWithTimeIntervalSinceNow:24*3600.0];//通知触发的时间，10s以后
+    //notification.fireDate=[NSDate dateWithTimeIntervalSinceNow:10.0];//通知触发的时间，10s以后
+    
     notification.repeatInterval=2;//通知重复次数
     //notification.repeatCalendar=[NSCalendar currentCalendar];//当前日历，使用前最好设置时区等信息以便能够自动同步时间
     
@@ -140,41 +141,24 @@
 }
 //程序进入后台
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    
-    
-    //[self beingBackgroundUpdateTask];
-    // 在这里加上你需要长久运行的代码
-    //[self endBackgroundUpdateTask];
-    
-    
+
     
     
 }
 
-- (void)beingBackgroundUpdateTask
-{
-    self.backgroundUpdateTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        [self endBackgroundUpdateTask];
-    }];
-}
-
-- (void)endBackgroundUpdateTask
-{
-    [[UIApplication sharedApplication] endBackgroundTask: self.backgroundUpdateTask];
-    self.backgroundUpdateTask = UIBackgroundTaskInvalid;
-}
 
 //进入前景
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     //VCLog(@"x2");
     [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];//进入前台取消应用消息图标
-    //[self removeEnterbgView];
+    [self removeNotification];
 }
 
 //程序成为活动的
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     
+    [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];//进入前台取消应用消息图标
     //[self removeEnterbgView];
     //VCLog(@"x");
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.

@@ -47,7 +47,7 @@
     NSDate *date = [NSDate date];
     //时间格式
     NSDateFormatter *dateFormate = [[NSDateFormatter alloc] init];
-    [dateFormate setDateFormat:@"yy/M/d HH:mm"];
+    [dateFormate setDateFormat:@"yyyy/M/d HH:mm"];
     [dateFormate setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"]];//中国
     
     NSString *time = [dateFormate stringFromDate:date];

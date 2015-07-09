@@ -22,6 +22,7 @@
     NSMutableDictionary *selectDict;
     UIImageView *checkImg;
     UIImageView *disCheckImg;
+    NSIndexPath  *currentPath;
     
 }
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *cancelBtn;
@@ -98,11 +99,14 @@
     ShowContactsCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ShowContactsCellID" forIndexPath:indexPath];
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CellBlueSelected"]];;
     cell.name.text = [[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personName];
     cell.number.text = [[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel];
+    
+     //多选
+    cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CellBlueSelected"]];;
     cell.checkImgv.hidden = YES;
     cell.accessoryView.hidden = YES;
+    
     
     return cell;
 }
@@ -110,7 +114,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [self.tableView cellForRowAtIndexPath: indexPath ];
-    
+    //多选
     if (cell.accessoryView.hidden == YES){
         //选中，如果数组里没有，则add
         if (![selectArray containsObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]]) {
@@ -144,6 +148,8 @@
         self.cancelBtn.enabled = NO;
     }
     
+    
+    //单选
     
     VCLog(@"selectDict:%@",selectDict);
     VCLog(@"selectArray:%@",selectArray);

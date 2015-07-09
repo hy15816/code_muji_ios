@@ -332,13 +332,16 @@
     }
     */
     
-    if (searcherString.length > 0) {
+    if (searchResault.count == 0 && searcherString.length >= 7) {
+        return 1;
+    }
+    if (searcherString.length > 0 && searchResault.count>0 )  {
         return searchResault.count;
     }else{
         return [CallRecords count];
     }
     
-    return 0;
+    return 1;
 }
 
 
@@ -348,9 +351,18 @@
     CallRecordsCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuseCell" forIndexPath:indexPath];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    
+    if (searchResault.count == 0 && searcherString.length >= 7) {
+        cell.hisName.text = [singleton.singletonValue insertStr];
+        cell.callBeginTime.text =[NSString stringWithFormat:@"%@ %@",areaString,opeareString] ;
+        cell.hisNumber.hidden = YES;
+        cell.callDirection.hidden = YES;
+        cell.callLength.hidden = YES;
+        cell.hisOperator.hidden = YES;
+        cell.hisHome.hidden = YES;
+    }
+
     //用户输入时
-    if (searcherString.length > 0 ) {
+    if (searcherString.length > 0 &&searchResault.count > 0 ) {
         Records *record = dataList[indexPath.row];
         cell.hisName.text = record.personName;
         cell.hisNumber.hidden = YES;
@@ -361,16 +373,7 @@
         cell.hisOperator.hidden = YES;
     }
     
-    if (searchResault.count == 0 && searcherString.length >= 7) {
-        cell.hisName.text = singleton.singletonValue;
-        cell.callBeginTime.text =[NSString stringWithFormat:@"%@ %@",areaString,opeareString] ;
-        cell.hisNumber.hidden = YES;
-        cell.callDirection.hidden = YES;
-        cell.callLength.hidden = YES;
-        cell.hisOperator.hidden = YES;
-        cell.hisHome.hidden = YES;
-    }
-    //未输入，显示通话记录
+        //未输入，显示通话记录
     if(searcherString.length <= 0 ) {
         
         //VCLog(@"CallRecords:%@,indexPath.row:%lu",CallRecords,indexPath.row);
@@ -428,10 +431,26 @@
     //当前选中行
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     TXData *mdata = [[TXData alloc] init];
-    TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
-    mdata.hisName = aRecord.hisName;
-    mdata.hisNumber = aRecord.hisNumber;
-    mdata.hisHome = aRecord.hisHome;
+    
+    //获取归属地
+    
+
+    
+    if (searcherString.length <= 0) {
+        TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
+        mdata.hisName = aRecord.hisName;
+        mdata.hisNumber = aRecord.hisNumber;
+        mdata.hisHome = aRecord.hisHome;
+    }else{
+        NSDictionary *dict = [searchResault objectAtIndex:indexPath.row];
+        mdata.hisName = [dict valueForKey:@"personName"];
+        mdata.hisNumber = [dict valueForKey:@"personTel"];
+        if (mdata.hisNumber.length >=7) {
+            mdata.hisHome  = [sqlite searchAreaWithHisNumber:[[mdata.hisNumber purifyString] substringToIndex:7]];
+        }else{mdata.hisHome =   @"";}
+        
+    }
+    
     
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     MsgDetailController *controller = [board instantiateViewControllerWithIdentifier:@"msgDetail"];
@@ -447,19 +466,39 @@
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kHideTabBarAndCallBtn object:self]];
     //当前选中行
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-    TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
-    VCLog(@"==================hisname:%@",aRecord.hisName);
-    if (aRecord.hisName.length==0 || [aRecord.hisName isEqualToString:@""] || aRecord.hisName ==nil) {
-        //跳转到添加联系人
+    TXData *aRecord;
+    if (searcherString.length <= 0) {
+        aRecord = [CallRecords objectAtIndex:indexPath.row];
+        VCLog(@"==================hisname:%@",aRecord.hisName);
+        if (aRecord.hisName.length==0 || [aRecord.hisName isEqualToString:@""] || aRecord.hisName ==nil) {
+            //跳转到添加联系人
+            
+            [self showAddperson];
+            
+            VCLog(@"show newPerson view");
+        }else
+        {
+            //跳转 详情->编辑
+            [self showPersonViewControllerWithName:aRecord.hisName];
+        }
+    }else{
+        NSDictionary *dict = [searchResault objectAtIndex:indexPath.row];
+        NSString *name = [dict valueForKey:@"personName"];
+        VCLog(@"==================hisname:%@",aRecord.hisName);
+        if ([name length]==0 || [name isEqualToString:@""] || name ==nil) {
+            //跳转到添加联系人
+            
+            [self showAddperson];
+            
+            VCLog(@"show newPerson view");
+        }else
+        {
+            //跳转 详情->编辑
+            [self showPersonViewControllerWithName:name];
+        }
         
-        [self showAddperson];
-        
-        VCLog(@"show newPerson view");
-    }else
-    {
-        //跳转 详情->编辑
-        [self showPersonViewControllerWithName:aRecord.hisName];
     }
+    
     
 }
 
@@ -548,15 +587,8 @@
 }
 
 -(void)jumpToDiscoveryCtrol{
-    //跳转到-发现
-    //disvyCtorl
-    UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    discoveryCtrol = [board instantiateViewControllerWithIdentifier:@"disvyCtorl"];
-    
-    [self.navigationController pushViewController:discoveryCtrol animated:YES];
-    
-    //隐藏tabbar
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
+    //tab到发现
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kJumptoDiscoeryView object:self]];
 }
 
 //是否呼转，开OR关
@@ -587,13 +619,8 @@
 #pragma mark -- 呼转Button
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender
 {
-    /*
-    UIView *wv = [[UIView alloc] initWithFrame:self.view.frame];
-    wv.backgroundColor = [UIColor grayColor];
-    [self.view.window addSubview:wv];
-    */
     callDivert.divertDelegate = self;
-    [callDivert isOrNotCallDivert];
+    [callDivert isOrNotCallDivert:PhoneView];
     
 }
 

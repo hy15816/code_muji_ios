@@ -7,7 +7,6 @@
 //
 
 #import "RegisteViewController.h"
-#import <AVOSCloud/AVOSCloud.h>
 
 @interface RegisteViewController ()<UITextFieldDelegate>
 {

@@ -55,6 +55,7 @@
     
     _textview =[[UITextView alloc] initWithFrame:CGRectMake(5, 5, DEVICE_WIDTH-70, rect.size.height-10)];
     _textview.textAlignment = NSTextAlignmentLeft;
+    _textview.contentMode = UIViewContentModeTopLeft;
     _textview.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     _textview.delegate = self;
     _textview.font = [UIFont systemFontOfSize:16];
@@ -62,12 +63,12 @@
     _textview.layer.borderColor = [UIColor blackColor].CGColor;
     _textview.layer.cornerRadius = 3;
     _textview.scrollEnabled = YES;
-    _textview.contentInset = UIEdgeInsetsMake(-5, -3, 0, 0);
+    _textview.contentInset = UIEdgeInsetsMake(0 , 0,0, 0);
     _textview.returnKeyType = UIReturnKeyDefault;
     _textview.keyboardType = UIKeyboardTypeDefault;
     _textview.editable = YES;
     _textview.indicatorStyle = UIScrollViewIndicatorStyleDefault;
-    _textview.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 5, 0);
+    _textview.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 0, 0);
     [self addSubview:_textview];
 }
 
@@ -80,8 +81,10 @@
     //_imgbgView.frame = CGRectMake(0, DEVICE_HEIGHT-252- size.height-10, DEVICE_WIDTH, size.height+15+10);
     
     CGFloat keyboradHieght =  [self.inputDelegate getKeyBoradHeight];
+    if (textView.text.length >=3) {
+        [self.inputDelegate changedFrame:CGRectMake(0, DEVICE_HEIGHT-keyboradHieght- (size.height+15), self.frame.size.width, size.height+15)];
+    }
     
-    [self.inputDelegate changedFrame:CGRectMake(0, DEVICE_HEIGHT-keyboradHieght- (size.height+15), self.frame.size.width, size.height+15)];
     
     
     

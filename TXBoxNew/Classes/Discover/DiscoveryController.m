@@ -12,7 +12,6 @@
 #import <ImageIO/ImageIO.h>
 #import "LoginController.h"
 #import "TXSqliteOperate.h"
-#import <AVOSCloud/AVOSCloud.h>
 #import "BLEmanager.h"
 #import "CallAndDivert.h"
 
@@ -90,7 +89,7 @@
     
     [self initLoginAndConfigButtons];
     [self refreshBindButton];
-    //[self isOrNotUpdateVersion];
+    [self isOrNotUpdateVersion];
     
     //初始化蓝牙
     bleManage = [BLEmanager sharedInstance];
@@ -193,48 +192,69 @@
     [self refreshBindButton];
 }
 
-
+- (NSInteger)whatAreWeekDayTaday
+{
+    
+    NSDate *now = [NSDate date];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *comp = [calendar components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSWeekdayCalendarUnit|NSDayCalendarUnit
+                                         fromDate:now];
+    
+    // 得到星期几
+    // 1(星期天) 2(星期二) 3(星期三) 4(星期四) 5(星期五) 6(星期六) 7(星期天)
+    NSInteger weekDay = [comp weekday];
+    // 得到几号
+    NSInteger day = [comp day];
+    
+    NSLog(@"weekDay:%ld   day:%ld",weekDay,day);
+    
+    return weekDay;
+}
 #pragma mark -- 检测版本
 -(void)isOrNotUpdateVersion
 {
-    //APP版本,检测本地版本，与最新版本比较
-    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    //获取服务器版本号
-    //NSURL *url = [NSURL URLWithString:@"http://car0.autoimg.cn/upload/spec/9579/u_20120110174805627264.jpg"];
-    
-    //NSString *str = [[NSString alloc] initWithFormat:@"1.2"];
-    
-    //获取当前程序版本号
-    //NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-    //NSString *str2 = [infoDictionary objectForKey:@"CFBundleVersion"];
-    
-    // 回到主线程，显示提示框
-    //dispatch_async(dispatch_get_main_queue(), ^{
-    BOOL a = [[defaults valueForKey:@"versionSSSd"] intValue];
-    if (!a) {//[str2 floatValue] != [str floatValue]
+    //NSLog(@"=-=-=-=-=%ld",(long)[self whatAreWeekDayTaday]);
+    if ([self whatAreWeekDayTaday] == 1) {//星期一检测
+        //APP版本,检测本地版本，与最新版本比较
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //获取服务器版本号
+        //NSURL *url = [NSURL URLWithString:@"http://car0"];
+        //NSString *str = [[NSString alloc] initWithFormat:@"1.2"];
         
-        UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-        atView.tag = 1005;
-        atView.delegate = self;
-        [atView show];
+        //获取当前程序版本号
+        NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+        NSString *localVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
         
-        // 显示更新
-        self.isFirmwareVersion.hidden = NO;
-    }else {
-        self.isFirmwareVersion.hidden = YES;
+        // 回到主线程，显示提示框
+        dispatch_async(dispatch_get_main_queue(), ^{
+        BOOL a = [[defaults valueForKey:@"versionSSSd"] intValue];
+        if (!a) {//[str2 floatValue] != [str floatValue]
+            
+            UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+            atView.tag = 3005;
+            atView.delegate = self;
+            [atView show];
+            
+            // 显示更新
+            self.isFirmwareVersion.hidden = NO;
+        }else {
+            self.isFirmwareVersion.hidden = YES;
+        }
+        
+        
+        
+        });
+        });
     }
     
     
-    
-    //});
-    //});
     
 }
 
 #pragma mark --AlertView delegate
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (alertView.tag == 1005) {
+    if (alertView.tag == 3005) {
         if (buttonIndex == 0) {
             [defaults setValue:@"1" forKey:@"versionSSSd"];
         }
@@ -540,7 +560,7 @@
 - (IBAction)callAnotherButtonClick:(UIButton *)sender {
     
     callAndDivert.divertDelegate = self;
-    [callAndDivert isOrNotCallDivert];
+    [callAndDivert isOrNotCallDivert:DiscoveryView];
     
 }
 #pragma mark -- CallAndDivert Delegate

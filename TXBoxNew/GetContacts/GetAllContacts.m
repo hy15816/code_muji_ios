@@ -100,7 +100,7 @@
         NSString *lastName =(__bridge NSString *)ABRecordCopyValue(record, kABPersonSortByLastName);    //返回个人姓
         NSString *name;
         if (firstName.length>0 && lastName.length>0) {
-            name = [[NSString alloc] initWithFormat:@"%@ %@",firstName,lastName];
+            name = [[NSString alloc] initWithFormat:@"%@ %@",lastName,firstName];
         }else if (firstName.length == 0 && lastName.length>0){
             name = [[NSString alloc] initWithFormat:@"%@",lastName];
         }else if (firstName.length >0 && lastName.length==0){

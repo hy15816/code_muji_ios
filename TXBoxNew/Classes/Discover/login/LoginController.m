@@ -7,7 +7,6 @@
 //
 
 #import "LoginController.h"
-#import <AVOSCloud/AVOSCloud.h>
 
 @interface LoginController ()<UITextFieldDelegate>
 {
@@ -42,6 +41,10 @@
     UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(loginViewSwipeActions:)];
     swipe.direction = UISwipeGestureRecognizerDirectionDown;
     
+    if ([userDefaults valueForKey:CurrentUser]) {
+        self.numberField.text = [userDefaults valueForKey:CurrentUser];
+    }
+    [self.numberField becomeFirstResponder];
     self.numberField.delegate = self;
     self.pwdField.delegate = self;
     

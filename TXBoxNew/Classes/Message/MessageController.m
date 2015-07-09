@@ -41,7 +41,11 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    [self.dataArray removeAllObjects];
+    
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"indexMessage" object:self]];
     
     //显示会话的所有联系人，但不重复
     NSMutableArray *aa = [txsqlite searchInfoFromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
@@ -80,6 +84,9 @@
         }
         
     }
+    
+    self.dataArray = (NSMutableArray *)[[self.dataArray reverseObjectEnumerator] allObjects];;
+    
     VCLog(@"self.dataArray:%@",self.dataArray);
 }
 

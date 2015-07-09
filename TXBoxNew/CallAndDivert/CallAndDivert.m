@@ -7,7 +7,6 @@
 //
 
 #import "CallAndDivert.h"
-#import <AVOSCloud/AVOSCloud.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CoreTelephony/CTCarrier.h>
 
@@ -33,9 +32,19 @@
 /**
  *  是否呼转
  */
--(void)isOrNotCallDivert{
+-(void)isOrNotCallDivert:(FromView)view{
     //1.判断是否登录
     BOOL loginst = [[userDefaults valueForKey:LOGIN_STATE] intValue];
+    NSString *lgmessage = @"";
+    NSString *cgmessage = @"";
+    if (view == 0) {
+        lgmessage = @"请到【发现】中【登录】后【配置】拇机号码";
+        cgmessage = @"请到【发现】中【配置】拇机号码";
+    }
+    if (view == 3){
+        lgmessage = @"请先【登录】,然后【配置】拇机号码";
+        cgmessage = @"请先【配置】拇机号码";
+    }
     
     if (loginst) {//已登录
         //2.获取配置(拇机)号码
@@ -45,13 +54,13 @@
             [self getDivertState:number];
             
         }else{//未配置
-            UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请先【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+            UIAlertView *isNoMujiAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:cgmessage delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
             isNoMujiAlert.tag =1900;
             [isNoMujiAlert show];
         }
         
     }else{//未登录
-        UIAlertView *isNoLoginAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:@"请先【登录】,然后【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+        UIAlertView *isNoLoginAlert = [[UIAlertView alloc] initWithTitle:@"想要呼转到拇机？" message:lgmessage delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
         isNoLoginAlert.tag =1901;
         [isNoLoginAlert show];
     }
@@ -240,7 +249,6 @@
     
     return @"Unknown";
 }
-
 
 
 @end

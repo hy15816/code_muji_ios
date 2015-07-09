@@ -6,19 +6,14 @@
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 
+
 #import "CustomTabBarView.h"
 
-
 @implementation CustomTabBarView
-
 
 - (void)drawRect:(CGRect)rect {
     
     
-    UILabel *label =[[UILabel alloc] initWithFrame:CGRectMake(0, 0, rect.size.width, .5)];
-    label.backgroundColor = [UIColor grayColor];
-    label.alpha = .5;
-    [self addSubview:label];
     
     //添加4个button
     [self creatButtonWithNormalName:@"icon_up"andSelectName:@"icon_up"andTitle:@"电话" andIndex:0];
@@ -27,7 +22,10 @@
     [self creatButtonWithNormalName:@"icon_discover"andSelectName:@"icon_discover_selected"andTitle:@"发现" andIndex:3];
     //添加呼叫button
     [self addCallBtn];
-    
+    UILabel *label =[[UILabel alloc] initWithFrame:CGRectMake(0, 0, rect.size.width, .5)];
+    label.backgroundColor = [UIColor grayColor];
+    label.alpha = .5;
+    [self addSubview:label];
 }
 
 //创建button
@@ -35,7 +33,7 @@
 {
     //初始化button
     CustomTabBarBtn *button = [CustomTabBarBtn buttonWithType:UIButtonTypeCustom];
-    button.backgroundColor = [UIColor clearColor];
+    button.backgroundColor = [UIColor whiteColor];
     button.exclusiveTouch = YES;
     button.highlighted = NO;
     button.tag = index;
@@ -61,8 +59,9 @@
     
     if (button.tag == 0) {
         button.selected = YES;
+        
     }
-    
+    _cusBtnExtern = button;
     [self addSubview:button];
     
 }
@@ -70,14 +69,19 @@
 //button事件
 -(void) buttonClick:(CustomTabBarBtn *)button
 {
+    if (button.tag == 0) {
+        [button setImage:[UIImage imageNamed:@"icon_down_gray"] forState:UIControlStateNormal];
+    }
     //防止按钮快速点击造成多次响应
 //    if (button.tag == 0) {
 //        [[self class] cancelPreviousPerformRequestsWithTarget:self selector:@selector(todoSomething:) object:button];
 //        [self performSelector:@selector(todoSomething:) withObject:button afterDelay:0.1f];
 //    }else
 //    {
-        [self.delegate changeViewController:button];
+       [self.delegate changeViewController:button];
 //    }
+    
+    
 }
 
 -(void)todoSomething:(CustomTabBarBtn *)button

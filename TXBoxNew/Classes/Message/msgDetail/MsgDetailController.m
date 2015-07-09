@@ -5,7 +5,7 @@
 //  Created by Naron on 15/4/21.
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
-#define textinputHeight 35
+
 
 #import "MsgDetailController.h"
 #import "Message.h"
@@ -36,7 +36,7 @@
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *contactsInfoBtn;
 
 - (IBAction)callOutBtn:(UIBarButtonItem *)sender;
-- (IBAction)ContactsInfo:(UIBarButtonItem *)sender;
+//- (IBAction)ContactsInfo:(UIBarButtonItem *)sender;
 
 @property (nonatomic,strong) UITableView *tableview;
 @property (nonatomic,strong) NSMutableArray *resultArray;
@@ -57,6 +57,7 @@
     [self jumpToLastRow];
     [self.tableview reloadData];
     [self initKeyBoardNotif];
+    [self initInputView];
 }
 #pragma mark - 键盘action
 -(void)initKeyBoardNotif{
@@ -75,7 +76,7 @@
     CGRect keyboardRect;
     [keyboardObject getValue:&keyboardRect];
     kHeight = keyboardRect.size.height;
-    textInput.frame = CGRectMake(0, DEVICE_HEIGHT-TabBarHeight-textinputHeight-kHeight, DEVICE_WIDTH, textinputHeight);
+    textInput.frame = CGRectMake(0, DEVICE_HEIGHT-textinputHeight-kHeight, DEVICE_WIDTH, textinputHeight);
     [UIView animateWithDuration:[duration doubleValue] animations:^{
         
         CGRect rect = [notif.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
@@ -146,7 +147,7 @@
     
     [self.view addSubview:_tableview];
     
-    [self initInputView];
+    
     
     
     
@@ -184,7 +185,7 @@
         
         NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
         NSDate *date = [NSDate date];
-        fmt.dateFormat = @"yy/M/d HH:mm"; // @"yyyy-MM-dd HH:mm:ss"
+        fmt.dateFormat = @"yyyy/M/d HH:mm";
         NSString *time = [fmt stringFromDate:date];
         [self addMessageWithContent:textInput.textview.text time:time];
         

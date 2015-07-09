@@ -43,7 +43,7 @@
     
     if (myNumber.length >0) {
         NSDateFormatter *dateFormate = [[NSDateFormatter alloc] init];
-        [dateFormate setDateFormat:@"yy/M/d HH:mm"];
+        [dateFormate setDateFormat:@"yyyy/M/d HH:mm"];
         [dateFormate setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"]];//中国
         //开始时间
         NSString *strDate = [dateFormate stringFromDate:startDate];
@@ -89,7 +89,7 @@
 {
     //时间格式
     NSDateFormatter *dateFormate = [[NSDateFormatter alloc] init];
-    [dateFormate setDateFormat:@"yy/M/d HH:mm"];
+    [dateFormate setDateFormat:@"yyyy/M/d HH:mm"];
     [dateFormate setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"]];//中国
     //开始时间
     NSString *strDate = [dateFormate stringFromDate:date];//sreDate:如1503261130

@@ -20,6 +20,7 @@
 
 #import "Common.h"
 #import "SVProgressHUD.h"
+#import <AVOSCloud/AVOSCloud.h>
 
 
 #ifdef DEBUG

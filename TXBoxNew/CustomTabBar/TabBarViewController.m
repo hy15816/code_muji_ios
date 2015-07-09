@@ -141,6 +141,8 @@
         
     }
     
+    
+    
 }
 //显示or隐藏键盘
 -(void) showOrHideKeyborad:(UIButton *)button{
@@ -176,7 +178,7 @@
     self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
     //隐藏call按钮
     tabBarView.callBtn.hidden = YES;
-    
+    //[previousBtn setImage:[UIImage imageNamed:@"icon_down_gray"] forState:UIControlStateNormal];
 }
 
 #pragma mark -- calling View
@@ -312,6 +314,18 @@
         tabBarView.hidden = YES;
     }
     
+    if ([notifi.name isEqualToString:kJumptoDiscoeryView]) {
+        //        
+        [self thisIsDiscv:3];
+        VCLog(@"jump");
+    }
+    
+    //indexMessage
+    if ([notifi.name isEqualToString:@"indexMessage"]) {
+        //
+        [self thisIsDiscv:1];
+        
+    }
 }
 
 -(void)callingButtonClick:(NSNotification *)notifi{
@@ -327,8 +341,7 @@
             //添加calling页面
             [self createCallingView];
             [self callingViewsValue:notifi];
-        }else
-        {
+        }else{
             [self isOrNotCallOutTitle:@"想要通过拇机通讯？" message:@"请到【发现】中【绑定】"];
         }
     }else{//没有登录
@@ -351,21 +364,27 @@
 {
     if (alertView.tag == 1200) {
         if (buttonIndex ==0) {
-            //跳转到-发现
-            CustomTabBarBtn *button = [[CustomTabBarBtn alloc] init];
-            button.tag =3;
-            self.selectedIndex = button.tag; //切换不同控制器的界面
-            button.selected = YES;//选中
             
-            if (previousBtn != button) {
-                previousBtn.selected = NO;
-            }
-            //隐藏tabbar
-            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCustomKeyboardHide object:self]];
+            [self thisIsDiscv:3];
         }
     }
 }
 
+-(void) thisIsDiscv:(NSInteger)index{
+    //KVO?
+    
+    /*
+    self.selectedIndex = index;
+    tabBarView.cusBtnExtern.selected = YES;
+    if (previousBtn != tabBarView.cusBtnExtern) {
+        previousBtn.selected = NO;
+    }
+    previousBtn = tabBarView.cusBtnExtern;
+    //隐藏键盘
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCustomKeyboardHide object:self]];
+    */
+    
+}
 -(void) viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];

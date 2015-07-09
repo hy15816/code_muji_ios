@@ -13,6 +13,14 @@ typedef NS_ENUM(NSInteger, CallDivertState) {
     CloseDivert = 1,
 };
 
+typedef NS_ENUM(NSInteger, FromView) {
+    //
+    PhoneView       = 0,
+    MessageView     = 1,
+    ContactsView    = 2,
+    DiscoveryView   = 3,
+};
+
 @protocol CallAndDivertDelegate <NSObject>
 @optional
 -(void)hasNotLogin;//未登录
@@ -30,6 +38,6 @@ typedef NS_ENUM(NSInteger, CallDivertState) {
 @interface CallAndDivert : NSObject
 
 @property(assign,nonatomic) id<CallAndDivertDelegate> divertDelegate;
--(void)isOrNotCallDivert;
+-(void)isOrNotCallDivert:(FromView)view;
 
 @end
