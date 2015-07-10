@@ -42,10 +42,13 @@
 {
     [super viewWillAppear:animated];
     
-    [self.dataArray removeAllObjects];
+    if (self.contactsArray || self.dataArray) {
+        [self.dataArray removeAllObjects];
+        [self.contactsArray removeAllObjects];
+    }
     
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"indexMessage" object:self]];
+    //[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"indexMessage" object:self]];
     
     //显示会话的所有联系人，但不重复
     NSMutableArray *aa = [txsqlite searchInfoFromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
@@ -56,7 +59,6 @@
             [self.contactsArray addObject:accp];
         }
     }
-    
     VCLog(@"self.contactsArray:%@",self.contactsArray);
     
     [self searchLastMsgRecord];
@@ -70,7 +72,6 @@
  */
 -(void)searchLastMsgRecord
 {
-    
     TXData *dd = [[TXData alloc] init];
     for (int i=0 ;i<self.contactsArray.count;i++) {
         dd =[txsqlite searchConversationFromtable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME hisNumber:self.contactsArray[i] wihtSqlString:SELECT_A_LAST_MESSAGE_RECORDS];
@@ -84,8 +85,8 @@
         }
         
     }
-    
-    self.dataArray = (NSMutableArray *)[[self.dataArray reverseObjectEnumerator] allObjects];;
+    self.contactsArray = (NSMutableArray *)[[self.contactsArray reverseObjectEnumerator] allObjects];
+    self.dataArray = (NSMutableArray *)[[self.dataArray reverseObjectEnumerator] allObjects];
     
     VCLog(@"self.dataArray:%@",self.dataArray);
 }

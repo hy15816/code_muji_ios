@@ -174,7 +174,7 @@
     NSMutableString *str;
     //cmcc
     if ([[self getCarrier] isEqualToString:China_Mobile]) {
-        str = [[NSMutableString alloc] initWithFormat:@"\*\*21\*tel://%@\#",string];
+        str = [[NSMutableString alloc] initWithFormat:@"**21*tel://%@#",string];
     }
     //unicom
     if ([[self getCarrier] isEqualToString:China_Unicom]) {

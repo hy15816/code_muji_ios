@@ -9,20 +9,30 @@
 
 #import "CustomTabBarView.h"
 
+@interface CustomTabBarView ()
+{
+    CustomTabBarBtn *fBtn;
+}
+@end
+
 @implementation CustomTabBarView
 
 - (void)drawRect:(CGRect)rect {
     
     
     
+    
+}
+
+-(void)createButton{
     //添加4个button
-    [self creatButtonWithNormalName:@"icon_up"andSelectName:@"icon_up"andTitle:@"电话" andIndex:0];
+    [self creatButtonWithNormalName:@"icon_down_gray"andSelectName:@"icon_up"andTitle:@"电话" andIndex:0];
     [self creatButtonWithNormalName:@"icon_message"andSelectName:@"icon_message_selected"andTitle:@"信息" andIndex:1];
     [self creatButtonWithNormalName:@"icon_person"andSelectName:@"icon_person_selected"andTitle:@"通讯录" andIndex:2];
     [self creatButtonWithNormalName:@"icon_discover"andSelectName:@"icon_discover_selected"andTitle:@"发现" andIndex:3];
     //添加呼叫button
     [self addCallBtn];
-    UILabel *label =[[UILabel alloc] initWithFrame:CGRectMake(0, 0, rect.size.width, .5)];
+    UILabel *label =[[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, .5)];
     label.backgroundColor = [UIColor grayColor];
     label.alpha = .5;
     [self addSubview:label];
@@ -59,8 +69,9 @@
     
     if (button.tag == 0) {
         button.selected = YES;
-        
+        fBtn = button;
     }
+
     _cusBtnExtern = button;
     [self addSubview:button];
     
@@ -69,8 +80,11 @@
 //button事件
 -(void) buttonClick:(CustomTabBarBtn *)button
 {
-    if (button.tag == 0) {
-        [button setImage:[UIImage imageNamed:@"icon_down_gray"] forState:UIControlStateNormal];
+    VCLog(@"b.tag = %ld",(long)button.tag);
+    if (button.tag != 0) {
+
+        fBtn.selected = NO;
+    
     }
     //防止按钮快速点击造成多次响应
 //    if (button.tag == 0) {

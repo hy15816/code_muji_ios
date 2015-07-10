@@ -11,4 +11,5 @@
 
 @interface NewMsgController : UIViewController
 
+@property (strong,nonatomic) NSString *msgContent;
 @end

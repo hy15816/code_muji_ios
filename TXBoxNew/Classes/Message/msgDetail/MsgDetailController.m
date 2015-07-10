@@ -14,6 +14,8 @@
 #import "TXSqliteOperate.h"
 #import "EditView.h"
 #import "TextViewInput.h"
+#import "NewMsgController.h"
+#import "ShareContentController.h"
 
 @interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate,ChangeRightMarginDelegate,TextInputDelegate>
 {
@@ -52,12 +54,20 @@
     [super viewWillAppear:animated];
     
     self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
+    
     VCLog(@"self.detailArray %@",self.detailArray);
     [self getResouce];
     [self jumpToLastRow];
     [self.tableview reloadData];
     [self initKeyBoardNotif];
     [self initInputView];
+    
+    
+    //编辑时显示
+    editView =[[EditView alloc] initWithFrame:CGRectMake(0, DEVICE_HEIGHT, DEVICE_WIDTH, 50)];
+    editView.backgroundColor = [UIColor whiteColor];
+    editView.delegate  =self;
+    [self.view addSubview:editView];
 }
 #pragma mark - 键盘action
 -(void)initKeyBoardNotif{
@@ -138,7 +148,7 @@
     
     self.contactsInfoBtn.customView = view;
     
-    _tableview = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT)];
+    _tableview = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT-35)];
     _tableview.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableview.delegate = self;
     _tableview.dataSource = self;
@@ -146,16 +156,6 @@
     [_tableview flashScrollIndicators ];
     
     [self.view addSubview:_tableview];
-    
-    
-    
-    
-    
-    //编辑时显示
-    editView =[[EditView alloc] initWithFrame:CGRectMake(0, DEVICE_HEIGHT, DEVICE_WIDTH, 50)];
-    editView.backgroundColor = [UIColor whiteColor];
-    editView.delegate  =self;
-    [self.view addSubview:editView];
     
 }
 #pragma mark -- input view
@@ -170,7 +170,7 @@
     [self.view addSubview:textInput];
     
 }
-#warning ====================================
+
 -(CGFloat)getKeyBoradHeight{
     return kHeight;
 }
@@ -180,7 +180,7 @@
 }
 -(void)rightButtonClick:(UIButton *)button{
     
-    [SVProgressHUD showImage:nil status:@"click"];
+    
     if (textInput.textview.text.length>0) {
         
         NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
@@ -194,11 +194,11 @@
         
         //保存到数据库
         TXData *txdata =  [[TXData alloc] init];
-        txdata.msgSender = @"1";
+        txdata.msgSender = @"1";//self.datailDatas.hisNumber;//
         txdata.msgTime = time;
         txdata.msgContent = textInput.textview.text;
-        txdata.msgAccepter = self.datailDatas.hisNumber;
-        txdata.msgStates = @"0";
+        txdata.msgAccepter = self.datailDatas.hisNumber;//@"1";//
+        txdata.msgStates = @"0";//@"0"
         
         [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
         //self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
@@ -208,27 +208,23 @@
     
     [self jumpToLastRow];
     [self.tableview reloadData];
-    
+    //[SVProgressHUD showImage:nil status:@"click"];
 }
 -(void)initMsgSwipeRecognizer:(UISwipeGestureRecognizer*)swipe{
     [textInput.textview resignFirstResponder];
 }
 
--(BOOL)canPerformAction:(SEL)action withSender:(id)sender
-{
-    return (action ==@selector(copy:));
-}
--(void)copy:(id)sender
-{
-    VCLog(@"xx");
-}
 
 #pragma  mark --EditViewDelegate
 
 -(void)buttonClickAndChanged:(UIButton *)button
 {
-    if (button.tag == 2000) {
-        VCLog(@"copys");
+    if (button.tag == 2000) {//拷贝
+        NSIndexPath *path = [self.tableview indexPathForSelectedRow];
+        UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+        pasteboard.string = [self.detailArray[path.row] msgContent];
+        VCLog(@"copys:pasteboard.string%@",pasteboard.string);
+        [SVProgressHUD showImage:nil status:@"已copy"];
     }
     
     if (button.tag == 2001) {
@@ -239,13 +235,25 @@
         [self deleteButtonClick:button];
     }
 }
-
+//转发
 -(void)shareContent
 {
+    /*
+    NSIndexPath *path = [self.tableview indexPathForSelectedRow];
+    //跳转到newMsg
+    NewMsgController *newMsgVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"newMsgID"];
+
+    ShareContentController *newvc = [[ShareContentController alloc] initWithNibName:@"ShareContentController" bundle:[NSBundle bundleWithIdentifier:@"ShareContentController"]];
+    
+    newMsgVC.msgContent = [[self.detailArray objectAtIndex:path.row] msgContent];
+    UINavigationController *nav =[[UINavigationController alloc] initWithRootViewController:newvc];
+        
+    [self presentViewController:nav animated:YES completion:^{VCLog(@"share");}];
+    */
     VCLog(@"share");
 }
 
-
+//删除所选
 -(void)deleteButtonClick:(UIButton *)button
 {
     //删除选中的条目
@@ -256,19 +264,19 @@
     }
     //重新获取数据
     self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
-    */
     
     
     
-    /*
+    
+    
     VCLog(@"self.detailArray:%@ ,allValues:%@",self.detailArray,[selectDict allValues]);
+    
     [self.detailArray removeObjectsInArray:[selectDict allValues]];
     VCLog(@"allKeys:%@",[selectDict allKeys]);
-    //[self.tableview deleteRowsAtIndexPaths:[NSArray arrayWithArray:[selectDict allKeys]] withRowAnimation:UITableViewRowAnimationFade];
     
     [self.tableview deleteRowsAtIndexPaths:[NSArray arrayWithArray:[selectDict allKeys]] withRowAnimation:UITableViewRowAnimationFade];
-    */
     
+    */
     [self cancelCheckCell];
 }
 
@@ -301,9 +309,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //获取选中的数据
-    NSString *msgsender = [self.detailArray[indexPath.row] msgSender];
-    NSString *peopleId = [NSString stringWithFormat:@"%d",[self.detailArray[indexPath.row] peopleId]];
-    NSArray *checkDatas=[[NSArray alloc] initWithObjects:msgsender,peopleId, nil];
+    //NSString *msgsender = [self.detailArray[indexPath.row] msgSender];
+    //NSString *peopleId = [NSString stringWithFormat:@"%d",[self.detailArray[indexPath.row] peopleId]];
+    //NSArray *checkDatas=[[NSArray alloc] initWithObjects:msgsender,peopleId, nil];
     
     //[selectArray addObject:checkDatas];
     //
@@ -460,14 +468,13 @@
 }
 -(void)jumpToLastRow
 {
-    if (self.allMsgFrame.count>5) {
+    if (self.allMsgFrame.count>7) {
         //滚动到当前信息
         NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:self.detailArray.count-1 inSection:0];
         [self.tableview scrollToRowAtIndexPath:lastIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
     }else{
         return;
     }
-    
     
 }
 #pragma mark - -changerightMargin delegate
@@ -486,6 +493,7 @@
 
 -(void)longPressAction:(UIGestureRecognizer *)recongizer
 {
+    [textInput.textview resignFirstResponder];
     if (recongizer.state == UIGestureRecognizerStateBegan) {
         VCLog(@"longPress");
         
@@ -518,13 +526,15 @@
 
 
 
-#warning -----------
 //导航栏右边按钮拨-拨打电话
 - (IBAction)callOutBtn:(UIBarButtonItem *)sender {
     
+    if (self.datailDatas.hisName.length <=0) {
+        self.datailDatas.hisName = @"";
+    }
     NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:self.datailDatas.hisName,@"hisName",self.datailDatas.hisNumber,@"hisNumber", nil];
     
-    VCLog(@"number:%@",self.datailDatas.hisNumber);
+    VCLog(@"dict:%@",dict);
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallingBtnClick object:self userInfo:dict]];
     
 }

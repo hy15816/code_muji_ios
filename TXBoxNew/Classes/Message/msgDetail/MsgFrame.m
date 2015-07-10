@@ -32,9 +32,9 @@
         CGSize timeSize = [_message.time sizeWithAttributes:@{NSFontAttributeName:kTimeFont}];
         //VCLog(@"----%@", NSStringFromCGSize(timeSize));
         //=480-77-10-20-?
-        timeX = DEVICE_WIDTH - timeSize.width-kMargin-kEdging-[self getMargin];//
+        timeX = DEVICE_WIDTH - timeSize.width-DEVICE_WIDTH/20-kEdging-[self getMargin];//
         if (_message.type == MessageTypeHe) {
-            timeX = kMargin+kEdging;
+            timeX = DEVICE_WIDTH/20;//+kEdging;
         }
         
         _timeF = CGRectMake(timeX, timeY, timeSize.width + kTimeMarginW, timeSize.height + kTimeMarginH);
@@ -53,12 +53,12 @@
     
      
     // 3、计算内容位置
-    CGFloat contentX = CGRectGetMaxX(_iconF) + kMargin;
+    CGFloat contentX = DEVICE_WIDTH/20;//+CGRectGetMaxX(_iconF)  ;
     CGFloat contentY = iconY;
     CGSize contentSize = [_message.content boundingRectWithSize:CGSizeMake(DEVICE_WIDTH*.618, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:kContentFont} context:nil].size;
     
     if (_message.type == MessageTypeMe) {
-        contentX = iconX  - contentSize.width - kContentLeft - kContentRight-[self getMargin];
+        contentX = iconX  - contentSize.width - kContentLeft - kContentRight-DEVICE_WIDTH/20;//[self getMargin];
     }
     
     _contentF = CGRectMake(contentX, contentY, contentSize.width + kContentLeft + kContentRight, contentSize.height + kContentTop + kContentBottom);

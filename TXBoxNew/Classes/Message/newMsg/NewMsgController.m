@@ -36,6 +36,7 @@
 
 
 @implementation NewMsgController
+@synthesize msgContent;
 
 -(IBAction)doSomethingDidSegue:(UIStoryboardSegue *)sender{
     
@@ -112,7 +113,6 @@
 -(void)initSwipeRecognizer:(UISwipeGestureRecognizer *)swipe
 {
     [self.hisNumber resignFirstResponder];
-    //[self.textMsgView resignFirstResponder];
 }
 
 -(void) initNewMsgInputView
@@ -121,6 +121,9 @@
     textvInput =[[TextViewInput alloc] initWithFrame:CGRectMake(0, DEVICE_HEIGHT-TabBarHeight-35, DEVICE_WIDTH, 35)];
     textvInput.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"abcd"]];
     textvInput.inputDelegate = self;
+    if (msgContent.length>0) {
+        textvInput.textview.text = msgContent;
+    }
     textvInput.textview.font = [UIFont systemFontOfSize:15];
     textvInput.maxHeight = 100;
     textvInput.rigBtnTitle = @"发送";
@@ -137,7 +140,7 @@
 }
 -(void)rightButtonClick:(UIButton *)button{
     
-    [SVProgressHUD showImage:nil status:@"click"];
+    
     //保存发送的数据
     NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
     NSDate *date = [NSDate date];
@@ -185,7 +188,7 @@
         [SVProgressHUD showImage:nil status:@"收件人不能为空!"];
         self.disMissBtn.enabled = YES;
     }
-
+    
     
 }
 

@@ -192,27 +192,11 @@
     [self refreshBindButton];
 }
 
-- (NSInteger)whatAreWeekDayTaday
-{
-    
-    NSDate *now = [NSDate date];
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSDateComponents *comp = [calendar components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSWeekdayCalendarUnit|NSDayCalendarUnit
-                                         fromDate:now];
-    
-    // 得到星期几
-    // 1(星期天) 2(星期二) 3(星期三) 4(星期四) 5(星期五) 6(星期六) 7(星期天)
-    NSInteger weekDay = [comp weekday];
-    // 得到几号
-    NSInteger day = [comp day];
-    
-    NSLog(@"weekDay:%ld   day:%ld",weekDay,day);
-    
-    return weekDay;
-}
+
 #pragma mark -- 检测版本
 -(void)isOrNotUpdateVersion
 {
+    
     //NSLog(@"=-=-=-=-=%ld",(long)[self whatAreWeekDayTaday]);
     if ([self whatAreWeekDayTaday] == 1) {//星期一检测
         //APP版本,检测本地版本，与最新版本比较
@@ -222,8 +206,8 @@
         //NSString *str = [[NSString alloc] initWithFormat:@"1.2"];
         
         //获取当前程序版本号
-        NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-        NSString *localVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
+        //NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+        //NSString *localVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
         
         // 回到主线程，显示提示框
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -251,6 +235,27 @@
     
 }
 
+/**
+ *  获取当前日期是，星期几
+ *  @return  NSInteger 星期几，
+ */
+- (NSInteger)whatAreWeekDayTaday
+{
+    NSDate *now = [NSDate date];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *comp = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitWeekday|NSCalendarUnitDay fromDate:now];
+    
+    // 得到星期几
+    // 1->7，(星期一)->(星期天)
+    NSInteger weekDay = [comp weekday];
+    // 得到几号
+    NSInteger day = [comp day];
+    
+    NSLog(@"weekDay:%ld   day:%ld",weekDay,day);
+    
+    return weekDay;
+}
+
 #pragma mark --AlertView delegate
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
@@ -260,7 +265,12 @@
         }
         
     }
-    
+    if (alertView.tag == 3006) {
+        if (buttonIndex == 0) {//确认取消
+            [userDefaults setValue:@"0" forKey:CALL_ANOTHER_STATE];
+        }
+        
+    }
     
     [self initLoginAndConfigButtons];
     
@@ -558,7 +568,13 @@
 
 #pragma mark -- 呼转 & 取消
 - (IBAction)callAnotherButtonClick:(UIButton *)sender {
-    
+    BOOL callst=[[userDefaults valueForKey:CALL_ANOTHER_STATE] intValue];
+    if (callst) {
+        UIAlertView *hh=[[UIAlertView alloc] initWithTitle:@"a" message:@"取消到xx的呼转？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"buOK", nil];
+        hh.tag = 3006;
+        [hh show];
+        return;
+    }
     callAndDivert.divertDelegate = self;
     [callAndDivert isOrNotCallDivert:DiscoveryView];
     

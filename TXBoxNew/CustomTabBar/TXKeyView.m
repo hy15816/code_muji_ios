@@ -156,6 +156,7 @@
     
     if (self.textsearch.text.length>0){
         
+        
         NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:[self.textsearch.text substringToIndex:self.textsearch.text.length-1],@"searchBarText",[self.textsearch.text substringWithRange:NSMakeRange(self.textsearch.text.length-1, 1)],@"lastChar", nil];
         
         //NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:[self.textsearch.text substringWithRange:NSMakeRange(self.textsearch.text.length-1, 1)],@"lastChar", nil];
@@ -163,8 +164,9 @@
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kDeleteCharNoti object:self userInfo:dict]];
         
         self.textsearch.text = [self.textsearch.text stringByReplacingCharactersInRange:NSMakeRange(textsearch.text.length-1, 1) withString:@""];
+        singleton.singletonValue = self.textsearch.text;
     }
-    singleton.singletonValue = self.textsearch.text;
+    
     [self.keyDelegate inputTextLength:self.textsearch.text];
     
 }

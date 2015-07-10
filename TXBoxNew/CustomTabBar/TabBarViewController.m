@@ -49,6 +49,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     deviceHeight = DEVICE_HEIGHT;
     //添加数字键盘
     self.keyView = [[TXKeyView alloc]init];
@@ -107,6 +108,7 @@
     //创建TabBar
     tabBarView = [[CustomTabBarView alloc] init];
     [self getTabbarHeight:DEVICE_HEIGHT];
+    [tabBarView createButton];
     tabBarView.delegate = self;
     tabBarView.userInteractionEnabled = YES;
     tabBarView.backgroundColor = [UIColor whiteColor] ;//RGBACOLOR(245, 245, 246, 1);
@@ -140,9 +142,7 @@
         [self customKeyboardHides];
         
     }
-    
-    
-    
+
 }
 //显示or隐藏键盘
 -(void) showOrHideKeyborad:(UIButton *)button{
@@ -175,6 +175,7 @@
 -(void) customKeyboardHides
 {
     //隐藏键盘，
+    showKeyboard = NO;
     self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
     //隐藏call按钮
     tabBarView.callBtn.hidden = YES;
@@ -373,7 +374,6 @@
 -(void) thisIsDiscv:(NSInteger)index{
     //KVO?
     
-    /*
     self.selectedIndex = index;
     tabBarView.cusBtnExtern.selected = YES;
     if (previousBtn != tabBarView.cusBtnExtern) {
@@ -382,7 +382,7 @@
     previousBtn = tabBarView.cusBtnExtern;
     //隐藏键盘
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCustomKeyboardHide object:self]];
-    */
+    
     
 }
 -(void) viewWillDisappear:(BOOL)animated

@@ -23,6 +23,6 @@
 
 @property (nonatomic,strong) CustomTabBarBtn *cusBtnExtern;
 @property (nonatomic,strong) UIButton *callBtn;
-
+-(void)createButton;
 
 @end

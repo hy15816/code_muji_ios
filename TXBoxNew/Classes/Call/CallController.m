@@ -10,7 +10,6 @@
 
 #import "CallController.h"
 #import "TXSqliteOperate.h"
-#import "CallingController.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import "NSString+helper.h"
 #import "MsgDetailController.h"
@@ -24,7 +23,6 @@
 {
     NSMutableArray *CallRecords;
     TXSqliteOperate *sqlite;
-    CallingController *calling;
     
     UIWebView *webView;
     NSUserDefaults *defaults;
@@ -43,7 +41,7 @@
     
     CallAndDivert *callDivert;
     NSString *searcherString;
-
+    BOOL canAdd;
 }
 
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
@@ -105,6 +103,7 @@
     self.title = @"电话";
     [self loadCallRecords];
     
+    canAdd = YES;
     self.selectedIndexPath = nil;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;//tableview分割线
     //self.tableView.tableFooterView = [[UIView alloc] init];
@@ -115,6 +114,10 @@
  
     callDivert =[[CallAndDivert alloc] init];
    
+    NSMutableString *s =[[NSMutableString alloc] initWithString:@"-1.*"];
+    [s insertString:@"GG" atIndex:s.length-2];
+    VCLog(@"s:%@",s);
+    
 }
 
 #pragma mark -- getContacts Delegate
@@ -161,7 +164,7 @@
     NSString *lastChar = [searchText substringWithRange:NSMakeRange(searchText.length-1, 1)];
     //NSString *testString = [NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastChar];
     
-    NSString *inputString = [NSString stringWithFormat:@"-%@[0-9,A,B,C]*",lastChar];
+    NSString *inputString = [NSString stringWithFormat:@"-%@[0-9,A,B,C].*",lastChar];
     //生成zz表达式
     [self zzStringAndArrayInputchar:inputString aChar:lastChar];
     
@@ -207,7 +210,7 @@
     
     
     [self setModel];
-     VCLog(@"searchResault:%@",searchResault);
+     //VCLog(@"searchResault:%@",searchResault);
     
     //输入的数字达到7个，且还没有结果时
     if (searchResault.count == 0 && searcherString.length >= 7) {
@@ -268,24 +271,29 @@
     
     NSMutableArray *latterArray = [[NSMutableArray alloc] init];
     
-    if (singleton.singletonValue.length>1) {
-        for (NSMutableString *sss in zzArray) {
-            //-1.* -> -1.*-2[0-9].*
-            NSMutableString *str1 = [NSMutableString stringWithFormat:@"%@%@",sss,inputChar];
+    if (singleton.singletonValue.length>1  ) {
+        if (canAdd) {
             
-            //-1.* -> -12[0-9].*
-            if (sss.length <=14 ) {
-                [sss insertString:achar atIndex:sss.length-2];
-            }else{
-                [sss insertString:achar atIndex:sss.length-12];
+            for (NSMutableString *sss in zzArray) {
+                //-1.* -> -1.*-2[0-9].*
+                NSMutableString *str1 = [NSMutableString stringWithFormat:@"%@%@",sss,inputChar];
+                
+                //-1.* -> -12[0-9].*
+                if (sss.length <=14 ) {
+                    VCLog(@"ssss.length:%lu",(unsigned long)sss.length);
+                    [sss insertString:achar atIndex:sss.length-2];
+                }else{
+                    [sss insertString:achar atIndex:sss.length-12];
+                }
+                
+                
+                [latterArray addObject:str1];
+                [latterArray addObject:sss];
             }
             
-            
-            [latterArray addObject:str1];
-            [latterArray addObject:sss];
+            zzArray =latterArray;
         }
         
-        zzArray =latterArray;
     }
     
     
@@ -303,8 +311,8 @@
         
         for (int i= 0; i<zzArray.count; i++) {
             if (i%2==0) {
-                NSString *sas = zzArray[i];
-                NSString *zzs = [sas substringToIndex:sas.length-14];
+                NSMutableString *sas = zzArray[i];
+                NSMutableString *zzs = (NSMutableString *)[sas substringToIndex:sas.length-15];
                 if(![lArray containsObject:zzs])
                     [lArray addObject:zzs];
             }
@@ -314,6 +322,7 @@
         zzArray = lArray;
         VCLog(@"lArray:%@",lArray);
     }
+    
     
 }
 
