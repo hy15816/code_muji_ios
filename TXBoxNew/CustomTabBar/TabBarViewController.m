@@ -23,6 +23,7 @@
     BOOL showKeyboard;
     CallingView *cv;
     CGFloat deviceHeight;
+    BOOL isCallingButton;
 }
 @end
 
@@ -51,6 +52,7 @@
     [super viewDidLoad];
     
     deviceHeight = DEVICE_HEIGHT;
+    isCallingButton = NO;
     //添加数字键盘
     self.keyView = [[TXKeyView alloc]init];
     self.keyView.frame = CGRectMake(0,deviceHeight-kTabBarHeight-4*keyHeight-NaviBarHeight-InputBoxView, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
@@ -239,6 +241,11 @@
 {
     cv.hisNames =[[notification userInfo] objectForKey:@"hisName"];
     cv.hisNumbers = [[notification userInfo] objectForKey:@"hisNumber"];
+    if (isCallingButton) {
+        cv.hisNames =@"";
+        cv.hisNumbers = singleton.singletonValue;
+        isCallingButton = NO;
+    }
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [cv startTimeLengthTimer];
@@ -265,6 +272,7 @@
         return;
         
     }else {
+        isCallingButton = YES;
         [self callingButtonClick:nil];
     }
 

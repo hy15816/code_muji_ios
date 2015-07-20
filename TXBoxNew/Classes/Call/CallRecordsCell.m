@@ -23,10 +23,7 @@
 }
 
 - (IBAction)callBtn:(UIButton *)sender {
-    //把姓名号码传过去
-    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:self.hisName.text,@"hisName",self.hisNumber.text,@"hisNumber", nil];
-    //点击callBtn
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallingBtnClick object:self userInfo:dict]];
+   
     
 }
 

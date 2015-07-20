@@ -56,7 +56,7 @@
 		637E41DF1B3961D20015F682 /* RegisteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E41D91B3961D20015F682 /* RegisteViewController.m */; };
 		637E41E01B3961D20015F682 /* UpdatePwdController.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E41DC1B3961D20015F682 /* UpdatePwdController.m */; };
 		637E41E41B3962F20015F682 /* TXKeyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E41E31B3962F20015F682 /* TXKeyView.m */; };
-		638773531B4F605100771AF2 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 638773521B4F605100771AF2 /* AVOSCloud.framework */; };
+		6385C4741B5C8DE80030D21E /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6385C4731B5C8DE80030D21E /* AVOSCloud.framework */; };
 		6387735A1B4F894600771AF2 /* ShareContentController.m in Sources */ = {isa = PBXBuildFile; fileRef = 638773581B4F894600771AF2 /* ShareContentController.m */; };
 		6387735D1B4FB0A000771AF2 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6387735C1B4FB0A000771AF2 /* Launch Screen.xib */; };
 		638B955A1B2E7A1200399FAA /* ContactsData.m in Sources */ = {isa = PBXBuildFile; fileRef = 638B95591B2E7A1200399FAA /* ContactsData.m */; };
@@ -194,7 +194,7 @@
 		637E41DC1B3961D20015F682 /* UpdatePwdController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdatePwdController.m; sourceTree = "<group>"; };
 		637E41E21B3962F20015F682 /* TXKeyView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXKeyView.h; sourceTree = "<group>"; };
 		637E41E31B3962F20015F682 /* TXKeyView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXKeyView.m; sourceTree = "<group>"; };
-		638773521B4F605100771AF2 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
+		6385C4731B5C8DE80030D21E /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		638773571B4F894600771AF2 /* ShareContentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareContentController.h; sourceTree = "<group>"; };
 		638773581B4F894600771AF2 /* ShareContentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareContentController.m; sourceTree = "<group>"; };
 		6387735C1B4FB0A000771AF2 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
@@ -256,7 +256,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				638773531B4F605100771AF2 /* AVOSCloud.framework in Frameworks */,
+				6385C4741B5C8DE80030D21E /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -582,7 +582,7 @@
 		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
 			isa = PBXGroup;
 			children = (
-				638773521B4F605100771AF2 /* AVOSCloud.framework */,
+				6385C4731B5C8DE80030D21E /* AVOSCloud.framework */,
 				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
 				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
 				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
@@ -1108,6 +1108,8 @@
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
@@ -1142,6 +1144,8 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,

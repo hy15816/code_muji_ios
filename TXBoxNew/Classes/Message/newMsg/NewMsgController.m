@@ -140,7 +140,6 @@
 }
 -(void)rightButtonClick:(UIButton *)button{
     
-    
     //保存发送的数据
     NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
     NSDate *date = [NSDate date];
@@ -189,10 +188,10 @@
         self.disMissBtn.enabled = YES;
     }
     
-    
 }
 
 -(NSData *)getdata{
+    
     Byte data[20];
     for (int i=0; i<kByte_count; i++) {
         data[i] = 0x00;
@@ -200,9 +199,12 @@
     
     data[0]  = 0x5A;//发送方
     data[1]  = 0x10;
+    
+    
     NSData * myData = [NSData dataWithBytes:&data length:sizeof(data)];
     return myData;
 }
+
 
 #pragma mark - Table view data source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

@@ -178,11 +178,11 @@
     }
     //unicom
     if ([[self getCarrier] isEqualToString:China_Unicom]) {
-        str = [[NSMutableString alloc] initWithFormat:@"\\*\\*21\\*tel://%@*11#",string];
+        str = [[NSMutableString alloc] initWithFormat:@"**21*tel://%@*11#",string];
     }
     //telecom
     if ([[self getCarrier] isEqualToString:China_Telecom]) {
-        str = [[NSMutableString alloc] initWithFormat:@"\\*72tel://%@",string];
+        str = [[NSMutableString alloc] initWithFormat:@"*72tel://%@",string];
     }
     
     return str;
@@ -194,15 +194,15 @@
     NSMutableString *str;
     //cmcc
     if ([[self getCarrier] isEqualToString:China_Mobile]) {
-        str = [[NSMutableString alloc] initWithFormat:@"tel://\\#\\#21\\#"];
+        str = [[NSMutableString alloc] initWithFormat:@"tel://##21#"];
     }
     //unicom
     if ([[self getCarrier] isEqualToString:China_Unicom]) {
-        str = [[NSMutableString alloc] initWithFormat:@"tel://\\#\\#21\\#"];
+        str = [[NSMutableString alloc] initWithFormat:@"tel://##21#"];
     }
     //telecom
     if ([[self getCarrier] isEqualToString:China_Telecom]) {
-        str = [[NSMutableString alloc] initWithFormat:@"tel://\\*720"];
+        str = [[NSMutableString alloc] initWithFormat:@"tel://*720"];
     }
     
     

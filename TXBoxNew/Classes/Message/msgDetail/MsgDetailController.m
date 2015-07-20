@@ -122,7 +122,7 @@
     if (self.datailDatas.hisName.length>0) {
         self.nameLabel.text = self.datailDatas.hisName;
     }
-    
+    self.nameLabel.text = @"这里是名字";
     self.nameLabel.textColor = [UIColor whiteColor];
     
     self.arearLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 1, 230, 20)];
@@ -145,7 +145,8 @@
     
     [view addSubview:self.nameLabel];
     [view addSubview:self.arearLabel];
-    
+    self.navigationItem.leftItemsSupplementBackButton = YES;
+    self.navigationItem.leftBarButtonItem.title = @"";
     self.contactsInfoBtn.customView = view;
     
     _tableview = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT-35)];
@@ -337,14 +338,14 @@
 -(void)setArearLabelTitle
 {
     if (self.datailDatas.hisNumber.length>0 && self.datailDatas.hisHome.length==0) {
-        self.arearLabel.text = [NSString stringWithFormat:@"< %@",self.datailDatas.hisNumber];
+        self.arearLabel.text = [NSString stringWithFormat:@"%@",self.datailDatas.hisNumber];
     }else if(self.datailDatas.hisNumber.length>0 && self.datailDatas.hisHome.length>0)
     {
-        self.arearLabel.text = [NSString stringWithFormat:@"< %@%@",self.datailDatas.hisNumber,self.datailDatas.hisHome];
+        self.arearLabel.text = [NSString stringWithFormat:@"%@%@",self.datailDatas.hisNumber,self.datailDatas.hisHome];
         
     }else
     {
-        self.arearLabel.text = [NSString stringWithFormat:@"< back"];
+        self.arearLabel.text = [NSString stringWithFormat:@"back"];
     }
 
 }
@@ -487,8 +488,6 @@
      */
     return 0;
     
-    
-    
 }
 
 -(void)longPressAction:(UIGestureRecognizer *)recongizer
@@ -523,8 +522,6 @@
     
     return result;
 }
-
-
 
 //导航栏右边按钮拨-拨打电话
 - (IBAction)callOutBtn:(UIBarButtonItem *)sender {

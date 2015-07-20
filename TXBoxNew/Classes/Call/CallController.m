@@ -431,6 +431,26 @@
 -(void)CallButtonClick:(UIButton *)btn
 {
     VCLog(@"callbtn click");
+    //当前选中行
+    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    NSString *name;
+    NSString *nber;
+    if (searcherString.length>0) {//输入后
+        NSDictionary *dict = [searchResault objectAtIndex:indexPath.row];
+        name = [dict valueForKey:@"personName"];
+        nber = [dict valueForKey:@"personTel"];
+    }
+    if (searcherString.length<=0) {
+        TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
+        name = aRecord.hisName;
+        nber = aRecord.hisNumber;
+    }
+    
+    //把姓名号码传过去
+    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:name,@"hisName",nber,@"hisNumber", nil];
+    //点击callBtn
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallingBtnClick object:self userInfo:dict]];
+    
 }
 
 -(void)MsgButtonClick:(UIButton *)btn

@@ -196,10 +196,8 @@
 #pragma mark -- 检测版本
 -(void)isOrNotUpdateVersion
 {
-    
-    //NSLog(@"=-=-=-=-=%ld",(long)[self whatAreWeekDayTaday]);
-    if ([self whatAreWeekDayTaday] == 1) {//星期一检测
-        //APP版本,检测本地版本，与最新版本比较
+    if ([self whatAreWeekDayTaday] == 2) {//星期一检测
+        //APP本地版本，与最新版本比较
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         //获取服务器版本号
         //NSURL *url = [NSURL URLWithString:@"http://car0"];
@@ -209,28 +207,27 @@
         //NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
         //NSString *localVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
         
-        // 回到主线程，显示提示框
-        dispatch_async(dispatch_get_main_queue(), ^{
-        BOOL a = [[defaults valueForKey:@"versionSSSd"] intValue];
-        if (!a) {//[str2 floatValue] != [str floatValue]
+            //显示提示框
+            dispatch_async(dispatch_get_main_queue(), ^{
+                BOOL a = [[userDefaults valueForKey:@"versionSSSd"] intValue];
+                VCLog(@"a:%d",a);
+                if (!a) {//[str2 floatValue] != [str floatValue]
+                    
+                    UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+                    atView.tag = 3005;
+                    atView.delegate = self;
+                    [atView show];
+                    
+                    // 显示更新
+                    self.isFirmwareVersion.hidden = NO;
+                }else {
+                    self.isFirmwareVersion.hidden = YES;
+                    //[userDefaults setValue:@"0" forKey:@"versionSSSd"];
+                }
+            });
             
-            UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-            atView.tag = 3005;
-            atView.delegate = self;
-            [atView show];
-            
-            // 显示更新
-            self.isFirmwareVersion.hidden = NO;
-        }else {
-            self.isFirmwareVersion.hidden = YES;
-        }
-        
-        
-        
-        });
         });
     }
-    
     
     
 }
@@ -246,7 +243,7 @@
     NSDateComponents *comp = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitWeekday|NSCalendarUnitDay fromDate:now];
     
     // 得到星期几
-    // 1->7，(星期一)->(星期天)
+    // 1->7，(星期天)->(星期一)->(星期六)
     NSInteger weekDay = [comp weekday];
     // 得到几号
     NSInteger day = [comp day];
@@ -262,6 +259,10 @@
     if (alertView.tag == 3005) {
         if (buttonIndex == 0) {
             [defaults setValue:@"1" forKey:@"versionSSSd"];
+        }
+        
+        if (buttonIndex == 1) {
+            [defaults setValue:@"0" forKey:@"versionSSSd"];
         }
         
     }
@@ -324,6 +325,8 @@
     BOOL configState = [[defaults valueForKey:CONFIG_STATE] intValue];
     BOOL callState = [[defaults valueForKey:CALL_ANOTHER_STATE] intValue];
     
+    VCLog(@"ls:%d cs:%d calls:%d",loginState,configState,callState);
+    
     if (loginState) {//已登录
         self.phoneNumber.hidden = NO;
         [self.loginButton setTitle:@"  退出  " forState:UIControlStateNormal];
@@ -346,6 +349,7 @@
         //显示gif图片
         if (loginState) {
             self.connectView.hidden = YES;
+            self.connectGifView.hidden = NO;
             [self initAnimatedWithFileName:@"phone_connect" andType:@"gif" view:self.connectGifView];
         }else {
             self.connectGifView.hidden = YES;
@@ -568,13 +572,16 @@
 
 #pragma mark -- 呼转 & 取消
 - (IBAction)callAnotherButtonClick:(UIButton *)sender {
+    /*
     BOOL callst=[[userDefaults valueForKey:CALL_ANOTHER_STATE] intValue];
+    NSString *amujiNumber = [userDefaults valueForKey:muji_bind_number];
     if (callst) {
-        UIAlertView *hh=[[UIAlertView alloc] initWithTitle:@"a" message:@"取消到xx的呼转？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"buOK", nil];
+        UIAlertView *hh=[[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"取消到 %@ 的呼转？",amujiNumber] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
         hh.tag = 3006;
         [hh show];
         return;
     }
+     */
     callAndDivert.divertDelegate = self;
     [callAndDivert isOrNotCallDivert:DiscoveryView];
     
