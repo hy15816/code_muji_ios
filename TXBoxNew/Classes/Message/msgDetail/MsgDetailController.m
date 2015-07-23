@@ -146,7 +146,7 @@
     [view addSubview:self.nameLabel];
     [view addSubview:self.arearLabel];
     self.navigationItem.leftItemsSupplementBackButton = YES;
-    self.navigationItem.leftBarButtonItem.title = @"";
+    
     self.contactsInfoBtn.customView = view;
     
     _tableview = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT-35)];

@@ -162,6 +162,7 @@
                 
             }else{
                 NSLog(@"reg error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
+                [SVProgressHUD showSuccessWithStatus:error.localizedDescription];
             }
         }];
         

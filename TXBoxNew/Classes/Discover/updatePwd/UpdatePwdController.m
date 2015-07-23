@@ -107,11 +107,9 @@
 
             }else{
                 VCLog(@"req smscode error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
-                [SVProgressHUD showImage:nil status:[NSString stringWithFormat:@"%@",error.localizedDescription]];
+                [SVProgressHUD showImage:nil status:error.localizedDescription];
             }
         }];
-        
-        
         
     }
     
@@ -143,9 +141,9 @@
             [AVUser resetPasswordWithSmsCode:self.updSmsCodeField.text newPassword:self.updpwdAgainField.text block:^(BOOL suc,NSError *error){
                 if (error) {
                     VCLog(@"重置pwd error-code:%ld errorInfo:%@",(long)error.code,error.localizedDescription);
-                    [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@",error.localizedDescription]];
+                    [SVProgressHUD showErrorWithStatus:error.localizedDescription];
                 }else{
-                    [SVProgressHUD showImage:nil status:@"以重置"];
+                    [SVProgressHUD showImage:nil status:@"已重置"];
                     VCLog(@"重置pwd suc");
                 }
                 

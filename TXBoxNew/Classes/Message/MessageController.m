@@ -103,6 +103,7 @@
     
     txsqlite = [[TXSqliteOperate alloc] init];
     //self.tableView.tableFooterView = [[UIView alloc] init];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
 }
 
 
