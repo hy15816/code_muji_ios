@@ -7,7 +7,7 @@
 //
 
 #import "ContactsCell.h"
-#import "TXSqliteOperate.h"
+
 
 @implementation ContactsCell
 
@@ -33,6 +33,7 @@
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
+    
 }
 
 

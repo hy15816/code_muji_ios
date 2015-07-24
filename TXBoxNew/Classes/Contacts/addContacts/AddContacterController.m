@@ -17,8 +17,13 @@
 
 @implementation AddContacterController
 
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     self.title = @"新增";
     
     newPerson = [[ABNewPersonViewController alloc] init];

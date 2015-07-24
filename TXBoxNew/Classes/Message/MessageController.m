@@ -47,7 +47,7 @@
         [self.contactsArray removeAllObjects];
     }
     
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
+    
     //[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"indexMessage" object:self]];
     
     //显示会话的所有联系人，但不重复
@@ -65,6 +65,12 @@
     
     [self.tableView reloadData];
 
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    //显示tabbar
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
 }
 
 /**
@@ -102,8 +108,8 @@
     [self initSearchController];
     
     txsqlite = [[TXSqliteOperate alloc] init];
-    //self.tableView.tableFooterView = [[UIView alloc] init];
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStyleDone target:nil action:nil];
 }
 
 

@@ -117,15 +117,16 @@
     UIView *view = [[UIView alloc] init];
     view.userInteractionEnabled = YES;
     
-    self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, -20, 150, 20)];
-    self.nameLabel.font = [UIFont systemFontOfSize:18];
+    self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(-20, -18, 150, 20)];
+    self.nameLabel.font = [UIFont systemFontOfSize:16];
     if (self.datailDatas.hisName.length>0) {
         self.nameLabel.text = self.datailDatas.hisName;
     }
     self.nameLabel.text = @"这里是名字";
     self.nameLabel.textColor = [UIColor whiteColor];
     
-    self.arearLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 1, 230, 20)];
+    self.arearLabel = [[UILabel alloc] initWithFrame:CGRectMake(-20, -2, 230, 20)];
+    self.arearLabel.font =[UIFont systemFontOfSize:14];
     [self setArearLabelTitle];
     self.arearLabel.textColor = [UIColor whiteColor];
     
@@ -145,7 +146,7 @@
     
     [view addSubview:self.nameLabel];
     [view addSubview:self.arearLabel];
-    self.navigationItem.leftItemsSupplementBackButton = YES;
+    self.navigationItem.leftItemsSupplementBackButton = YES;//显示返回按钮
     
     self.contactsInfoBtn.customView = view;
     
@@ -225,7 +226,9 @@
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         pasteboard.string = [self.detailArray[path.row] msgContent];
         VCLog(@"copys:pasteboard.string%@",pasteboard.string);
-        [SVProgressHUD showImage:nil status:@"已copy"];
+        [SVProgressHUD showSuccessWithStatus:@"已复制"];
+        [self cancelCheckCell];
+        //[self.tableview setEditing:NO animated:YES];
     }
     
     if (button.tag == 2001) {
@@ -259,25 +262,24 @@
 {
     //删除选中的条目
     //数据库
-    /*
-    for (NSArray *arr in selectArray) {
-        [txsqlite deleteContacterWithNumber:arr[0] formTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME peopleId:arr[1] withSql:DELETE_MESSAGE_RECORD_SQL];
+    for (NSIndexPath *index in selectArray) {
+        NSString *number =[NSString stringWithFormat:@"%@",[self.detailArray[index.row] msgSender]];
+        NSString *peopld =[NSString stringWithFormat:@"%d",[self.detailArray[index.row] peopleId]];
+        
+        [txsqlite deleteContacterWithNumber: number formTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME peopleId:peopld withSql:DELETE_MESSAGE_RECORD_SQL];
     }
+    
     //重新获取数据
     self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
     
+    VCLog(@"self.detailArray:%@ ",self.detailArray);
     
-    
-    
-    
-    VCLog(@"self.detailArray:%@ ,allValues:%@",self.detailArray,[selectDict allValues]);
-    
-    [self.detailArray removeObjectsInArray:[selectDict allValues]];
+    //[self.detailArray removeObjectsInArray:[selectDict allValues]];
     VCLog(@"allKeys:%@",[selectDict allKeys]);
     
-    [self.tableview deleteRowsAtIndexPaths:[NSArray arrayWithArray:[selectDict allKeys]] withRowAnimation:UITableViewRowAnimationFade];
+    //[self.tableview deleteRowsAtIndexPaths:selectArray withRowAnimation:UITableViewRowAnimationFade];
     
-    */
+    [self getResouce];
     [self cancelCheckCell];
 }
 
@@ -371,7 +373,7 @@
         
     }
     
-    //[self.tableview reloadData];
+    [self.tableview reloadData];
 }
 
 #pragma --mark 给数据源增加内容-自己发送的内容
@@ -409,13 +411,12 @@
 {
     [self.tableview setEditing:NO animated:YES];
     [self setArearLabelTitle];
-    [UIView beginAnimations:@"" context:nil];
-    [UIView setAnimationCurve:.5];
-    editView.frame = CGRectMake(0, DEVICE_HEIGHT, DEVICE_WIDTH, 50);
-    [UIView commitAnimations];
+    [UIView animateWithDuration:.5 animations:^{
+        editView.frame = CGRectMake(0, DEVICE_HEIGHT, DEVICE_WIDTH, 50);
+    }];
     
     [self.callOutBtn setImage:[UIImage imageNamed:@"actionbar_call_hub32"]];
-    [self.callOutBtn setEnabled:YES];
+    //[self.callOutBtn setEnabled:YES];
     if (selectArray.count <= 0) {
         [editView.copysButton setEnabled:NO];
         [editView.sharesButton setEnabled:NO];
@@ -495,18 +496,15 @@
     [textInput.textview resignFirstResponder];
     if (recongizer.state == UIGestureRecognizerStateBegan) {
         VCLog(@"longPress");
-        
         //
         [self.tableview setEditing:YES animated:YES];
-        self.arearLabel.text = @"取消";
-        [UIView beginAnimations:@"" context:nil];
-        [UIView setAnimationCurve:.5];
-        editView.frame = CGRectMake(0, DEVICE_HEIGHT-50, DEVICE_WIDTH, 50);
-        [UIView commitAnimations];
+        [UIView animateWithDuration:.5 animations:^{
+            editView.frame = CGRectMake(0, DEVICE_HEIGHT-50, DEVICE_WIDTH, 50);
+        }];
         
         [self.callOutBtn setImage:[UIImage imageNamed:@""]];
-        [self.callOutBtn setTitle:@""];
-        [self.callOutBtn setEnabled:NO];
+        [self.callOutBtn setTitle:@"取消"];
+
     }
     [self getResouce];
     
@@ -526,13 +524,18 @@
 //导航栏右边按钮拨-拨打电话
 - (IBAction)callOutBtn:(UIBarButtonItem *)sender {
     
-    if (self.datailDatas.hisName.length <=0) {
-        self.datailDatas.hisName = @"";
+    if ([self.callOutBtn.title isEqualToString:@"取消"]) {
+        [self cancelCheckCell];
+    }else{
+        if (self.datailDatas.hisName.length <=0) {
+            self.datailDatas.hisName = @"";
+        }
+        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:self.datailDatas.hisName,@"hisName",self.datailDatas.hisNumber,@"hisNumber", nil];
+        
+        VCLog(@"dict:%@",dict);
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallingBtnClick object:self userInfo:dict]];
+
     }
-    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:self.datailDatas.hisName,@"hisName",self.datailDatas.hisNumber,@"hisNumber", nil];
-    
-    VCLog(@"dict:%@",dict);
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallingBtnClick object:self userInfo:dict]];
     
 }
 

@@ -27,6 +27,7 @@
     NSArray *sortedArray;               //排序后的数组
     TXData *msgdata;
     TXSqliteOperate *txsql;
+    GetAllContacts *cont;
 }
 
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
@@ -42,9 +43,14 @@
 -(void)viewWillAppear:(BOOL)animated{
 
     [super viewWillAppear:animated];
+    
+    //[self.tableView reloadData];
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
     //显示tabbar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
-    //[self.tableView reloadData];
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -55,6 +61,7 @@
     sortedArray = [[NSArray alloc] init];
     msgdata = [[TXData alloc] init];
     txsql=[[TXSqliteOperate alloc] init];
+    self.navigationItem.backBarButtonItem =[[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     //self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     //索引相关
     self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
@@ -89,7 +96,7 @@
 // 导入通讯录
 -(void)loadcContacts
 {
-    GetAllContacts *cont=[[GetAllContacts alloc] init];
+    cont=[[GetAllContacts alloc] init];
     cont.getContactsDelegate = self;
     [cont getContacts];
     
@@ -216,6 +223,7 @@
         cell.nameLabel.text = [[persons objectAtIndex:indexPath.row] objectForKey:@"personName"];
         //cell.numberLabel.text = [[persons objectAtIndex:indexPath.row] objectForKey:@"personTel"];
         cell.numberLabel.text = [[[[persons objectAtIndex:indexPath.row] objectForKey:@"personTel"] purifyString] insertStr];
+        cell.numberLabel.hidden = YES;
         //VCLog(@"name:%@,number:%@",cell.nameLabel.text,cell.numberLabel.text);
         
         
@@ -437,6 +445,7 @@
 #pragma mark -- 新增联系人
 -(IBAction)addNewContacts:(UIBarButtonItem *)sender
 {
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kHideCusotomTabBar object:self]];
     
     ABNewPersonViewController *newPerson =[[ABNewPersonViewController alloc] init];
     newPerson.newPersonViewDelegate = self;
@@ -449,6 +458,10 @@
 {
     VCLog(@"add new people:%@",person);
     [self.navigationController popToRootViewControllerAnimated:YES];
+    
+    //
+    //[cont getContacts];
+    [self.tableView reloadData];
 }
 
 

@@ -19,8 +19,9 @@
 
 @end
 @interface GetAllContacts : NSObject
-
++(GetAllContacts *)shardGet;
 -(void)getContacts;//获取所有联系人
+-(void)reloadContacts;
 @property(assign,nonatomic) id<GetContactsDelegate> getContactsDelegate;
 
 @end

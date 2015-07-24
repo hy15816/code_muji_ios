@@ -33,6 +33,19 @@
     return self;
 }
 
++(GetAllContacts *)shardGet{
+    static dispatch_once_t onceToken;
+    static GetAllContacts *gets;
+    dispatch_once(&onceToken, ^{
+        gets=[[GetAllContacts alloc] init];
+    });
+    return gets;
+}
+-(void)reloadContacts{
+    [self loadAllContacts];
+    [self.getContactsDelegate getAllPhoneArray:phonesArray SectionDict:sectionDicts PhoneDict:phoneDicts];
+}
+
 -(void)loadAllContacts{
     
     [phonesArray removeAllObjects];
@@ -137,7 +150,7 @@
         [phonesArray addObject:tempDic];//把tempDic赋给phoneArray数组
         
     }
-    //VCLog(@"phoneArray：%@",phonesArray);
+    VCLog(@"phoneArray：%@",phonesArray);
     //return phonesArray;
     
     /***

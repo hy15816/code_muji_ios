@@ -382,10 +382,11 @@
         if (sqlite3_prepare_v2(dataBase, [selectSql UTF8String], -1, &stmt, nil)==SQLITE_OK) {
             VCLog(@"select prepare ok!");
         }
-        TXData *data=[[TXData alloc] init];
+        
         //循环遍历，sqlite3_step处理一行结果
         while (sqlite3_step(stmt)==SQLITE_ROW) {
             
+            TXData *data=[[TXData alloc] init];
             int tid=sqlite3_column_int(stmt, 0);
             
             NSString *sender = [NSString stringWithCString:(char *)sqlite3_column_text(stmt, 1) encoding:NSUTF8StringEncoding];
@@ -400,10 +401,10 @@
             data.msgTime=beginTime;
             data.msgContent = content;
             data.msgAccepter = accepter;
+            
             if (![allContent containsObject:data]) {
                 [allContent addObject:data];
             }
-            
         }
         
         

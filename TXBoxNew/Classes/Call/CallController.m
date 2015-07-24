@@ -19,7 +19,7 @@
 #import "GetAllContacts.h"
 #import "CallAndDivert.h"
 
-@interface CallController ()<UITextFieldDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,GetContactsDelegate,CallAndDivertDelegate>
+@interface CallController ()<UITextFieldDelegate,ABUnknownPersonViewControllerDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,GetContactsDelegate,CallAndDivertDelegate>
 {
     NSMutableArray *CallRecords;
     TXSqliteOperate *sqlite;
@@ -56,8 +56,7 @@
 {
     [super viewWillAppear:animated];
     
-    //显示tabbar
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
+    
     
     //textInput
     if([self respondsToSelector:@selector(inputTextDidChanged:)]) {
@@ -87,6 +86,8 @@
 {
     [super viewDidAppear:animated];
     
+    //显示tabbar
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
     //获取联系人数据#pragma mark-- 获取通讯录联系人
     [self loadContacts];
 }
@@ -113,10 +114,6 @@
     opeareString = [[NSString alloc] init];
  
     callDivert =[[CallAndDivert alloc] init];
-   
-    NSMutableString *s =[[NSMutableString alloc] initWithString:@"-1.*"];
-    [s insertString:@"GG" atIndex:s.length-2];
-    VCLog(@"s:%@",s);
     
 }
 
@@ -185,6 +182,7 @@
     //过滤数据
     for (NSMutableString *str in zzArray) {
         NSPredicate *regextestcm = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", str];
+        NSLog(@"regextestcm:%@",regextestcm);
         for (NSDictionary *dict in mutPhoneArray) {
             //匹配姓名
             NSString *pnameNum = [dict valueForKey:@"personNameNum"];
@@ -210,7 +208,7 @@
     
     
     [self setModel];
-     //VCLog(@"searchResault:%@",searchResault);
+     VCLog(@"searchResault:%@",searchResault);
     
     //输入的数字达到7个，且还没有结果时
     if (searchResault.count == 0 && searcherString.length >= 7) {
@@ -265,7 +263,7 @@
 {
     
     if (zzArray.count <1) {
-        NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"-%@.*",achar];
+        NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"-%@.*",achar];//-1
         [zzArray addObject:mstring];
     }
     
@@ -492,7 +490,7 @@
 -(void)PersonButtonClick:(UIButton *)btn
 {
     //隐藏tabbar和callBtn
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kHideTabBarAndCallBtn object:self]];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
     //当前选中行
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     TXData *aRecord;
@@ -502,7 +500,7 @@
         if (aRecord.hisName.length==0 || [aRecord.hisName isEqualToString:@""] || aRecord.hisName ==nil) {
             //跳转到添加联系人
             
-            [self showAddperson];
+            [self showUnknownPersonViewController:[aRecord.hisNumber purifyString]];
             
             VCLog(@"show newPerson view");
         }else
@@ -517,7 +515,7 @@
         if ([name length]==0 || [name isEqualToString:@""] || name ==nil) {
             //跳转到添加联系人
             
-            [self showAddperson];
+            [self showUnknownPersonViewController:[[dict valueForKey:@"personTel"] purifyString]];
             
             VCLog(@"show newPerson view");
         }else
@@ -653,23 +651,55 @@
     
 }
 
-#pragma mark -- 跳转到添加联系人
+#pragma mark -- 跳转到-添加到现有联系人或新建
 /**
  *  跳转到add联系人
  */
--(void)showAddperson
-{
-    ABNewPersonViewController *newPerson = [[ABNewPersonViewController alloc]init];
-    newPerson.newPersonViewDelegate=self;
-    newPerson.title = @"添加联系人";
-    [self.navigationController pushViewController:newPerson animated:YES];
+
+-(void)showUnknownPersonViewController:(NSString *)number{
+    
+    ABRecordRef aContact = ABPersonCreate();
+    CFErrorRef anError = NULL;
+    //ABMultiValueRef email = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+    ABMultiValueRef phone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+    //bool didAdd = ABMultiValueAddValueAndLabel(email, @"John-Appleseed@mac.com", kABOtherLabel, NULL);
+    BOOL didAdds = ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)(number), kABPersonPhoneMobileLabel, NULL);
+    
+    if (didAdds == YES )
+    {
+        //ABRecordSetValue(aContact, kABPersonEmailProperty, email, &anError);
+        ABRecordSetValue(aContact, kABPersonEmailProperty, phone, &anError);
+        if (anError == NULL)
+        {
+            ABUnknownPersonViewController *picker = [[ABUnknownPersonViewController alloc] init];
+            picker.unknownPersonViewDelegate = self;
+            picker.displayedPerson = aContact;
+            picker.allowsAddingToAddressBook = YES;
+            picker.allowsActions = YES;
+            //picker.alternateName = @"John Appleseed2";
+            //picker.title = @"John Appleseed3";
+            //picker.message = @"Company, Inc";
+            
+            [self.navigationController pushViewController:picker animated:YES];
+            
+        }
+        else
+        {
+            [SVProgressHUD showImage:nil status:@"*.*"];
+            
+        }
+    }else
+    {
+        NSLog(@"x");
+    }
+    CFRelease(aContact);
 }
+
 #pragma mark --new person
 -(void)newPersonViewController:(ABNewPersonViewController *)newPersonView didCompleteWithNewPerson:(ABRecordRef)person
 {
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
-
 
 #pragma mark -- 跳转到编辑联系人
 /**
@@ -681,7 +711,7 @@
     //CFErrorRef *error;
     //  获取通讯录
     ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL,NULL) ;//ABAddressBookCreate()
-    //  查找名字为Appleseed的联系人
+    //  查找名字为??的联系人
     NSArray *people = (__bridge NSArray *)ABAddressBookCopyPeopleWithName(addressBook,name);//
     // 若找到了，显示其信息
     if ((people != nil) && [people count])
@@ -690,8 +720,10 @@
         ABPersonViewController *picker = [[ABPersonViewController alloc] init];
         picker.personViewDelegate = self;
         picker.displayedPerson = person;
+        picker.shouldShowLinkedPeople = YES;
+        picker.allowsActions = YES;//是否显示可以打电话发信息
         picker.allowsEditing = YES;//是否显示编辑按钮
-        picker.allowsActions = NO;//是否显示可以打电话发信息
+        
         [self.navigationController pushViewController:picker animated:YES];
         
     }
