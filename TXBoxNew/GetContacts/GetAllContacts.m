@@ -146,6 +146,7 @@
         }
         [tempDic setObject:name forKey:@"personName"];//把名字存为key:"personName"的Value
         [tempDic setObject:nameNum forKey:@"personNameNum"];
+        [tempDic setObject:(__bridge id)(record) forKey:@"recordRef"];
         //VCLog(@"tempDictemp：%@",tempDic);
         [phonesArray addObject:tempDic];//把tempDic赋给phoneArray数组
         

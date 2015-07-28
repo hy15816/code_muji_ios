@@ -6,12 +6,17 @@
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 
+#define canUpdate @"canUpdate"
+#define APPURL @"http://itunes.apple.com/lookup?id=901293133"
+
 #import "AppDelegate.h"
 #import "TXSqliteOperate.h"
 
 
 @interface AppDelegate ()<UIAlertViewDelegate>
-
+{
+    NSString *appTrackViewURL;
+}
 @end
 
 @implementation AppDelegate
@@ -41,17 +46,20 @@
     
     
     if ([[UIApplication sharedApplication]currentUserNotificationSettings].types!=UIUserNotificationTypeNone) {
-        [self addLocalNotification];
+        //[self addLocalNotification];
     }else{
         [[UIApplication sharedApplication]registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound  categories:nil]];
     }
+    
+    [self isOrNotUpdateVersion];
+    
     return YES;
 }
 
 -(void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
     
     if (notificationSettings.types!=UIUserNotificationTypeNone) {
-        [self addLocalNotification];
+        //[self addLocalNotification];
     }
 }
 
@@ -188,6 +196,93 @@
     if (currentUser) {
         currentUser =nil;
     }
+}
+
+#pragma mark -- 检测版本
+-(void)isOrNotUpdateVersion
+{
+    if ([self whatAreWeekDayTaday] == 2 ) {//星期一检测
+        //[userDefaults setBool:NO forKey:canUpdate];
+        //获取本地版本
+        NSDictionary *infoDic = [[NSBundle mainBundle] infoDictionary];
+        NSString *currentVersion = [infoDic objectForKey:@"CFBundleVersion"];
+        //获取itunes上的版本
+        NSString *URL = APPURL;
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+        [request setURL:[NSURL URLWithString:URL]];
+        [request setHTTPMethod:@"POST"];
+        NSHTTPURLResponse *urlResponse = nil;
+        NSError *error = nil;
+        NSData *recervedData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:&error];
+        
+        NSDictionary *infoDicts = [NSJSONSerialization JSONObjectWithData:recervedData options:NSJSONReadingMutableLeaves error:&error];
+        
+        NSArray *infoArray = [infoDicts objectForKey:@"results"];
+        
+        if ([infoArray count] && ![userDefaults boolForKey:canUpdate]) {
+            
+            NSDictionary *releaseInfo = [infoArray objectAtIndex:0];
+            NSString *lastVersion = [releaseInfo objectForKey:@"version"];
+            
+            if ([lastVersion floatValue ] > [currentVersion floatValue]) {
+                appTrackViewURL = [releaseInfo objectForKey:@"trackViewUrl"];
+                UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+                atView.tag = 3005;
+                atView.delegate = self;
+                [atView show];
+            }
+            else
+            {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"更新" message:@"此版本为最新版本" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+                alert.tag = 10001;
+                [alert show];
+            }
+            
+            
+        }
+    
+    }
+    
+    
+}
+
+/**
+ *  获取当前日期是，星期几
+ *  @return  NSInteger 星期几，
+ */
+- (NSInteger)whatAreWeekDayTaday
+{
+    NSDate *now = [NSDate date];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *comp = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitWeekday|NSCalendarUnitDay fromDate:now];
+    
+    // 得到星期几
+    // 1->7，(星期天)->(星期一)->(星期六)
+    NSInteger weekDay = [comp weekday];
+    // 得到几号
+    NSInteger day = [comp day];
+    
+    NSLog(@"weekDay:%ld   day:%ld",weekDay,day);
+    
+    return weekDay;
+}
+
+#pragma  mark --alertView  Delegate
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (alertView.tag == 3005) {
+        if (buttonIndex == 0) {
+            //跳转到store 更新页面
+            UIApplication *application = [UIApplication sharedApplication];
+            [application openURL:[NSURL URLWithString:appTrackViewURL]];
+        }
+        
+        [userDefaults setBool:YES forKey:canUpdate];
+        
+    }
+    
+    
+    
+    
 }
 
 @end

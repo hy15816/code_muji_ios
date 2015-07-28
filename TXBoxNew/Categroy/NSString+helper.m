@@ -40,6 +40,12 @@
     
 }
 
+#pragma mark --过滤字符串中的“,”
+-(NSString *) iPhoneStandards_douhao{
+    return [self stringByReplacingOccurrencesOfString:@"," withString:@""];
+    
+}
+
 #pragma mark --过滤字符串中的“(”
 -(NSString *) iPhoneStandardedFormat{
     return [self stringByReplacingOccurrencesOfString:@"(" withString:@""];
@@ -117,6 +123,7 @@
         string = [string trimOfString];     //去除字符串中间的空格
         string = [string iPhoneStandardFormat];//去除 -
         
+        string = [string iPhoneStandards_douhao];//逗号
         string = [string iPhoneStandardedleftMarkFormat];
         string = [string iPhoneStandardedrightMarkFormat];
         //551 87896

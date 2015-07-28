@@ -7,12 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6304E5311B62309A00EF91DA /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6304E5301B62309A00EF91DA /* AVOSCloud.framework */; };
 		632AC6391ADCE92F0023FAA9 /* TXData.m in Sources */ = {isa = PBXBuildFile; fileRef = 632AC6361ADCE92F0023FAA9 /* TXData.m */; };
 		632AC63A1ADCE92F0023FAA9 /* TXSqliteOperate.m in Sources */ = {isa = PBXBuildFile; fileRef = 632AC6381ADCE92F0023FAA9 /* TXSqliteOperate.m */; };
 		632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 632AC6431ADCF0240023FAA9 /* libsqlite3.dylib */; };
 		63315A521B12D5FF00BD9817 /* Addresser.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63315A511B12D5FF00BD9817 /* Addresser.plist */; };
-		635003591ADF9C790051377F /* ContactsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 635003581ADF9C790051377F /* ContactsCell.m */; };
 		6350035C1ADFB9710051377F /* pinyin.c in Sources */ = {isa = PBXBuildFile; fileRef = 6350035A1ADFB9710051377F /* pinyin.c */; };
 		6350035F1ADFBB750051377F /* Records.m in Sources */ = {isa = PBXBuildFile; fileRef = 6350035E1ADFBB750051377F /* Records.m */; };
 		6352995C1ADE0296006840AC /* TXTelNumSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6352995B1ADE0296006840AC /* TXTelNumSingleton.m */; };
@@ -28,7 +26,6 @@
 		6363DA681B2AD369005EF820 /* MessageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6363DA671B2AD369005EF820 /* MessageCell.xib */; };
 		6367B0B61B16E1AE0005F4B0 /* EditView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6367B0B51B16E1AE0005F4B0 /* EditView.m */; };
 		636A29FB1B4A2DDA00B8F504 /* ContactController.m in Sources */ = {isa = PBXBuildFile; fileRef = 636A29FA1B4A2DDA00B8F504 /* ContactController.m */; };
-		636FDE981B452DC50056F241 /* ShowContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 636FDE971B452DC50056F241 /* ShowContacts.m */; };
 		636FDE9D1B453BD40056F241 /* BLEmanager.m in Sources */ = {isa = PBXBuildFile; fileRef = 636FDE9C1B453BD40056F241 /* BLEmanager.m */; };
 		637005CA1AE4C1D000B8BAFD /* BLEOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 637005C31AE4C1D000B8BAFD /* BLEOperation.m */; };
 		637005CB1AE4C1D000B8BAFD /* TXCallAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 637005C61AE4C1D000B8BAFD /* TXCallAction.m */; };
@@ -51,12 +48,13 @@
 		637B49DE1B438DA000326937 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 637B49DB1B438DA000326937 /* SVProgressHUD.bundle */; };
 		637B49DF1B438DA000326937 /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 637B49DD1B438DA000326937 /* SVProgressHUD.m */; };
 		637B49E21B438E2900326937 /* CallAndDivert.m in Sources */ = {isa = PBXBuildFile; fileRef = 637B49E11B438E2900326937 /* CallAndDivert.m */; };
-		637C29D91AEB9FF200CD3DAF /* ContactsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 637C29D81AEB9FF200CD3DAF /* ContactsCell.xib */; };
 		637E41DD1B3961D20015F682 /* LoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E41D41B3961D20015F682 /* LoginController.m */; };
 		637E41DE1B3961D20015F682 /* PopView.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E41D61B3961D20015F682 /* PopView.m */; };
 		637E41DF1B3961D20015F682 /* RegisteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E41D91B3961D20015F682 /* RegisteViewController.m */; };
 		637E41E01B3961D20015F682 /* UpdatePwdController.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E41DC1B3961D20015F682 /* UpdatePwdController.m */; };
 		637E41E41B3962F20015F682 /* TXKeyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E41E31B3962F20015F682 /* TXKeyView.m */; };
+		6382AE9D1B660D6A00745285 /* ContactsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6382AE9B1B660D6A00745285 /* ContactsTableViewCell.m */; };
+		6382AE9E1B660D6A00745285 /* ContactsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6382AE9C1B660D6A00745285 /* ContactsTableViewCell.xib */; };
 		6387735A1B4F894600771AF2 /* ShareContentController.m in Sources */ = {isa = PBXBuildFile; fileRef = 638773581B4F894600771AF2 /* ShareContentController.m */; };
 		6387735D1B4FB0A000771AF2 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6387735C1B4FB0A000771AF2 /* Launch Screen.xib */; };
 		638B955A1B2E7A1200399FAA /* ContactsData.m in Sources */ = {isa = PBXBuildFile; fileRef = 638B95591B2E7A1200399FAA /* ContactsData.m */; };
@@ -64,6 +62,10 @@
 		639132431B2177A500F61E04 /* ShowContactsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 639132421B2177A500F61E04 /* ShowContactsCell.m */; };
 		63975E6D1AE73C040076E849 /* CustomTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63975E6C1AE73C040076E849 /* CustomTabBarView.m */; };
 		63AE3B041B60EFFD0035DE87 /* ProvisionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AE3B031B60EFFD0035DE87 /* ProvisionViewController.m */; };
+		63B8F08B1B672E9600221AA4 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63B8F08A1B672E9600221AA4 /* AVOSCloud.framework */; };
+		63B8F0A61B6775E700221AA4 /* ChatsInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B8F0A11B6775E700221AA4 /* ChatsInputView.m */; };
+		63B8F0A71B6775E700221AA4 /* HPGrowingTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B8F0A31B6775E700221AA4 /* HPGrowingTextView.m */; };
+		63B8F0A81B6775E700221AA4 /* HPTextViewInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B8F0A51B6775E700221AA4 /* HPTextViewInternal.m */; };
 		63D34AFD1AF9C6DD00C8B533 /* board.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D34AFC1AF9C6DD00C8B533 /* board.gif */; };
 		63D4871C1B1835CA005F2E1A /* DiscoveryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D4871B1B1835CA005F2E1A /* DiscoveryController.m */; };
 		63D4871E1B183B24005F2E1A /* ble_connect.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D4871D1B183B24005F2E1A /* ble_connect.gif */; };
@@ -111,7 +113,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		6304E5301B62309A00EF91DA /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		632AC6351ADCE92F0023FAA9 /* TXData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXData.h; sourceTree = "<group>"; };
 		632AC6361ADCE92F0023FAA9 /* TXData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXData.m; sourceTree = "<group>"; };
 		632AC6371ADCE92F0023FAA9 /* TXSqliteOperate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXSqliteOperate.h; sourceTree = "<group>"; };
@@ -120,8 +121,6 @@
 		632AC63E1ADCEB7C0023FAA9 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		632AC6431ADCF0240023FAA9 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		63315A511B12D5FF00BD9817 /* Addresser.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Addresser.plist; sourceTree = "<group>"; };
-		635003571ADF9C790051377F /* ContactsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsCell.h; sourceTree = "<group>"; };
-		635003581ADF9C790051377F /* ContactsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsCell.m; sourceTree = "<group>"; };
 		6350035A1ADFB9710051377F /* pinyin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pinyin.c; sourceTree = "<group>"; };
 		6350035B1ADFB9710051377F /* pinyin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pinyin.h; sourceTree = "<group>"; };
 		6350035D1ADFBB750051377F /* Records.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Records.h; sourceTree = "<group>"; };
@@ -149,8 +148,6 @@
 		6367B0B51B16E1AE0005F4B0 /* EditView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditView.m; sourceTree = "<group>"; };
 		636A29F91B4A2DDA00B8F504 /* ContactController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactController.h; sourceTree = "<group>"; };
 		636A29FA1B4A2DDA00B8F504 /* ContactController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactController.m; sourceTree = "<group>"; };
-		636FDE961B452DC50056F241 /* ShowContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowContacts.h; sourceTree = "<group>"; };
-		636FDE971B452DC50056F241 /* ShowContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowContacts.m; sourceTree = "<group>"; };
 		636FDE9B1B453BD40056F241 /* BLEmanager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLEmanager.h; sourceTree = "<group>"; };
 		636FDE9C1B453BD40056F241 /* BLEmanager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLEmanager.m; sourceTree = "<group>"; };
 		637005C21AE4C1D000B8BAFD /* BLEOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLEOperation.h; sourceTree = "<group>"; };
@@ -195,7 +192,6 @@
 		637B49DD1B438DA000326937 /* SVProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVProgressHUD.m; sourceTree = "<group>"; };
 		637B49E01B438E2900326937 /* CallAndDivert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallAndDivert.h; sourceTree = "<group>"; };
 		637B49E11B438E2900326937 /* CallAndDivert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallAndDivert.m; sourceTree = "<group>"; };
-		637C29D81AEB9FF200CD3DAF /* ContactsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactsCell.xib; sourceTree = "<group>"; };
 		637E41D31B3961D20015F682 /* LoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginController.h; sourceTree = "<group>"; };
 		637E41D41B3961D20015F682 /* LoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginController.m; sourceTree = "<group>"; };
 		637E41D51B3961D20015F682 /* PopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopView.h; sourceTree = "<group>"; };
@@ -206,6 +202,9 @@
 		637E41DC1B3961D20015F682 /* UpdatePwdController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdatePwdController.m; sourceTree = "<group>"; };
 		637E41E21B3962F20015F682 /* TXKeyView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXKeyView.h; sourceTree = "<group>"; };
 		637E41E31B3962F20015F682 /* TXKeyView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXKeyView.m; sourceTree = "<group>"; };
+		6382AE9A1B660D6A00745285 /* ContactsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTableViewCell.h; sourceTree = "<group>"; };
+		6382AE9B1B660D6A00745285 /* ContactsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTableViewCell.m; sourceTree = "<group>"; };
+		6382AE9C1B660D6A00745285 /* ContactsTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactsTableViewCell.xib; sourceTree = "<group>"; };
 		638773571B4F894600771AF2 /* ShareContentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareContentController.h; sourceTree = "<group>"; };
 		638773581B4F894600771AF2 /* ShareContentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareContentController.m; sourceTree = "<group>"; };
 		6387735C1B4FB0A000771AF2 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
@@ -219,6 +218,13 @@
 		63975E6C1AE73C040076E849 /* CustomTabBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomTabBarView.m; sourceTree = "<group>"; };
 		63AE3B021B60EFFD0035DE87 /* ProvisionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProvisionViewController.h; sourceTree = "<group>"; };
 		63AE3B031B60EFFD0035DE87 /* ProvisionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProvisionViewController.m; sourceTree = "<group>"; };
+		63B8F08A1B672E9600221AA4 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
+		63B8F0A01B6775E700221AA4 /* ChatsInputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsInputView.h; sourceTree = "<group>"; };
+		63B8F0A11B6775E700221AA4 /* ChatsInputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatsInputView.m; sourceTree = "<group>"; };
+		63B8F0A21B6775E700221AA4 /* HPGrowingTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPGrowingTextView.h; sourceTree = "<group>"; };
+		63B8F0A31B6775E700221AA4 /* HPGrowingTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPGrowingTextView.m; sourceTree = "<group>"; };
+		63B8F0A41B6775E700221AA4 /* HPTextViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPTextViewInternal.h; sourceTree = "<group>"; };
+		63B8F0A51B6775E700221AA4 /* HPTextViewInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPTextViewInternal.m; sourceTree = "<group>"; };
 		63D34AFC1AF9C6DD00C8B533 /* board.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = board.gif; sourceTree = "<group>"; };
 		63D4871A1B1835CA005F2E1A /* DiscoveryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscoveryController.h; sourceTree = "<group>"; };
 		63D4871B1B1835CA005F2E1A /* DiscoveryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoveryController.m; sourceTree = "<group>"; };
@@ -290,7 +296,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				6304E5311B62309A00EF91DA /* AVOSCloud.framework in Frameworks */,
+				63B8F08B1B672E9600221AA4 /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -375,9 +381,9 @@
 				6350035E1ADFBB750051377F /* Records.m */,
 				6350035A1ADFB9710051377F /* pinyin.c */,
 				6350035B1ADFB9710051377F /* pinyin.h */,
-				635003571ADF9C790051377F /* ContactsCell.h */,
-				635003581ADF9C790051377F /* ContactsCell.m */,
-				637C29D81AEB9FF200CD3DAF /* ContactsCell.xib */,
+				6382AE9A1B660D6A00745285 /* ContactsTableViewCell.h */,
+				6382AE9B1B660D6A00745285 /* ContactsTableViewCell.m */,
+				6382AE9C1B660D6A00745285 /* ContactsTableViewCell.xib */,
 				636A29F91B4A2DDA00B8F504 /* ContactController.h */,
 				636A29FA1B4A2DDA00B8F504 /* ContactController.m */,
 			);
@@ -604,6 +610,19 @@
 			path = External;
 			sourceTree = "<group>";
 		};
+		63B8F09F1B6775E700221AA4 /* class */ = {
+			isa = PBXGroup;
+			children = (
+				63B8F0A01B6775E700221AA4 /* ChatsInputView.h */,
+				63B8F0A11B6775E700221AA4 /* ChatsInputView.m */,
+				63B8F0A21B6775E700221AA4 /* HPGrowingTextView.h */,
+				63B8F0A31B6775E700221AA4 /* HPGrowingTextView.m */,
+				63B8F0A41B6775E700221AA4 /* HPTextViewInternal.h */,
+				63B8F0A51B6775E700221AA4 /* HPTextViewInternal.m */,
+			);
+			path = class;
+			sourceTree = "<group>";
+		};
 		63D34AFB1AF9C6DD00C8B533 /* Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -619,7 +638,7 @@
 		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
 			isa = PBXGroup;
 			children = (
-				6304E5301B62309A00EF91DA /* AVOSCloud.framework */,
+				63B8F08A1B672E9600221AA4 /* AVOSCloud.framework */,
 				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
 				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
 				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
@@ -653,14 +672,13 @@
 		63DEA66F1B009425003343A7 /* newMsg */ = {
 			isa = PBXGroup;
 			children = (
+				63B8F09F1B6775E700221AA4 /* class */,
 				63DEA67E1B009512003343A7 /* NewMsgController.h */,
 				63DEA67F1B009512003343A7 /* NewMsgController.m */,
 				6391323E1B21778B00F61E04 /* ShowContactsController.h */,
 				6391323F1B21778B00F61E04 /* ShowContactsController.m */,
 				639132411B2177A500F61E04 /* ShowContactsCell.h */,
 				639132421B2177A500F61E04 /* ShowContactsCell.m */,
-				636FDE961B452DC50056F241 /* ShowContacts.h */,
-				636FDE971B452DC50056F241 /* ShowContacts.m */,
 			);
 			path = newMsg;
 			sourceTree = "<group>";
@@ -869,6 +887,7 @@
 				63FB5FDE1ADBB58700A1A92B /* Main.storyboard in Resources */,
 				63D487201B183B72005F2E1A /* phone_connect.gif in Resources */,
 				63FF5E961B4D2148007D791F /* abcd.png in Resources */,
+				6382AE9E1B660D6A00745285 /* ContactsTableViewCell.xib in Resources */,
 				6363DA681B2AD369005EF820 /* MessageCell.xib in Resources */,
 				635F818B1B3AAB5900A7A7D1 /* line.gif in Resources */,
 				63D4871E1B183B24005F2E1A /* ble_connect.gif in Resources */,
@@ -878,7 +897,6 @@
 				635F81811B3A851300A7A7D1 /* ff.gif in Resources */,
 				63FB5FE01ADBB58700A1A92B /* Images.xcassets in Resources */,
 				63315A521B12D5FF00BD9817 /* Addresser.plist in Resources */,
-				637C29D91AEB9FF200CD3DAF /* ContactsCell.xib in Resources */,
 				6387735D1B4FB0A000771AF2 /* Launch Screen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -916,8 +934,6 @@
 				63FA3A691B5E28FF0049EB1C /* AFURLSessionManager.m in Sources */,
 				637005D81AE4DE2400B8BAFD /* NSString+helper.m in Sources */,
 				637E41DE1B3961D20015F682 /* PopView.m in Sources */,
-				635003591ADF9C790051377F /* ContactsCell.m in Sources */,
-				636FDE981B452DC50056F241 /* ShowContacts.m in Sources */,
 				6371918D1B1F01B1005C09C8 /* PinyinHelper.m in Sources */,
 				637B49D81B438D7300326937 /* Guides.m in Sources */,
 				637858471B317BEB006D5155 /* GetAllContacts.m in Sources */,
@@ -928,12 +944,15 @@
 				637E41E41B3962F20015F682 /* TXKeyView.m in Sources */,
 				63DEA67C1B0094FB003343A7 /* MsgDetailController.m in Sources */,
 				63FA3A631B5E28FF0049EB1C /* AFHTTPSessionManager.m in Sources */,
+				6382AE9D1B660D6A00745285 /* ContactsTableViewCell.m in Sources */,
 				6371918B1B1F01B1005C09C8 /* NSString+PinYin4Cocoa.m in Sources */,
 				637191971B1F01CF005C09C8 /* AKNumericFormatter.m in Sources */,
 				63DEA6791B0094FB003343A7 /* Message.m in Sources */,
 				63DEA6841B009568003343A7 /* AddContacterController.m in Sources */,
+				63B8F0A81B6775E700221AA4 /* HPTextViewInternal.m in Sources */,
 				635299811ADE3AF7006840AC /* CallController.m in Sources */,
 				63FF5E951B4D2148007D791F /* TextViewInput.m in Sources */,
+				63B8F0A71B6775E700221AA4 /* HPGrowingTextView.m in Sources */,
 				63DBF8AC1B0303C500041321 /* TXNavgationController.m in Sources */,
 				635B1A3E1AEC968B003F37B5 /* UIImage+helper.m in Sources */,
 				635299821ADE3AF7006840AC /* CallRecordsCell.m in Sources */,
@@ -963,6 +982,7 @@
 				6387735A1B4F894600771AF2 /* ShareContentController.m in Sources */,
 				63FB5FD51ADBB58700A1A92B /* main.m in Sources */,
 				63DEA67D1B0094FB003343A7 /* MsgFrame.m in Sources */,
+				63B8F0A61B6775E700221AA4 /* ChatsInputView.m in Sources */,
 				636A29FB1B4A2DDA00B8F504 /* ContactController.m in Sources */,
 				6359D0941AE600AB00592201 /* MessageController.m in Sources */,
 			);
@@ -1202,6 +1222,10 @@
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
@@ -1236,6 +1260,10 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,

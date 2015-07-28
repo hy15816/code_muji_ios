@@ -12,4 +12,6 @@
 @interface NewMsgController : UIViewController
 
 @property (strong,nonatomic) NSString *msgContent;
+@property (assign, nonatomic, readonly) UIEdgeInsets originalTableViewContentInset;
+
 @end

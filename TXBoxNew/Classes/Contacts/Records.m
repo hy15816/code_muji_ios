@@ -13,7 +13,7 @@
 - (NSString *)description
 
 {
-    return [NSString stringWithFormat:@"<Records: %p,personTel: %@,personName: %@,personTelNum: %@,personNameNum: %@>", self, self.personTel, self.personName,self.personTelNum, self.personNameNum];
+    return [NSString stringWithFormat:@"<Records: %p,personTel: %@,personName: %@,personTelNum: %@,personNameNum: %@,recordRef:%@>", self, self.personTel, self.personName,self.personTelNum, self.personNameNum,self.recordRef];
     
 }
 @end

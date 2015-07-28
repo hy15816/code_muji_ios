@@ -8,7 +8,7 @@
 #define HeaderViewColor [[UIColor alloc]initWithRed:239/255.f green:239/255.f blue:240/255.f alpha:1];
 
 #import "ContactController.h"
-#import "ContactsCell.h"
+#import "ContactsTableViewCell.h"
 #import "SVProgressHUD.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import "pinyin.h"
@@ -30,6 +30,9 @@
     GetAllContacts *cont;
 }
 
+@property (strong,nonatomic) NSMutableArray *recordRefMutArray;
+@property (assign,nonatomic) ABAddressBookRef abAddressBookRef;
+
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
 @property (strong,nonatomic) UITableViewController *searchVC;
 @property (strong,nonatomic) NSMutableArray *searchsArray;          //搜索后的结果数组
@@ -43,6 +46,9 @@
 -(void)viewWillAppear:(BOOL)animated{
 
     [super viewWillAppear:animated];
+    CFErrorRef error;
+    _abAddressBookRef =ABAddressBookCreateWithOptions(nil, &error);
+    _recordRefMutArray = (__bridge NSMutableArray *)(ABAddressBookCopyArrayOfAllPeople(_abAddressBookRef));
     
     //[self.tableView reloadData];
 }
@@ -72,6 +78,8 @@
     [self initSearchController];
     [self loadcContacts];
     [self PacketSequencing];
+
+    
 }
 
 -(void) initSearchController
@@ -195,16 +203,15 @@
     
     static NSString *CellIdentifier = @"CellID";
     
-    ContactsCell *cell = (ContactsCell*)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    ContactsTableViewCell *cell = (ContactsTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil){
         //加载cell-xib
-        cell = [[[NSBundle mainBundle] loadNibNamed:@"ContactsCell" owner:self options:nil] objectAtIndex:0];
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"ContactsTableViewCell" owner:self options:nil] objectAtIndex:0];
         
     }
     //取消cell 选中背景色
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
     
     //搜索后
     if (self.searchController.active) {
@@ -223,7 +230,7 @@
         cell.nameLabel.text = [[persons objectAtIndex:indexPath.row] objectForKey:@"personName"];
         //cell.numberLabel.text = [[persons objectAtIndex:indexPath.row] objectForKey:@"personTel"];
         cell.numberLabel.text = [[[[persons objectAtIndex:indexPath.row] objectForKey:@"personTel"] purifyString] insertStr];
-        cell.numberLabel.hidden = YES;
+        //cell.numberLabel.hidden = YES;
         //VCLog(@"name:%@,number:%@",cell.nameLabel.text,cell.numberLabel.text);
         
         
@@ -350,47 +357,30 @@
     NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
     
     NSMutableArray *persons=[sectionDicty objectForKey:key];
-    NSString *name;
+    ABRecordRef recordRef;
     if (self.searchController.active) {
         Records *record = self.searchsArray[indexPath.row];
-        name = record.personName;
+        recordRef = (__bridge ABRecordRef)(record.recordRef);
+        //name = record.personName;
     }else{
-        name = [[persons objectAtIndex:indexPath.row] objectForKey:@"personName"];
+        recordRef = (__bridge ABRecordRef)([[persons objectAtIndex:indexPath.row] objectForKey:@"recordRef"]);
+        //recordRef = (__bridge ABRecordRef)([_addressBookEntryArray objectAtIndex:indexPath.row]);
+        
     }
     
-    [self showPersonViewControllerWithName:name];
+    [self showPersonViewControllerWithRecordRef:recordRef];
 }
 #pragma mark -- 跳转到编辑联系人
 //跳转到edit联系人
--(void)showPersonViewControllerWithName:(NSString *)string{
-    CFStringRef name = (__bridge CFStringRef)string;
-    //CFErrorRef *error;
-    //  获取通讯录
-    ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL,NULL) ;//ABAddressBookCreate()
-    //  查找名字为Appleseed的联系人
-    NSArray *people = (__bridge NSArray *)ABAddressBookCopyPeopleWithName(addressBook,name);//
-    // 若找到了，显示其信息
-    if ((people != nil) && [people count])
-    {
-        ABRecordRef person = (__bridge ABRecordRef)[people objectAtIndex:0];
-        ABPersonViewController *picker = [[ABPersonViewController alloc] init];
-        picker.personViewDelegate = self;
-        picker.displayedPerson = person;
-        picker.allowsEditing = YES;//是否显示编辑按钮
-        picker.allowsActions = NO;//是否显示可以打电话发信息
-        [self.navigationController pushViewController:picker animated:YES];
-        
-    }
-    else
-    {
-        // 提示找不到联系人
-        //UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"Could not find %@",string] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
-        //[alert show];
-        [self.tableView reloadData];
-        
-    }
+-(void)showPersonViewControllerWithRecordRef:(ABRecordRef)recordRef{
     
-    CFRelease(addressBook);
+    ABPersonViewController *personViewController = [[ABPersonViewController alloc] init];
+    //ABRecordRef record = (__bridge ABRecordRef)([_addressBookEntryArray objectAtIndex:indexPath.row]);
+    personViewController.personViewDelegate = self;
+    personViewController.displayedPerson = recordRef;
+    personViewController.allowsEditing = YES;
+    personViewController.allowsActions = NO;
+    [self.navigationController pushViewController:personViewController animated:YES];
     
 }
 
@@ -457,12 +447,27 @@
 -(void)newPersonViewController:(ABNewPersonViewController *)newPersonView didCompleteWithNewPerson:(ABRecordRef)person
 {
     VCLog(@"add new people:%@",person);
+    
+    if (person) {
+        CFErrorRef error = NULL;
+        ABAddressBookAddRecord(_abAddressBookRef, person, &error);
+        ABAddressBookSave(_abAddressBookRef, &error);
+        if (error != NULL) {
+            NSLog(@"An error occurred");
+        }
+    }
+    
+    [self reloadAddressBooks];
     [self.navigationController popToRootViewControllerAnimated:YES];
     
-    //
-    //[cont getContacts];
+}
+//更新表格数据
+-(void)reloadAddressBooks{
+    _recordRefMutArray = (__bridge NSMutableArray *)ABAddressBookCopyArrayOfAllPeople(_abAddressBookRef);
+    
+    
+    
     [self.tableView reloadData];
 }
-
 
 @end

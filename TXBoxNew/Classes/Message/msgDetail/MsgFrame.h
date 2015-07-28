@@ -21,7 +21,7 @@
 #define kContentRight 15    //文本内容与按钮右边缘间隔
 
 #define kTimeFont [UIFont systemFontOfSize:12]      //时间字体
-#define kContentFont [UIFont systemFontOfSize:14]   //内容字体
+#define kContentFont [UIFont systemFontOfSize:16]   //内容字体
 
 #import <UIKit/UIKit.h>
 

@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ShowContacts.h"
+
 
 @interface ShowContactsController : UITableViewController
 
-@property (strong,nonatomic) ShowContacts *selectContacts;
+
 @end

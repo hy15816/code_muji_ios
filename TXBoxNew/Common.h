@@ -109,7 +109,7 @@
 
 // 状态栏高度
 #define StatusBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
-#define textinputHeight 35 //短信输入框
+#define textinputHeight 40 //短信输入框
 // tabBar高度
 #define  TabBarHeight self.tabBarController.tabBar.frame.size.height
 // 导航栏高度 
@@ -155,6 +155,8 @@
 #define keyReadChc  @"readChc"
 
 #define userDefaults [NSUserDefaults standardUserDefaults]
+#define yyyy_M_d_HH_mm @"yyyy/M/d HH:mm"
 
-
+#define isRead @"isRead"
+#define isRecordRef @"isRecordRef"
 

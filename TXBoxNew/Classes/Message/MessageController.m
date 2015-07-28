@@ -26,8 +26,12 @@
 @interface MessageController ()<UISearchResultsUpdating,UISearchControllerDelegate>
 {
     TXSqliteOperate *txsqlite;
-
+    NSMutableDictionary *namesDicts;
+    ABRecordRef allRecords;
 }
+@property (assign,nonatomic) ABAddressBookRef addressBooks;
+@property (strong,nonatomic) NSMutableArray *refMutArray;
+
 @property (strong,nonatomic) NSMutableArray *dataArray;     //短信信息
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
 @property (strong,nonatomic) UITableViewController *tableViewController;
@@ -42,6 +46,13 @@
 {
     [super viewWillAppear:animated];
     
+    CFErrorRef error;
+    _addressBooks =ABAddressBookCreateWithOptions(nil, &error);
+    _refMutArray = (__bridge NSMutableArray *)(ABAddressBookCopyArrayOfAllPeople(_addressBooks));
+    allRecords = ABAddressBookCopyArrayOfAllPeople(_addressBooks);
+    VCLog(@"allRecords:%@",allRecords);
+    
+    namesDicts = [[NSMutableDictionary alloc] init];
     if (self.contactsArray || self.dataArray) {
         [self.dataArray removeAllObjects];
         [self.contactsArray removeAllObjects];
@@ -95,6 +106,11 @@
     self.dataArray = (NSMutableArray *)[[self.dataArray reverseObjectEnumerator] allObjects];
     
     VCLog(@"self.dataArray:%@",self.dataArray);
+    
+    
+    
+    
+    
 }
 
 - (void)viewDidLoad {
@@ -217,6 +233,7 @@
         //加载cell-xib
         cell = [[[NSBundle mainBundle] loadNibNamed:@"MessageCell" owner:self options:nil] objectAtIndex:0];
         
+        
     }
     //取消cell 选中背景色
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -231,22 +248,63 @@
         cell.dateLabel.text = sdata.msgTime;
 
     }else{
-        cell.contactsLabel.text = [self.contactsArray objectAtIndex:indexPath.row];//ddata.msgSender;
+        cell.contactsLabel.text =[self showContactsName:[self.contactsArray objectAtIndex:indexPath.row]].length > 0?[self showContactsName:[self.contactsArray objectAtIndex:indexPath.row]]:[self.contactsArray objectAtIndex:indexPath.row];//ddata.msgSender;
         cell.contentsLabel.text = ddata.msgContent;
         cell.dateLabel.text = ddata.msgTime;
     }
     
     // Configure the cell...
-    
   
     return cell;
+}
+/**
+ * @method  获取联系人名字
+ * @pragma  phones 号码
+ * @return  NSString name
+ */
+-(NSString *)showContactsName:(NSString *)phones{
+
+    NSString *name = @"";
+    
+    for (int i=0; i<CFArrayGetCount(allRecords); i++) {
+        ABRecordRef record = CFArrayGetValueAtIndex(allRecords, i);
+        CFTypeRef items = ABRecordCopyValue(record, kABPersonPhoneProperty);
+        CFArrayRef phoneNums = ABMultiValueCopyArrayOfAllValues(items);
+        
+        if (phoneNums) {
+            for (int j=0; j<CFArrayGetCount(phoneNums); j++) {
+                NSString *phone = (NSString*)CFArrayGetValueAtIndex(phoneNums, j);
+                phone = [phone purifyString];
+                if ([phone isEqualToString:phones]) {
+                    NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonFirstNameProperty));
+                    NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonLastNameProperty));
+                    
+                    if (firstName.length == 0) {
+                        firstName = @"";
+                    }
+                    if (lastName.length == 0) {
+                        lastName = @"";
+                    }
+
+                    name = [NSString stringWithFormat:@"%@%@",firstName,lastName];
+                    [namesDicts setObject:name forKey:phones];
+                    return name;
+                }
+            }
+        }
+    }
+    
+    [namesDicts setObject:name forKey:phones];
+    
+    return @"";
+
 }
 //选中某行
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //传值，hisName,hisNumber,hisHome
     
-    
+    VCLog(@"namesDicts:%@",namesDicts);
     TXData *detaildata = [[TXData alloc] init];//传值data
     
     if (self.searchController.active) {
@@ -256,9 +314,11 @@
         detaildata.hisHome = searchdata.hisHome;
     }else{
         TXData *normaldata = [self.dataArray objectAtIndex:indexPath.row];
-        detaildata.hisName = normaldata.hisName;
+        detaildata.hisName = [namesDicts valueForKey:[self.contactsArray objectAtIndex:indexPath.row]];
         detaildata.hisNumber = [self.contactsArray objectAtIndex:indexPath.row];//data.msgSender;
-        detaildata.hisHome = normaldata.hisHome;//@"hisHome"
+        if (detaildata.hisNumber.length >=7) {
+            detaildata.hisHome = [txsqlite searchAreaWithHisNumber:[[detaildata.hisNumber purifyString] substringToIndex:7]];
+        }else{detaildata.hisHome  = @"";}
     }
     MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
     DetailVC.datailDatas = detaildata;
@@ -308,6 +368,11 @@
 -(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return @"删除";
+}
+
+-(void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    CFRelease(_addressBooks);
 }
 
 @end

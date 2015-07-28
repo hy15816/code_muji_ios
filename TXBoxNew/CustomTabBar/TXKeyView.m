@@ -27,7 +27,7 @@
     UILabel *line =[[UILabel alloc] initWithFrame:CGRectMake(0, 50, rect.size.width, .1)];
     line.backgroundColor=[UIColor blackColor];
 //    line.alpha=.8;
-    [self addSubview:line];
+    //[self addSubview:line];
     
     [self drawKeyBorad];
     [self addInputBox];

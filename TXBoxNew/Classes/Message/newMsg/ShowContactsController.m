@@ -6,26 +6,19 @@
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 
-#define personTel @"personTel"
-#define personName @"personName"
-
 #import "ShowContactsController.h"
 #import "ShowContactsCell.h"
-#import "GetAllContacts.h"
-@interface ShowContactsController ()<GetContactsDelegate>
+
+@interface ShowContactsController ()
 
 {
-    NSMutableArray *mutPhoneArr;
-    NSMutableDictionary *phoneDic;      //同一个人的手机号码dic
+    NSMutableArray *contactsRefArray;   //保存联系人对象
     
     NSMutableArray *selectArray;
-    NSMutableDictionary *selectDict;
-    UIImageView *checkImg;
-    UIImageView *disCheckImg;
     NSIndexPath  *currentPath;
-    
+    NSString *currentName;
 }
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *cancelBtn;
+@property (assign,nonatomic) ABAddressBookRef addressBookRef;
 
 @end
 
@@ -35,20 +28,19 @@
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kHideCusotomTabBar object:self]];
     self.tabBarController.tabBar.hidden = YES;
-    [self loadContacts];
+    
     [self addFootview];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    mutPhoneArr = [[NSMutableArray alloc] init];
-    phoneDic = [[NSMutableDictionary alloc] init];
+    CFErrorRef error;
+    _addressBookRef =ABAddressBookCreateWithOptions(nil, &error);
+    contactsRefArray = (__bridge NSMutableArray *)(ABAddressBookCopyArrayOfAllPeople(_addressBookRef));
+    
     selectArray = [[NSMutableArray alloc] init];
-    selectDict = [[NSMutableDictionary alloc] init];
-    checkImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CellBlueSelected"]];
-    disCheckImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CellNotSelected"]];
-    self.cancelBtn.enabled = NO;
+    currentName = [[NSString alloc] init];
 }
 
 -(void)addFootview
@@ -61,7 +53,7 @@
     [footv addSubview:line];
     
     UILabel *text = [[UILabel alloc] initWithFrame:CGRectMake(0, 8, DEVICE_WIDTH, 25)];
-    text.text = [NSString stringWithFormat:@"共%lu位联系人",mutPhoneArr.count];
+    text.text = [NSString stringWithFormat:@"共%lu位联系人",contactsRefArray.count];
     text.textAlignment = NSTextAlignmentCenter;
     text.font = [UIFont systemFontOfSize:16];
     
@@ -91,7 +83,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    return mutPhoneArr.count;
+    return contactsRefArray.count;
 }
 
 
@@ -99,77 +91,56 @@
     ShowContactsCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ShowContactsCellID" forIndexPath:indexPath];
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.name.text = [[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personName];
-    cell.number.text = [[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel];
     
-     //多选
-    cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CellBlueSelected"]];;
-    cell.checkImgv.hidden = YES;
-    cell.accessoryView.hidden = YES;
+    ABRecordRef record = (__bridge ABRecordRef)([contactsRefArray objectAtIndex:indexPath.row]);
+    NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonFirstNameProperty));
+    NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonLastNameProperty));
     
+    if (firstName.length == 0) {
+        firstName = @"";
+    }
+    if (lastName.length == 0) {
+        lastName = @"";
+    }
+    
+    cell.name.text = [NSString stringWithFormat:@"%@%@",firstName,lastName];
+    //获取号码
+    ABMultiValueRef phoneNumber = ABRecordCopyValue(record, kABPersonPhoneProperty);
+    if (ABMultiValueGetCount(phoneNumber) > 0) {
+        NSString *phone = [NSString stringWithFormat:@"%@",ABMultiValueCopyValueAtIndex(phoneNumber,0)];//取第一个号码
+        NSLog(@"phone:%@",phone);
+        cell.number.text  = phone;
+    
+    
+    }else{
+        cell.number.text = @"";
+    }
     
     return cell;
 }
 
+
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath: indexPath ];
-    //多选
-    if (cell.accessoryView.hidden == YES){
-        //选中，如果数组里没有，则add
-        if (![selectArray containsObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]]) {
-            if ([[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]) {
-                [selectDict setObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]forKey:indexPath];
-            }else{
-                return;
-            }
-            
-            [selectArray addObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]];
-
-            cell.accessoryView.hidden = NO;
-        }
+    ABRecordRef record = (__bridge ABRecordRef)([contactsRefArray objectAtIndex:indexPath.row]);
+    NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonFirstNameProperty));
+    NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonLastNameProperty));
     
-    }else{
-        
-        //如果数组里有，则remove
-        if ([selectArray containsObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]]) {
-            [selectDict removeObjectForKey:indexPath];
-            [selectArray removeObject:[[mutPhoneArr objectAtIndex:indexPath.row] valueForKey:personTel]];
-
-            cell.accessoryView.hidden = YES;
-        }
-        
+    if (firstName.length == 0) {
+        firstName = @"";
     }
-
-    if (selectArray.count > 0) {
-        self.cancelBtn.enabled = YES;
-        [self.cancelBtn setTitle:@"确定"];
-    }else{
-        self.cancelBtn.enabled = NO;
+    if (lastName.length == 0) {
+        lastName = @"";
     }
+    NSDictionary *dict=@{isRecordRef:(__bridge NSString *)record,isRead:@"1"};
     
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"refnoti" object:self userInfo:dict];
+    [userDefaults setBool:YES forKey:isRead];
+    [self dismissViewControllerAnimated:YES completion:nil];
+
     
-    //单选
-    
-    VCLog(@"selectDict:%@",selectDict);
-    VCLog(@"selectArray:%@",selectArray);
-    //[self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-#pragma mark-- 获取通讯录联系人
--(void)loadContacts
-{
-    GetAllContacts *contacts = [[GetAllContacts alloc] init];
-    contacts.getContactsDelegate = self;
-    [contacts getContacts];
-}
-
-#pragma mark -- getContacts Delegate
--(void)getAllPhoneArray:(NSMutableArray *)array SectionDict:(NSMutableDictionary *)sDict PhoneDict:(NSMutableDictionary *)pDict
-{
-    mutPhoneArr = array;
-    VCLog(@"mutPhoneArray:%@",array);
-}
 
 #pragma mark - Navigation
 
@@ -177,15 +148,6 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    
-    if (sender != self.cancelBtn) {
-        return;
-    }
-    if (selectArray.count >0) {
-        self.selectContacts = [[ShowContacts alloc] init];
-        self.selectContacts.mmutArray = selectArray;
-    }
-
     
 }
 -(void)viewWillDisappear:(BOOL)animated

@@ -20,9 +20,25 @@
 
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
+
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        // Initialization code
+        [self createTextView:frame];
+        [self createRightButton:frame];
+        
+    }
+    return self;
+}
 - (void)drawRect:(CGRect)rect {
     
     self.backgroundColor = [UIColor clearColor];
+    UILabel *la=[[UILabel alloc] initWithFrame:CGRectMake(0, 0, DEVICE_WIDTH, .5)];
+    la.alpha = .5;
+    la.backgroundColor =[UIColor blackColor];
+    [self addSubview:la];
     /*
     _imgbgView = [[UIImageView alloc] initWithFrame:rect];
     _imgbgView.userInteractionEnabled = YES;
@@ -30,8 +46,7 @@
     _imgbgView.image = [UIImage imageNamed:_bgvName];
     [self addSubview:_imgbgView];
     */
-    [self createTextView:rect];
-    [self createRightButton:rect];
+    
     
 }
 -(void)createRightButton:(CGRect)rect{
@@ -63,12 +78,12 @@
     _textview.layer.borderColor = [UIColor blackColor].CGColor;
     _textview.layer.cornerRadius = 3;
     _textview.scrollEnabled = YES;
-    _textview.contentInset = UIEdgeInsetsMake(0 , 0,0, 0);
+    _textview.contentInset = UIEdgeInsetsMake(0 , 5,0, 5);
     _textview.returnKeyType = UIReturnKeyDefault;
     _textview.keyboardType = UIKeyboardTypeDefault;
     _textview.editable = YES;
     _textview.indicatorStyle = UIScrollViewIndicatorStyleDefault;
-    _textview.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+    _textview.scrollIndicatorInsets = UIEdgeInsetsMake(5, 0, 5, 0);
     [self addSubview:_textview];
 }
 

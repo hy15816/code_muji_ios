@@ -21,7 +21,8 @@
 #import "Common.h"
 #import "SVProgressHUD.h"
 #import <AVOSCloud/AVOSCloud.h>
-
+#import <AddressBook/AddressBook.h>
+#import <AddressBookUI/AddressBookUI.h>
 
 #ifdef DEBUG
 #define VCLog(...) NSLog(__VA_ARGS__)

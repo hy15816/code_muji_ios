@@ -1,14 +1,15 @@
 //
-//  ContactsCell.h
+//  ContactsTableViewCell.h
 //  TXBoxNew
 //
-//  Created by Naron on 15/4/16.
+//  Created by Naron on 15/7/27.
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-@interface ContactsCell : UITableViewCell
+@interface ContactsTableViewCell : UITableViewCell
+
 @property (weak  ,nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak  ,nonatomic) IBOutlet UILabel *numberLabel;
 @property (strong,nonatomic) UIImageView *imgView;

@@ -1,19 +1,17 @@
 //
-//  ContactsCell.m
+//  ContactsTableViewCell.m
 //  TXBoxNew
 //
-//  Created by Naron on 15/4/16.
+//  Created by Naron on 15/7/27.
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 
-#import "ContactsCell.h"
+#import "ContactsTableViewCell.h"
 
-
-@implementation ContactsCell
+@implementation ContactsTableViewCell
 
 - (void)awakeFromNib {
-    
-    
+    // Initialization code
 }
 
 #pragma mark 拨打电话
@@ -28,14 +26,6 @@
     
     
 }
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
-    
-}
-
 
 #pragma mark-创建上下分割线
 - (void)drawRect:(CGRect)rect
@@ -53,6 +43,10 @@
     [self.contentView addSubview:self.imgView];
     
 }
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
 
+    // Configure the view for the selected state
+}
 
 @end

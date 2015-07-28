@@ -89,7 +89,6 @@
     
     [self initLoginAndConfigButtons];
     [self refreshBindButton];
-    [self isOrNotUpdateVersion];
     
     //初始化蓝牙
     bleManage = [BLEmanager sharedInstance];
@@ -193,65 +192,6 @@
 }
 
 
-#pragma mark -- 检测版本
--(void)isOrNotUpdateVersion
-{
-    if ([self whatAreWeekDayTaday] == 2) {//星期一检测
-        //APP本地版本，与最新版本比较
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        //获取服务器版本号
-        //NSURL *url = [NSURL URLWithString:@"http://car0"];
-        //NSString *str = [[NSString alloc] initWithFormat:@"1.2"];
-        
-        //获取当前程序版本号
-        //NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-        //NSString *localVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
-        
-            //显示提示框
-            dispatch_async(dispatch_get_main_queue(), ^{
-                BOOL a = [[userDefaults valueForKey:@"versionSSSd"] intValue];
-                VCLog(@"a:%d",a);
-                if (!a) {//[str2 floatValue] != [str floatValue]
-                    
-                    UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-                    atView.tag = 3005;
-                    atView.delegate = self;
-                    [atView show];
-                    
-                    // 显示更新
-                    self.isFirmwareVersion.hidden = NO;
-                }else {
-                    self.isFirmwareVersion.hidden = YES;
-                    //[userDefaults setValue:@"0" forKey:@"versionSSSd"];
-                }
-            });
-            
-        });
-    }
-    
-    
-}
-
-/**
- *  获取当前日期是，星期几
- *  @return  NSInteger 星期几，
- */
-- (NSInteger)whatAreWeekDayTaday
-{
-    NSDate *now = [NSDate date];
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSDateComponents *comp = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitWeekday|NSCalendarUnitDay fromDate:now];
-    
-    // 得到星期几
-    // 1->7，(星期天)->(星期一)->(星期六)
-    NSInteger weekDay = [comp weekday];
-    // 得到几号
-    NSInteger day = [comp day];
-    
-    NSLog(@"weekDay:%ld   day:%ld",weekDay,day);
-    
-    return weekDay;
-}
 
 #pragma mark --AlertView delegate
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex

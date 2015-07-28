@@ -6,23 +6,27 @@
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 
+#define INPUT_HEIGHT 49.f
 
 #import "NewMsgController.h"
 #import "ShowContactsController.h"
 #import "TXSqliteOperate.h"
 #import "MsgDetailController.h"
 #import "NSString+helper.h"
-#import "ShowContacts.h"
 #import "BLEmanager.h"
-#import "TextViewInput.h"
+#import "HPGrowingTextView.h"
 
-@interface NewMsgController ()<UITextViewDelegate,UITextFieldDelegate,BLEmanagerDelegate,TextInputDelegate>
+@interface NewMsgController ()<UITextViewDelegate,UITextFieldDelegate,BLEmanagerDelegate,HPGrowingTextViewDelegate>
 {
     TXSqliteOperate *txsqlite;
     BLEmanager *bmanager;
     
-    TextViewInput *textvInput;
+    HPGrowingTextView *putViews;
     CGFloat tempHeight;
+    ABRecordRef ref;
+    UIView *containerView;
+    BOOL isSend;
+    NSString *phoneNumberString;
 }
 
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *disMissBtn;
@@ -38,56 +42,111 @@
 @implementation NewMsgController
 @synthesize msgContent;
 
--(IBAction)doSomethingDidSegue:(UIStoryboardSegue *)sender{
-    
-    ShowContactsController *thisViewController = [sender sourceViewController];
-    ShowContacts *showcs = thisViewController.selectContacts;
-    
-    NSString *string = [[NSString alloc] init];
-    //for (int i=0 ;i<1 ;  i++) {
-        string = [NSString stringWithFormat:@"%@,%@",string,[showcs.mmutArray lastObject]];
-    //}
-    
-    self.hisNumber.text = [string substringFromIndex:1];
-    
-}
 
+-(void)changeRecordRef:(NSNotification *)noti{
+    
+    ref = (__bridge ABRecordRef)[[noti userInfo] valueForKey:isRecordRef];
+    
+    NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(ref, kABPersonFirstNameProperty));
+    NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(ref, kABPersonLastNameProperty));
+    
+    if (firstName.length == 0) {
+        firstName = @"";
+    }
+    if (lastName.length == 0) {
+        lastName = @"";
+    }
+    if ([userDefaults valueForKey:isRead]) {
+        
+        self.hisNumber.text = [NSString stringWithFormat:@"%@%@",firstName,lastName];
+        
+        if (firstName.length == 0 && lastName.length == 0) {
+            //获取号码
+            ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
+            if (ABMultiValueGetCount(phoneNumber) > 0) {
+                NSString *phone = [NSString stringWithFormat:@"%@,",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
+                
+                NSLog(@"phone:%@",phone);
+                self.hisNumber.text = phone;
+            }
+            
+        }
+        [userDefaults setBool:NO forKey:isRead];
+    }
+    
+    //获取号码
+    ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
+    if (ABMultiValueGetCount(phoneNumber) > 0) {
+        NSString *phone = [NSString stringWithFormat:@"%@",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
+        
+        phoneNumberString = phone;
+    }
+
+
+    VCLog(@"ref:%@ name:%@",ref,self.hisNumber.text);
+
+}
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    //_originalTableViewContentInset = self.ta.contentInset;
     //键盘显示消息
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowNotif:) name:UIKeyboardWillShowNotification object:nil];
     //键盘隐藏消息
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardHiddenNotif:) name:UIKeyboardWillHideNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeRecordRef:) name:@"refnoti" object:nil];
      [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kHideCusotomTabBar object:self]];
     self.tabBarController.tabBar.hidden = YES;
     [self initNewMsgInputView];
+
+    
+}
+-(void)viewDidAppear:(BOOL)animated{
+    if (isSend == NO) {
+        putViews.text = [userDefaults valueForKey:@"putViewsText"];
+    }
 }
 
 #pragma mark - 键盘显示响应函数
 -(void)keyboardWillShowNotif:(NSNotification*)notif{
+    CGRect keyboardBounds;
+    [[notif.userInfo valueForKey:UIKeyboardFrameEndUserInfoKey] getValue: &keyboardBounds];
+    NSNumber *duration = [notif.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    keyboardBounds = [self.view convertRect:keyboardBounds toView:nil];
     
-    NSValue *keyboardObject = [[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey];
-    CGRect keyboardRect;
-    [keyboardObject getValue:&keyboardRect];
-    tempHeight = keyboardRect.size.height;
-    textvInput.frame = CGRectMake(0, DEVICE_HEIGHT-textinputHeight-tempHeight, DEVICE_WIDTH, textinputHeight);
+    CGRect containerFrame = containerView.frame;
+    containerFrame.origin.y = self.view.bounds.size.height - (keyboardBounds.size.height + containerFrame.size.height);
+    
+    [UIView animateWithDuration:[duration doubleValue] animations:^{
+        containerView.frame = containerFrame;
+    }];
+    
+
 }
 
 #pragma mark - 键盘隐藏响应函数
 -(void)keyboardHiddenNotif:(NSNotification*)notif{
     
-    tempHeight = 0;
-    textvInput.frame = CGRectMake(0, DEVICE_HEIGHT-textinputHeight, DEVICE_WIDTH, textinputHeight);
+    NSNumber *duration = [notif.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    
+    CGRect containerFrame = containerView.frame;
+    containerFrame.origin.y = self.view.bounds.size.height - containerFrame.size.height;
+    
+    [UIView animateWithDuration:[duration doubleValue] animations:^{
+        containerView.frame = containerFrame;
+    }];
     
 }
+
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     bmanager = [BLEmanager sharedInstance];
     bmanager.managerDelegate = self;
-    
+    isSend = NO;
     
     self.title = @"新信息";
     self.disMissBtn.enabled = YES;
@@ -118,39 +177,106 @@
 -(void) initNewMsgInputView
 {
     
-    textvInput =[[TextViewInput alloc] initWithFrame:CGRectMake(0, DEVICE_HEIGHT-TabBarHeight-35, DEVICE_WIDTH, 35)];
-    textvInput.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"abcd"]];
-    textvInput.inputDelegate = self;
-    if (msgContent.length>0) {
-        textvInput.textview.text = msgContent;
-    }
-    textvInput.textview.font = [UIFont systemFontOfSize:15];
-    textvInput.maxHeight = 100;
-    textvInput.rigBtnTitle = @"发送";
-    [self.view addSubview:textvInput];
+    containerView = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 40, DEVICE_WIDTH, 40)];
+    containerView.backgroundColor=[UIColor grayColor];
     
+    putViews = [[HPGrowingTextView alloc] initWithFrame:CGRectMake(6, 3, 240, 40)];
+    putViews.isScrollable = NO;
+    putViews.layer.cornerRadius = 5;
+    putViews.layer.borderWidth = .5;
+    putViews.layer.borderColor =[UIColor blackColor].CGColor;
+    putViews.contentInset = UIEdgeInsetsMake(0, 5, 0, 5);
+    
+    putViews.minNumberOfLines = 1;
+    putViews.maxNumberOfLines = 6;
+    // you can also set the maximum height in points with maxHeight
+    // textView.maxHeight = 200.0f;
+    putViews.returnKeyType = UIReturnKeyGo; //just as an example
+    putViews.font = [UIFont systemFontOfSize:15.0f];
+    putViews.delegate = self;
+    putViews.internalTextView.scrollIndicatorInsets = UIEdgeInsetsMake(5, 0, 5, 0);
+    putViews.backgroundColor = [UIColor whiteColor];
+    putViews.placeholder = @"信息";
+    
+    // textView.text = @"test\n\ntest";
+    // textView.animateHeightChange = NO; //turns off animation
+    
+    [self.view addSubview:containerView];
+    /*
+    UIImage *rawEntryBackground = [UIImage imageNamed:@"MessageEntryInputField.png"];
+    UIImage *entryBackground = [rawEntryBackground stretchableImageWithLeftCapWidth:13 topCapHeight:22];
+    UIImageView *entryImageView = [[UIImageView alloc] initWithImage:entryBackground];
+    entryImageView.frame = CGRectMake(5, 0, 248, 40);
+    entryImageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    //entryImageView.backgroundColor =[UIColor greenColor];
+    */
+    UIImage *rawBackground = [UIImage imageNamed:@"MessageEntryBackground.png"];
+    UIImage *background = [rawBackground stretchableImageWithLeftCapWidth:13 topCapHeight:22];
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:background];
+    imageView.frame = CGRectMake(0, 0, containerView.frame.size.width, containerView.frame.size.height);
+    imageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    imageView.backgroundColor =[UIColor groupTableViewBackgroundColor];
+    
+    putViews.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    
+    // view hierachy
+    [containerView addSubview:imageView];
+    [containerView addSubview:putViews];
+    //[containerView addSubview:entryImageView];
+
+    UIImage *sendBtnBackground = [[UIImage imageNamed:@"MessageEntrySendButton.png"] stretchableImageWithLeftCapWidth:13 topCapHeight:0];
+    UIImage *selectedSendBtnBackground = [[UIImage imageNamed:@"MessageEntrySendButton.png"] stretchableImageWithLeftCapWidth:13 topCapHeight:0];
+    
+    UIButton *doneBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    doneBtn.frame = CGRectMake(containerView.frame.size.width - 69, 8, 63, 27);
+    doneBtn.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
+    [doneBtn setTitle:@"发送" forState:UIControlStateNormal];
+    
+    [doneBtn setTitleShadowColor:[UIColor colorWithWhite:0 alpha:0.4] forState:UIControlStateNormal];
+    doneBtn.titleLabel.shadowOffset = CGSizeMake (0.0, -1.0);
+    doneBtn.titleLabel.font = [UIFont systemFontOfSize:16];
+    
+    [doneBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [doneBtn addTarget:self action:@selector(sendButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+    [doneBtn setBackgroundImage:sendBtnBackground forState:UIControlStateNormal];
+    [doneBtn setBackgroundImage:selectedSendBtnBackground forState:UIControlStateSelected];
+    [containerView addSubview:doneBtn];
+    containerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
 }
 
--(CGFloat)getKeyBoradHeight{
-    return tempHeight;
+-(void)sendButtonClick:(UIButton *)btn{
+    
+    [self rightButtonClick:btn];
+}
+#pragma mark - HPGrowingTextViewDelegate
+- (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height
+{
+    float diff = (growingTextView.frame.size.height - height);
+    
+    CGRect r = containerView.frame;
+    r.size.height -= diff;
+    r.origin.y += diff;
+    containerView.frame = r;
 }
 
--(void)changedFrame:(CGRect)rect{
-    textvInput.frame = rect;
-}
+
+#pragma mark -- send 消息
+
 -(void)rightButtonClick:(UIButton *)button{
     
     //保存发送的数据
     NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
     NSDate *date = [NSDate date];
-    fmt.dateFormat = @"yyyy/M/d HH:mm";
+    fmt.dateFormat = yyyy_M_d_HH_mm;
     NSString *time = [fmt stringFromDate:date];
     
     TXData *txdata =  [[TXData alloc] init];
     txdata.msgSender = @"1";
     txdata.msgTime = time;
-    txdata.msgContent = textvInput.textview.text;
-    txdata.msgAccepter = [self.hisNumber.text purifyString];
+    txdata.msgContent = putViews.text;
+    ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
+    NSString *phone = [NSString stringWithFormat:@"%@",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
+    txdata.msgAccepter = [phone purifyString];
     txdata.msgStates = @"0";
     /*
      BOOL connect = [[userDefaults valueForKey:BIND_STATE] intValue];
@@ -161,9 +287,9 @@
      return;
      }
      */
-    BOOL ismobile = [[self.hisNumber.text purifyString] isMobileNumber:[self.hisNumber.text purifyString]];
+    BOOL ismobile = [[phoneNumberString purifyString] isMobileNumber:[phoneNumberString purifyString]];
     
-    if (textvInput.textview.text.length > 0 && ismobile && self.hisNumber.text.length >= 11) {
+    if (putViews.text.length > 0 && ismobile && phoneNumberString.length >= 11) {
         
         //向蓝牙发送信息
         //[bmanager writeDatas:[self getdata]];
@@ -178,6 +304,7 @@
             self.title = [self.hisNumber.text purifyString];
             self.disMissBtn.enabled = NO;
             [self disMissButton:nil];
+            isSend = YES;
         }else{
             [SVProgressHUD showImage:nil status:@"发送失败"];
             self.disMissBtn.enabled = YES;
@@ -236,9 +363,22 @@
 
 - (IBAction)disMissButton:(UIBarButtonItem *)sender {
     
-    [textvInput.textview resignFirstResponder];
+    [putViews resignFirstResponder];
     [self dismissViewControllerAnimated:YES completion:nil];
     
+}
+
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    if (isSend ==NO ) {
+        [userDefaults setValue:putViews.text forKey:@"putViewsText"];
+    }
+    
+    
+}
+-(void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    [putViews resignFirstResponder];
 }
 - (void)idReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

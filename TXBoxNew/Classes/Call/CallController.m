@@ -44,6 +44,8 @@
     BOOL canAdd;
 }
 
+@property (nonatomic,assign) ABAddressBookRef addressBook;
+
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
 @property (weak,nonatomic) UIAlertController *alertc;
 @property (strong,nonatomic) NSIndexPath *selectedIndexPath;        //被选中
@@ -56,7 +58,10 @@
 {
     [super viewWillAppear:animated];
     
-    
+    CFErrorRef error = NULL;
+    _addressBook  = ABAddressBookCreateWithOptions(nil, &error);
+    CFIndex nPeople = ABAddressBookGetPersonCount(_addressBook);
+    NSLog(@"%ld",nPeople);
     
     //textInput
     if([self respondsToSelector:@selector(inputTextDidChanged:)]) {
@@ -494,8 +499,10 @@
     //当前选中行
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     TXData *aRecord;
+    ABRecordRef recordReff;
     if (searcherString.length <= 0) {
         aRecord = [CallRecords objectAtIndex:indexPath.row];
+        recordReff = (__bridge ABRecordRef)([((__bridge NSArray *)(ABAddressBookCopyPeopleWithName(_addressBook, (__bridge CFStringRef)(aRecord.hisName)))) lastObject]);
         VCLog(@"==================hisname:%@",aRecord.hisName);
         if (aRecord.hisName.length==0 || [aRecord.hisName isEqualToString:@""] || aRecord.hisName ==nil) {
             //跳转到添加联系人
@@ -506,11 +513,12 @@
         }else
         {
             //跳转 详情->编辑
-            [self showPersonViewControllerWithName:aRecord.hisName];
+            [self showPersonViewControllerWithRecordRefs:recordReff];
         }
     }else{
         NSDictionary *dict = [searchResault objectAtIndex:indexPath.row];
         NSString *name = [dict valueForKey:@"personName"];
+        recordReff = (__bridge ABRecordRef)([dict valueForKey:@"recordRef"]);
         VCLog(@"==================hisname:%@",aRecord.hisName);
         if ([name length]==0 || [name isEqualToString:@""] || name ==nil) {
             //跳转到添加联系人
@@ -520,8 +528,9 @@
             VCLog(@"show newPerson view");
         }else
         {
+            
             //跳转 详情->编辑
-            [self showPersonViewControllerWithName:name];
+            [self showPersonViewControllerWithRecordRefs:recordReff];
         }
         
     }
@@ -663,7 +672,7 @@
     //ABMultiValueRef email = ABMultiValueCreateMutable(kABMultiStringPropertyType);
     ABMultiValueRef phone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
     //bool didAdd = ABMultiValueAddValueAndLabel(email, @"John-Appleseed@mac.com", kABOtherLabel, NULL);
-    BOOL didAdds = ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)(number), kABPersonPhoneMobileLabel, NULL);
+    BOOL didAdds = ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)(number), kABPersonPhoneWorkFAXLabel, NULL);
     
     if (didAdds == YES )
     {
@@ -699,44 +708,23 @@
 -(void)newPersonViewController:(ABNewPersonViewController *)newPersonView didCompleteWithNewPerson:(ABRecordRef)person
 {
     [self.navigationController popToRootViewControllerAnimated:YES];
+    
 }
 
 #pragma mark -- 跳转到编辑联系人
 /**
- *  跳转到edit联系人
- *  @pragma string name
+ * @medoth 跳转到edit联系人
+ * @pragma recordRef 联系人-地址
  */
--(void)showPersonViewControllerWithName:(NSString *)string{
-    CFStringRef name = (__bridge CFStringRef)string;
-    //CFErrorRef *error;
-    //  获取通讯录
-    ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL,NULL) ;//ABAddressBookCreate()
-    //  查找名字为??的联系人
-    NSArray *people = (__bridge NSArray *)ABAddressBookCopyPeopleWithName(addressBook,name);//
-    // 若找到了，显示其信息
-    if ((people != nil) && [people count])
-    {
-        ABRecordRef person = (__bridge ABRecordRef)[people objectAtIndex:0];
-        ABPersonViewController *picker = [[ABPersonViewController alloc] init];
-        picker.personViewDelegate = self;
-        picker.displayedPerson = person;
-        picker.shouldShowLinkedPeople = YES;
-        picker.allowsActions = YES;//是否显示可以打电话发信息
-        picker.allowsEditing = YES;//是否显示编辑按钮
-        
-        [self.navigationController pushViewController:picker animated:YES];
-        
-    }
-    else
-    {
-        // 提示找不到联系人
-        //UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"Could not find %@",string] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
-        //[alert show];
-        [self.tableView reloadData];
-        
-    }
+-(void)showPersonViewControllerWithRecordRefs:(ABRecordRef)recordRef{
     
-    CFRelease(addressBook);
+    ABPersonViewController *personViewController = [[ABPersonViewController alloc] init];
+    //ABRecordRef record = (__bridge ABRecordRef)([_addressBookEntryArray objectAtIndex:indexPath.row]);
+    personViewController.personViewDelegate = self;
+    personViewController.displayedPerson = recordRef;
+    personViewController.allowsEditing = YES;
+    personViewController.allowsActions = NO;
+    [self.navigationController pushViewController:personViewController animated:YES];
     
 }
 
@@ -754,6 +742,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kInputCharNoti object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kDeleteCharNoti object:nil];
 
+    CFRelease(_addressBook);
     
 }
 - (void)didReceiveMemoryWarning {
