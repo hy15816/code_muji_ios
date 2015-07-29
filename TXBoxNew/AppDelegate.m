@@ -26,15 +26,6 @@
     
     //leanCloud 服务器
     [AVOSCloud setApplicationId:@"85m0pvb0vv1iluti5sk0xsou1mkftzn06a3f1ompvza9xc7z" clientKey:@"orluh89ufnpvl773b68w5gcdk4dxfrahzwaahz7c46ettn44"];
-
-    
-    if ([[userDefaults valueForKey:muji_bind_number] length] >0 ) {
-        [userDefaults setValue:@"1" forKey:CONFIG_STATE];
-    }else{
-        [userDefaults setValue:@"0" forKey:CONFIG_STATE];
-    }
-    
-    
     
     //创建数据库-和表
     TXSqliteOperate *sqlite = [[TXSqliteOperate alloc] init];
@@ -161,6 +152,9 @@
     //VCLog(@"x2");
     [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];//进入前台取消应用消息图标
     [self removeNotification];
+    
+    [[NSNotificationCenter defaultCenter ] postNotificationName:@"updataBLEOPenState" object:self];
+    
 }
 
 //程序成为活动的
@@ -190,12 +184,14 @@
 #pragma warning 退出程序时
 - (void)applicationWillTerminate:(UIApplication *)application {
     //控制为否
-    [userDefaults setValue:@"0" forKey:BIND_STATE];
-    [userDefaults setValue:@"0" forKey:LOGIN_STATE];
+    //[userDefaults setValue:@"0" forKey:BIND_STATE];
+    //[userDefaults setValue:@"0" forKey:CONFIG_STATE];
+    /*
     AVUser *currentUser = [AVUser currentUser];
     if (currentUser) {
         currentUser =nil;
     }
+     */
 }
 
 #pragma mark -- 检测版本

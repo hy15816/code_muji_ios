@@ -33,7 +33,7 @@
     
     
     //标题
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 5, SELF_WIDTH-5*2, 40)];
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 5, self.frame.size.width-5*2, 40)];
     titleLabel.font = [UIFont systemFontOfSize:18];
     titleLabel.text = title;
     titleLabel.numberOfLines = 0;

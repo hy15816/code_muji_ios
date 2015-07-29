@@ -95,6 +95,9 @@
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
     //获取联系人数据#pragma mark-- 获取通讯录联系人
     [self loadContacts];
+    
+    
+    
 }
 
 -(void)loadContacts{
@@ -103,9 +106,19 @@
     [contacts getContacts];
 }
 
+
+-(void)recognizerAction:(UIGestureRecognizer *)re{
+    //隐藏tabbar和callBtn
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"AAAAA" object:self]];
+}
 - (void)viewDidLoad {
     
     [super viewDidLoad];
+    
+    UITapGestureRecognizer *tap =[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(recognizerAction:)];
+    tap.numberOfTapsRequired = 1;
+    [self.view addGestureRecognizer:tap];
+    
     self.title = @"电话";
     [self loadCallRecords];
     
@@ -734,6 +747,7 @@
 {
     return NO;
 }
+
 
 -(void)viewWillDisappear:(BOOL)animated
 {

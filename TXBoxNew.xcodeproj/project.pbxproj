@@ -42,6 +42,7 @@
 		637191981B1F01CF005C09C8 /* NSString+AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 637191941B1F01CF005C09C8 /* NSString+AKNumericFormatter.m */; };
 		637191991B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 637191961B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m */; };
 		63719B011B44DBFC00AB7DE3 /* CallingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63719B001B44DBFC00AB7DE3 /* CallingView.m */; };
+		6374058F1B688878002BB074 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6374058E1B688878002BB074 /* AVOSCloud.framework */; };
 		637858471B317BEB006D5155 /* GetAllContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 637858461B317BEB006D5155 /* GetAllContacts.m */; };
 		637B49D81B438D7300326937 /* Guides.m in Sources */ = {isa = PBXBuildFile; fileRef = 637B49D51B438D7300326937 /* Guides.m */; };
 		637B49D91B438D7300326937 /* GuideView.m in Sources */ = {isa = PBXBuildFile; fileRef = 637B49D71B438D7300326937 /* GuideView.m */; };
@@ -62,7 +63,6 @@
 		639132431B2177A500F61E04 /* ShowContactsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 639132421B2177A500F61E04 /* ShowContactsCell.m */; };
 		63975E6D1AE73C040076E849 /* CustomTabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63975E6C1AE73C040076E849 /* CustomTabBarView.m */; };
 		63AE3B041B60EFFD0035DE87 /* ProvisionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AE3B031B60EFFD0035DE87 /* ProvisionViewController.m */; };
-		63B8F08B1B672E9600221AA4 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63B8F08A1B672E9600221AA4 /* AVOSCloud.framework */; };
 		63B8F0A61B6775E700221AA4 /* ChatsInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B8F0A11B6775E700221AA4 /* ChatsInputView.m */; };
 		63B8F0A71B6775E700221AA4 /* HPGrowingTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B8F0A31B6775E700221AA4 /* HPGrowingTextView.m */; };
 		63B8F0A81B6775E700221AA4 /* HPTextViewInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B8F0A51B6775E700221AA4 /* HPTextViewInternal.m */; };
@@ -91,7 +91,6 @@
 		63FA3A671B5E28FF0049EB1C /* AFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FA3A5C1B5E28FF0049EB1C /* AFURLRequestSerialization.m */; };
 		63FA3A681B5E28FF0049EB1C /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FA3A5E1B5E28FF0049EB1C /* AFURLResponseSerialization.m */; };
 		63FA3A691B5E28FF0049EB1C /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FA3A601B5E28FF0049EB1C /* AFURLSessionManager.m */; };
-		63FA3A6C1B5E2F8C0049EB1C /* aaTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FA3A6B1B5E2F8C0049EB1C /* aaTableViewController.m */; };
 		63FB5FD51ADBB58700A1A92B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB5FD41ADBB58700A1A92B /* main.m */; };
 		63FB5FD81ADBB58700A1A92B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB5FD71ADBB58700A1A92B /* AppDelegate.m */; };
 		63FB5FDE1ADBB58700A1A92B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63FB5FDC1ADBB58700A1A92B /* Main.storyboard */; };
@@ -181,6 +180,7 @@
 		637191961B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+AKNumericFormatter.m"; sourceTree = "<group>"; };
 		63719AFF1B44DBFC00AB7DE3 /* CallingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallingView.h; sourceTree = "<group>"; };
 		63719B001B44DBFC00AB7DE3 /* CallingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallingView.m; sourceTree = "<group>"; };
+		6374058E1B688878002BB074 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		637858451B317BEB006D5155 /* GetAllContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetAllContacts.h; sourceTree = "<group>"; };
 		637858461B317BEB006D5155 /* GetAllContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetAllContacts.m; sourceTree = "<group>"; };
 		637B49D41B438D7300326937 /* Guides.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Guides.h; sourceTree = "<group>"; };
@@ -218,7 +218,6 @@
 		63975E6C1AE73C040076E849 /* CustomTabBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomTabBarView.m; sourceTree = "<group>"; };
 		63AE3B021B60EFFD0035DE87 /* ProvisionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProvisionViewController.h; sourceTree = "<group>"; };
 		63AE3B031B60EFFD0035DE87 /* ProvisionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProvisionViewController.m; sourceTree = "<group>"; };
-		63B8F08A1B672E9600221AA4 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		63B8F0A01B6775E700221AA4 /* ChatsInputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsInputView.h; sourceTree = "<group>"; };
 		63B8F0A11B6775E700221AA4 /* ChatsInputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatsInputView.m; sourceTree = "<group>"; };
 		63B8F0A21B6775E700221AA4 /* HPGrowingTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPGrowingTextView.h; sourceTree = "<group>"; };
@@ -268,8 +267,6 @@
 		63FA3A5E1B5E28FF0049EB1C /* AFURLResponseSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLResponseSerialization.m; sourceTree = "<group>"; };
 		63FA3A5F1B5E28FF0049EB1C /* AFURLSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLSessionManager.h; sourceTree = "<group>"; };
 		63FA3A601B5E28FF0049EB1C /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLSessionManager.m; sourceTree = "<group>"; };
-		63FA3A6A1B5E2F8C0049EB1C /* aaTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aaTableViewController.h; sourceTree = "<group>"; };
-		63FA3A6B1B5E2F8C0049EB1C /* aaTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = aaTableViewController.m; sourceTree = "<group>"; };
 		63FB5FCF1ADBB58700A1A92B /* TXBoxNew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TXBoxNew.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63FB5FD31ADBB58700A1A92B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		63FB5FD41ADBB58700A1A92B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -296,7 +293,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				63B8F08B1B672E9600221AA4 /* AVOSCloud.framework in Frameworks */,
+				6374058F1B688878002BB074 /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -638,7 +635,7 @@
 		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
 			isa = PBXGroup;
 			children = (
-				63B8F08A1B672E9600221AA4 /* AVOSCloud.framework */,
+				6374058E1B688878002BB074 /* AVOSCloud.framework */,
 				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
 				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
 				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
@@ -758,8 +755,6 @@
 				6387735C1B4FB0A000771AF2 /* Launch Screen.xib */,
 				63FB5FDF1ADBB58700A1A92B /* Images.xcassets */,
 				63FB5FD21ADBB58700A1A92B /* Supporting Files */,
-				63FA3A6A1B5E2F8C0049EB1C /* aaTableViewController.h */,
-				63FA3A6B1B5E2F8C0049EB1C /* aaTableViewController.m */,
 			);
 			path = TXBoxNew;
 			sourceTree = "<group>";
@@ -977,7 +972,6 @@
 				63FA3A671B5E28FF0049EB1C /* AFURLRequestSerialization.m in Sources */,
 				6352996A1ADE372E006840AC /* CustomTabBarBtn.m in Sources */,
 				63719B011B44DBFC00AB7DE3 /* CallingView.m in Sources */,
-				63FA3A6C1B5E2F8C0049EB1C /* aaTableViewController.m in Sources */,
 				637005CC1AE4C1D000B8BAFD /* TXMessageProcessing.m in Sources */,
 				6387735A1B4F894600771AF2 /* ShareContentController.m in Sources */,
 				63FB5FD51ADBB58700A1A92B /* main.m in Sources */,
@@ -1226,6 +1220,8 @@
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
@@ -1260,6 +1256,8 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,

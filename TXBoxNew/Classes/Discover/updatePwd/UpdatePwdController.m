@@ -83,7 +83,25 @@
 }
 -(BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    [self closeKeyBoard];
+    
+    if (textField == self.updNumberField) {
+        [self.updNumberField resignFirstResponder];
+        [self.updSmsCodeField becomeFirstResponder];
+    }else if (textField == self.updSmsCodeField){
+        [self.updSmsCodeField resignFirstResponder];
+        [self.updPwdField becomeFirstResponder];
+    }else if (textField == self.updPwdField){
+        [self.updPwdField resignFirstResponder];
+        [self.updpwdAgainField becomeFirstResponder];
+    }else if(textField == self.updpwdAgainField){
+        
+        [self.updpwdAgainField resignFirstResponder];
+        //
+        [self updatePWD];
+    }
+
+    
+    //[self closeKeyBoard];
     //
     //[self loginUserAccount];
     return YES;
@@ -132,11 +150,17 @@
 
 - (IBAction)updatePwdBtnClick:(UIButton *)sender{
     
+    [self updatePWD];
+    
+    //[self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+-(void)updatePWD{
     //验证手机验证码
     [AVUser verifyMobilePhone:self.updSmsCodeField.text withBlock:^(BOOL suc,NSError *error){
         if (suc) {
             VCLog(@"验证smscode suc");
-            
+            [SVProgressHUD showWithStatus:@""];
             //重置密码
             [AVUser resetPasswordWithSmsCode:self.updSmsCodeField.text newPassword:self.updpwdAgainField.text block:^(BOOL suc,NSError *error){
                 if (error) {
@@ -144,6 +168,7 @@
                     [SVProgressHUD showErrorWithStatus:error.localizedDescription];
                 }else{
                     [SVProgressHUD showImage:nil status:@"已重置"];
+                    [self.navigationController popToRootViewControllerAnimated:YES];
                     VCLog(@"重置pwd suc");
                 }
                 
@@ -156,8 +181,9 @@
             [SVProgressHUD showImage:nil status:@"验证码错误"];
         }
     }];
-    
+
 }
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

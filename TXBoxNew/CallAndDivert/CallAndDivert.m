@@ -49,7 +49,7 @@
     if (loginst) {//已登录
         //2.获取配置(拇机)号码
         NSString *number = [userDefaults valueForKey:muji_bind_number];
-        if ([[userDefaults valueForKey:muji_bind_number] length] > 0) {//已配置
+        if ([[userDefaults valueForKey:CONFIG_STATE] intValue]) {//已配置
             //3.获取呼转状态
             [self getDivertState:number];
             

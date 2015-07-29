@@ -7,6 +7,8 @@
 //
 
 #import "LoginController.h"
+#import "RegisteViewController.h"
+#import "UpdatePwdController.h"
 
 @interface LoginController ()<UITextFieldDelegate>
 {
@@ -22,6 +24,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *registers;
 - (IBAction)loginButtonClick:(UIButton *)sender;
 - (IBAction)forgetPwdBtnClick:(UIButton *)sender;
+- (IBAction)reistersButton:(UIButton *)sender;
 
 @end
 
@@ -44,7 +47,7 @@
     if ([userDefaults valueForKey:CurrentUser]) {
         self.numberField.text = [userDefaults valueForKey:CurrentUser];
     }
-    [self.numberField becomeFirstResponder];
+    
     self.numberField.delegate = self;
     self.pwdField.delegate = self;
     
@@ -57,6 +60,7 @@
     self.loginBtn.alpha = .5f;
 }
 
+#pragma mark -- Swipe
 -(void)loginViewSwipeActions:(UISwipeGestureRecognizer *)recognizer
 {
     [self closeKeyboard];
@@ -66,7 +70,7 @@
     [self closeKeyboard];
 }
 
-#pragma mark textField delegate
+#pragma mark --textField delegate
 -(void)textFieldDidBeginEditing:(UITextField *)textField
 {
     /*
@@ -144,6 +148,18 @@
 }
 */
 
+#pragma mark -- 登录账号
+- (IBAction)loginButtonClick:(UIButton *)sender {
+    
+    NSLog(@"login click");
+    
+    
+    [self loginUserAccount];
+    
+    
+    
+}
+
 -(void)loginUserAccount
 {
     //
@@ -154,11 +170,21 @@
         [SVProgressHUD showImage:nil status:@"请输入正确的账号密码"];
         
     }else{
-     
+        [SVProgressHUD showWithStatus:@""];
+        //[SVProgressHUD showWithStatus:@"登录中..." maskType:SVProgressHUDMaskTypeNone]
         [AVUser logInWithUsernameInBackground:self.numberField.text password:self.pwdField.text block:^(AVUser *user,NSError *error){
             if (error) {
                 VCLog(@"login error.code%ld error:%@",(long)error.code,error.localizedDescription);
-                [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+                NSString *errorString;
+                if ([error.localizedDescription isEqualToString:@"THE USERNAME AND PASSWORD MISMATCH."]) {
+                    errorString = @"账号或密码不正确";
+                    [SVProgressHUD showErrorWithStatus:errorString];
+                }else if([error.localizedDescription isEqualToString:@"COULD NOT FIND USER"]){
+                    [SVProgressHUD showErrorWithStatus:@"用户不存在"];
+                }else{
+                    [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+                }
+                
                 self.pwdField.text = nil;
                 [self.pwdImg setImage:[UIImage imageNamed:@"login_key"] forState:UIControlStateNormal];
             }else{
@@ -180,19 +206,25 @@
 }
 
 
-- (IBAction)loginButtonClick:(UIButton *)sender {
-    
-    NSLog(@"login click");
-   
-    [self loginUserAccount];
-    
-    
-   
-}
 
+#pragma mark -- 忘记密码
 - (IBAction)forgetPwdBtnClick:(UIButton *)sender {
     
     VCLog(@"forget pwd?");
     
+    UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UpdatePwdController *updateView = [board instantiateViewControllerWithIdentifier:@"UpdatePwdControllerID"];
+    [self.navigationController pushViewController:updateView animated:YES];
+    
+    
+    
+}
+
+#pragma mark -- 注册账号
+- (IBAction)reistersButton:(UIButton *)sender {
+    
+    UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    RegisteViewController *registerView = [board instantiateViewControllerWithIdentifier:@"RegisteViewControllerID"];
+    [self.navigationController pushViewController:registerView animated:YES];
 }
 @end

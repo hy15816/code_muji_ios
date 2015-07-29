@@ -7,6 +7,8 @@
 //
 
 #import "RegisteViewController.h"
+#import "LoginController.h"
+
 
 @interface RegisteViewController ()<UITextFieldDelegate>
 {
@@ -75,7 +77,23 @@
 #pragma mark --textField ..
 -(BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    [self closeKeyBoard];
+    if (textField == self.regNumberField) {
+        [self.regNumberField resignFirstResponder];
+        [self.enterSmsCode becomeFirstResponder];
+    }else if (textField == self.enterSmsCode){
+        [self.enterSmsCode resignFirstResponder];
+        [self.regPwdField becomeFirstResponder];
+    }else if (textField == self.regPwdField){
+        [self.regPwdField resignFirstResponder];
+        [self.pwdFieldAgain becomeFirstResponder];
+    }else if(textField == self.pwdFieldAgain){
+        
+        [self.pwdFieldAgain resignFirstResponder];
+        //
+        [self registerUser];
+    }
+    
+    //[self closeKeyBoard];
     //
     //[self loginUserAccount];
     return YES;
@@ -97,51 +115,63 @@
 
 #pragma mark--用户注册
 - (IBAction)registerBtnClick:(UIButton *)sender {
+    
+    
+    [self registerUser];
+}
+
+-(void)registerUser{
     //验证手机验证码
     
-    [AVOSCloud verifySmsCode:self.enterSmsCode.text mobilePhoneNumber:self.regNumberField.text callback:^(BOOL suc,NSError *error){
-        if (error) {
-            VCLog(@"验证- error");
-            [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@",@"请输入正确的验证码"]];
-        }else{
-            VCLog(@"验证-suc");
-            
-            //用户注册
-            AVUser *user = [AVUser user];
-            user.username = self.regNumberField.text;
-            user.password = self.regPwdField.text;
-            //注册
-            [user signUpInBackgroundWithBlock:^(BOOL suc,NSError *error){
-            
-                if (error) {
-                    VCLog(@"reg - error");
-                    
-                    UIAlertView *regAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"%@",error.localizedDescription] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                    [regAlert show];
-                    self.regNumberField.text = nil;
-                    //self.regPwdField.text = nil;
-                    //self.pwdFieldAgain.text = nil;
-                    self.enterSmsCode.text = nil;
-                    
-                }else{
-                    VCLog(@"reg -suc");
-                    [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@",@"注册成功"]];
-                    //[self.cancelBtn setTitle:@"完成"];
-                    
-                    [userDefaults setValue:self.regNumberField.text forKey:muji_bind_number];
-                    [userDefaults setValue:@"1" forKey:LOGIN_STATE];
-                    [self.navigationController popToRootViewControllerAnimated:YES];
-                }
-            }];
-            
-            
-        }
-        
-    }];
+     [AVOSCloud verifySmsCode:self.enterSmsCode.text mobilePhoneNumber:self.regNumberField.text callback:^(BOOL suc,NSError *error){
+         if (error) {
+             VCLog(@"验证- error");
+             [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@",@"请输入正确的验证码"]];
+             }else{
+                 VCLog(@"验证-suc");
+                 [SVProgressHUD showWithStatus:@""];
+                 //用户注册
+                 AVUser *user = [AVUser user];
+                 user.username = self.regNumberField.text;
+                 user.password = self.regPwdField.text;
+                 //注册
+                 [user signUpInBackgroundWithBlock:^(BOOL suc,NSError *error){
+                 
+                 if (error) {
+                 VCLog(@"reg - error");
+                 NSString *Errors;
+                 if ([error.localizedDescription isEqualToString:@"USERNAME HAS ALREADY BEEN TAKEN"]) {
+                 Errors = @"用户名已存在";
+                 }
+                 
+                 UIAlertView *regAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"%@",error.localizedDescription] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                 [regAlert show];
+                 self.regNumberField.text = nil;
+                 //self.regPwdField.text = nil;
+                 //self.pwdFieldAgain.text = nil;
+                 self.enterSmsCode.text = nil;
+                 [SVProgressHUD dismiss];
+                 
+                 }else{
+                 VCLog(@"reg -suc");
+                 [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@",@"注册成功"]];
+                 //[self.cancelBtn setTitle:@"完成"];
+                 
+                 [userDefaults setValue:self.regNumberField.text forKey:muji_bind_number];
+                 [userDefaults setValue:@"1" forKey:LOGIN_STATE];
+                 [self.navigationController popToRootViewControllerAnimated:YES];
+                 }
+             }];
+         
+         }
+     
+     }];
+     
     
     
     VCLog(@"reg btn");
 }
+
 #pragma mark -- 请求手机验证码
 - (IBAction)smsCodeClick:(UIButton *)sender {
     

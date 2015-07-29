@@ -11,7 +11,7 @@
 // 通知
 #define ktextChangeNotify @"textChangeNotification"//输入文本时，显示callBtn
 #define kCallingBtnClick @"callingBtnClick"     //点击callBtn
-#define kCustomKeyboardHide @"customKeyboardHide"//自定键盘隐藏
+#define kCustomKeyboardHide @"customKeyboardHide"//自定键盘隐藏和callbtn
 #define kKeyboardAndTabViewHide @"keyboardAndTabBarHide"//自定键盘、callBtn,tabbar隐藏
 #define kHideCusotomTabBar @"hideCustomTabBar"//隐藏自定tabbar
 #define kShowCusotomTabBar @"showCustomTabBar"//显示自定tabbar

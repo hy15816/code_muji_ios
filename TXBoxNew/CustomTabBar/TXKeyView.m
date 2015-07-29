@@ -98,6 +98,7 @@
     [self.textsearch setPlaceholder:@"输入数字或拼音模糊搜索"];//NSLocalizedString(@"Please_enter_number_or_letter_of_fuzzy_search", nil)
     
     self.textsearch.returnKeyType = UIReturnKeyDefault;
+    
     [textsearch resignFirstResponder];
     [self layoutSubviews];
     self.textsearch.delegate = self;

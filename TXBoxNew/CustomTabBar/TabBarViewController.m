@@ -322,6 +322,10 @@
         tabBarView.callBtn.hidden = YES;
         tabBarView.hidden = YES;
     }
+    if ([notifi.name isEqualToString:@"AAAAA"]) {
+        [self showOrHideKeyborad:nil];
+    }
+    
     
     if ([notifi.name isEqualToString:kJumptoDiscoeryView]) {
         //        
