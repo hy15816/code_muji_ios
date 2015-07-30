@@ -6,10 +6,10 @@
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 
-#define TagControlAlert 4000
-#define TagLoginAlert   4002
-#define TagOpenBLE      4003
-#define TagConfigAlert  4004
+#define TagToLoginAlert     4000
+#define TagToConfigAlert    4002
+#define TagToOpenBLE        4003
+#define TagToControlAlert   4004
 
 #import "DiscoveryController.h"
 #import "NSString+helper.h"
@@ -95,23 +95,12 @@
     
     [self initLoginAndConfigButtons];
     [self refreshBindButton];
-    if (isState) {
-        //再次检测蓝牙状态
-        isState = NO;
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateBLEOpenDate:) name:@"updataBLEOPenState" object:nil];
-        NSLog(@"agin jc");
-    }
     
 }
--(void)updateBLEOpenDate:(NSNotification *)noti{
-    
-    //初始化蓝牙
-    bleManage = [BLEmanager sharedInstance];
-    bleManage.managerDelegate = self;
-    
-}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [userDefaults setBool:NO forKey:@"al"];
     isState = NO;
     defaults = [NSUserDefaults standardUserDefaults];
     txsqlite = [[TXSqliteOperate alloc] init];
@@ -430,8 +419,7 @@
     popview.delegate = self;
     [self.view.window addSubview:popview];
     
-    
-    if (mujiNumber.length>0) {
+    if ([[userDefaults valueForKey:CONFIG_STATE] intValue]) {
         [popview initWithTitle:@"修改拇机号码信息:" label:@"拇机号码" cancelButtonTitle:@"OK" otherButtonTitles:@"不OK"];
         popview.secondField.text = mujiNumber;
     }else{
@@ -564,7 +552,7 @@
         }else{
             //提示登录
             UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"想【修改】拇机号码？请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-            configAlert.tag = TagConfigAlert;
+            configAlert.tag = TagToLoginAlert;
             [configAlert show];
         }
         
@@ -579,17 +567,14 @@
         }else{
             //提示登录
             UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"想【配置】拇机号码？请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-            configAlert.tag = TagConfigAlert;
+            configAlert.tag = TagToLoginAlert;
             [configAlert show];
         }
 
         
         
     }
-    
-    
 
-    
 }
 
 #pragma mark -- 登录 & 退出
@@ -598,11 +583,15 @@
     BOOL loginstate = [[defaults valueForKey:LOGIN_STATE] intValue];
     if (loginstate) {
         [self loginOut];
-        //[defaults setValue:@"0" forKey:LOGIN_STATE];
-        [defaults setValue:@"0" forKey:CONFIG_STATE];
         self.connectGifView.hidden = YES;
         
+        //更新ui
         [self initLoginAndConfigButtons];
+        [self cutConnectperipheral];//断开蓝牙连接，
+        [self refreshBindButton];
+        
+        //呼转？
+#warning ??????????????????????
     }else
     {
         [self jumpToLoginView];
@@ -630,51 +619,58 @@
 
 #pragma mark -- 控制 & 解除
 - (IBAction)bindButtonClick:(UIButton *)sender {
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        
+    if (![userDefaults boolForKey:@"al"]) {
         //初始化蓝牙
         bleManage = [BLEmanager sharedInstance];
         bleManage.managerDelegate = self;
-
-    });
-    
-    
-    
-    
-    
-    BOOL loginstate = [[defaults valueForKey:LOGIN_STATE] intValue];
-    if (loginstate) {
-        BOOL bstate = [[defaults valueForKey:BIND_STATE] intValue];
-        if (bstate) {
-            [defaults setObject:@"0" forKey:BIND_STATE];
-            //断开蓝牙连接
-            [self cutConnectperipheral];
-        }else{//没绑定
-            
-            if (managerState == CBCentralManagerStatePoweredOn) {
-                
-                [SVProgressHUD showWithStatus:@"匹配中..." maskType:SVProgressHUDMaskTypeNone];
-                //查找外设
-                [self scanPeripheral];
-                
-                [self performSelector:@selector(dismissSvp) withObject:nil afterDelay:15];//扫描外设时间
-            }else{
-                UIAlertView *atv=[[UIAlertView alloc] initWithTitle:@"需要打开蓝牙" message:@"是否打开蓝牙？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-                atv.tag = TagOpenBLE;
-                isState = YES;
-                [atv show];
-            }
-        }
-    }else{//未登录
-        //提示登录
-        UIAlertView *controlAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"想要【控制】拇机？请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-        controlAlert.tag = TagLoginAlert;
-        [controlAlert show];
+        [userDefaults setBool:YES forKey:@"al"];
     }
     
-    
-    [self refreshBindButton];
+        // 汇总结果
+        BOOL loginstate = [[defaults valueForKey:LOGIN_STATE] intValue];
+        if (loginstate) {
+            BOOL configsState = [[userDefaults valueForKey:CONFIG_STATE] intValue];
+            if (configsState) {//已配置
+                BOOL bstate = [[defaults valueForKey:BIND_STATE] intValue];
+                if (bstate) {
+                    [defaults setObject:@"0" forKey:BIND_STATE];
+                    //断开蓝牙连接
+                    [self cutConnectperipheral];
+                }else{//没绑定
+                    NSLog(@"--------------is  alert");
+                    if (managerState == CBCentralManagerStatePoweredOn ) {
+                        
+                        [SVProgressHUD showWithStatus:@"匹配中..." maskType:SVProgressHUDMaskTypeNone];
+                        //查找外设
+                        [self scanPeripheral];
+                        
+                        [self performSelector:@selector(dismissSvp) withObject:nil afterDelay:15];//扫描外设时间
+                    }else{//蓝牙是非打开状态
+                        if (isState) {
+                            UIAlertView *atv=[[UIAlertView alloc] initWithTitle:@"需要打开蓝牙" message:@"是否打开蓝牙？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+                            atv.tag = TagToOpenBLE;
+                            
+                            [atv show];
+                        }
+                    }
+                }
+            }else{//未配置
+                //提示配置
+                UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"想要【控制】拇机" message:@"请先【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+                configAlert.tag = TagToConfigAlert;
+                [configAlert show];
+            }
+            
+        }else{//未登录
+            //isState = NO;
+            //提示登录
+            UIAlertView *controlAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"想要【控制】拇机？请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+            controlAlert.tag = TagToLoginAlert;
+            [controlAlert show];
+        }
+        
+        
+        [self refreshBindButton];
     
 }
 
@@ -718,7 +714,7 @@
         
     }
     //打开蓝牙？
-    if (alertView.tag == TagOpenBLE) {
+    if (alertView.tag == TagToOpenBLE) {
         if (buttonIndex == 0) {//ok
             //
             // ios8之后可用
@@ -730,19 +726,20 @@
         }else{
             
         }
+        
     }
     
-    if (alertView.tag == TagLoginAlert) {
+    if (alertView.tag == TagToLoginAlert) {
         if (buttonIndex == 0) {
             //
             [self jumpToLoginView];
         }
     }
     
-    if (alertView.tag == TagConfigAlert) {
+    if (alertView.tag == TagToConfigAlert) {
         if (buttonIndex == 0) {
             //
-            [self jumpToLoginView];
+            [self configureButtonClick:nil];
         }
     }
     
@@ -756,6 +753,11 @@
     
     managerState = state;
     NSLog(@"------------------state:%ld",(long)state);
+    
+    if (state != CBCentralManagerStatePoweredOn) {
+        isState = YES;
+    }
+    
     
 }
 -(void)managerConnectedPeripheral:(CBPeripheral *)peripheral connect:(BOOL)isConnect

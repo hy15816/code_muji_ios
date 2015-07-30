@@ -66,8 +66,9 @@ static BLEmanager *sharedBLEmanger=nil;
 //central蓝牙当前状态
 -(void)centralManagerDidUpdateState:(CBCentralManager *)central{
     
-    [managerDelegate systemBLEState:centralManager.state];
     [self isLECapableHaedware];
+    [managerDelegate systemBLEState:central.state];
+    
     
 }
 

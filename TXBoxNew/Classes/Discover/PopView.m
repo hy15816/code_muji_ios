@@ -15,6 +15,14 @@
 @implementation PopView
 
 
+-(id)initWithFrame:(CGRect)frame{
+    self = [super initWithFrame:frame];
+    if (self) {
+        //
+        [self simg:frame];
+    }
+    return self;
+}
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect {
@@ -23,15 +31,16 @@
     
 }
 
--(void)initWithTitle:(NSString *)title label:(NSString *)label cancelButtonTitle:(NSString *)cancelTitle otherButtonTitles:(NSString *)sureTitle
-{
+-(void)simg:(CGRect)frame{
     self.backgroundColor = [UIColor clearColor];
     self.imgv = [[UIImageView alloc] initWithFrame:self.bounds];
     self.imgv.backgroundColor = RGBACOLOR(246, 246, 246, 1);
     self.imgv.layer.cornerRadius = 5;
     self.imgv.userInteractionEnabled = YES;
-    
-    
+}
+
+-(void)initWithTitle:(NSString *)title label:(NSString *)label cancelButtonTitle:(NSString *)cancelTitle otherButtonTitles:(NSString *)sureTitle
+{
     //标题
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 5, self.frame.size.width-5*2, 40)];
     titleLabel.font = [UIFont systemFontOfSize:18];

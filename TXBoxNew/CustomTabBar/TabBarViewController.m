@@ -323,7 +323,7 @@
         tabBarView.hidden = YES;
     }
     if ([notifi.name isEqualToString:@"AAAAA"]) {
-        [self showOrHideKeyborad:nil];
+        [self initRecognizer:nil];
     }
     
     

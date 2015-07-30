@@ -187,6 +187,8 @@ CGFloat SVProgressHUDRingThickness = 6;
     }
 }
 
+
+
 - (void)updatePosition {
 	
     CGFloat hudWidth = 100;

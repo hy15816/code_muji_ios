@@ -106,18 +106,9 @@
     [contacts getContacts];
 }
 
-
--(void)recognizerAction:(UIGestureRecognizer *)re{
-    //隐藏tabbar和callBtn
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"AAAAA" object:self]];
-}
 - (void)viewDidLoad {
     
     [super viewDidLoad];
-    
-    UITapGestureRecognizer *tap =[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(recognizerAction:)];
-    tap.numberOfTapsRequired = 1;
-    [self.view addGestureRecognizer:tap];
     
     self.title = @"电话";
     [self loadCallRecords];
@@ -343,7 +334,12 @@
 }
 
 
-#pragma mark -- Table view data source
+#pragma mark -- Table view 
+
+-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    //隐藏tabbar和callBtn
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"AAAAA" object:self]];
+}
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     
     return 1;
