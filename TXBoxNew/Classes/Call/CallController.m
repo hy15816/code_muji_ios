@@ -49,6 +49,7 @@
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
 @property (weak,nonatomic) UIAlertController *alertc;
 @property (strong,nonatomic) NSIndexPath *selectedIndexPath;        //被选中
+@property (strong,nonatomic) NSIndexPath *ccurrentIndexPath;    //当前被选中的
 @end
 
 
@@ -58,10 +59,6 @@
 {
     [super viewWillAppear:animated];
     
-    CFErrorRef error = NULL;
-    _addressBook  = ABAddressBookCreateWithOptions(nil, &error);
-    CFIndex nPeople = ABAddressBookGetPersonCount(_addressBook);
-    NSLog(@"%ld",nPeople);
     
     //textInput
     if([self respondsToSelector:@selector(inputTextDidChanged:)]) {
@@ -91,6 +88,11 @@
 {
     [super viewDidAppear:animated];
     
+    CFErrorRef error = NULL;
+    _addressBook  = ABAddressBookCreateWithOptions(nil, &error);
+    CFIndex nPeople = ABAddressBookGetPersonCount(_addressBook);
+    NSLog(@"%ld",nPeople);
+
     //显示tabbar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
     //获取联系人数据#pragma mark-- 获取通讯录联系人
@@ -117,6 +119,7 @@
     self.selectedIndexPath = nil;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;//tableview分割线
     //self.tableView.tableFooterView = [[UIView alloc] init];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStyleDone target:nil action:nil];
     
     zzArray =[[NSMutableArray alloc] init];
     areaString = [[NSString alloc] init];
@@ -444,7 +447,8 @@
 {
     VCLog(@"callbtn click");
     //当前选中行
-    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    //NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    NSIndexPath *indexPath = self.ccurrentIndexPath;
     NSString *name;
     NSString *nber;
     if (searcherString.length>0) {//输入后
@@ -470,7 +474,8 @@
     //自定键盘、callBtn,tabbar隐藏
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
     //当前选中行
-    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    //NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    NSIndexPath *indexPath = self.ccurrentIndexPath;
     TXData *mdata = [[TXData alloc] init];
     
     //获取归属地
@@ -506,7 +511,8 @@
     //隐藏tabbar和callBtn
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kKeyboardAndTabViewHide object:self]];
     //当前选中行
-    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    //NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    NSIndexPath *indexPath = self.ccurrentIndexPath;
     TXData *aRecord;
     ABRecordRef recordReff;
     if (searcherString.length <= 0) {
@@ -606,6 +612,7 @@
 //选中cell时
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    self.ccurrentIndexPath = indexPath;
     if ([indexPath isEqual:self.selectedIndexPath] ) {
         
         self.selectedIndexPath = nil;
@@ -711,6 +718,21 @@
         NSLog(@"x");
     }
     CFRelease(aContact);
+}
+
+#pragma mark -- unknow person
+- (BOOL)unknownPersonViewController:(ABUnknownPersonViewController *)personViewController shouldPerformDefaultActionForPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier{
+    
+    NSLog(@"un-id:%d,person:%@",property,person);
+    
+    return YES;
+}
+
+-(void)unknownPersonViewController:(ABUnknownPersonViewController *)unknownCardViewController didResolveToPerson:(ABRecordRef)person{
+    
+    NSLog(@"person-un:%@",person);
+    
+    
 }
 
 #pragma mark --new person

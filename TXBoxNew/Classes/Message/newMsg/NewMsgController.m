@@ -19,7 +19,7 @@
 @interface NewMsgController ()<UITextViewDelegate,UITextFieldDelegate,BLEmanagerDelegate,HPGrowingTextViewDelegate>
 {
     TXSqliteOperate *txsqlite;
-    BLEmanager *bmanager;
+    BLEmanager *bmanagers;
     
     HPGrowingTextView *putViews;
     CGFloat tempHeight;
@@ -108,7 +108,7 @@
     }
 }
 
-#pragma mark - 键盘显示响应函数
+#pragma mark -- 键盘显示响应函数
 -(void)keyboardWillShowNotif:(NSNotification*)notif{
     CGRect keyboardBounds;
     [[notif.userInfo valueForKey:UIKeyboardFrameEndUserInfoKey] getValue: &keyboardBounds];
@@ -125,7 +125,7 @@
 
 }
 
-#pragma mark - 键盘隐藏响应函数
+#pragma mark -- 键盘隐藏响应函数
 -(void)keyboardHiddenNotif:(NSNotification*)notif{
     
     NSNumber *duration = [notif.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
@@ -144,8 +144,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    bmanager = [BLEmanager sharedInstance];
-    bmanager.managerDelegate = self;
     isSend = NO;
     
     self.title = @"新信息";
@@ -248,7 +246,7 @@
     
     [self rightButtonClick:btn];
 }
-#pragma mark - HPGrowingTextViewDelegate
+#pragma mark -- HPGrowingTextViewDelegate
 - (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height
 {
     float diff = (growingTextView.frame.size.height - height);
@@ -263,6 +261,9 @@
 #pragma mark -- send 消息
 
 -(void)rightButtonClick:(UIButton *)button{
+    
+    bmanagers = [BLEmanager sharedInstance];
+    bmanagers.managerDelegate = self;
     
     //保存发送的数据
     NSDateFormatter *fmt = [[NSDateFormatter alloc] init];
@@ -333,7 +334,7 @@
 }
 
 
-#pragma mark - Table view data source
+#pragma mark -- Table view
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     // Return the number of sections.
     return 1;
@@ -376,6 +377,36 @@
     
     
 }
+
+#pragma mark -- BLEManager delegate
+-(void)systemBLEState:(CBCentralManagerState)state{
+    
+    NSLog(@"new msg ble state:%ld",(long)state);
+    
+}
+-(void)managerConnectedPeripheral:(CBPeripheral *)peripheral connect:(BOOL)isConnect;
+{
+    
+}
+-(BOOL)managerDisConnectedPeripheral :(CBPeripheral *)peripheral;
+{
+    return NO;
+}
+
+-(void)managerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic;
+{
+    
+}
+-(void)searchedPeripheral:(NSMutableArray *)peripArray;
+{
+
+}
+-(void)showAlertView;
+{
+
+}
+
+#pragma mark ---------^.^---------
 -(void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
     [putViews resignFirstResponder];

@@ -7,7 +7,7 @@
 //
 
 #define canUpdate @"canUpdate"
-#define APPURL @"http://itunes.apple.com/lookup?id=901293133"
+#define APPURL @"http://itunes.apple.com"
 
 #import "AppDelegate.h"
 #import "TXSqliteOperate.h"
@@ -16,6 +16,7 @@
 @interface AppDelegate ()<UIAlertViewDelegate>
 {
     NSString *appTrackViewURL;
+    BOOL end;
 }
 @end
 
@@ -44,9 +45,28 @@
     
     [self isOrNotUpdateVersion];
     
+    [self addTimer];//延时
+    
     return YES;
 }
 
+-(void)addTimer{
+    
+    [NSThread detachNewThreadSelector:@selector(runOnNewThread) toTarget:self withObject:nil];
+    while (!end) {
+        
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+        
+    }
+    
+}
+
+-(void)runOnNewThread{
+    
+    sleep(1.5f);
+    end=YES;
+    
+}
 -(void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
     
     if (notificationSettings.types!=UIUserNotificationTypeNone) {
@@ -205,36 +225,38 @@
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
         [request setURL:[NSURL URLWithString:URL]];
         [request setHTTPMethod:@"POST"];
-        NSHTTPURLResponse *urlResponse = nil;
-        NSError *error = nil;
-        NSData *recervedData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:&error];
-        
-        NSDictionary *infoDicts = [NSJSONSerialization JSONObjectWithData:recervedData options:NSJSONReadingMutableLeaves error:&error];
-        
-        NSArray *infoArray = [infoDicts objectForKey:@"results"];
-        
-        if ([infoArray count] && ![userDefaults boolForKey:canUpdate]) {
+        [NSURLConnection sendAsynchronousRequest:request queue:nil completionHandler:^(NSURLResponse *response,NSData* data, NSError* connectionError){
             
-            NSDictionary *releaseInfo = [infoArray objectAtIndex:0];
-            NSString *lastVersion = [releaseInfo objectForKey:@"version"];
+            NSDictionary *infoDicts = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&connectionError];
             
-            if ([lastVersion floatValue ] > [currentVersion floatValue]) {
-                appTrackViewURL = [releaseInfo objectForKey:@"trackViewUrl"];
-                UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
-                atView.tag = 3005;
-                atView.delegate = self;
-                [atView show];
+            NSArray *infoArray = [infoDicts objectForKey:@"results"];
+            
+            if ([infoArray count] && ![userDefaults boolForKey:canUpdate]) {
+                
+                NSDictionary *releaseInfo = [infoArray objectAtIndex:0];
+                NSString *lastVersion = [releaseInfo objectForKey:@"version"];
+                
+                if ([lastVersion floatValue ] > [currentVersion floatValue]) {
+                    appTrackViewURL = [releaseInfo objectForKey:@"trackViewUrl"];
+                    UIAlertView *atView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"检测到有新版本，是否更新？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+                    atView.tag = 3005;
+                    atView.delegate = self;
+                    [atView show];
+                }
+                else
+                {
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"更新" message:@"此版本为最新版本" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+                    alert.tag = 10001;
+                    [alert show];
+                }
+                
+                
             }
-            else
-            {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"更新" message:@"此版本为最新版本" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
-                alert.tag = 10001;
-                [alert show];
-            }
+
             
-            
-        }
-    
+        }];
+        
+        
     }
     
     

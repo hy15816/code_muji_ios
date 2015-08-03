@@ -33,7 +33,7 @@
     NSMutableDictionary *sectionDict;
     NSMutableArray *sectionArray;
     NSMutableArray *dataArray;
-    NSArray *sortedArray;               //排序后的数组
+                 //排序后的数组
     NSMutableArray *nameNumberArray;//
     NSMutableArray *Allphones;
     NSMutableArray *searchsArray;          //搜索后的结果数组
@@ -43,6 +43,8 @@
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
 @property (strong,nonatomic) UITableViewController *searchVC;
 @property (strong,nonatomic) NSIndexPath *selectedIndexPath;        //被选中
+@property (strong,nonatomic) NSIndexPath *currentIndexPath;
+@property (strong,nonatomic) NSArray *sortedArray;
 -(IBAction)addNewContacts:(UIBarButtonItem *)sender;
 @end
 
@@ -51,6 +53,9 @@
 -(void)viewWillAppear:(BOOL)animated{
 
     [super viewWillAppear:animated];
+    
+    [self initll];
+    
     //第一次获取通讯录
     if (![userDefaults boolForKey:IsUpdateContacts]) {
         [userDefaults setBool:YES forKey:IsUpdateContacts];
@@ -60,7 +65,7 @@
         [self.tableView reloadData];
     }
     
-    
+    //[self.tableView reloadData];
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -68,29 +73,18 @@
     
     //显示tabbar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
-    
     [self changedTableViewIndex];//改变索引属性
-    
     
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.selectedIndexPath = nil;
+    
     [userDefaults setBool:NO forKey:IsUpdateContacts];
     self.title = @"通讯录";
-    peopleArray = [[NSMutableArray alloc] init];
-    abAddressBooks = [MyAddressBooks sharedAddBooks];
-    abAddressBooks.delegate = self;
-    sectionArray = [[NSMutableArray alloc] init];
-    sectionDict = [[NSMutableDictionary alloc] init];
-    sortedArray = [[NSArray alloc] init];
-    dataArray = [[NSMutableArray alloc] init];
-    msgdata = [[TXData alloc] init];
-    txsql=[[TXSqliteOperate alloc] init];
-    nameNumberArray = [[NSMutableArray alloc] init];
-    Allphones =[[NSMutableArray alloc] init];
-    searchsArray = [[NSMutableArray alloc] init];
+    
     
     self.navigationItem.backBarButtonItem =[[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     //self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -105,6 +99,20 @@
     
 }
 
+-(void)initll{
+    peopleArray = [[NSMutableArray alloc] init];
+    abAddressBooks = [MyAddressBooks sharedAddBooks];
+    abAddressBooks.delegate = self;
+    sectionArray = [[NSMutableArray alloc] init];
+    sectionDict = [[NSMutableDictionary alloc] init];
+    self.sortedArray = [[NSArray alloc] init];
+    dataArray = [[NSMutableArray alloc] init];
+    msgdata = [[TXData alloc] init];
+    txsql=[[TXSqliteOperate alloc] init];
+    nameNumberArray = [[NSMutableArray alloc] init];
+    Allphones =[[NSMutableArray alloc] init];
+    searchsArray = [[NSMutableArray alloc] init];
+}
 -(void) initSearchController
 {
     //需要初始化一下UISearchController:
@@ -163,7 +171,7 @@
         
     }
     
-    sortedArray =[sectionArray sortedArrayUsingSelector:@selector(compare:)];
+    self.sortedArray =[sectionArray sortedArrayUsingSelector:@selector(compare:)];
     
     NSLog(@"sectionDict:%@",sectionDict);
     NSLog(@"dataArray:%@",dataArray);
@@ -346,14 +354,13 @@
     }
 }
 
-
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     // Return the number of sections.
     //是搜索后的tableView
     if (self.searchController.active) {
         return 1;
     }
-    return sortedArray.count;//否则返回索引个数
+    return self.sortedArray.count;//否则返回索引个数
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -363,8 +370,8 @@
     }
     
     //返回sectionDic的 key里有值的value的个数
-    NSString *key=[NSString stringWithFormat:@"%@",sortedArray[section]];
-    
+    NSString *key=[NSString stringWithFormat:@"%@",self.sortedArray[section]];
+    NSLog(@"sec:%ld,conut:%lu",(long)section,(unsigned long)[[sectionDict objectForKey:key] count]);
     return  [[sectionDict objectForKey:key] count];
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -382,6 +389,10 @@
     //取消cell 选中背景色
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
+    if (!self.searchController.active) {
+        [searchsArray removeAllObjects];
+    }
+    
     //搜索后
     if (self.searchController.active && searchsArray.count >0) {
         //把searchArray根据每行显示
@@ -391,14 +402,13 @@
         
     }else{
         
-        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
+        NSString *key=[NSString stringWithFormat:@"%@",self.sortedArray[indexPath.section]];
         ABRecordRef ref = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
         abrecordID  = ABRecordGetRecordID(ref);
         cell.nameLabel.text = [self getShowNameText:ref];
         cell.numberLabel.text = [[self getShowPhoneText:ref] firstObject];
         //cell.numberLabel.text = [[[[persons objectAtIndex:indexPath.row] objectForKey:@"personTel"] purifyString] insertStr];
         //VCLog(@"name:%@,number:%@",cell.nameLabel.text,cell.numberLabel.text);
-        
         
     }
     
@@ -410,6 +420,8 @@
 //点击单元格
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
+    self.currentIndexPath = indexPath;
     
     if ([indexPath isEqual:self.selectedIndexPath] ) {
         
@@ -453,7 +465,7 @@
         return nil;
     }
     
-    return sortedArray;
+    return self.sortedArray;
 }
 
 
@@ -498,7 +510,7 @@
     //title.textColor = [UIColor redColor];
     title.frame = CGRectMake(20, 0, 30, 18);
     title.font = [UIFont systemFontOfSize:15 weight:.3];
-    title.text = [sortedArray objectAtIndex:section];
+    title.text = [self.sortedArray objectAtIndex:section];
     
     [headerView addSubview:title];
     
@@ -514,8 +526,9 @@
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     MsgDetailController *msgDetail = [board instantiateViewControllerWithIdentifier:@"msgDetail"];
     
-    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-
+    //NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    NSIndexPath *indexPath = self.currentIndexPath;
+    
     if (self.searchController.active) {
         
         ABRecordRef ref = (__bridge ABRecordRef)([searchsArray objectAtIndex:indexPath.row]);
@@ -526,7 +539,7 @@
         }else{msgdata.hisHome = @"";}
         msgDetail.datailDatas =msgdata;
     }else{
-        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
+        NSString *key=[NSString stringWithFormat:@"%@",self.sortedArray[indexPath.section]];
         ABRecordRef refd = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
         msgdata.hisName = [self getShowNameText:refd];
         msgdata.hisNumber = [[self getShowPhoneText:refd] firstObject];
@@ -543,14 +556,14 @@
 -(void)editButtonClick:(UIButton *)btn{
     
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kHideTabBarAndCallBtn object:self]];
-    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-    
+    //NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    NSIndexPath *indexPath = self.currentIndexPath;
     
     if (self.searchController.active) {
         ABRecordRef ref = (__bridge ABRecordRef)([searchsArray objectAtIndex:indexPath.row]);
         [self showPersonViewControllerWithRecordRef:ref];
     }else{
-        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
+        NSString *key=[NSString stringWithFormat:@"%@",self.sortedArray[indexPath.section]];
         ABRecordRef refd = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
         [self showPersonViewControllerWithRecordRef:refd];
     }
@@ -560,6 +573,9 @@
 #pragma mark -- 跳转到编辑联系人
 //跳转到edit联系人
 -(void)showPersonViewControllerWithRecordRef:(ABRecordRef)recordRef{
+    
+
+    
     
     [userDefaults setBool:NO forKey:IsUpdateContacts];
     ABPersonViewController *personViewController = [[ABPersonViewController alloc] init];
@@ -615,8 +631,7 @@
         int  i = 0 ;
         for (NSMutableDictionary *dcit in nameNumberArray) {
             if ([[dcit valueForKey:s] length] > 0) {
-                NSLog(@"%@",[dcit valueForKey:s]);
-                //i =[dcit valueForKey:s];
+                //NSLog(@"%@",[dcit valueForKey:s]);
                 i = [[dcit valueForKey:s] intValue];
             }
         }
@@ -641,13 +656,6 @@
     [self.searchVC.tableView reloadData];
     //[self.tableView reloadData];
     
-}
-
--(NSString *)kkkkkk:(NSString *)s{
-    
-    NSString *name;
-    
-    return name;
 }
 
 #pragma mark -- 新增联系人
@@ -690,11 +698,11 @@
         {
             if([subview respondsToSelector:@selector(setFont:)])
             {
-                [subview performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:15 weight:.1]];
+                [subview performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:14 weight:.1]];
             }
             
             if ([subview respondsToSelector:@selector(setFrame:)]) {
-                [subview setFrame:CGRectMake(DEVICE_WIDTH-20, 50, 20, DEVICE_HEIGHT)];
+                [subview setFrame:CGRectMake(DEVICE_WIDTH-20, (DEVICE_HEIGHT-480)/2, 20, 480)];
                 
                 [subview performSelector:@selector(setFrame:) withObject:subview];
             }

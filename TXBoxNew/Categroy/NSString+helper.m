@@ -173,11 +173,13 @@
     HanyuPinyinOutputFormat *outputFormat =[[HanyuPinyinOutputFormat alloc] init];
     [outputFormat setToneType:ToneTypeWithoutTone];//声调
     [outputFormat setVCharType:VCharTypeWithV];//特殊拼音的显示格式如 ü
-    [outputFormat setCaseType:CaseTypeLowercase];//大小写
+    [outputFormat setCaseType:CaseTypeLowercase];//大小(Lowercase)写
     
     NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"-%@",self];
     NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:mstring withHanyuPinyinOutputFormat:outputFormat withNSString:@"-"];
-    //VCLog(@"-------------outputpy:%@",outputPinyin);
+    VCLog(@"-------------:%@",outputPinyin);
+    
+    
     
     return outputPinyin;
 }

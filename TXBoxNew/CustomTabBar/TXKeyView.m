@@ -37,7 +37,6 @@
     
     [self endEditing:YES];
     
-    
 }
 
 
@@ -49,7 +48,7 @@
     for (int i=0; i<=11; i++) {
         
         NSString *icon = [[NSString alloc] initWithFormat:@"dial_num_%d.png",i+1];
-        NSString *sicon = [[NSString alloc] initWithFormat:@"dial_num_%dselected.png",i+1];//dial_num_9selected
+        NSString *sicon = [[NSString alloc] initWithFormat:@"dial_num_%d.png",i+1];//dial_num_9selected
         
         int y = i/3;
         int x = i%3;
@@ -74,9 +73,14 @@
     itembg.tag = tag+1;
     // 位置
     itembg.frame = rectbg;
+    
+    UIImageView *imgv =[[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 50, 40)];
+    imgv.backgroundColor =[UIColor grayColor];
+    
+    
     // 图标
     [itembg setImage:[UIImage imageNamed:icon] forState:UIControlStateNormal];
-    [itembg setImage:[UIImage imageNamed:selected] forState:UIControlStateHighlighted];
+    [itembg setImage:[UIImage imageNamed:selected] forState:UIControlStateSelected];
     
     // 监听item的点击
     [itembg addTarget:self action:@selector(itemClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -110,8 +114,12 @@
     UIButton *delBtn = [[UIButton alloc] init];
     delBtn.frame = CGRectMake(DEVICE_WIDTH-80, 5, 46, 44);
     [delBtn setImage:[UIImage imageNamed:@"com_Keyboard_Backspace"] forState:UIControlStateNormal];
-    //[delBtn setImage:[UIImage imageNamed:@"com_Keyboard_Backspace"] forState:UIControlStateSelected];
-        [delBtn addTarget:self action:@selector(del) forControlEvents:UIControlEventTouchUpInside];
+
+    [delBtn addTarget:self action:@selector(del) forControlEvents:UIControlEventTouchUpInside];
+    UILongPressGestureRecognizer *longPress=[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(dleLongPressKey:)];
+
+    longPress.minimumPressDuration = 1;
+    [delBtn addGestureRecognizer:longPress];
     [self addSubview:delBtn];
 
     singleton = [TXTelNumSingleton sharedInstance];
@@ -133,7 +141,7 @@
                 textField2.leftView = nil;
                 textField2.clearButtonMode  = UITextFieldViewModeNever;
                 textField2.textAlignment = NSTextAlignmentCenter;
-                textField2.font = [UIFont systemFontOfSize:16];
+                textField2.font = [UIFont systemFontOfSize:18];
                 break;
             }
             //去掉背景
@@ -157,7 +165,6 @@
     
     if (self.textsearch.text.length>0){
         
-        
         NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:[self.textsearch.text substringToIndex:self.textsearch.text.length-1],@"searchBarText",[self.textsearch.text substringWithRange:NSMakeRange(self.textsearch.text.length-1, 1)],@"lastChar", nil];
         
         //NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:[self.textsearch.text substringWithRange:NSMakeRange(self.textsearch.text.length-1, 1)],@"lastChar", nil];
@@ -174,7 +181,6 @@
 #pragma mark 监听item点击
 - (void)itemClick:(UIButton *)item
 {
-
     NSString *text = self.textsearch.text;
     NSInteger tag = item.tag;
     //
@@ -206,13 +212,26 @@
     }
     
 }
--(void)longPressKey:(UITapGestureRecognizer*)tap{
+-(void)longPressKey:(UILongPressGestureRecognizer*)longPress{
     
     NSString *text = self.textsearch.text;
-    self.textsearch.text = [NSString stringWithFormat:@"%@+",text];
-    
+    if (longPress.state == UIGestureRecognizerStateBegan) {
+        
+        self.textsearch.text = [NSString stringWithFormat:@"%@+",text];
+    }
     
 }
+
+-(void)dleLongPressKey:(UILongPressGestureRecognizer*)longPress{
+    
+    //NSString *text = self.textsearch.text;
+    if (longPress.state == UIGestureRecognizerStateBegan) {
+        
+        self.textsearch.text = nil;
+    }
+}
+
+
 
 //取消系统键盘弹出
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
