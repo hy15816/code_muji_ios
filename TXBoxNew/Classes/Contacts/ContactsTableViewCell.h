@@ -15,9 +15,7 @@
 @property (strong,nonatomic) UIImageView *imgView;
 @property (weak, nonatomic) IBOutlet UIButton *msgsBtn;
 @property (weak, nonatomic) IBOutlet UIButton *editBtn;
-
-
-- (IBAction)callBtn:(UIButton *)sender;
+@property (strong, nonatomic) IBOutlet UIButton *callBtns;
 
 
 @end

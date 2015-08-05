@@ -10,24 +10,25 @@
 #import "TXTelNumSingleton.h"
 
 
-@interface TXKeyView()<UISearchBarDelegate>
+@interface TXKeyView()<UITextFieldDelegate>
 {
 
     TXTelNumSingleton *singleton;
+    UITextField *textFieldh;
+    UIView *hudv;
 }
 @end
 @implementation TXKeyView
-@synthesize textsearch;
 
 -(void) drawRect:(CGRect)rect
 {
     //self.backgroundColor = RGBACOLOR(201, 201, 201, 1);//键盘背景色
     self.backgroundColor = [UIColor whiteColor];
     
-    UILabel *line =[[UILabel alloc] initWithFrame:CGRectMake(0, 50, rect.size.width, .1)];
+    UILabel *line =[[UILabel alloc] initWithFrame:CGRectMake(0, 0, rect.size.width, .1)];
     line.backgroundColor=[UIColor blackColor];
-//    line.alpha=.8;
-    //[self addSubview:line];
+    line.alpha=.5;
+    [self addSubview:line];
     
     [self drawKeyBorad];
     [self addInputBox];
@@ -52,8 +53,9 @@
         
         int y = i/3;
         int x = i%3;
-        //VCLog(@"%D",x);
-        [self addKeyWithIcon:icon selectedIcon:sicon rectbg:CGRectMake(x*keyWidth, y*keyHeight+InputBoxView,keyWidth , keyHeight) tag:i];
+
+        //VCLog(@"w:%f,h:%f",keyWidth,keyHeight);
+        [self addKeyWithIcon:icon selectedIcon:sicon rectbg:CGRectMake(x*keyWidth, y*keyHeight+InputBoxViewHeight,keyWidth , keyHeight) tag:i];
         
     }
 
@@ -84,6 +86,8 @@
     
     // 监听item的点击
     [itembg addTarget:self action:@selector(itemClick:) forControlEvents:UIControlEventTouchUpInside];
+    [itembg addTarget:self action:@selector(itemClickChangeView:) forControlEvents:UIControlEventTouchDown];
+    [itembg addTarget:self action:@selector(itemClickChangecanel:) forControlEvents:UIControlEventTouchDragExit];
     if (itembg.tag ==11) {
         [itembg addGestureRecognizer:longPress];
     }
@@ -96,19 +100,16 @@
 -(void)addInputBox{
 
     //输入框
-    self.textsearch=[[UISearchBar alloc]init];
-    self.textsearch.contentMode = UIViewContentModeCenter;
-    self.textsearch.frame=CGRectMake(5, 5, DEVICE_WIDTH*.8, 44);
-    [self.textsearch setPlaceholder:@"输入数字或拼音模糊搜索"];//NSLocalizedString(@"Please_enter_number_or_letter_of_fuzzy_search", nil)
+    textFieldh = [[UITextField alloc] initWithFrame:CGRectMake(5, 5, DEVICE_WIDTH*.8f, 44)];
+    textFieldh.textAlignment = NSTextAlignmentCenter;
+    textFieldh.font = [UIFont systemFontOfSize:17];
+    textFieldh.placeholder = @"输入数字或拼音模糊搜索";
+    textFieldh.contentMode = UIViewContentModeCenter;
+    textFieldh.delegate = self;
+    [textFieldh resignFirstResponder];
+    //[self layoutSubviews];
     
-    self.textsearch.returnKeyType = UIReturnKeyDefault;
-    
-    [textsearch resignFirstResponder];
-    [self layoutSubviews];
-    self.textsearch.delegate = self;
-    
-    [self addSubview:self.textsearch];
-    
+    [self addSubview:textFieldh];
     
     //删除（退格）按钮
     UIButton *delBtn = [[UIButton alloc] init];
@@ -125,7 +126,7 @@
     singleton = [TXTelNumSingleton sharedInstance];
    
 }
-
+/*
 #pragma mark 对searchbar的修改
 -(void)layoutSubviews
 {
@@ -157,67 +158,116 @@
     [super layoutSubviews];
     
 }
-
+*/
 
 #pragma mark 删除号码
 -(void)del
 {
     
-    if (self.textsearch.text.length>0){
+    if (textFieldh.text.length>0){
+        NSString *allText = [textFieldh.text substringToIndex:textFieldh.text.length-1];//删除之后的
+        NSString *lastDeleteChar = [textFieldh.text substringWithRange:NSMakeRange(textFieldh.text.length-1, 1)];//最后删除的那个char
         
-        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:[self.textsearch.text substringToIndex:self.textsearch.text.length-1],@"searchBarText",[self.textsearch.text substringWithRange:NSMakeRange(self.textsearch.text.length-1, 1)],@"lastChar", nil];
+        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
+                              allText,InputFieldAllText,
+                              @"0",AddOrDelete, nil];
         
-        //NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:[self.textsearch.text substringWithRange:NSMakeRange(self.textsearch.text.length-1, 1)],@"lastChar", nil];
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
         
-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kDeleteCharNoti object:self userInfo:dict]];
-        
-        self.textsearch.text = [self.textsearch.text stringByReplacingCharactersInRange:NSMakeRange(textsearch.text.length-1, 1) withString:@""];
-        singleton.singletonValue = self.textsearch.text;
+        textFieldh.text = [textFieldh.text substringToIndex:textFieldh.text.length-1];
+        singleton.singletonValue = textFieldh.text;
+    }
+    if (textFieldh.text.length <=0) {
+        textFieldh.font = [UIFont systemFontOfSize:17];
     }
     
-    [self.keyDelegate inputTextLength:self.textsearch.text];
+    [self.keyDelegate inputTextLength:textFieldh.text];
     
 }
 #pragma mark 监听item点击
+//touch up inside
 - (void)itemClick:(UIButton *)item
 {
-    NSString *text = self.textsearch.text;
+    NSString *text = textFieldh.text;
     NSInteger tag = item.tag;
     //
     switch (tag) {
         case 10:
-            self.textsearch.text = [NSString stringWithFormat:@"%@*",text];
+            textFieldh.text = [NSString stringWithFormat:@"%@*",text];
             break;
         case 11:
-            self.textsearch.text = [NSString stringWithFormat:@"%@0",text];
+            textFieldh.text = [NSString stringWithFormat:@"%@0",text];
             break;
         case 12:
-            self.textsearch.text = [NSString stringWithFormat:@"%@#",text];
+            textFieldh.text = [NSString stringWithFormat:@"%@#",text];
             break;
         default:
-            self.textsearch.text = [NSString stringWithFormat:@"%@%ld",text,tag];
+            textFieldh.text = [NSString stringWithFormat:@"%@%ld",text,tag];
             
             break;
     }
 
     //利用单利保存呼叫的号码
-    singleton.singletonValue = self.textsearch.text;
+    singleton.singletonValue = textFieldh.text;
     //VCLog(@"singletonValue: %@",singleton.singletonValue);
-
-    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:self.textsearch.text ,@"searchBarText", nil];
+    NSString *lastInChar = [textFieldh.text substringWithRange:NSMakeRange(textFieldh.text.length -1, 1)];//输入的最后一个字
+    
+    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
+                          textFieldh.text , InputFieldAllText,
+                          @"1",           AddOrDelete,nil];
     //2.通过通知中心发送通知
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
-    if (self.textsearch.text.length>=1) {
+    if (textFieldh.text.length>=1) {
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:ktextChangeNotify object:self]];
+        textFieldh.font = [UIFont systemFontOfSize:24];
+    }
+    
+    if (hudv) {
+        [hudv removeFromSuperview];
+    }
+
+    
+}
+
+//touch down
+-(void)itemClickChangeView:(UIButton *)button{
+    if (!hudv) {
+        hudv = [[UIView alloc] initWithFrame:CGRectMake(1, 1, button.frame.size.width-2, button.frame.size.height-2)];
+        hudv.backgroundColor =[UIColor grayColor];
+        hudv.alpha = .4;
+    }
+    hudv.layer.cornerRadius = 3;
+    
+    [button addSubview:hudv];
+    
+}
+
+-(void)removeHudv{
+    if (hudv) {
+        [hudv removeFromSuperview];
     }
     
 }
+
+-(void)itemClickChangecanel:(UIButton *)b{
+    
+    if (hudv) {
+        [hudv removeFromSuperview];
+    }
+
+    
+    
+}
+
+
+
+#pragma mark -- longPress
 -(void)longPressKey:(UILongPressGestureRecognizer*)longPress{
     
-    NSString *text = self.textsearch.text;
+    NSString *text = textFieldh.text;
     if (longPress.state == UIGestureRecognizerStateBegan) {
         
-        self.textsearch.text = [NSString stringWithFormat:@"%@+",text];
+        textFieldh.text = [NSString stringWithFormat:@"%@+",text];
     }
     
 }
@@ -227,17 +277,24 @@
     //NSString *text = self.textsearch.text;
     if (longPress.state == UIGestureRecognizerStateBegan) {
         
-        self.textsearch.text = nil;
+        textFieldh.text = nil;
+    }
+    if (longPress.state == UIGestureRecognizerStateEnded) {
+        
+        if (hudv) {
+            [hudv removeFromSuperview];
+        }
+
     }
 }
 
-
-
+#pragma mark -- textField delegate
 //取消系统键盘弹出
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
-{
+-(BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
     return NO;
 }
+
+
 
 
 @end

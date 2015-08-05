@@ -139,7 +139,7 @@
             //加入phoneDic中
             [phoneDicts setObject:(__bridge id)(record) forKey:[NSString stringWithFormat:@"%@%d",phone,recordID]];
             [tempDic setObject:phone forKey:@"personTel"];//把每一条号码存为key:“personTel”的Value
-            NSString *phoneNum = [NSString stringWithFormat:@"-%@",phone];
+            NSString *phoneNum = [NSString stringWithFormat:@"%@",[phone purifyString]];
             
             [tempDic setObject:phoneNum forKey:@"personTelNum"];//-数字号码
             

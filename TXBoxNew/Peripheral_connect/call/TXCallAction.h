@@ -22,13 +22,14 @@
 -(int) callIn:(NSString *)hisnumber;
 -(int) callInAction;
 //拨电话
--(int) callOutFromNumber:(NSString *)myNumber HisNumber:(NSString *)hisNumber;
+-(int) callOutFromNumber:(NSString *)myNumber HisNumber:(NSString *)hisNumber contactID:(NSString *)contactid;
 -(int) callOutAction:(int)sender;
 //通话结束
 -(int) callEndByMeWithState:(int)state
                   hisNumber:(NSString *)hisNumber
                     hisName:(NSString *)hisName
                  timeLength:(NSString *)times;
+
 -(int) callEndByHim:(int)state;
 
 

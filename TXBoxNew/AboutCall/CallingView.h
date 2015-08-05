@@ -32,7 +32,7 @@
 
 @property (strong,nonatomic) NSString *hisNames;    //姓名
 @property (strong,nonatomic) NSString *hisNumbers;  //号码
-
+@property (strong,nonatomic) NSString *hisContactId;//id
 
 @property (assign,nonatomic) id<CallingDelegate> delegateCalling;
 -(void)startTimeLengthTimer;

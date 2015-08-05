@@ -55,7 +55,7 @@
     isCallingButton = NO;
     //添加数字键盘
     self.keyView = [[TXKeyView alloc]init];
-    self.keyView.frame = CGRectMake(0,deviceHeight-kTabBarHeight-4*keyHeight-NaviBarHeight-InputBoxView, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
+    self.keyView.frame = CGRectMake(0,deviceHeight-kTabBarHeight-4*keyHeight-NaviBarHeight-InputBoxViewHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxViewHeight);
     self.keyView.backgroundColor = [UIColor whiteColor];//键盘背景色
     self.keyView.keyDelegate = self;
     [self.view addSubview:self.keyView];
@@ -95,12 +95,14 @@
 {
     [UIView animateWithDuration:.27 animations:^{
         //隐藏键盘，
-        self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
+        self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxViewHeight);
         showKeyboard = NO;
         //隐藏call按钮
         tabBarView.callBtn.hidden = YES;
         
     }];
+    
+    [self.keyView removeHudv];
     
 }
 
@@ -153,7 +155,7 @@
     [UIView animateWithDuration:.27 animations:^{
         if (showKeyboard) {
             //弹出键盘
-            self.keyView .frame=CGRectMake(0,deviceHeight-kTabBarHeight-4*keyHeight-NaviBarHeight-InputBoxView, DEVICE_WIDTH, keyHeight*4.f+InputBoxView);
+            self.keyView .frame=CGRectMake(0,deviceHeight-kTabBarHeight-4*keyHeight-NaviBarHeight-InputBoxViewHeight, DEVICE_WIDTH, keyHeight*4.f+InputBoxViewHeight);
             showKeyboard = YES;
             [button setImage:[UIImage imageNamed:@"icon_up"] forState:UIControlStateSelected];
             //若已输入号码，显示callBtn
@@ -178,10 +180,11 @@
 {
     //隐藏键盘，
     showKeyboard = NO;
-    self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);
+    self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxViewHeight);
     //隐藏call按钮
     tabBarView.callBtn.hidden = YES;
     //[previousBtn setImage:[UIImage imageNamed:@"icon_down_gray"] forState:UIControlStateNormal];
+    [self.keyView removeHudv];
 }
 
 #pragma mark -- calling View
@@ -241,6 +244,7 @@
 {
     cv.hisNames =[[notification userInfo] objectForKey:@"hisName"];
     cv.hisNumbers = [[notification userInfo] objectForKey:@"hisNumber"];
+    cv.hisContactId = [[notification userInfo] objectForKey:@"hisContactId"];
     if (isCallingButton) {
         cv.hisNames =@"";
         cv.hisNumbers = singleton.singletonValue;
@@ -294,13 +298,15 @@
 {
     if ([notifi.name isEqual:kKeyboardAndTabViewHide]) {
         tabBarView.hidden = YES;
-        self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);//隐藏键盘，
+        self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxViewHeight);//隐藏键盘，
         tabBarView.callBtn.hidden = YES;//隐藏call按钮
+        [self.keyView removeHudv];
     }
     
     if ([notifi.name isEqualToString:kCustomKeyboardHide]) {
-        self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxView);//隐藏键盘，
+        self.keyView.frame=CGRectMake(0,deviceHeight, DEVICE_WIDTH, keyHeight*5.f+InputBoxViewHeight);//隐藏键盘，
         tabBarView.callBtn.hidden = YES;//隐藏call按钮
+        [self.keyView removeHudv];
     }
     //显示callBtn
     if ([notifi.name isEqualToString:ktextChangeNotify]) {

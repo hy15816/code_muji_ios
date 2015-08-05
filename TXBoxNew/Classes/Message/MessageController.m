@@ -302,7 +302,7 @@
 //选中某行
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //传值，hisName,hisNumber,hisHome
+    //传值，hisName,hisNumber,hisHome，hisContactId
     
     VCLog(@"namesDicts:%@",namesDicts);
     TXData *detaildata = [[TXData alloc] init];//传值data
@@ -312,6 +312,7 @@
         detaildata.hisName = searchdata.msgAccepter;
         detaildata.hisNumber = searchdata.msgAccepter;
         detaildata.hisHome = searchdata.hisHome;
+        detaildata.contactID = [self getcontactsId:searchdata.hisName];
     }else{
         TXData *normaldata = [self.dataArray objectAtIndex:indexPath.row];
         detaildata.hisName = [namesDicts valueForKey:[self.contactsArray objectAtIndex:indexPath.row]];
@@ -319,6 +320,7 @@
         if (detaildata.hisNumber.length >=7) {
             detaildata.hisHome = [txsqlite searchAreaWithHisNumber:[[detaildata.hisNumber purifyString] substringToIndex:7]];
         }else{detaildata.hisHome  = @"";}
+        detaildata.contactID = [self getcontactsId:[namesDicts valueForKey:[self.contactsArray objectAtIndex:indexPath.row]]];
     }
     MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
     DetailVC.datailDatas = detaildata;
@@ -329,6 +331,17 @@
     
 }
 
+-(NSString *)getcontactsId:(NSString *)name{
+    
+    
+    ABRecordRef recordReff = (__bridge ABRecordRef)([((__bridge NSArray *)(ABAddressBookCopyPeopleWithName(_addressBooks, (__bridge CFStringRef)name))) lastObject]);//根据名字获取对象
+    
+    ABRecordID abid = ABRecordGetRecordID(recordReff);
+    NSString *contactId = [NSString stringWithFormat:@"%d",abid];
+    
+    return contactId;
+    
+}
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (self.searchController.active) {

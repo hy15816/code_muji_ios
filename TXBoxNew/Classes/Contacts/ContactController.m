@@ -12,7 +12,6 @@
 #import "ContactsTableViewCell.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import "pinyin.h"
-#import "Records.h"
 #import "NSString+helper.h"
 #import "MsgDetailController.h"
 #import "TXData.h"
@@ -95,6 +94,7 @@
     self.tableView.sectionHeaderHeight = 18.f;
     //self.tableView.sectionIndexTrackingBackgroundColor = [[UIColor alloc]initWithRed:227/255.f green:212/255.f blue:197/255.f alpha:1];
     [self initSearchController];
+    
     
     
 }
@@ -183,7 +183,7 @@
         NSMutableDictionary *dict =[[NSMutableDictionary alloc] init];
         ABRecordRef record = (__bridge ABRecordRef)(peopleArray[i]);
         ABRecordID recordID = ABRecordGetRecordID(record);
-        NSLog(@"recordID:%d",recordID);
+        //NSLog(@"recordID:%d",recordID);
         //ABRecordRef ref = ABAddressBookGetPersonWithRecordID(abBooksRef , recordID);
         NSString *name;
         NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonFirstNameProperty));
@@ -199,11 +199,12 @@
         name = [NSString stringWithFormat:@"%@%@",firstName,lastName];
         
         NSString *phone;
+
         //获取号码
         ABMultiValueRef phoneNumber = ABRecordCopyValue(record, kABPersonPhoneProperty);
         if (ABMultiValueGetCount(phoneNumber) > 0) {//取第一个号码
             phone = (__bridge NSString *)(ABMultiValueCopyValueAtIndex(phoneNumber,0));
-            
+
         }
         if (name.length >0 && phone.length >0) {
             [dict setValue:[NSString stringWithFormat:@"%d",recordID] forKey:phone];
@@ -302,9 +303,32 @@
     NSLog(@"error:%@",error);
 }
 -(void)abAddressBooks:(ABAddressBookRef)bookRef allRefArray:(NSMutableArray *)array{
-    NSLog(@"bookRef:%@ array:%@,conut:%lu",bookRef,array,(unsigned long)array.count);
+    //NSLog(@"bookRef:%@ array:%@,conut:%lu",bookRef,array,(unsigned long)array.count);
     peopleArray = array;
     abBooksRef = bookRef;
+    
+    //联系人名字与对应的id
+    /*
+    for (int i=0;i<peopleArray.count ;i++   ) {
+        
+        ABRecordRef abf = (__bridge ABRecordRef)(peopleArray[i]);
+        NSString *name;
+        NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(abf, kABPersonFirstNameProperty));
+        NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(abf, kABPersonLastNameProperty));
+        
+        if (firstName.length == 0) {
+            firstName = @"";
+        }
+        if (lastName.length == 0) {
+            lastName = @"";
+        }
+        
+        name = [NSString stringWithFormat:@"%@%@",firstName,lastName];
+        ABRecordID abid = ABRecordGetRecordID(abf);
+        NSLog(@"%@------%d",name,abid);
+        
+    }
+     */
 }
 
 #pragma mark --alertView
@@ -323,24 +347,6 @@
     
 }
 
-//数据模型
-/*
--(void)setModel{
-    
-    NSMutableArray *arrayM = [NSMutableArray array];
-    for (NSDictionary *dict in cphoneArray) {
-        
-        Records *record = [[Records alloc] init];
-        // 给record赋值
-        [record setValuesForKeysWithDictionary:dict];//record:<Records: 0x7fa2f27207c0,personTel: 888-555-1212,personName: John Appleseed>
-        [arrayM addObject:record];
-        
-    }
-    VCLog(@"arrayM:%@",arrayM);
-    self.dataList = arrayM;
-    //VCLog(@"arrayM-0:%@",[[arrayM objectAtIndex:0] valueForKey:@"personTel"]);
-}
- */
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -371,7 +377,7 @@
     
     //返回sectionDic的 key里有值的value的个数
     NSString *key=[NSString stringWithFormat:@"%@",self.sortedArray[section]];
-    NSLog(@"sec:%ld,conut:%lu",(long)section,(unsigned long)[[sectionDict objectForKey:key] count]);
+    //NSLog(@"sec:%ld,conut:%lu",(long)section,(unsigned long)[[sectionDict objectForKey:key] count]);
     return  [[sectionDict objectForKey:key] count];
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -411,7 +417,7 @@
         //VCLog(@"name:%@,number:%@",cell.nameLabel.text,cell.numberLabel.text);
         
     }
-    
+    [cell.callBtns addTarget:self action:@selector(callsBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     [cell.msgsBtn addTarget:self action:@selector(msgsBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     [cell.editBtn addTarget:self action:@selector(editButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     return cell;
@@ -517,7 +523,35 @@
     return headerView;
 }
 
+-(void)callsBtnClick:(UIButton *)btn{
+    
+    NSIndexPath *indexPath = self.currentIndexPath;
+    //ABRecordRef ref = (__bridge ABRecordRef)([searchsArray objectAtIndex:indexPath.row]);
+    NSString *name;
+    NSString *phone;
+    NSString *contactId;
 
+    if (self.searchController.active) {
+        
+        ABRecordRef ref = (__bridge ABRecordRef)([searchsArray objectAtIndex:indexPath.row]);
+        name = [self getShowNameText:ref];
+        phone = [[self getShowPhoneText:ref] firstObject];
+        contactId = [NSString stringWithFormat:@"%d",ABRecordGetRecordID(ref)];
+    }else{
+        NSString *key=[NSString stringWithFormat:@"%@",self.sortedArray[indexPath.section]];
+        ABRecordRef refd = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
+        name = [self getShowNameText:refd];
+        phone = [[self getShowPhoneText:refd] firstObject];
+        contactId = [NSString stringWithFormat:@"%d",ABRecordGetRecordID(refd)];
+        
+    }
+    
+    //把姓名号码传过去
+    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:name,@"hisName",phone,@"hisNumber",contactId,@"contactId", nil];
+    
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallingBtnClick object:self userInfo:dict]];
+    
+}
 
 -(void)msgsBtnClick:(UIButton *)btn
 {

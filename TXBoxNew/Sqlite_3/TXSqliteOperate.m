@@ -1,4 +1,5 @@
 //
+//
 //  TXSqliteOperate.m
 //  TXBox
 //
@@ -9,8 +10,18 @@
 #import "TXSqliteOperate.h"
 #import "NSString+helper.h"
 
-@implementation TXSqliteOperate
+@implementation TXSqliteOperate//
 
++(TXSqliteOperate *)shardSql{
+    
+    static dispatch_once_t once;
+    static TXSqliteOperate *_sqliteOP;
+    dispatch_once(&once, ^{
+        _sqliteOP = [[TXSqliteOperate alloc] init];
+    });
+    return _sqliteOP;
+    
+}
 
 #pragma mark --打开数据库
 -(BOOL)openDatabase
@@ -30,6 +41,35 @@
 }
 
 #pragma mark --建表
+-(void)createTable{
+    //通话记录
+    NSString *callRecordSql =[NSString stringWithFormat:@"create table if not exists %@(tel_id integer primary key AUTOINCREMENT,hisName text,hisNumber text,callDirection text,callLength text,callBeginTime text,hisHome text,hisOperator text)",CALL_RECORDS_TABLE_NAME] ;
+    //短息
+    NSString *msgRecordSql = [NSString stringWithFormat:@"create table if not exists %@(peopleId integer primary key AUTOINCREMENT,msgSender text,msgTime text,msgContent text,msgAccepter text,msgState text)",MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
+    NSArray *sqlArray = @[callRecordSql,msgRecordSql];
+    
+    if ([self openDatabase]) {
+        
+        for (NSString *sql in sqlArray) {
+            //执行sql语句
+            if (sqlite3_exec(dataBase, [sql UTF8String], NULL, NULL, &msg)==SQLITE_OK) {
+                VCLog(@"create table success !");
+            }else{
+                VCLog(@"create table error:%s",msg);
+                //清空错误信息
+                sqlite3_free(msg);
+            }
+
+        }
+        
+    }else {
+        VCLog(@"sqlite ...");
+    }
+    
+    //关闭数据库
+    sqlite3_close(dataBase);
+    
+}
 -(void)createTable:(NSString *)tableName withSql:(NSString *)sqlSring;
 {
     if ([self openDatabase]) {
@@ -81,6 +121,7 @@
             sqlite3_bind_text(stmt, 5, [data.callBeginTime UTF8String], -1, NULL);
             sqlite3_bind_text(stmt, 6, [data.hisHome UTF8String], -1, NULL);
             sqlite3_bind_text(stmt, 7, [data.hisOperator UTF8String], -1, NULL);
+            sqlite3_bind_text(stmt, 8, [data.contactID UTF8String], -1, NULL);
         }
         //添加收信记录
         if ([sqlSring isEqualToString:MESSAGE_RECORDS_ADDINFO_SQL]) {
@@ -143,6 +184,7 @@
                 NSString *beginTime=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 5) encoding:NSUTF8StringEncoding];
                 NSString *home=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 6) encoding:NSUTF8StringEncoding];
                 NSString *operator=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 7) encoding:NSUTF8StringEncoding];
+                NSString *contactid=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 8) encoding:NSUTF8StringEncoding];
                 
                 //VCLog(@"id = %d,date = %@",tid,date);
                 
@@ -155,7 +197,7 @@
                 data.callBeginTime=beginTime;
                 data.hisHome = home;
                 data.hisOperator = operator;
-                
+                data.contactID = contactid;
                 /*
                  [mutArray addObject:[NSString stringWithFormat:@"%d",tid]];
                  [mutArray addObject:number];

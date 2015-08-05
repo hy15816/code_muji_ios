@@ -27,4 +27,7 @@
 @synthesize msgStates;
 
 
+@synthesize contactID;
+
+
 @end

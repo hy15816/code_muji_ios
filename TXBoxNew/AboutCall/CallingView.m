@@ -38,7 +38,7 @@
 @end
 
 @implementation CallingView
-@synthesize hisNames,hisNumbers;
+@synthesize hisNames,hisNumbers,hisContactId;
 
 -(void)drawRect:(CGRect)rect{
     
@@ -139,7 +139,7 @@
     //==接通电话
     //我的号码
     NSString *myPhoneNumber = [NSString stringWithFormat:@"%@",@"my phone number"];
-    [callAction callOutFromNumber:myPhoneNumber HisNumber:hisNumbers];
+    [callAction callOutFromNumber:myPhoneNumber HisNumber:hisNumbers contactID:hisContactId];
     
     
 }

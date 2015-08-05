@@ -21,6 +21,7 @@
     char *msg;
 }
 
++(TXSqliteOperate *)shardSql;
 //============共用===============
 /**
  *  @method     打开数据库

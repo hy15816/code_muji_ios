@@ -601,7 +601,11 @@
         if (self.datailDatas.hisName.length <=0) {
             self.datailDatas.hisName = @"";
         }
-        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:self.datailDatas.hisName,@"hisName",self.datailDatas.hisNumber,@"hisNumber", nil];
+        
+        
+        
+        
+        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:self.datailDatas.hisName,@"hisName",self.datailDatas.hisNumber,@"hisNumber",self.datailDatas.contactID,@"hisContactId", nil];
         
         VCLog(@"dict:%@",dict);
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallingBtnClick object:self userInfo:dict]];

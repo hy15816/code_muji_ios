@@ -69,9 +69,6 @@
                                 <exclude reference="bLu-5b-NBM"/>
                             </mask>
                         </variation>
-                        <connections>
-                            <action selector="callBtn:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="D0S-c3-Jc3"/>
-                        </connections>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mIx-0t-Dfm">
                         <rect key="frame" x="280" y="48" width="32" height="23"/>
@@ -97,6 +94,7 @@
                 </constraints>
             </tableViewCellContentView>
             <connections>
+                <outlet property="callBtns" destination="n4f-f4-Sd9" id="YY4-C2-UBr"/>
                 <outlet property="editBtn" destination="mIx-0t-Dfm" id="5yV-lR-Xgq"/>
                 <outlet property="msgsBtn" destination="Zdt-UP-6jG" id="CcU-us-JgO"/>
                 <outlet property="nameLabel" destination="iM4-Fe-59J" id="pN3-Ef-Z57"/>

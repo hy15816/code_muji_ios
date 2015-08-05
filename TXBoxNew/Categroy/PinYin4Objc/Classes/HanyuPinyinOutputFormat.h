@@ -5,18 +5,21 @@
 #define _HanyuPinyinOutputFormat_H_
 
 typedef enum {
-  ToneTypeWithToneNumber,
-  ToneTypeWithoutTone,
-  ToneTypeWithToneMark
+  ToneTypeWithToneNumber,   //数字声调
+  ToneTypeWithoutTone,      //无声调
+  ToneTypeWithToneMark      //标记声调
 }ToneType;
 
 typedef enum {
-    CaseTypeUppercase,
-    CaseTypeLowercase
+    CaseTypeUppercase,      //大写
+    CaseTypeLowercase       //小写
 }CaseType;
 
+/*
+ *  设置特殊拼音的显示格式如 u->ü
+ */
 typedef enum {
-    VCharTypeWithUAndColon,
+    VCharTypeWithUAndColon, //
     VCharTypeWithV,
     VCharTypeWithUUnicode
 }VCharType;

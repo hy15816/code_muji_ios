@@ -17,9 +17,6 @@
 
 @interface TXKeyView : UIView
 
-
-@property (strong,nonatomic) UISearchBar *textsearch;
-
 @property (assign,nonatomic) id<KeyViewDelegate> keyDelegate;
-
+-(void)removeHudv;
 @end

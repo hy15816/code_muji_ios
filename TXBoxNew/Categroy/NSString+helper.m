@@ -177,7 +177,12 @@
     
     NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"-%@",self];
     NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:mstring withHanyuPinyinOutputFormat:outputFormat withNSString:@"-"];
-    VCLog(@"-------------:%@",outputPinyin);
+    //char aa = (char)[self substringWithRange:NSMakeRange(0, 1)];
+    //NSArray *atextArray = [PinyinHelper toTongyongPinyinStringArrayWithChar:(char)[self substringWithRange:NSMakeRange(0, 1)]];
+    
+    
+    
+    //VCLog(@"-outputPinyin-----:%@",outputPinyin);
     
     
     

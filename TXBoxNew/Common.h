@@ -26,7 +26,7 @@
 #define kCallViewReloadData @"callViewReloadData"
 // custom键盘高宽
 #define keyWidth DEVICE_WIDTH/3.f
-#define keyHeight keyWidth/3.f
+#define keyHeight keyWidth/2.6f
 
 // 颜色
 #define RGBACOLOR(r,g,b,a) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:(a)/1.f]
@@ -47,11 +47,11 @@
 
 
 // =================通话记录表===========//
-#define CALL_RECORDS_TABLE_NAME @"CALL_RECORDS7_20_1"
+#define CALL_RECORDS_TABLE_NAME @"CALL_RECORDS8_5_2"
 //创建通话记录表的sql语句
-#define CALL_RECORDS_CREATE_TABLE_SQL @"create table if not exists %@(tel_id integer primary key AUTOINCREMENT,hisName text,hisNumber text,callDirection text,callLength text,callBeginTime text,hisHome text,hisOperator text)"
+#define CALL_RECORDS_CREATE_TABLE_SQL @"create table if not exists %@(tel_id integer primary key AUTOINCREMENT,hisName text,hisNumber text,callDirection text,callLength text,callBeginTime text,hisHome text,hisOperator text,contactid,text)"
 //添加call——records
-#define CALL_RECORDS_ADDINFO_SQL @"insert into %@(hisName ,hisNumber ,callDirection ,callLength,callBeginTime ,hisHome ,hisOperator ) values(?,?,?,?,?,?,?)"
+#define CALL_RECORDS_ADDINFO_SQL @"insert into %@(hisName ,hisNumber ,callDirection ,callLength,callBeginTime ,hisHome ,hisOperator,contactid ) values(?,?,?,?,?,?,?,?)"
 //删除一条通话记录
 #define DELETE_CALL_RECORD_SQL @"delete from %@ where hisNumber=%@"
 
@@ -89,7 +89,7 @@
 
 //===================================//
 // 首页输入框的view
-#define InputBoxView 50.f
+#define InputBoxViewHeight 50.f
 
 // searchBar高度
 #define kSearchH 44.f
@@ -160,3 +160,7 @@
 #define isRead @"isRead"
 #define isRecordRef @"isRecordRef"
 
+
+#define LastInputChar @"lastInputChar"
+#define InputFieldAllText @"textFieldAllText"
+#define AddOrDelete @"addOrDelete"

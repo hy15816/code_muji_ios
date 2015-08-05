@@ -12,6 +12,7 @@
 
 @interface TXData : NSObject
 
+//==============通话记录
 @property (assign, nonatomic) int tel_id;
 @property (strong, nonatomic) NSString *hisName;//对方在通讯录中的名字，没有存则不显示
 @property (strong, nonatomic) NSString *hisNumber;//对方号码
@@ -22,14 +23,16 @@
 @property (strong, nonatomic) NSString *hisOperator;//对方的归属运营商
 
 
-//短信
+//===============短信
 @property (assign, nonatomic) int peopleId;
 @property (strong, nonatomic) NSString *msgSender;      //发送者
 @property (strong, nonatomic) NSString *msgTime;        //信息时间
 @property (strong, nonatomic) NSString *msgContent;     //短信内容
 @property (strong, nonatomic) NSString *msgAccepter;    //接收者
 @property (strong, nonatomic) NSString *msgStates;       //状态，发送还是接收
-//发短信
 
+
+//=================
+@property (strong, nonatomic) NSString *contactID;//联系人在addressbook中的ABRecordID
 
 @end

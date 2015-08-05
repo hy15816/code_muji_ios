@@ -9,6 +9,11 @@
 #import "TXCallAction.h"
 #import "NSString+helper.h"
 
+@interface TXCallAction ()
+
+@property (strong, nonatomic) NSString *contactsID;
+@end
+
 @implementation TXCallAction
 @synthesize data,txSqlite,startDate;
 
@@ -19,6 +24,7 @@
         txSqlite = [[TXSqliteOperate alloc] init];
         data = [[TXData alloc] init];
         startDate = [[NSDate alloc] init];
+        _contactsID = [[NSString alloc] init];
     }
     return self;
 }
@@ -36,10 +42,12 @@
 }
 
 #pragma mark -- 拨电话
--(int) callOutFromNumber:(NSString *)myNumber HisNumber:(NSString *)hisNumber
+-(int) callOutFromNumber:(NSString *)myNumber HisNumber:(NSString *)hisNumber contactID:(NSString *)contactid
 {
     //获取当前时间，开始拨打
     startDate = [NSDate date];
+    
+    _contactsID = contactid;//获取联系人id
     
     if (myNumber.length >0) {
         NSDateFormatter *dateFormate = [[NSDateFormatter alloc] init];
@@ -138,6 +146,7 @@
     data.hisName = strName;
     data.callDirection = direction;
     data.callLength = strCallLength;
+    data.contactID = _contactsID;
     
     [txSqlite addInfo:data inTable:CALL_RECORDS_TABLE_NAME withSql:CALL_RECORDS_ADDINFO_SQL];
 }

@@ -63,7 +63,7 @@
 
 -(void)runOnNewThread{
     
-    sleep(1.5f);
+    sleep(1);
     end=YES;
     
 }
