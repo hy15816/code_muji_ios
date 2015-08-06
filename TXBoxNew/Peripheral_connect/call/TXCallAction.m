@@ -136,7 +136,9 @@
     }else{
         strAddress = @"";
     }
-    
+    if (_contactsID == nil) {
+        _contactsID = @"";
+    }
     
     //data.tel_id =singleton.telID;//不需要存id，
     data.hisNumber = strNunmber;

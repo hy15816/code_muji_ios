@@ -559,43 +559,7 @@
 }
 ///////===============================================================================
 
--(void)addInfo:(ContactsData *)contactsData inTable:(NSString *)table withSqlString:(NSString *)sqlString
-{
-    if ([self openDatabase]) {
-        
-        //NSString *insertSql = [NSString stringWithFormat:@"insert into tels(tel_number) values(?)"];
-        NSString *insertSql = [NSString stringWithFormat:sqlString,table];
-        
-        if (sqlite3_prepare_v2(dataBase, [insertSql UTF8String], -1, &stmt, nil) == SQLITE_OK) {
-            VCLog(@"insert prepare ok");
-        }else{
-            VCLog(@"insert prepare error:%s",msg);
-            //清空错误信息
-            sqlite3_free(msg);
-        }
-        
-        //sqlite3_bind_int(stmt,1, contactsData.contacterId);
-        sqlite3_bind_text(stmt, 1, [contactsData.contactName UTF8String], -1, NULL);
-        sqlite3_bind_text(stmt, 2, [contactsData.contactNumber UTF8String], -1, NULL);
-        
-        if (sqlite3_step(stmt) == SQLITE_DONE) {
-            //清空错误信息
-            sqlite3_free(msg);
-            VCLog(@"insert success");
-            
-        }else
-        {
-            VCLog(@"insert msg:%s",msg);
-        }
-        
-        sqlite3_reset(stmt);
-        //关闭
-        sqlite3_close(dataBase);
-    }else{
-        VCLog(@"sqlite ...");
-    }
 
-}
 
 
 -(NSMutableArray *)searchAcontacterInfoFrom:(NSString *)table hisName:(NSString *)string withSqlString:(NSString *)sqlString

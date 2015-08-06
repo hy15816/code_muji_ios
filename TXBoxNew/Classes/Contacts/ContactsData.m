@@ -2,7 +2,7 @@
 //  ContactsData.m
 //  TXBoxNew
 //
-//  Created by Naron on 15/6/15.
+//  Created by Naron on 15/8/6.
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
 
@@ -10,8 +10,8 @@
 
 @implementation ContactsData
 
-@synthesize contacterId;
-@synthesize contactName;
-@synthesize contactNumber;
+@synthesize nameString;
+@synthesize numberString;
+@synthesize contactsId;
 
 @end

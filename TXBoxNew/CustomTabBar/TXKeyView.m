@@ -166,7 +166,6 @@
     
     if (textFieldh.text.length>0){
         NSString *allText = [textFieldh.text substringToIndex:textFieldh.text.length-1];//删除之后的
-        NSString *lastDeleteChar = [textFieldh.text substringWithRange:NSMakeRange(textFieldh.text.length-1, 1)];//最后删除的那个char
         
         NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
                               allText,InputFieldAllText,
@@ -208,10 +207,7 @@
     }
 
     //利用单利保存呼叫的号码
-    singleton.singletonValue = textFieldh.text;
-    //VCLog(@"singletonValue: %@",singleton.singletonValue);
-    NSString *lastInChar = [textFieldh.text substringWithRange:NSMakeRange(textFieldh.text.length -1, 1)];//输入的最后一个字
-    
+    singleton.singletonValue = textFieldh.text;    
     NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
                           textFieldh.text , InputFieldAllText,
                           @"1",           AddOrDelete,nil];
@@ -219,7 +215,7 @@
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
     if (textFieldh.text.length>=1) {
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:ktextChangeNotify object:self]];
-        textFieldh.font = [UIFont systemFontOfSize:24];
+        textFieldh.font = [UIFont systemFontOfSize:22];
     }
     
     if (hudv) {
@@ -268,6 +264,10 @@
     if (longPress.state == UIGestureRecognizerStateBegan) {
         
         textFieldh.text = [NSString stringWithFormat:@"%@+",text];
+        if (hudv) {
+            [hudv removeFromSuperview];
+        }
+        
     }
     
 }
@@ -284,7 +284,7 @@
         if (hudv) {
             [hudv removeFromSuperview];
         }
-
+        textFieldh.font = [UIFont systemFontOfSize:17];
     }
 }
 

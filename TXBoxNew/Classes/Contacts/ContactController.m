@@ -17,6 +17,7 @@
 #import "TXData.h"
 #import "TXSqliteOperate.h"
 #import "MyAddressBooks.h"
+#import "ContactsData.h"
 
 @interface ContactController ()<UISearchResultsUpdating,UISearchControllerDelegate,ABNewPersonViewControllerDelegate,ABPersonViewControllerDelegate,MyAddressBooksDelegate>
 {
@@ -37,13 +38,14 @@
     NSMutableArray *Allphones;
     NSMutableArray *searchsArray;          //搜索后的结果数组
     ABRecordID abrecordID;
+    NSArray *sortedArray;;
 }
 
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
 @property (strong,nonatomic) UITableViewController *searchVC;
 @property (strong,nonatomic) NSIndexPath *selectedIndexPath;        //被选中
 @property (strong,nonatomic) NSIndexPath *currentIndexPath;
-@property (strong,nonatomic) NSArray *sortedArray;
+
 -(IBAction)addNewContacts:(UIBarButtonItem *)sender;
 @end
 
@@ -79,8 +81,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.selectedIndexPath = nil;
-    
+    //self.selectedIndexPath = nil;
+    [self initll];
+    abAddressBooks = [MyAddressBooks sharedAddBooks];
+    abAddressBooks.delegate = self;
+
     [userDefaults setBool:NO forKey:IsUpdateContacts];
     self.title = @"通讯录";
     
@@ -94,18 +99,15 @@
     self.tableView.sectionHeaderHeight = 18.f;
     //self.tableView.sectionIndexTrackingBackgroundColor = [[UIColor alloc]initWithRed:227/255.f green:212/255.f blue:197/255.f alpha:1];
     [self initSearchController];
-    
-    
+    [self sectionDicts];
     
 }
 
 -(void)initll{
     peopleArray = [[NSMutableArray alloc] init];
-    abAddressBooks = [MyAddressBooks sharedAddBooks];
-    abAddressBooks.delegate = self;
     sectionArray = [[NSMutableArray alloc] init];
     sectionDict = [[NSMutableDictionary alloc] init];
-    self.sortedArray = [[NSArray alloc] init];
+    sortedArray = [[NSArray alloc] init];
     dataArray = [[NSMutableArray alloc] init];
     msgdata = [[TXData alloc] init];
     txsql=[[TXSqliteOperate alloc] init];
@@ -171,7 +173,7 @@
         
     }
     
-    self.sortedArray =[sectionArray sortedArrayUsingSelector:@selector(compare:)];
+    sortedArray =[sectionArray sortedArrayUsingSelector:@selector(compare:)];
     
     NSLog(@"sectionDict:%@",sectionDict);
     NSLog(@"dataArray:%@",dataArray);
@@ -366,7 +368,7 @@
     if (self.searchController.active) {
         return 1;
     }
-    return self.sortedArray.count;//否则返回索引个数
+    return sortedArray.count;//否则返回索引个数
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -376,7 +378,7 @@
     }
     
     //返回sectionDic的 key里有值的value的个数
-    NSString *key=[NSString stringWithFormat:@"%@",self.sortedArray[section]];
+    NSString *key=[NSString stringWithFormat:@"%@",sortedArray[section]];
     //NSLog(@"sec:%ld,conut:%lu",(long)section,(unsigned long)[[sectionDict objectForKey:key] count]);
     return  [[sectionDict objectForKey:key] count];
 }
@@ -408,7 +410,7 @@
         
     }else{
         
-        NSString *key=[NSString stringWithFormat:@"%@",self.sortedArray[indexPath.section]];
+        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
         ABRecordRef ref = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
         abrecordID  = ABRecordGetRecordID(ref);
         cell.nameLabel.text = [self getShowNameText:ref];
@@ -471,7 +473,7 @@
         return nil;
     }
     
-    return self.sortedArray;
+    return sortedArray;
 }
 
 
@@ -516,7 +518,7 @@
     //title.textColor = [UIColor redColor];
     title.frame = CGRectMake(20, 0, 30, 18);
     title.font = [UIFont systemFontOfSize:15 weight:.3];
-    title.text = [self.sortedArray objectAtIndex:section];
+    title.text = [sortedArray objectAtIndex:section];
     
     [headerView addSubview:title];
     
@@ -538,7 +540,7 @@
         phone = [[self getShowPhoneText:ref] firstObject];
         contactId = [NSString stringWithFormat:@"%d",ABRecordGetRecordID(ref)];
     }else{
-        NSString *key=[NSString stringWithFormat:@"%@",self.sortedArray[indexPath.section]];
+        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
         ABRecordRef refd = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
         name = [self getShowNameText:refd];
         phone = [[self getShowPhoneText:refd] firstObject];
@@ -547,7 +549,7 @@
     }
     
     //把姓名号码传过去
-    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:name,@"hisName",phone,@"hisNumber",contactId,@"contactId", nil];
+    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:name,@"hisName",phone,@"hisNumber",contactId,@"hisContactId", nil];
     
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallingBtnClick object:self userInfo:dict]];
     
@@ -573,7 +575,7 @@
         }else{msgdata.hisHome = @"";}
         msgDetail.datailDatas =msgdata;
     }else{
-        NSString *key=[NSString stringWithFormat:@"%@",self.sortedArray[indexPath.section]];
+        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
         ABRecordRef refd = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
         msgdata.hisName = [self getShowNameText:refd];
         msgdata.hisNumber = [[self getShowPhoneText:refd] firstObject];
@@ -597,7 +599,7 @@
         ABRecordRef ref = (__bridge ABRecordRef)([searchsArray objectAtIndex:indexPath.row]);
         [self showPersonViewControllerWithRecordRef:ref];
     }else{
-        NSString *key=[NSString stringWithFormat:@"%@",self.sortedArray[indexPath.section]];
+        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
         ABRecordRef refd = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
         [self showPersonViewControllerWithRecordRef:refd];
     }

@@ -175,8 +175,8 @@
     [outputFormat setVCharType:VCharTypeWithV];//特殊拼音的显示格式如 ü
     [outputFormat setCaseType:CaseTypeLowercase];//大小(Lowercase)写
     
-    NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"-%@",self];
-    NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:mstring withHanyuPinyinOutputFormat:outputFormat withNSString:@"-"];
+    NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"%@%@",ReplaceIdentifi,self];
+    NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:mstring withHanyuPinyinOutputFormat:outputFormat withNSString:ReplaceIdentifi];
     //char aa = (char)[self substringWithRange:NSMakeRange(0, 1)];
     //NSArray *atextArray = [PinyinHelper toTongyongPinyinStringArrayWithChar:(char)[self substringWithRange:NSMakeRange(0, 1)]];
     
@@ -307,7 +307,7 @@
     /**
      * 中国移动
      */
-    NSString * CM = @"^1(34[0-8]|(3[5-9]|5[0127-9]|8[2378])\\d).*$";
+    NSString * CM = @"^1(34[0-8]|(3[5-9]|5[0127-9]|8[2378])|4[7]\\d).*$";
     /**
      * 中国联通
      */

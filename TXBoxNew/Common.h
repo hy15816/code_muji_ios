@@ -47,7 +47,7 @@
 
 
 // =================通话记录表===========//
-#define CALL_RECORDS_TABLE_NAME @"CALL_RECORDS8_5_2"
+#define CALL_RECORDS_TABLE_NAME @"CALL_RECORDS8_6_2"
 //创建通话记录表的sql语句
 #define CALL_RECORDS_CREATE_TABLE_SQL @"create table if not exists %@(tel_id integer primary key AUTOINCREMENT,hisName text,hisNumber text,callDirection text,callLength text,callBeginTime text,hisHome text,hisOperator text,contactid,text)"
 //添加call——records
@@ -164,3 +164,8 @@
 #define LastInputChar @"lastInputChar"
 #define InputFieldAllText @"textFieldAllText"
 #define AddOrDelete @"addOrDelete"
+
+//about 正则
+//#define ZZExpression @"[0-9,A,B,C]*"
+#define ZZExpression @"\\w*"
+#define ReplaceIdentifi @"-"
