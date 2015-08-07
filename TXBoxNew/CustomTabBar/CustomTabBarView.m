@@ -26,10 +26,10 @@
 
 -(void)createButton{
     //添加4个button
-    [self creatButtonWithNormalName:@"icon_down_gray"andSelectName:@"icon_up"andTitle:@"电话" andIndex:0];
-    [self creatButtonWithNormalName:@"icon_message"andSelectName:@"icon_message_selected"andTitle:@"信息" andIndex:1];
-    [self creatButtonWithNormalName:@"icon_person"andSelectName:@"icon_person_selected"andTitle:@"通讯录" andIndex:2];
-    [self creatButtonWithNormalName:@"icon_discover"andSelectName:@"icon_discover_selected"andTitle:@"发现" andIndex:3];
+    [self creatButtonWithNormalName:@"tabbar_call"andSelectName:@"tabbar_call_HL"andTitle:@"电话" andIndex:0];
+    [self creatButtonWithNormalName:@"tabbar_message_center"andSelectName:@"tabbar_message_center_HL"andTitle:@"信息" andIndex:1];
+    [self creatButtonWithNormalName:@"tabbar_profile"andSelectName:@"tabbar_profile_HL"andTitle:@"通讯录" andIndex:2];
+    [self creatButtonWithNormalName:@"tabbar_discover"andSelectName:@"tabbar_discover_HL"andTitle:@"发现" andIndex:3];
     //添加呼叫button
     [self addCallBtn];
     UILabel *label =[[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, .5)];
@@ -56,8 +56,8 @@
     //设置图片，文字
     [button setImage:[UIImage imageNamed:normal] withTitle:title forState:UIControlStateNormal];
     [button setImage:[UIImage imageNamed:selected] withTitle:title forState:UIControlStateSelected];
-    [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [button setTitleColor:RGBACOLOR(0, 174, 154, 1) forState:UIControlStateSelected];
+    [button setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+    [button setTitleColor:RGBACOLOR(0, 170, 242, 1) forState:UIControlStateSelected];
     button.titleLabel.font = [UIFont systemFontOfSize:10];// 设置标题的字体大小
     
     //事件
@@ -71,7 +71,7 @@
         button.selected = YES;
         fBtn = button;
     }
-
+    //VCLog(@"button.frame%@",button);
     _cusBtnExtern = button;
     [self addSubview:button];
     
@@ -80,7 +80,7 @@
 //button事件
 -(void) buttonClick:(CustomTabBarBtn *)button
 {
-    VCLog(@"b.tag = %ld",(long)button.tag);
+    //VCLog(@"b.tag = %ld",(long)button.tag);
     if (button.tag != 0) {
 
         fBtn.selected = NO;

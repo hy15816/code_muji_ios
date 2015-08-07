@@ -43,8 +43,6 @@
 
 #pragma mark --添加键盘按键
 -(void) drawKeyBorad {
-
-    
     
     for (int i=0; i<=11; i++) {
         
@@ -126,39 +124,7 @@
     singleton = [TXTelNumSingleton sharedInstance];
    
 }
-/*
-#pragma mark 对searchbar的修改
--(void)layoutSubviews
-{
-    for(id aa in [self.textsearch subviews])
-    {
-        for (id bb in  [aa subviews]) {
-            
-            if([bb isKindOfClass:[UITextField class]])
-            {
-                UITextField *textField2 = (UITextField *)bb;
-                //textField2.clipsToBounds = NO;
-                //去掉放大镜
-                textField2.leftView = nil;
-                textField2.clearButtonMode  = UITextFieldViewModeNever;
-                textField2.textAlignment = NSTextAlignmentCenter;
-                textField2.font = [UIFont systemFontOfSize:18];
-                break;
-            }
-            //去掉背景
-            if ([bb isKindOfClass:NSClassFromString(@"UISearchBarBackground") ]) {
-                [bb removeFromSuperview];
-                break;
-            }
- 
-        }
- 
-    }
-    
-    [super layoutSubviews];
-    
-}
-*/
+
 
 #pragma mark 删除号码
 -(void)del
@@ -178,8 +144,9 @@
     }
     if (textFieldh.text.length <=0) {
         textFieldh.font = [UIFont systemFontOfSize:17];
+        
     }
-    
+    textFieldh.placeholder = @"";
     [self.keyDelegate inputTextLength:textFieldh.text];
     
 }
@@ -216,6 +183,7 @@
     if (textFieldh.text.length>=1) {
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:ktextChangeNotify object:self]];
         textFieldh.font = [UIFont systemFontOfSize:22];
+        textFieldh.placeholder = @"";
     }
     
     if (hudv) {

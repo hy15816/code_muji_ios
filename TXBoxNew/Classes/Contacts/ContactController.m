@@ -38,24 +38,23 @@
     NSMutableArray *Allphones;
     NSMutableArray *searchsArray;          //搜索后的结果数组
     ABRecordID abrecordID;
-    NSArray *sortedArray;;
 }
 
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
 @property (strong,nonatomic) UITableViewController *searchVC;
 @property (strong,nonatomic) NSIndexPath *selectedIndexPath;        //被选中
 @property (strong,nonatomic) NSIndexPath *currentIndexPath;
+@property (strong,nonatomic) NSArray *sortedArray;
 
 -(IBAction)addNewContacts:(UIBarButtonItem *)sender;
 @end
 
 @implementation ContactController
 
+
 -(void)viewWillAppear:(BOOL)animated{
 
     [super viewWillAppear:animated];
-    
-    [self initll];
     
     //第一次获取通讯录
     if (![userDefaults boolForKey:IsUpdateContacts]) {
@@ -63,6 +62,7 @@
         [abAddressBooks CreateAddressBooks];
         [self sectionDicts];
         [self setNameAndNumberDicts];
+        //[abAddressBooks refReshContacts];
         [self.tableView reloadData];
     }
     
@@ -86,6 +86,8 @@
     abAddressBooks = [MyAddressBooks sharedAddBooks];
     abAddressBooks.delegate = self;
 
+    
+    
     [userDefaults setBool:NO forKey:IsUpdateContacts];
     self.title = @"通讯录";
     
@@ -99,7 +101,7 @@
     self.tableView.sectionHeaderHeight = 18.f;
     //self.tableView.sectionIndexTrackingBackgroundColor = [[UIColor alloc]initWithRed:227/255.f green:212/255.f blue:197/255.f alpha:1];
     [self initSearchController];
-    [self sectionDicts];
+    
     
 }
 
@@ -107,7 +109,7 @@
     peopleArray = [[NSMutableArray alloc] init];
     sectionArray = [[NSMutableArray alloc] init];
     sectionDict = [[NSMutableDictionary alloc] init];
-    sortedArray = [[NSArray alloc] init];
+    _sortedArray = [[NSArray alloc] init];
     dataArray = [[NSMutableArray alloc] init];
     msgdata = [[TXData alloc] init];
     txsql=[[TXSqliteOperate alloc] init];
@@ -173,14 +175,14 @@
         
     }
     
-    sortedArray =[sectionArray sortedArrayUsingSelector:@selector(compare:)];
+    _sortedArray =[sectionArray sortedArrayUsingSelector:@selector(compare:)];
     
     NSLog(@"sectionDict:%@",sectionDict);
     NSLog(@"dataArray:%@",dataArray);
 }
 
 -(void)setNameAndNumberDicts{
-    
+    //[self sectionDicts];
     for (int i=0; i<peopleArray.count; i++) {
         NSMutableDictionary *dict =[[NSMutableDictionary alloc] init];
         ABRecordRef record = (__bridge ABRecordRef)(peopleArray[i]);
@@ -198,7 +200,7 @@
             lastName = @"";
         }
         
-        name = [NSString stringWithFormat:@"%@%@",firstName,lastName];
+        name = [NSString stringWithFormat:@"%@%@",lastName,firstName];
         
         NSString *phone;
 
@@ -246,7 +248,7 @@
         lastName = @"";
     }
     
-    name = [NSString stringWithFormat:@"%@%@",firstName,lastName];
+    name = [NSString stringWithFormat:@"%@%@",lastName,firstName];
     if (name.length <= 0) {
         //获取号码
         ABMultiValueRef phoneNumber = ABRecordCopyValue(record, kABPersonPhoneProperty);
@@ -368,7 +370,7 @@
     if (self.searchController.active) {
         return 1;
     }
-    return sortedArray.count;//否则返回索引个数
+    return _sortedArray.count;//否则返回索引个数
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -378,7 +380,7 @@
     }
     
     //返回sectionDic的 key里有值的value的个数
-    NSString *key=[NSString stringWithFormat:@"%@",sortedArray[section]];
+    NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[section]];
     //NSLog(@"sec:%ld,conut:%lu",(long)section,(unsigned long)[[sectionDict objectForKey:key] count]);
     return  [[sectionDict objectForKey:key] count];
 }
@@ -410,7 +412,7 @@
         
     }else{
         
-        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
+        NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
         ABRecordRef ref = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
         abrecordID  = ABRecordGetRecordID(ref);
         cell.nameLabel.text = [self getShowNameText:ref];
@@ -473,7 +475,7 @@
         return nil;
     }
     
-    return sortedArray;
+    return _sortedArray;
 }
 
 
@@ -518,7 +520,7 @@
     //title.textColor = [UIColor redColor];
     title.frame = CGRectMake(20, 0, 30, 18);
     title.font = [UIFont systemFontOfSize:15 weight:.3];
-    title.text = [sortedArray objectAtIndex:section];
+    title.text = [_sortedArray objectAtIndex:section];
     
     [headerView addSubview:title];
     
@@ -540,7 +542,7 @@
         phone = [[self getShowPhoneText:ref] firstObject];
         contactId = [NSString stringWithFormat:@"%d",ABRecordGetRecordID(ref)];
     }else{
-        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
+        NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
         ABRecordRef refd = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
         name = [self getShowNameText:refd];
         phone = [[self getShowPhoneText:refd] firstObject];
@@ -575,7 +577,7 @@
         }else{msgdata.hisHome = @"";}
         msgDetail.datailDatas =msgdata;
     }else{
-        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
+        NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
         ABRecordRef refd = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
         msgdata.hisName = [self getShowNameText:refd];
         msgdata.hisNumber = [[self getShowPhoneText:refd] firstObject];
@@ -599,7 +601,7 @@
         ABRecordRef ref = (__bridge ABRecordRef)([searchsArray objectAtIndex:indexPath.row]);
         [self showPersonViewControllerWithRecordRef:ref];
     }else{
-        NSString *key=[NSString stringWithFormat:@"%@",sortedArray[indexPath.section]];
+        NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
         ABRecordRef refd = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
         [self showPersonViewControllerWithRecordRef:refd];
     }
@@ -690,7 +692,7 @@
     //[self removeTableViewFootView];
     //刷新表格
     [self.searchVC.tableView reloadData];
-    //[self.tableView reloadData];
+    [self.tableView reloadData];
     
 }
 

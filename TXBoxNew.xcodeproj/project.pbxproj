@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		630E1B131B747DEC007A29EC /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 630E1B121B747DEC007A29EC /* AVOSCloud.framework */; };
 		632AC6391ADCE92F0023FAA9 /* TXData.m in Sources */ = {isa = PBXBuildFile; fileRef = 632AC6361ADCE92F0023FAA9 /* TXData.m */; };
 		632AC63A1ADCE92F0023FAA9 /* TXSqliteOperate.m in Sources */ = {isa = PBXBuildFile; fileRef = 632AC6381ADCE92F0023FAA9 /* TXSqliteOperate.m */; };
 		632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 632AC6431ADCF0240023FAA9 /* libsqlite3.dylib */; };
@@ -69,9 +70,7 @@
 		63D4871C1B1835CA005F2E1A /* DiscoveryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D4871B1B1835CA005F2E1A /* DiscoveryController.m */; };
 		63D4871E1B183B24005F2E1A /* ble_connect.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D4871D1B183B24005F2E1A /* ble_connect.gif */; };
 		63D487201B183B72005F2E1A /* phone_connect.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D4871F1B183B72005F2E1A /* phone_connect.gif */; };
-		63D4F8571B71FEDA00D5CFF6 /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D4F8561B71FEDA00D5CFF6 /* RegexKitLite.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		63DBF8AC1B0303C500041321 /* TXNavgationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DBF8AB1B0303C500041321 /* TXNavgationController.m */; };
-		63DCF8941B72F80E00C897F2 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DCF8931B72F80E00C897F2 /* AVOSCloud.framework */; };
 		63DCF8971B731ACC00C897F2 /* ContactsData.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DCF8961B731ACC00C897F2 /* ContactsData.m */; };
 		63DEA6791B0094FB003343A7 /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6711B0094FB003343A7 /* Message.m */; };
 		63DEA67B1B0094FB003343A7 /* MsgDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6741B0094FB003343A7 /* MsgDetailCell.m */; };
@@ -113,6 +112,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		630E1B121B747DEC007A29EC /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		632AC6351ADCE92F0023FAA9 /* TXData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXData.h; sourceTree = "<group>"; };
 		632AC6361ADCE92F0023FAA9 /* TXData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXData.m; sourceTree = "<group>"; };
 		632AC6371ADCE92F0023FAA9 /* TXSqliteOperate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXSqliteOperate.h; sourceTree = "<group>"; };
@@ -229,11 +229,8 @@
 		63D4871B1B1835CA005F2E1A /* DiscoveryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoveryController.m; sourceTree = "<group>"; };
 		63D4871D1B183B24005F2E1A /* ble_connect.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = ble_connect.gif; sourceTree = "<group>"; };
 		63D4871F1B183B72005F2E1A /* phone_connect.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = phone_connect.gif; sourceTree = "<group>"; };
-		63D4F8551B71FEDA00D5CFF6 /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
-		63D4F8561B71FEDA00D5CFF6 /* RegexKitLite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegexKitLite.m; sourceTree = "<group>"; };
 		63DBF8AA1B0303C500041321 /* TXNavgationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXNavgationController.h; sourceTree = "<group>"; };
 		63DBF8AB1B0303C500041321 /* TXNavgationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXNavgationController.m; sourceTree = "<group>"; };
-		63DCF8931B72F80E00C897F2 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		63DCF8951B731ACC00C897F2 /* ContactsData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsData.h; sourceTree = "<group>"; };
 		63DCF8961B731ACC00C897F2 /* ContactsData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsData.m; sourceTree = "<group>"; };
 		63DEA6701B0094FB003343A7 /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
@@ -296,7 +293,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				63DCF8941B72F80E00C897F2 /* AVOSCloud.framework in Frameworks */,
+				630E1B131B747DEC007A29EC /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -647,7 +644,7 @@
 		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
 			isa = PBXGroup;
 			children = (
-				63DCF8931B72F80E00C897F2 /* AVOSCloud.framework */,
+				630E1B121B747DEC007A29EC /* AVOSCloud.framework */,
 				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
 				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
 				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
@@ -740,8 +737,6 @@
 		63FB5FD11ADBB58700A1A92B /* TXBoxNew */ = {
 			isa = PBXGroup;
 			children = (
-				63D4F8551B71FEDA00D5CFF6 /* RegexKitLite.h */,
-				63D4F8561B71FEDA00D5CFF6 /* RegexKitLite.m */,
 				63719AFE1B44DBE900AB7DE3 /* AboutCall */,
 				637B49CF1B438BA400326937 /* CallAndDivert */,
 				6352996D1ADE39D5006840AC /* Classes */,
@@ -943,7 +938,6 @@
 				63DCF8971B731ACC00C897F2 /* ContactsData.m in Sources */,
 				637E41E41B3962F20015F682 /* TXKeyView.m in Sources */,
 				63DEA67C1B0094FB003343A7 /* MsgDetailController.m in Sources */,
-				63D4F8571B71FEDA00D5CFF6 /* RegexKitLite.m in Sources */,
 				63FA3A631B5E28FF0049EB1C /* AFHTTPSessionManager.m in Sources */,
 				6382AE9D1B660D6A00745285 /* ContactsTableViewCell.m in Sources */,
 				6371918B1B1F01B1005C09C8 /* NSString+PinYin4Cocoa.m in Sources */,
@@ -1244,6 +1238,10 @@
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
@@ -1278,6 +1276,10 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,

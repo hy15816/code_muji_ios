@@ -57,7 +57,7 @@
 
 
 //===================信息表=============//
-#define MESSAGE_RECEIVE_RECORDS_TABLE_NAME @"MESSAGE_RECORDS7_9_1"
+#define MESSAGE_RECEIVE_RECORDS_TABLE_NAME @"MESSAGE_RECORDS8_7_1"
 //创建d短信记录表的sql语句
 #define MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL  @"create table if not exists %@(peopleId integer primary key AUTOINCREMENT,msgSender text,msgTime text,msgContent text,msgAccepter text,msgState text)"
 //添加msg记录
@@ -160,8 +160,7 @@
 #define isRead @"isRead"
 #define isRecordRef @"isRecordRef"
 
-
-#define LastInputChar @"lastInputChar"
+//keyView
 #define InputFieldAllText @"textFieldAllText"
 #define AddOrDelete @"addOrDelete"
 
@@ -169,3 +168,23 @@
 //#define ZZExpression @"[0-9,A,B,C]*"
 #define ZZExpression @"\\w*"
 #define ReplaceIdentifi @"-"
+
+//联系人
+#define PersonName @"personName"
+#define PersonNameNum @"personNameNum"
+#define PersonTel   @"personTel"
+#define PersonTelNum @"personTelNum"
+#define PersonRecordRef @"recordRef"
+/*
+//联系人dict格式：{
+ personName = "",
+ personNameNum = "",
+ personTel = "",
+ personTelNum,
+ recordRef = ""
+ 
+}
+*/
+
+
+

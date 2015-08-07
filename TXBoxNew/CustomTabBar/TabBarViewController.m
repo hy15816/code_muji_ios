@@ -157,7 +157,7 @@
             //弹出键盘
             self.keyView .frame=CGRectMake(0,deviceHeight-kTabBarHeight-4*keyHeight-NaviBarHeight-InputBoxViewHeight, DEVICE_WIDTH, keyHeight*4.f+InputBoxViewHeight);
             showKeyboard = YES;
-            [button setImage:[UIImage imageNamed:@"icon_up"] forState:UIControlStateSelected];
+            [button setImage:[UIImage imageNamed:@"tabbar_call_HL"] forState:UIControlStateSelected];
             //若已输入号码，显示callBtn
             if (singleton.singletonValue.length>=1) {
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.38f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -171,7 +171,7 @@
             //隐藏键盘，隐藏call按钮
             showKeyboard = NO;
             [self customKeyboardHides];
-            [button setImage:[UIImage imageNamed:@"icon_down"] forState:UIControlStateSelected];
+            [button setImage:[UIImage imageNamed:@"tabbar_call_HL"] forState:UIControlStateSelected];
         }
     }];
 }

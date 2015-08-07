@@ -41,8 +41,14 @@
 }
 
 #pragma mark --过滤字符串中的“,”
--(NSString *) iPhoneStandards_douhao{
+-(NSString *) iPhoneStandards_douhao_En{
     return [self stringByReplacingOccurrencesOfString:@"," withString:@""];
+    
+}
+
+#pragma mark --过滤字符串中的“，”
+-(NSString *) iPhoneStandards_douhao_Ch{
+    return [self stringByReplacingOccurrencesOfString:@"，" withString:@""];
     
 }
 
@@ -123,7 +129,8 @@
         string = [string trimOfString];     //去除字符串中间的空格
         string = [string iPhoneStandardFormat];//去除 -
         
-        string = [string iPhoneStandards_douhao];//逗号
+        string = [string iPhoneStandards_douhao_En];//逗号
+        string = [string iPhoneStandards_douhao_Ch];//逗号
         string = [string iPhoneStandardedleftMarkFormat];
         string = [string iPhoneStandardedrightMarkFormat];
         //551 87896
@@ -175,14 +182,16 @@
     [outputFormat setVCharType:VCharTypeWithV];//特殊拼音的显示格式如 ü
     [outputFormat setCaseType:CaseTypeLowercase];//大小(Lowercase)写
     
-    NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"%@%@",ReplaceIdentifi,self];
+    NSString *hanzi =  [self purifyString];
+    
+    NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"%@%@",ReplaceIdentifi,hanzi];
     NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:mstring withHanyuPinyinOutputFormat:outputFormat withNSString:ReplaceIdentifi];
     //char aa = (char)[self substringWithRange:NSMakeRange(0, 1)];
     //NSArray *atextArray = [PinyinHelper toTongyongPinyinStringArrayWithChar:(char)[self substringWithRange:NSMakeRange(0, 1)]];
     
     
     
-    //VCLog(@"-outputPinyin-----:%@",outputPinyin);
+    VCLog(@"%@-----:%@",self,outputPinyin);
     
     
     

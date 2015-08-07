@@ -16,7 +16,6 @@
 #import "DiscoveryController.h"
 #import "GetAllContacts.h"
 #import "CallAndDivert.h"
-#import "RegexKitLite.h"
 
 static NSMutableArray *mLastAllRegularsMapArray;
 
@@ -46,6 +45,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
 }
 
 @property (nonatomic,assign) ABAddressBookRef addressBook;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *callAnother;
 
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
 @property (weak,nonatomic) UIAlertController *alertc;
@@ -87,8 +87,8 @@ static NSMutableArray *mLastAllRegularsMapArray;
     
     CFErrorRef error = NULL;
     _addressBook  = ABAddressBookCreateWithOptions(nil, &error);
-    CFIndex nPeople = ABAddressBookGetPersonCount(_addressBook);
-    NSLog(@"People count：%ld",nPeople);
+//    CFIndex nPeople = ABAddressBookGetPersonCount(_addressBook);
+//    NSLog(@"People count：%ld",nPeople);
 
     //显示tabbar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
@@ -157,9 +157,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
 
 #pragma mark -- 用户输入时（增加或退格）
 -(void)inputTextDidChanged:(NSNotification*)notifi{
-
-    //NSLog(@"mLastAllRegularsMapArray:%@",mLastAllRegularsMapArray);
-    
+    //若结果集不为空，清空结果
     if (searchResault) {
         [searchResault removeAllObjects];
     }
@@ -185,10 +183,9 @@ static NSMutableArray *mLastAllRegularsMapArray;
         return;
     }
     
-    BOOL isAdd = [[[notifi userInfo] valueForKey:AddOrDelete] intValue];
-    //NSLog(@"inUserInputsStr:%@ isAdd:%d",inUserInputsStr,isAdd);
+    BOOL isAdd = [[[notifi userInfo] valueForKey:AddOrDelete] intValue];//是否输入
+
     searcherString = inUserInputsStr;//类变量赋值，后续。。。
-    
     
     //1.2取出：上一次的正则表达式list <- 上一次的输入字符串 <- 当前的输入字符串
     NSString *keyForLastRegulars = [inUserInputsStr substringToIndex:(inUserInputsStr.length-1)];
@@ -227,59 +224,45 @@ static NSMutableArray *mLastAllRegularsMapArray;
         [mLastAllRegularsMapArray removeObjectAtIndex:mLastAllRegularsMapArray.count-1];
         tempNumsRegularsMap = [mLastAllRegularsMapArray objectAtIndex:mLastAllRegularsMapArray.count-1];
         [self.tableView reloadData];
-         NSLog(@"mLastAllRegularsMapArray-delete:%@",mLastAllRegularsMapArray);
+        NSLog(@"mLastAllRegularsMapArray-delete:%@",mLastAllRegularsMapArray);
     }
     
     if(isAdd){
         [tempNumsRegularsMap setObject:tempRegularList forKey:inUserInputsStr];
-        //[mLastAllRegularsMapArray addObject:tempNumsRegularsMap];
     }
 
-    
-    
-     NSLog(@"[tempNumsRegularsMap valueForKey:inUserInputsStr]:%@",[tempNumsRegularsMap valueForKey:inUserInputsStr]);
-
-    //tempNumsRegularsMapCopy = tempNumsRegularsMap;
     //2.匹配：结果 <- 正则表达式
     for (int i = 0 ; i <[[tempNumsRegularsMap valueForKey:inUserInputsStr] count ] ; i++) {//0,1
 
         NSString *regular = [[tempNumsRegularsMap valueForKey:inUserInputsStr] objectAtIndex:i];
         BOOL isRegular = FALSE;
         BOOL isNumRgular = FALSE;
-        //NSPredicate *regextestcm = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regular];
-        
-        for (int k = 0; k < mutPhoneArray.count; k++) {
+        for (int k = 0; k < mutPhoneArray.count; k++) {//取出第k个元素
             
-            for (int j = 0; j < [mutPhoneArray[k] count]; j++) {
-                
-                NSString *nameNum = [mutPhoneArray[k]valueForKey:@"personNameNum"];
-                NSString *phoneNum = [mutPhoneArray[k]valueForKey:@"personTelNum"];
-                //匹配号码
-                NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regular options:NSRegularExpressionCaseInsensitive | NSRegularExpressionDotMatchesLineSeparators|NSRegularExpressionUseUnicodeWordBoundaries error:nil];
-                NSTextCheckingResult *result = [regex firstMatchInString:nameNum options:NSMatchingReportCompletion range:NSMakeRange(0, nameNum.length)];
-                
-                if (result) {
-                    isRegular = true;
-                    if (![searchResault containsObject:mutPhoneArray[k]]) {
-                        [searchResault addObject:mutPhoneArray[k]];
-                       
-                    }
-                    
-                }else{
-                    NSRange pRange = [phoneNum  rangeOfString:inUserInputsStr];
-                    NSRange rRange = [regular  rangeOfString:inUserInputsStr];
-                    if(pRange.length && rRange.length){
-                        isNumRgular = true;
-                        if (![searchResault containsObject:mutPhoneArray[k]]) {
-                            [searchResault addObject:mutPhoneArray[k]];
-                            
-                        }
-
-                    }
+            NSString *nameNum = [mutPhoneArray[k]valueForKey:PersonNameNum];//第k个元素的数字名字
+            NSString *phoneNum = [mutPhoneArray[k]valueForKey:PersonTelNum];//第k个元素的号码
+            //匹配号码
+            NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regular options:NSRegularExpressionCaseInsensitive | NSRegularExpressionDotMatchesLineSeparators|NSRegularExpressionUseUnicodeWordBoundaries error:nil];
+            NSTextCheckingResult *result = [regex firstMatchInString:nameNum options:NSMatchingReportCompletion range:NSMakeRange(0, nameNum.length)];
+            
+            if (result) {
+                isRegular = true;
+                if (![searchResault containsObject:mutPhoneArray[k]]) {
+                    [searchResault addObject:mutPhoneArray[k]];
+                   
                 }
                 
+            }else{
+                NSRange pRange = [phoneNum  rangeOfString:inUserInputsStr];
+                NSRange rRange = [regular  rangeOfString:inUserInputsStr];
+                if(pRange.length && rRange.length){//在正则式和数据源中都存在inUserInputsStr，添加到结果数组
+                    isNumRgular = true;
+                    if (![searchResault containsObject:mutPhoneArray[k]]) {
+                        [searchResault addObject:mutPhoneArray[k]];
+                    }
+
+                }
             }
-            
         }
         
         //3.去重：对结果
@@ -289,8 +272,6 @@ static NSMutableArray *mLastAllRegularsMapArray;
             i = i-1;
             
         }
-        
-        
     }
     
     if (isAdd) {
@@ -298,14 +279,12 @@ static NSMutableArray *mLastAllRegularsMapArray;
         [mLastAllRegularsMapArray addObject:tempNumsRegularsMap];
     }
     
-    
     [self.tableView reloadData];
     
-     NSLog(@"searchResault:%@- %lu",searchResault,(unsigned long)searchResault.count);
-     NSLog(@"匹配后mLastAllRegularsMapArray:%@",mLastAllRegularsMapArray);
+    //NSLog(@"searchResault.count:%lu- %@",(unsigned long)searchResault.count,searchResault);
+    //NSLog(@"匹配后mLastAllRegularsMapArray:%@",mLastAllRegularsMapArray);
     NSLog(@"tempNumsRegularsMap:%@",tempNumsRegularsMap);
    
-    
     //输入的数字达到7个，且还没有结果时
     if (searchResault.count == 0 && searcherString.length >= 7) {
         
@@ -315,15 +294,6 @@ static NSMutableArray *mLastAllRegularsMapArray;
         
     }
 
-}
-
--(NSString *)stringToFormat:(NSString *)s{
-    NSString *str = @"";
-    
-    for (int i=0; i<s.length; i++) {
-        str = [NSString stringWithFormat:@"%@%@%@",str,ReplaceIdentifi,[s substringWithRange:NSMakeRange(i, 1)]];
-    }
-    return str;
 }
 
 //数据模型
@@ -347,6 +317,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
 #pragma mark -- Table view 
 
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    
     //隐藏tabbar和callBtn
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"AAAAA" object:self]];
 }
@@ -356,12 +327,6 @@ static NSMutableArray *mLastAllRegularsMapArray;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
-    /*
-    if (searchResault.count == 0 && singleton.singletonValue.length>=7) {
-        return 1;
-    }
-    */
     
     if (searchResault.count == 0 && searcherString.length >= 7) {
         return 1;
@@ -394,12 +359,12 @@ static NSMutableArray *mLastAllRegularsMapArray;
 
     //用户输入时
     if (searcherString.length > 0 &&searchResault.count > 0 ) {
-        Records *record = dataList[indexPath.row];
-        cell.hisName.text = [[searchResault objectAtIndex:indexPath.row] valueForKey:@"personName"];//;record.personName;
+        //Records *record = dataList[indexPath.row];
+        cell.hisName.text = [[searchResault objectAtIndex:indexPath.row] valueForKey:PersonName];//;record.personName;
         cell.hisNumber.hidden = YES;
         cell.callDirection.hidden = YES;
         cell.callLength.hidden = YES;
-        cell.callBeginTime.text = [[searchResault objectAtIndex:indexPath.row] valueForKey:@"personTel"];
+        cell.callBeginTime.text = [[searchResault objectAtIndex:indexPath.row] valueForKey:PersonTel];
         cell.hisHome.hidden = YES;
         cell.hisOperator.hidden = YES;
     }
@@ -461,8 +426,8 @@ static NSMutableArray *mLastAllRegularsMapArray;
     ABRecordRef recordReff = NULL;
     if (searcherString.length>0) {//输入后
         NSDictionary *dict = [searchResault objectAtIndex:indexPath.row];
-        name = [dict valueForKey:@"personName"];
-        nber = [dict valueForKey:@"personTel"];
+        name = [dict valueForKey:PersonName];
+        nber = [dict valueForKey:PersonTel];
         recordReff = (__bridge ABRecordRef)([((__bridge NSArray *)(ABAddressBookCopyPeopleWithName(_addressBook, (__bridge CFStringRef)name))) lastObject]);//根据名字获取对象
     }
     if (searcherString.length<=0) {
@@ -502,8 +467,8 @@ static NSMutableArray *mLastAllRegularsMapArray;
         mdata.hisHome = aRecord.hisHome;
     }else{
         NSDictionary *dict = [searchResault objectAtIndex:indexPath.row];
-        mdata.hisName = [dict valueForKey:@"personName"];
-        mdata.hisNumber = [dict valueForKey:@"personTel"];
+        mdata.hisName = [dict valueForKey:PersonName];
+        mdata.hisNumber = [dict valueForKey:PersonTel];
         if (mdata.hisNumber.length >=7) {
             mdata.hisHome  = [sqlite searchAreaWithHisNumber:[[mdata.hisNumber purifyString] substringToIndex:7]];
         }else{mdata.hisHome =   @"";}
@@ -545,13 +510,13 @@ static NSMutableArray *mLastAllRegularsMapArray;
         }
     }else{
         NSDictionary *dict = [searchResault objectAtIndex:indexPath.row];
-        NSString *name = [dict valueForKey:@"personName"];
-        recordReff = (__bridge ABRecordRef)([dict valueForKey:@"recordRef"]);
+        NSString *name = [dict valueForKey:PersonName];
+        recordReff = (__bridge ABRecordRef)([dict valueForKey:PersonRecordRef]);
         VCLog(@"==================hisname:%@",aRecord.hisName);
         if ([name length]==0 || [name isEqualToString:@""] || name ==nil) {
             //跳转到添加联系人
             
-            [self showUnknownPersonViewController:[[dict valueForKey:@"personTel"] purifyString]];
+            [self showUnknownPersonViewController:[[dict valueForKey:PersonTel] purifyString]];
             
             VCLog(@"show newPerson view");
         }else

@@ -314,7 +314,7 @@
         detaildata.hisHome = searchdata.hisHome;
         detaildata.contactID = [self getcontactsId:searchdata.hisName];
     }else{
-        TXData *normaldata = [self.dataArray objectAtIndex:indexPath.row];
+        //TXData *normaldata = [self.dataArray objectAtIndex:indexPath.row];
         detaildata.hisName = [namesDicts valueForKey:[self.contactsArray objectAtIndex:indexPath.row]];
         detaildata.hisNumber = [self.contactsArray objectAtIndex:indexPath.row];//data.msgSender;
         if (detaildata.hisNumber.length >=7) {

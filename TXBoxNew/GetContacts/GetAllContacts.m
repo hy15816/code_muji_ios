@@ -95,7 +95,6 @@
     CFMutableArrayRef mresults=CFArrayCreateMutableCopy(kCFAllocatorDefault,CFArrayGetCount(results),results);
     
     //将结果按照拼音排序，将结果放入mresults数组中
-    
     CFArraySortValues(mresults,
                       CFRangeMake(0, CFArrayGetCount(results)),
                       (CFComparatorFunction) ABPersonComparePeopleByName,
@@ -113,7 +112,7 @@
         NSString *lastName =(__bridge NSString *)ABRecordCopyValue(record, kABPersonSortByLastName);    //返回个人姓
         NSString *name;
         if (firstName.length>0 && lastName.length>0) {
-            name = [[NSString alloc] initWithFormat:@"%@ %@",lastName,firstName];
+            name = [[NSString alloc] initWithFormat:@"%@%@",lastName,firstName];
         }else if (firstName.length == 0 && lastName.length>0){
             name = [[NSString alloc] initWithFormat:@"%@",lastName];
         }else if (firstName.length >0 && lastName.length==0){
@@ -138,19 +137,21 @@
             
             //加入phoneDic中
             [phoneDicts setObject:(__bridge id)(record) forKey:[NSString stringWithFormat:@"%@%d",phone,recordID]];
-            [tempDic setObject:phone forKey:@"personTel"];//把每一条号码存为key:“personTel”的Value
+            [tempDic setObject:phone forKey:PersonTel];//把每一条号码存为key:“personTel”的Value
             NSString *phoneNum = [NSString stringWithFormat:@"%@",[phone purifyString]];
             
-            [tempDic setObject:phoneNum forKey:@"personTelNum"];//-数字号码
+            [tempDic setObject:phoneNum forKey:PersonTelNum];//-数字号码
             
         }
-        [tempDic setObject:name forKey:@"personName"];//把名字存为key:"personName"的Value
-        [tempDic setObject:nameNum forKey:@"personNameNum"];
-        [tempDic setObject:(__bridge id)(record) forKey:@"recordRef"];
+        [tempDic setObject:name forKey:PersonName];//把名字存为key:"personName"的Value
+        [tempDic setObject:nameNum forKey:PersonNameNum];
+        [tempDic setObject:(__bridge id)(record) forKey:PersonRecordRef];
         //VCLog(@"tempDictemp：%@",tempDic);
         [phonesArray addObject:tempDic];//把tempDic赋给phoneArray数组
         
     }
+    CFIndex nPeople = ABAddressBookGetPersonCount(myAddressBook);
+    VCLog(@"people count %ld",nPeople);
     VCLog(@"phoneArray：%@",phonesArray);
     //return phonesArray;
     
