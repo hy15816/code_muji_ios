@@ -189,19 +189,34 @@
     //char aa = (char)[self substringWithRange:NSMakeRange(0, 1)];
     //NSArray *atextArray = [PinyinHelper toTongyongPinyinStringArrayWithChar:(char)[self substringWithRange:NSMakeRange(0, 1)]];
     
-    
-    
-    VCLog(@"%@-----:%@",self,outputPinyin);
-    
-    
+    //VCLog(@"%@-----:%@",self,outputPinyin);
     
     return outputPinyin;
+}
+//转为拼音，只取首字母
+-(NSString *)getFirstCharWithHanZi{
+    
+    NSMutableString *firstCharsString = [[NSMutableString alloc] init];
+    HanyuPinyinOutputFormat *outputFormat =[[HanyuPinyinOutputFormat alloc] init];
+    [outputFormat setToneType:ToneTypeWithoutTone];//声调
+    [outputFormat setVCharType:VCharTypeWithV];//特殊拼音的显示格式如 ü
+    [outputFormat setCaseType:CaseTypeLowercase];//大小(Lowercase)写
+    
+    NSString *hanzi =  [self purifyString];
+    
+    for (int i=0; i<hanzi.length; i++) {
+        NSString *chars = [NSString stringWithFormat:@"%@",[hanzi substringWithRange:NSMakeRange(i, 1)]];
+        NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:chars withHanyuPinyinOutputFormat:outputFormat withNSString:@""];
+        
+        [firstCharsString appendString:[outputPinyin substringToIndex:1]];
+    }
+    
+    return firstCharsString;
 }
 
 #pragma mark -- 拼音转数字
 -(NSString *)pinyinTrimIntNumber
 {
-    
     NSString *lString=[[NSString alloc] init];
     NSString *ss = [[NSString alloc] init];
     for (int i =0; i<self.length; i++) {

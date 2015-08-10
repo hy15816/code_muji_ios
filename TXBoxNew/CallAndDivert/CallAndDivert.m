@@ -38,11 +38,11 @@
     NSString *lgmessage = @"";
     NSString *cgmessage = @"";
     if (view == 0) {
-        lgmessage = @"请到【发现】中【登录】后【配置】拇机号码";
+        lgmessage = @"请到【发现】中【登录】，然后【配置】拇机号码";
         cgmessage = @"请到【发现】中【配置】拇机号码";
     }
     if (view == 3){
-        lgmessage = @"请先【登录】,然后【配置】拇机号码";
+        lgmessage = @"请先【登录】，然后【配置】拇机号码";
         cgmessage = @"请先【配置】拇机号码";
     }
     

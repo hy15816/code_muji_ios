@@ -137,7 +137,7 @@
 #define CallForwardEndTime @"CallForwardEndTime"
 //状态
 #define LOGIN_STATE @"loginState"
-#define BIND_STATE @"bindState"
+#define CONTROL_STATE @"controlState"
 #define CONFIG_STATE @"configState"
 #define CALL_ANOTHER_STATE @"callAnotherState"
 
@@ -170,6 +170,7 @@
 #define ReplaceIdentifi @"-"
 
 //联系人
+#define FirstNameChars @"firstNameChars"
 #define PersonName @"personName"
 #define PersonNameNum @"personNameNum"
 #define PersonTel   @"personTel"

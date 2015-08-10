@@ -7,9 +7,11 @@
 //
 
 #define TagToLoginAlert     4000
+#define TagWithShowAlert    4001
 #define TagToConfigAlert    4002
 #define TagToOpenBLE        4003
 #define TagToControlAlert   4004
+
 
 #import "DiscoveryController.h"
 #import "NSString+helper.h"
@@ -43,6 +45,7 @@
     UIWebView *dwebView;
 
     AVObject *avobj;
+    UIView *showAlertView;
 }
 
 @property (strong, nonatomic) IBOutlet UIImageView *firstImageView;
@@ -105,6 +108,7 @@
     defaults = [NSUserDefaults standardUserDefaults];
     txsqlite = [[TXSqliteOperate alloc] init];
     callAndDivert = [[CallAndDivert alloc] init];
+    callAndDivert.divertDelegate = self;
     dwebView = [[UIWebView alloc] init];
     animationtimes = 0.25f;
 
@@ -306,8 +310,8 @@
 //button-控制
 -(void)refreshBindButton
 {
-    BOOL bindState = [[defaults valueForKey:BIND_STATE] intValue];
-    if (bindState) {//已绑定
+    BOOL controlState = [[defaults valueForKey:CONTROL_STATE] intValue];
+    if (controlState) {//已绑定
         [self.bindButton setTitle:@"  解除  " forState:UIControlStateNormal];
         [self.bindButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];//ble_connect
         self.BLEView.hidden = YES;
@@ -501,7 +505,7 @@
         return;
     }
      */
-    callAndDivert.divertDelegate = self;
+    
     [callAndDivert isOrNotCallDivert:DiscoveryView];
     
 }
@@ -551,7 +555,7 @@
             
         }else{
             //提示登录
-            UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"想【修改】拇机号码？请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+            UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"想【修改】拇机号码？" message:@"请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
             configAlert.tag = TagToLoginAlert;
             [configAlert show];
         }
@@ -566,7 +570,7 @@
             
         }else{
             //提示登录
-            UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"想【配置】拇机号码？请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+            UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"想【配置】拇机号码？" message:@"请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
             configAlert.tag = TagToLoginAlert;
             [configAlert show];
         }
@@ -612,13 +616,14 @@
     [AVUser logOut];
     [userDefaults setValue:@"0" forKey:LOGIN_STATE];
     [userDefaults setValue:@"0" forKey:CONFIG_STATE];
-    [userDefaults setValue:@"0" forKey:BIND_STATE];
+    [userDefaults setValue:@"0" forKey:CONTROL_STATE];
     [userDefaults setValue:@"0" forKey:CALL_ANOTHER_STATE];
     
 }
 
 #pragma mark -- 控制 & 解除
 - (IBAction)bindButtonClick:(UIButton *)sender {
+    
     if (![userDefaults boolForKey:@"al"]) {
         //初始化蓝牙
         bleManage = [BLEmanager sharedInstance];
@@ -631,13 +636,13 @@
         if (loginstate) {
             BOOL configsState = [[userDefaults valueForKey:CONFIG_STATE] intValue];
             if (configsState) {//已配置
-                BOOL bstate = [[defaults valueForKey:BIND_STATE] intValue];
+                BOOL bstate = [[defaults valueForKey:CONTROL_STATE] intValue];
                 if (bstate) {
-                    [defaults setObject:@"0" forKey:BIND_STATE];
+                    [defaults setObject:@"0" forKey:CONTROL_STATE];
                     //断开蓝牙连接
                     [self cutConnectperipheral];
                 }else{//没绑定
-                    NSLog(@"--------------is  alert");
+
                     if (managerState == CBCentralManagerStatePoweredOn ) {
                         
                         [SVProgressHUD showWithStatus:@"匹配中..." maskType:SVProgressHUDMaskTypeNone];
@@ -656,7 +661,7 @@
                 }
             }else{//未配置
                 //提示配置
-                UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"想要【控制】拇机" message:@"请先【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+                UIAlertView *configAlert = [[UIAlertView alloc] initWithTitle:@"想通过手机【控制】拇机?" message:@"请先【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
                 configAlert.tag = TagToConfigAlert;
                 [configAlert show];
             }
@@ -664,7 +669,7 @@
         }else{//未登录
             //isState = NO;
             //提示登录
-            UIAlertView *controlAlert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"想要【控制】拇机？请先【登录】" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+            UIAlertView *controlAlert = [[UIAlertView alloc] initWithTitle:@"想通过手机【控制】拇机?" message:@"请先【登录，然后【配置】拇机号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
             controlAlert.tag = TagToLoginAlert;
             [controlAlert show];
         }
@@ -744,6 +749,13 @@
     }
     
     
+    if (alertView.tag == TagWithShowAlert) {
+        if (buttonIndex == 0) {
+            //取消呼转
+            [callAndDivert isOrNotCallDivert:DiscoveryView ];
+        }
+    }
+        
     [self initLoginAndConfigButtons];
     
 }
@@ -764,10 +776,10 @@
 {
     isConnecting = isConnect;
     if (isConnecting) {
-        [defaults setObject:@"1" forKey:BIND_STATE];
+        [defaults setObject:@"1" forKey:CONTROL_STATE];
         currentPeripheral = peripheral;
     }else{
-        [defaults setObject:@"0" forKey:BIND_STATE];
+        [defaults setObject:@"0" forKey:CONTROL_STATE];
     }
     [self refreshBindButton];
     //连接成功
@@ -775,9 +787,18 @@
         [SVProgressHUD showSuccessWithStatus:@"连接成功!"];
         [bleManage.centralManager stopScan];
         //[SVProgressHUD dismiss];
+        
+        //判断是否需要显示提示？
+        if (!showAlertView && [[userDefaults valueForKey:CALL_ANOTHER_STATE] intValue]) {
+            //
+            [callAndDivert isOrNotCallDivert:DiscoveryView ];
+            showAlertView = [[UIView alloc] init];
+            
+        }
+        
+        
+        
     }
-    
-    
     
 }
 

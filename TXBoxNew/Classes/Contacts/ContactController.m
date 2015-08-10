@@ -642,10 +642,6 @@
         [searchsArray removeAllObjects];
     }
     
-    NSString *numberInputString = [searchController.searchBar.text pinyinTrimIntNumber];
-    VCLog(@"numberInputString:%@",numberInputString);
-    
-    
     NSString *searchString = [self.searchController.searchBar text];
     //NSPredicate *preicate = [NSPredicate predicateWithFormat:@"(SELF.personName CONTAINS[c] %@) OR (SELF.personTel contains [c] %@)", searchString];
     NSPredicate *preicate = [NSPredicate predicateWithFormat:@"SELF contains [c]  %@",searchString ];

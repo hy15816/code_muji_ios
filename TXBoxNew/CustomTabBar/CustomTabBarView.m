@@ -12,10 +12,32 @@
 @interface CustomTabBarView ()
 {
     CustomTabBarBtn *fBtn;
+    
 }
+
+@property (strong,nonatomic) UIImageView *pointcView;//call
+@property (strong,nonatomic) UIImageView *pointmView;//msg
+@property (strong,nonatomic) UIImageView *pointctView;//ct
+@property (strong,nonatomic) UIImageView *pointdcView;//disc
+
 @end
 
+
 @implementation CustomTabBarView
+
+-(id)init{
+    self = [super init];
+    if (self) {
+        //
+        _pointcView = [[UIImageView alloc] init];
+        _pointmView = [[UIImageView alloc] init];
+        _pointctView = [[UIImageView alloc] init];
+        _pointdcView = [[UIImageView alloc] init];
+        
+    }
+    
+    return self;
+}
 
 - (void)drawRect:(CGRect)rect {
     
@@ -60,6 +82,21 @@
     [button setTitleColor:RGBACOLOR(0, 170, 242, 1) forState:UIControlStateSelected];
     button.titleLabel.font = [UIFont systemFontOfSize:10];// 设置标题的字体大小
     
+    //红点
+    if (index == 0) {
+        [button addSubview:[self view:_pointcView withButton:button]];
+    }
+    if (index == 1) {
+        [button addSubview:[self view:_pointmView withButton:button]];
+    }
+    if (index == 2) {
+        [button addSubview:[self view:_pointctView withButton:button]];
+    }
+    if (index == 3) {
+        [button addSubview:[self view:_pointdcView withButton:button]];
+    }
+    
+    
     //事件
     [button addTarget:self action:@selector(buttonClick:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -75,6 +112,15 @@
     _cusBtnExtern = button;
     [self addSubview:button];
     
+}
+-(UIImageView *)view:(UIImageView *)imgv withButton:(UIButton *)btn{
+    
+    imgv.frame = CGRectMake(btn.frame.size.width-btn.frame.size.width/3, 10, 6, 6);
+    imgv.image = [UIImage imageNamed:@"point_state.png"];
+    imgv.tag = btn.tag;
+    imgv.hidden = YES;
+    imgv.backgroundColor = [UIColor clearColor];
+    return imgv;
 }
 
 //button事件
@@ -95,6 +141,27 @@
        [self.delegate changeViewController:button];
 //    }
     
+    [self hiddenpointView:button.tag];
+}
+//
+-(void)hiddenpointView:(NSInteger)tag{
+    switch (tag) {
+        case 0:
+            _pointcView.hidden = YES;
+            break;
+        case 1:
+            _pointmView.hidden = YES;
+            break;
+        case 2:
+            _pointctView.hidden = YES;
+            break;
+        case 3:
+            _pointdcView.hidden = YES;
+            break;
+            
+        default:
+            break;
+    }
     
 }
 
@@ -123,5 +190,26 @@
 }
 
 
+-(void)showPromptWithTag:(NSInteger)tag{
+    
+    switch (tag) {
+        case 0:
+            _pointcView.hidden = NO;
+            break;
+        case 1:
+            _pointmView.hidden = NO;
+            break;
+        case 2:
+            _pointctView.hidden = NO;
+            break;
+        case 3:
+            _pointdcView.hidden = NO;
+            break;
+            
+        default:
+            break;
+    }
+    
+}
 
 @end

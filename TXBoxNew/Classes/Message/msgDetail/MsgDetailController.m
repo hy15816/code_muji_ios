@@ -16,8 +16,9 @@
 #import "NewMsgController.h"
 #import "ShareContentController.h"
 #import "HPGrowingTextView.h"
+#import "BLEmanager.h"
 
-@interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate,ChangeRightMarginDelegate,HPGrowingTextViewDelegate>
+@interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate,ChangeRightMarginDelegate,HPGrowingTextViewDelegate,BLEmanagerDelegate>
 {
     TXSqliteOperate *txsqlite;
     UILongPressGestureRecognizer *longPress;
@@ -28,6 +29,7 @@
     HPGrowingTextView *textInput;
     UIView *contentView;
     CGFloat kHeight;
+    BLEmanager *bManager;
 }
 @property (strong, nonatomic) NSMutableArray *detailArray;
 @property (strong, nonatomic) NSMutableArray *allMsgFrame;
@@ -224,7 +226,7 @@
     [doneBtn setTitle:@"发送" forState:UIControlStateNormal];
     
     [doneBtn setTitleShadowColor:[UIColor colorWithWhite:0 alpha:0.4] forState:UIControlStateNormal];
-    doneBtn.titleLabel.shadowOffset = CGSizeMake (0.0, -1.0);
+    //doneBtn.titleLabel.shadowOffset = CGSizeMake (0.0, -1.0);//阴影
     doneBtn.titleLabel.font = [UIFont systemFontOfSize:16];
     
     [doneBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -248,6 +250,8 @@
 }
 
 -(void)sendButtonClicks:(UIButton *)btn{
+    bManager = [BLEmanager sharedInstance];
+    bManager.managerDelegate = self;
     [self rightButtonClick:btn];
     
 }
@@ -282,14 +286,47 @@
     [self jumpToLastRow];
     [self.tableview reloadData];
     //[SVProgressHUD showImage:nil status:@"click"];
+    
+    //同时需要发送给设备
+#warning 同时需要发送给设备
+    
+    
+    
 }
 -(void)initMsgSwipeRecognizer:(UISwipeGestureRecognizer*)swipe{
     [textInput resignFirstResponder];
 }
 
+#pragma mark -- BLEManager delegate
+-(void)managerConnectedPeripheral:(CBPeripheral *)peripheral connect:(BOOL)isConnect;{}
+
+/**
+ *  是否断线重连
+ *  @param peripheral 当前外设
+ *  @return YES是, NO否
+ */
+-(BOOL)managerDisConnectedPeripheral :(CBPeripheral *)peripheral;{return NO;}
+
+/**
+ *  返回蓝牙接收到的值
+ *  @param data              data
+ *  @param hexString         16进制string
+ *  @param curCharacteristic 当前特征
+ */
+-(void)managerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic;{}
+
+/**
+ *  扫描到的所有外设并返回当前连接的哪一个
+ *  @param pArray 所有外设
+ *
+ */
+-(void)searchedPeripheral:(NSMutableArray *)peripArray;{}
+
+-(void)systemBLEState:(CBCentralManagerState)state{}
+-(void)showAlertView{}
+
 
 #pragma  mark --EditViewDelegate
-
 -(void)buttonClickAndChanged:(UIButton *)button
 {
     if (button.tag == 2000) {//拷贝

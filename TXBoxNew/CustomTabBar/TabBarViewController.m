@@ -35,6 +35,8 @@
 {
     [super viewWillAppear:animated];
 
+    [tabBarView showPromptWithTag:1];
+    [tabBarView showPromptWithTag:3];
     //显示tabBar
     tabBarView.hidden = NO;
     //第一次，则加载引导页
@@ -78,6 +80,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(customKeyboradAndTabViewHide:) name:nil object:nil];
     }
     [self respondsToSelector:@selector(changeViewController:)];
+
 }
 
 #pragma mark -- GuideView Delegate

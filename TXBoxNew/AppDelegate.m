@@ -63,7 +63,7 @@
 
 -(void)runOnNewThread{
     
-    sleep(1);
+    sleep(0);
     end=YES;
     
 }
@@ -202,7 +202,7 @@
 #pragma warning 退出程序时
 - (void)applicationWillTerminate:(UIApplication *)application {
     //控制为否
-    [userDefaults setValue:@"0" forKey:BIND_STATE];
+    [userDefaults setValue:@"0" forKey:CONTROL_STATE];
     //[userDefaults setValue:@"0" forKey:CONFIG_STATE];
     /*
     AVUser *currentUser = [AVUser currentUser];

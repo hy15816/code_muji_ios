@@ -55,13 +55,6 @@ static BLEmanager *sharedBLEmanger=nil;
     return self;
 }
 
-//初始化central
--(void)initCentralManager
-{
-    centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:dispatch_get_main_queue()];
-    chcDict = [[NSDictionary alloc] init];
-}
-
 #pragma mark -- centralManager
 //central蓝牙当前状态
 -(void)centralManagerDidUpdateState:(CBCentralManager *)central{

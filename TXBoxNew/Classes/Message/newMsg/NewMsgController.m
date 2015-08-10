@@ -231,7 +231,7 @@
     [doneBtn setTitle:@"发送" forState:UIControlStateNormal];
     
     [doneBtn setTitleShadowColor:[UIColor colorWithWhite:0 alpha:0.4] forState:UIControlStateNormal];
-    doneBtn.titleLabel.shadowOffset = CGSizeMake (0.0, -1.0);
+    //doneBtn.titleLabel.shadowOffset = CGSizeMake (0.0, -1.0);
     doneBtn.titleLabel.font = [UIFont systemFontOfSize:16];
     
     [doneBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];

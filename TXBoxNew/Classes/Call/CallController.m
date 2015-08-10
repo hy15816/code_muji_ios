@@ -16,6 +16,7 @@
 #import "DiscoveryController.h"
 #import "GetAllContacts.h"
 #import "CallAndDivert.h"
+#import <CoreText/CoreText.h>
 
 static NSMutableArray *mLastAllRegularsMapArray;
 
@@ -42,6 +43,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
     CallAndDivert *callDivert;
     NSString *searcherString;
     BOOL canAdd;
+    NSMutableString *lengthString;//用于染色的length
 }
 
 @property (nonatomic,assign) ABAddressBookRef addressBook;
@@ -278,6 +280,19 @@ static NSMutableArray *mLastAllRegularsMapArray;
         
         [mLastAllRegularsMapArray addObject:tempNumsRegularsMap];
     }
+    if ([[tempNumsRegularsMap valueForKey:inUserInputsStr] count]>0) {
+        NSArray *arr =[[[tempNumsRegularsMap valueForKey:inUserInputsStr] lastObject] componentsSeparatedByString:@"-"] ;
+        lengthString = [[NSMutableString alloc] init];
+        
+        for (NSString *s in arr) {
+            if (s.length>0) {
+                [lengthString appendString:[s substringToIndex:1]];
+            }
+            
+        }
+        VCLog(@"lengthString:%@",lengthString);
+
+    }
     
     [self.tableView reloadData];
     
@@ -357,14 +372,42 @@ static NSMutableArray *mLastAllRegularsMapArray;
         cell.hisHome.hidden = YES;
     }
 
+    /*  保存格式
+     {
+     name = @"啊一";
+     namefcn = @"29";//ay
+     }
+     //匹配输入如：29,
+     取出name；
+     */
+
     //用户输入时
     if (searcherString.length > 0 &&searchResault.count > 0 ) {
         //Records *record = dataList[indexPath.row];
         cell.hisName.text = [[searchResault objectAtIndex:indexPath.row] valueForKey:PersonName];//;record.personName;
+        
+        NSString *nameFirstChars = [[searchResault objectAtIndex:indexPath.row] valueForKey:FirstNameChars];
+        
+        
+        NSRange rangeName = [nameFirstChars rangeOfString:lengthString];
+        if (rangeName.length > 0) {
+            NSMutableAttributedString *attributeString =[[NSMutableAttributedString alloc] initWithString:cell.hisName.text];
+            [attributeString setAttributes:@{NSForegroundColorAttributeName : [UIColor redColor],   NSFontAttributeName : [UIFont systemFontOfSize:18]} range:rangeName];
+            cell.hisName.attributedText = attributeString;
+            
+        }
+        
         cell.hisNumber.hidden = YES;
         cell.callDirection.hidden = YES;
         cell.callLength.hidden = YES;
-        cell.callBeginTime.text = [[searchResault objectAtIndex:indexPath.row] valueForKey:PersonTel];
+        cell.callBeginTime.text = [[[searchResault objectAtIndex:indexPath.row] valueForKey:PersonTel] purifyString];
+        NSRange rangeNumber  = [cell.callBeginTime.text rangeOfString:searcherString];
+        if (rangeNumber.length > 0) {
+            NSMutableAttributedString *attributeString =[[NSMutableAttributedString alloc] initWithString:cell.callBeginTime.text];
+            [attributeString setAttributes:@{NSForegroundColorAttributeName : [UIColor redColor],   NSFontAttributeName : [UIFont systemFontOfSize:16]} range:rangeNumber];
+            cell.callBeginTime.attributedText = attributeString;
+
+        }
         cell.hisHome.hidden = YES;
         cell.hisOperator.hidden = YES;
     }

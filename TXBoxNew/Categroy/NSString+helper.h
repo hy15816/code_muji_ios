@@ -61,6 +61,7 @@
 #pragma mark -- 拼音转数字
 -(NSString *)pinyinTrimIntNumber;
 -(NSString *)isMobileNumberWhoOperation;
+-(NSString *)getFirstCharWithHanZi;
 
 -(NSString *)isMobileNumber:(NSString *)number;
 @end

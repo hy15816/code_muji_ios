@@ -125,6 +125,7 @@
         //转拼音
         NSString *namePinYin = [name hanziTopinyin];
         NSString *nameNum = [namePinYin pinyinTrimIntNumber];
+        NSString *nameFirstChars = [[name getFirstCharWithHanZi] pinyinTrimIntNumber];
         
         //获取电话号码，通用的，基本的,概括的
         ABMultiValueRef personPhone = ABRecordCopyValue(record, kABPersonPhoneProperty);
@@ -146,6 +147,7 @@
         [tempDic setObject:name forKey:PersonName];//把名字存为key:"personName"的Value
         [tempDic setObject:nameNum forKey:PersonNameNum];
         [tempDic setObject:(__bridge id)(record) forKey:PersonRecordRef];
+        [tempDic setObject:nameFirstChars forKey:FirstNameChars];
         //VCLog(@"tempDictemp：%@",tempDic);
         [phonesArray addObject:tempDic];//把tempDic赋给phoneArray数组
         

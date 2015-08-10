@@ -153,6 +153,9 @@
     [txSqlite addInfo:data inTable:CALL_RECORDS_TABLE_NAME withSql:CALL_RECORDS_ADDINFO_SQL];
 }
 
+
+
+
 // 时间转字符串，
 -(NSString *) dateTurnStringWithDate:(NSDate *)date dateFormate:(NSString *)formate
 {

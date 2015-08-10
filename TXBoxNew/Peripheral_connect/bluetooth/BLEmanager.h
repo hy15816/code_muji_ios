@@ -48,7 +48,6 @@
 
 @interface BLEmanager : NSObject<CBCentralManagerDelegate,CBPeripheralDelegate>
 {
-    NSDictionary *chcDict;
     CBPeripheral *cPeripheral;          //外设
     NSMutableArray *peripheralArray;   //外设数组
     NSMutableArray *chacteristicArray;  //特征
@@ -60,7 +59,6 @@
 @property (strong,nonatomic) CBCentralManager *centralManager;//中心管理器
 @property (assign,nonatomic) id<BLEmanagerDelegate> managerDelegate;
 
--(void)initCentralManager;
 -(void)writeDatas:(NSData *)data;// type:(CBCharacteristicWriteType)type;
 -(void)isOrNotSetNotify:(BOOL)setNotify;
 

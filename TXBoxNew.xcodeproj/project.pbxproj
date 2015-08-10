@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		630E1B131B747DEC007A29EC /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 630E1B121B747DEC007A29EC /* AVOSCloud.framework */; };
 		632AC6391ADCE92F0023FAA9 /* TXData.m in Sources */ = {isa = PBXBuildFile; fileRef = 632AC6361ADCE92F0023FAA9 /* TXData.m */; };
 		632AC63A1ADCE92F0023FAA9 /* TXSqliteOperate.m in Sources */ = {isa = PBXBuildFile; fileRef = 632AC6381ADCE92F0023FAA9 /* TXSqliteOperate.m */; };
 		632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 632AC6431ADCF0240023FAA9 /* libsqlite3.dylib */; };
@@ -77,6 +76,7 @@
 		63DEA67C1B0094FB003343A7 /* MsgDetailController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6761B0094FB003343A7 /* MsgDetailController.m */; };
 		63DEA67D1B0094FB003343A7 /* MsgFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6781B0094FB003343A7 /* MsgFrame.m */; };
 		63DEA6801B009512003343A7 /* NewMsgController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA67F1B009512003343A7 /* NewMsgController.m */; };
+		63E156B31B783E940046D459 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E156B21B783E940046D459 /* AVOSCloud.framework */; };
 		63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FAC61B09C8B8005C7258 /* SystemConfiguration.framework */; };
 		63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */; };
 		63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FACA1B09C8D7005C7258 /* libicucore.dylib */; };
@@ -112,7 +112,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		630E1B121B747DEC007A29EC /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		632AC6351ADCE92F0023FAA9 /* TXData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXData.h; sourceTree = "<group>"; };
 		632AC6361ADCE92F0023FAA9 /* TXData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXData.m; sourceTree = "<group>"; };
 		632AC6371ADCE92F0023FAA9 /* TXSqliteOperate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXSqliteOperate.h; sourceTree = "<group>"; };
@@ -243,6 +242,7 @@
 		63DEA6781B0094FB003343A7 /* MsgFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MsgFrame.m; sourceTree = "<group>"; };
 		63DEA67E1B009512003343A7 /* NewMsgController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewMsgController.h; sourceTree = "<group>"; };
 		63DEA67F1B009512003343A7 /* NewMsgController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewMsgController.m; sourceTree = "<group>"; };
+		63E156B21B783E940046D459 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
 		63E1FAC61B09C8B8005C7258 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		63E1FACA1B09C8D7005C7258 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
@@ -293,7 +293,7 @@
 				63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */,
 				63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */,
 				63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */,
-				630E1B131B747DEC007A29EC /* AVOSCloud.framework in Frameworks */,
+				63E156B31B783E940046D459 /* AVOSCloud.framework in Frameworks */,
 				632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -644,7 +644,7 @@
 		63D97E131B0C86FA00C5C33B /*  StaticLibrarys */ = {
 			isa = PBXGroup;
 			children = (
-				630E1B121B747DEC007A29EC /* AVOSCloud.framework */,
+				63E156B21B783E940046D459 /* AVOSCloud.framework */,
 				63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */,
 				63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */,
 				63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */,
@@ -1242,6 +1242,8 @@
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
+					StaticLibrarys,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/TXBoxNew/TXBoxNew.pch";
@@ -1276,6 +1278,8 @@
 					"$(PROJECT_DIR)/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/",
+					StaticLibrarys,
+					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
 					"$(PROJECT_DIR)/TXBoxNew/",
 					StaticLibrarys,
