@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <AddressBook/AddressBook.h>
 #import <UIKit/UIKit.h>
+#import "ConBook.h"
 
 typedef CF_ENUM(NSInteger, MyBooksNotifity) {
     kMyBooksNotifityStatusNoBody = 0,
@@ -17,9 +18,14 @@ typedef CF_ENUM(NSInteger, MyBooksNotifity) {
 
 @protocol MyAddressBooksDelegate <NSObject>
 @optional
+/**
+ *  发送通知
+ *  0没有联系人  1无权限
+ */
 -(void)sendNotify:(MyBooksNotifity)noti;
 -(void)noAuthority:(CFErrorRef)error;
 -(void)abAddressBooks:(ABAddressBookRef)bookRef allRefArray:(NSMutableArray *)array;
+-(void)SectionDicts:(NSMutableDictionary *)sectionDicts sortedArray:(NSArray *)sortedArray conbookArray:(NSMutableArray *)conbook;
 
 @end
 

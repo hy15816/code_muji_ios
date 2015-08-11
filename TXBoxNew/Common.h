@@ -147,7 +147,8 @@
 #define USER_SPORT_INFO @"user_sport_info"
 //字段
 #define table_username @"username"  //NSString
-#define table_total_duration_call_transfer @"total_duration_call_transfer"  //NSNumber
+#define table_total_duration_call_transfer @"total_duration_call_transfer"  //NSNumber(单次时长)
+#define TotalTime @"totalTime"
 
 //发送给设备蓝牙的数据长度
 #define kByte_count   20//数据长度

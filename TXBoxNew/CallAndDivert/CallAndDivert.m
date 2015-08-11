@@ -126,6 +126,7 @@
                 [userDefaults setValue:@"0" forKey:CALL_ANOTHER_STATE];
                 [divertDelegate openOrCloseCallDivertState:CloseDivert number:[self setCancelCallFrowardingWithNumber:mujiNumber]];//确认取消
                 [self getCallDivertTimeLengthWithCurrTime:time];//计算时长
+                
             }
             break;
         case 1903:
@@ -141,7 +142,10 @@
 }
 
 
-#pragma mark -- 计算呼转时长
+/**
+ *  计算呼转时长
+ *  @pragma currentTime 当前时间
+ */
 -(void)getCallDivertTimeLengthWithCurrTime:(NSString *)currentTime{
     
     int durningTime =0;
@@ -149,10 +153,12 @@
     int end   = [currentTime intValue];
     
     durningTime = end - start;
-    
     VCLog(@"CallDivertTimeLength:%d s(秒)",durningTime);
     
-    //上传至服务器
+    int totalTime = durningTime + [[userDefaults valueForKey:TotalTime] intValue];//总时长=单次市场+上次记录的总时长
+    [userDefaults setValue:[NSString stringWithFormat:@"%d",totalTime] forKey:TotalTime];
+    
+    //单次时长上传至服务器
     NSNumber *number = [NSNumber numberWithInt:durningTime];
     [userInfoObj setObject:[userDefaults valueForKey:CurrentUser] forKey:table_username];//username
     [userInfoObj setObject:number forKey:table_total_duration_call_transfer];//佩戴时长

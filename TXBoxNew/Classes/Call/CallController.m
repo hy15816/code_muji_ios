@@ -49,6 +49,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
 @property (nonatomic,assign) ABAddressBookRef addressBook;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *callAnother;
 
+
 - (IBAction)callAnotherPelple:(UIBarButtonItem *)sender;
 @property (weak,nonatomic) UIAlertController *alertc;
 @property (strong,nonatomic) NSIndexPath *selectedIndexPath;        //被选中
@@ -62,6 +63,13 @@ static NSMutableArray *mLastAllRegularsMapArray;
 {
     [super viewWillAppear:animated];
     
+    BOOL callaState = [[userDefaults valueForKey:CALL_ANOTHER_STATE] intValue];
+    if (callaState) {
+        [self.callAnother setImage:[UIImage imageNamed:@"call_another60_normal"]];
+        
+    }else{
+        [self.callAnother setImage:[UIImage imageNamed:@"call_another60"]];
+    }
     
     //textInput
     if([self respondsToSelector:@selector(inputTextDidChanged:)]) {
@@ -240,31 +248,34 @@ static NSMutableArray *mLastAllRegularsMapArray;
         BOOL isRegular = FALSE;
         BOOL isNumRgular = FALSE;
         for (int k = 0; k < mutPhoneArray.count; k++) {//取出第k个元素
-            
-            NSString *nameNum = [mutPhoneArray[k]valueForKey:PersonNameNum];//第k个元素的数字名字
-            NSString *phoneNum = [mutPhoneArray[k]valueForKey:PersonTelNum];//第k个元素的号码
-            //匹配号码
-            NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regular options:NSRegularExpressionCaseInsensitive | NSRegularExpressionDotMatchesLineSeparators|NSRegularExpressionUseUnicodeWordBoundaries error:nil];
-            NSTextCheckingResult *result = [regex firstMatchInString:nameNum options:NSMatchingReportCompletion range:NSMakeRange(0, nameNum.length)];
-            
-            if (result) {
-                isRegular = true;
-                if (![searchResault containsObject:mutPhoneArray[k]]) {
-                    [searchResault addObject:mutPhoneArray[k]];
-                   
-                }
+            NSMutableArray *nameNumArray = [mutPhoneArray[k]valueForKey:PersonNameNum];
+             NSString *phoneNum = [mutPhoneArray[k]valueForKey:PersonTelNum];//第k个元素的号码
+            for (NSString *nameNum in nameNumArray) {
+                //匹配号码
+                NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regular options:NSRegularExpressionCaseInsensitive | NSRegularExpressionDotMatchesLineSeparators|NSRegularExpressionUseUnicodeWordBoundaries error:nil];
+                NSTextCheckingResult *result = [regex firstMatchInString:nameNum options:NSMatchingReportCompletion range:NSMakeRange(0, nameNum.length)];
                 
-            }else{
-                NSRange pRange = [phoneNum  rangeOfString:inUserInputsStr];
-                NSRange rRange = [regular  rangeOfString:inUserInputsStr];
-                if(pRange.length && rRange.length){//在正则式和数据源中都存在inUserInputsStr，添加到结果数组
-                    isNumRgular = true;
+                if (result) {
+                    isRegular = true;
                     if (![searchResault containsObject:mutPhoneArray[k]]) {
                         [searchResault addObject:mutPhoneArray[k]];
+                        
                     }
-
+                    
+                }else{
+                    NSRange pRange = [phoneNum  rangeOfString:inUserInputsStr];
+                    NSRange rRange = [regular  rangeOfString:inUserInputsStr];
+                    if(pRange.length && rRange.length){//在正则式和数据源中都存在inUserInputsStr，添加到结果数组
+                        isNumRgular = true;
+                        if (![searchResault containsObject:mutPhoneArray[k]]) {
+                            [searchResault addObject:mutPhoneArray[k]];
+                        }
+                        
+                    }
                 }
+
             }
+            
         }
         
         //3.去重：对结果
@@ -386,16 +397,19 @@ static NSMutableArray *mLastAllRegularsMapArray;
         //Records *record = dataList[indexPath.row];
         cell.hisName.text = [[searchResault objectAtIndex:indexPath.row] valueForKey:PersonName];//;record.personName;
         
-        NSString *nameFirstChars = [[searchResault objectAtIndex:indexPath.row] valueForKey:FirstNameChars];
-        
-        
-        NSRange rangeName = [nameFirstChars rangeOfString:lengthString];
-        if (rangeName.length > 0) {
-            NSMutableAttributedString *attributeString =[[NSMutableAttributedString alloc] initWithString:cell.hisName.text];
-            [attributeString setAttributes:@{NSForegroundColorAttributeName : [UIColor redColor],   NSFontAttributeName : [UIFont systemFontOfSize:18]} range:rangeName];
-            cell.hisName.attributedText = attributeString;
-            
+        //NSString *nameFirstChars = ;
+        NSMutableArray *nameFirstCharsArray = [[searchResault objectAtIndex:indexPath.row] valueForKey:FirstNameChars];
+        for (NSString *nameFirstChars in nameFirstCharsArray) {
+            NSRange rangeName = [nameFirstChars rangeOfString:lengthString];
+            if (rangeName.length > 0) {
+                NSMutableAttributedString *attributeString =[[NSMutableAttributedString alloc] initWithString:cell.hisName.text];
+                [attributeString setAttributes:@{NSForegroundColorAttributeName : [UIColor redColor],   NSFontAttributeName : [UIFont systemFontOfSize:18]} range:rangeName];
+                cell.hisName.attributedText = attributeString;
+                
+            }
+
         }
+        
         
         cell.hisNumber.hidden = YES;
         cell.callDirection.hidden = YES;
@@ -682,8 +696,11 @@ static NSMutableArray *mLastAllRegularsMapArray;
     }
     if (state == OpenDivert) {
         VCLog(@"open d");
+        //self.callAnother.tintColor = [UIColor clearColor];
+        [self.callAnother setImage:[UIImage imageNamed:@"callaa"]];
     }else{
         VCLog(@"close d");
+        [self.callAnother setImage:[UIImage imageNamed:@"call_another60"]];
     }
     
 }

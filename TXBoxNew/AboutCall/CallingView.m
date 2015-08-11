@@ -15,6 +15,7 @@
 #import "TXSqliteOperate.h"
 #import "NSString+helper.h"
 #import "BLEmanager.h"
+#import "SendData.h"
 
 @interface CallingView ()<BLEmanagerDelegate>
 {

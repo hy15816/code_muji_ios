@@ -35,8 +35,8 @@
 {
     [super viewWillAppear:animated];
 
-    [tabBarView showPromptWithTag:1];
-    [tabBarView showPromptWithTag:3];
+    //[tabBarView showPromptWithTag:1];
+    //[tabBarView showPromptWithTag:0];
     //显示tabBar
     tabBarView.hidden = NO;
     //第一次，则加载引导页

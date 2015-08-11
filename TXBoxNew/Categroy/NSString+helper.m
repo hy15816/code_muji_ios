@@ -175,43 +175,130 @@
 }
 
 #pragma mark -- 汉字转拼音
--(NSString  *)hanziTopinyin{
+-(NSMutableArray  *)hanziTopinyin{
     
     HanyuPinyinOutputFormat *outputFormat =[[HanyuPinyinOutputFormat alloc] init];
     [outputFormat setToneType:ToneTypeWithoutTone];//声调
     [outputFormat setVCharType:VCharTypeWithV];//特殊拼音的显示格式如 ü
     [outputFormat setCaseType:CaseTypeLowercase];//大小(Lowercase)写
+    NSString *inSeperator = @"-";
     
-    NSString *hanzi =  [self purifyString];
-    
-    NSMutableString *mstring = [[NSMutableString alloc] initWithFormat:@"%@%@",ReplaceIdentifi,hanzi];
-    NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:mstring withHanyuPinyinOutputFormat:outputFormat withNSString:ReplaceIdentifi];
-    //char aa = (char)[self substringWithRange:NSMakeRange(0, 1)];
-    //NSArray *atextArray = [PinyinHelper toTongyongPinyinStringArrayWithChar:(char)[self substringWithRange:NSMakeRange(0, 1)]];
-    
-    //VCLog(@"%@-----:%@",self,outputPinyin);
-    
-    return outputPinyin;
-}
-//转为拼音，只取首字母
--(NSString *)getFirstCharWithHanZi{
-    
-    NSMutableString *firstCharsString = [[NSMutableString alloc] init];
-    HanyuPinyinOutputFormat *outputFormat =[[HanyuPinyinOutputFormat alloc] init];
-    [outputFormat setToneType:ToneTypeWithoutTone];//声调
-    [outputFormat setVCharType:VCharTypeWithV];//特殊拼音的显示格式如 ü
-    [outputFormat setCaseType:CaseTypeLowercase];//大小(Lowercase)写
-    
-    NSString *hanzi =  [self purifyString];
-    
-    for (int i=0; i<hanzi.length; i++) {
-        NSString *chars = [NSString stringWithFormat:@"%@",[hanzi substringWithRange:NSMakeRange(i, 1)]];
-        NSString *outputPinyin = [PinyinHelper toHanyuPinyinStringWithNSString:chars withHanyuPinyinOutputFormat:outputFormat withNSString:@""];
+    NSString *hanzi =  self;
+    NSMutableArray *outStringListList = [[NSMutableArray alloc] init];
+    for(int i = 0;i < hanzi.length; i++){
+       NSString *currChar = [hanzi substringWithRange:NSMakeRange(i, 1)];
+        NSMutableArray *thisList = [[NSMutableArray alloc] init];
+        if ([self thisHanZi: [currChar characterAtIndex:0]]) {
+            NSMutableArray *allPY4CurrentHZ = (NSMutableArray*)[PinyinHelper toHanyuPinyinStringArrayWithChar:[currChar characterAtIndex:0]withHanyuPinyinOutputFormat:outputFormat];
         
-        [firstCharsString appendString:[outputPinyin substringToIndex:1]];
+        if (allPY4CurrentHZ.count != 0) {
+            for (int j = 0; j < allPY4CurrentHZ.count; j++) {
+                allPY4CurrentHZ[j] = [NSString stringWithFormat:@"%@%@",inSeperator,allPY4CurrentHZ[j]];
+            }
+            [thisList addObject:allPY4CurrentHZ];
+        }
+        }else{//不是汉字
+            NSMutableArray *a = [[NSMutableArray alloc] initWithObjects:[NSString stringWithFormat:@"%@%@",inSeperator,currChar], nil];
+            [thisList addObject:a];
+        }
+    
+        [outStringListList addObject:thisList];
+        
     }
     
-    return firstCharsString;
+    NSMutableArray *mutArray =[[NSMutableArray alloc] initWithObjects:@"", nil];
+    for (NSArray *ar in outStringListList) {//abc中的所有数组
+        NSMutableArray *arr = [[NSMutableArray alloc] init];
+        for (NSArray *s in ar) {//abc中数组里的所有元素
+            for (NSString *a in s) {
+                for (NSString *ss in mutArray) {//mutArray中的所有元素
+                    if (![arr containsObject:[NSString stringWithFormat:@"%@%@",ss,a]]) {
+                        [arr addObject:[NSString stringWithFormat:@"%@%@",ss,a]];
+                    }
+                    
+                }
+            }
+            
+        }
+        mutArray = arr;//把arr赋给mutArray
+        
+    }
+    
+
+    VCLog(@"self:%@-----mutArray:%@",self,mutArray);
+    
+    return mutArray;
+}
+
+/**
+ *  @method
+ *  @abstract   判断是否中文,
+ *  @pragma string 输入的字符(串)
+ *  @return YES是，NO否
+ */
+-(BOOL)thisHanZi:(unichar)c{
+    
+//    unichar c = [string characterAtIndex:0];
+    
+    if (c >=0x4E00 && c <=0x9FFF){
+        
+        return  YES;
+        
+    }
+    
+    return NO;
+}
+
+//转为拼音，只取首字母
+-(NSMutableArray *)getFirstCharWithHanZi{
+    
+    HanyuPinyinOutputFormat *outputFormat =[[HanyuPinyinOutputFormat alloc] init];
+    [outputFormat setToneType:ToneTypeWithoutTone];//声调
+    [outputFormat setVCharType:VCharTypeWithV];//特殊拼音的显示格式如 ü
+    [outputFormat setCaseType:CaseTypeLowercase];//大小(Lowercase)写
+    
+    NSString *hanzi =  self;
+    NSMutableArray *outStringListList = [[NSMutableArray alloc] init];
+    for(int i = 0;i < hanzi.length; i++){
+        NSString *currChar = [hanzi substringWithRange:NSMakeRange(i, 1)];
+        NSMutableArray *thisList = [[NSMutableArray alloc] init];
+        if ([self thisHanZi: [currChar characterAtIndex:0]]) {
+            NSMutableArray *allPY4CurrentHZ = (NSMutableArray*)[PinyinHelper toHanyuPinyinStringArrayWithChar:[currChar characterAtIndex:0]withHanyuPinyinOutputFormat:outputFormat];
+            
+            if (allPY4CurrentHZ.count != 0) {
+                for (int j = 0; j < allPY4CurrentHZ.count; j++) {
+                    allPY4CurrentHZ[j] = [allPY4CurrentHZ[j] substringToIndex:1];
+                }
+                [thisList addObject:allPY4CurrentHZ];
+            }
+        }else{//不是汉字
+            NSMutableArray *a = [[NSMutableArray alloc] initWithObjects:currChar, nil];
+            [thisList addObject:a];
+        }
+        
+        [outStringListList addObject:thisList];
+        
+    }
+    
+    NSMutableArray *mutArray =[[NSMutableArray alloc] initWithObjects:@"", nil];
+    for (NSArray *ar in outStringListList) {//abc中的所有数组
+        NSMutableArray *arr = [[NSMutableArray alloc] init];
+        for (NSArray *s in ar) {//abc中数组里的所有元素
+            for (NSString *a in s) {
+                for (NSString *ss in mutArray) {//mutArray中的所有元素
+                    if (![arr containsObject:[NSString stringWithFormat:@"%@%@",ss,a]]) {
+                        [arr addObject:[NSString stringWithFormat:@"%@%@",ss,a]];
+                    }
+                    
+                }
+            }
+            
+        }
+        mutArray = arr;//把arr赋给mutArray
+        
+    }
+    
+    return mutArray;
 }
 
 #pragma mark -- 拼音转数字
