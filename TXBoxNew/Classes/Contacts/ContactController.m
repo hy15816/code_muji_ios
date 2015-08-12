@@ -11,13 +11,11 @@
 #import "ContactController.h"
 #import "ContactsTableViewCell.h"
 #import <AddressBookUI/AddressBookUI.h>
-#import "pinyin.h"
 #import "NSString+helper.h"
 #import "MsgDetailController.h"
 #import "TXData.h"
 #import "TXSqliteOperate.h"
 #import "MyAddressBooks.h"
-#import "ContactsData.h"
 #import "ConBook.h"
 
 @interface ContactController ()<UISearchResultsUpdating,UISearchControllerDelegate,ABNewPersonViewControllerDelegate,ABPersonViewControllerDelegate,MyAddressBooksDelegate>
@@ -38,7 +36,6 @@
     NSMutableArray *nameNumberArray;//
     NSMutableArray *Allphones;
     NSMutableArray *searchsArray;          //搜索后的结果数组
-    ABRecordID abrecordID;
     NSMutableArray *conBookArray;
 }
 
@@ -58,17 +55,12 @@
 
     [super viewWillAppear:animated];
     
-    //第一次获取通讯录
     if (![userDefaults boolForKey:IsUpdateContacts]) {
         [userDefaults setBool:YES forKey:IsUpdateContacts];
-        [abAddressBooks CreateAddressBooks];
-        //[self sectionDicts];
-        //[self setNameAndNumberDicts];
-        //[abAddressBooks refReshContacts];
+        [abAddressBooks refReshContacts];//刷新联系人
         [self.tableView reloadData];
     }
     
-    //[self.tableView reloadData];
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -83,11 +75,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //self.selectedIndexPath = nil;
     [self initll];
     abAddressBooks = [MyAddressBooks sharedAddBooks];
     abAddressBooks.delegate = self;
-
+    [abAddressBooks CreateAddressBooks];//第一次获取通讯录
     conBookArray = [[NSMutableArray alloc] init];
     
     [userDefaults setBool:NO forKey:IsUpdateContacts];
@@ -138,125 +129,6 @@
     
 }
 
-/*
--(void)setNameAndNumberDicts{
-    //[self sectionDicts];
-    for (int i=0; i<peopleArray.count; i++) {
-        NSMutableDictionary *dict =[[NSMutableDictionary alloc] init];
-        ABRecordRef record = (__bridge ABRecordRef)(peopleArray[i]);
-        ABRecordID recordID = ABRecordGetRecordID(record);
-        //NSLog(@"recordID:%d",recordID);
-        //ABRecordRef ref = ABAddressBookGetPersonWithRecordID(abBooksRef , recordID);
-        NSString *name;
-        NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonFirstNameProperty));
-        NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonLastNameProperty));
-        
-        if (firstName.length == 0) {
-            firstName = @"";
-        }
-        if (lastName.length == 0) {
-            lastName = @"";
-        }
-        if (lastName.length ==0 && firstName.length == 0) {
-            lastName = @"未命名";
-        }
-        
-        name = [NSString stringWithFormat:@"%@%@",lastName,firstName];
-        
-        NSString *phone;
-
-        //获取号码
-        ABMultiValueRef phoneNumber = ABRecordCopyValue(record, kABPersonPhoneProperty);
-        if (ABMultiValueGetCount(phoneNumber) > 0) {//取第一个号码
-            phone = (__bridge NSString *)(ABMultiValueCopyValueAtIndex(phoneNumber,0));
-
-        }
-        if (name.length >0 && phone.length >0) {
-            [dict setValue:[NSString stringWithFormat:@"%d",recordID] forKey:phone];
-        }else if(name.length<=0 && phone.length>0 ){
-            [dict setValue:[NSString stringWithFormat:@"%d",recordID] forKey:phone];
-            
-        }else{
-            [dict setValue:[NSString stringWithFormat:@"%d",recordID] forKey:name];
-        }
-        [nameNumberArray addObject:dict];
-    
-    }
-    
-    for (NSMutableDictionary *dicts in nameNumberArray) {
-        for (NSString *keys in dicts) {
-            [Allphones addObject:keys];
-        }
-    }
-    
-    NSLog(@"--%@",[nameNumberArray[0] valueForKey:@"186-7569-2900"]);
-    NSLog(@"Allphones:%@",Allphones);
-    NSLog(@"nameNumberArray:%@",nameNumberArray);
-    
-}
-
-//获取应该显示的text
--(NSString *)getShowNameText:(ABRecordRef)record{
-    
-    NSString *name;
-    NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonFirstNameProperty));
-    NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonLastNameProperty));
-    
-    if (firstName.length == 0) {
-        firstName = @"";
-    }
-    if (lastName.length == 0) {
-        lastName = @"";
-    }
-    if (lastName.length ==0 && firstName.length == 0) {
-        lastName = @"未命名";
-    }
-    
-    name = [NSString stringWithFormat:@"%@%@",lastName,firstName];
-    if (name.length <= 0) {
-        //获取号码
-        ABMultiValueRef phoneNumber = ABRecordCopyValue(record, kABPersonPhoneProperty);
-        if (ABMultiValueGetCount(phoneNumber) > 0) {
-            NSString *phone = [NSString stringWithFormat:@"%@",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
-            //NSLog(@"phone:%@",phone);
-            name = phone;
-            if (![dataArray containsObject:name]) {
-                [dataArray addObject:name];
-            }
-            
-            return name;
-        }
-        
-    }
-    
-    if (![dataArray containsObject:name]) {
-        [dataArray addObject:name];
-    }
-    return name;
-}
-*/
-//获取该Record的号码数组
--(NSMutableArray *)getShowPhoneText:(ABRecordRef)record{
-    
-    NSMutableArray *phonesArray = [[NSMutableArray alloc] init];
-    NSString *phone;
-    //获取号码
-    ABMultiValueRef phoneNumber = ABRecordCopyValue(record, kABPersonPhoneProperty);
-    if (ABMultiValueGetCount(phoneNumber) > 0) {
-        for (int i=0 ; i<ABMultiValueGetCount(phoneNumber); i++) {
-            phone = (__bridge NSString *)(ABMultiValueCopyValueAtIndex(phoneNumber,i));
-            
-            [phonesArray addObject:phone];
-        }
-        //NSLog(@"phonesArray:%@",phonesArray);
-        return phonesArray;
-    }else{
-        [phonesArray addObject:@""];
-    }
-    return phonesArray;
-}
-
-
 #pragma mark -- MyAddressBooks Delegate
 -(void)sendNotify:(MyBooksNotifity)noti{
     
@@ -275,28 +147,6 @@
     peopleArray = array;
     abBooksRef = bookRef;
     
-    //联系人名字与对应的id
-    /*
-    for (int i=0;i<peopleArray.count ;i++   ) {
-        
-        ABRecordRef abf = (__bridge ABRecordRef)(peopleArray[i]);
-        NSString *name;
-        NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(abf, kABPersonFirstNameProperty));
-        NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(abf, kABPersonLastNameProperty));
-        
-        if (firstName.length == 0) {
-            firstName = @"";
-        }
-        if (lastName.length == 0) {
-            lastName = @"";
-        }
-        
-        name = [NSString stringWithFormat:@"%@%@",firstName,lastName];
-        ABRecordID abid = ABRecordGetRecordID(abf);
-        NSLog(@"%@------%d",name,abid);
-        
-    }
-     */
 }
 
 -(void)SectionDicts:(NSMutableDictionary *)sectionDicts sortedArray:(NSArray *)sortedArray conbookArray:(NSMutableArray *)conbook{
@@ -337,61 +187,53 @@
         [hudview removeFromSuperview];
     }
 }
-
+//否则返回分区个数
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    // Return the number of sections.
+
     //是搜索后的tableView
     if (self.searchController.active) {
         return 1;
     }
-    return _sortedArray.count;//否则返回索引个数
+    return _sortedArray.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    // Return the number of rows in the section.
+
     if (self.searchController.active) {
         return searchsArray.count;
     }
     
     //返回sectionDic的 key里有值的value的个数
     NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[section]];
-    //NSLog(@"sec:%ld,conut:%lu",(long)section,(unsigned long)[[sectionDict objectForKey:key] count]);
+
     return  [[sectionDict objectForKey:key] count];
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
     
     static NSString *CellIdentifier = @"CellID";
-    
     ContactsTableViewCell *cell = (ContactsTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
     if (cell == nil){
         //加载cell-xib
         cell = [[[NSBundle mainBundle] loadNibNamed:@"ContactsTableViewCell" owner:self options:nil] objectAtIndex:0];
         
     }
-    //取消cell 选中背景色
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;//取消cell 选中背景色
     
     if (!self.searchController.active) {
         [searchsArray removeAllObjects];
     }
     
     //搜索后
-    if (self.searchController.active && searchsArray.count >0) {
-        //把searchArray根据每行显示
-        ABRecordRef ref = (__bridge ABRecordRef)([searchsArray objectAtIndex:indexPath.row]);
-        cell.nameLabel.text = [[conBookArray objectAtIndex:indexPath.row] fullName];
-        cell.numberLabel.text = [[[conBookArray objectAtIndex:indexPath.row] phoneNumberArray] firstObject];
+    if (self.searchController.active && searchsArray.count >0) {//显示searchArray数据
+        cell.nameLabel.text = [[searchsArray objectAtIndex:indexPath.row] fullName];
+        cell.numberLabel.text = [[[searchsArray objectAtIndex:indexPath.row] phoneNumberArray] firstObject];
         
     }else{
         
         NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
-        ABRecordRef ref = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
-        abrecordID  = ABRecordGetRecordID(ref);
-        cell.nameLabel.text = [[conBookArray objectAtIndex:indexPath.row] fullName];;
-        cell.numberLabel.text = [[[conBookArray objectAtIndex:indexPath.row] phoneNumberArray] firstObject];//[[self getShowPhoneText:ref] firstObject];
-        //cell.numberLabel.text = [[[[persons objectAtIndex:indexPath.row] objectForKey:@"personTel"] purifyString] insertStr];
+        cell.nameLabel.text = [[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] fullName];
+        cell.numberLabel.text = [[[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] phoneNumberArray] firstObject];
         //VCLog(@"name:%@,number:%@",cell.nameLabel.text,cell.numberLabel.text);
         
     }
@@ -406,7 +248,6 @@
 {
     
     self.currentIndexPath = indexPath;
-    
     if ([indexPath isEqual:self.selectedIndexPath] ) {
         
         self.selectedIndexPath = nil;
@@ -500,28 +341,23 @@
     
     return headerView;
 }
-
+//call
 -(void)callsBtnClick:(UIButton *)btn{
     
     NSIndexPath *indexPath = self.currentIndexPath;
-    //ABRecordRef ref = (__bridge ABRecordRef)([searchsArray objectAtIndex:indexPath.row]);
     NSString *name;
     NSString *phone;
     NSString *contactId;
 
     if (self.searchController.active) {
-        
-        ABRecordRef ref = (__bridge ABRecordRef)([searchsArray objectAtIndex:indexPath.row]);
-        name = [[conBookArray objectAtIndex:indexPath.row] fullName];//[self getShowNameText:ref];
-        phone = [[[conBookArray objectAtIndex:indexPath.row] phoneNumberArray] firstObject];//[[self getShowPhoneText:ref] firstObject];
-        contactId = [NSString stringWithFormat:@"%d",ABRecordGetRecordID(ref)];
+        name = [[searchsArray objectAtIndex:indexPath.row] fullName];
+        phone = [[[searchsArray objectAtIndex:indexPath.row] phoneNumberArray] firstObject];
+        contactId = [[searchsArray objectAtIndex:indexPath.row] recordID];
     }else{
         NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
-        ABRecordRef refd = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
-        name = [[conBookArray objectAtIndex:indexPath.row] fullName];//[self getShowNameText:refd];
-        phone = [[[conBookArray objectAtIndex:indexPath.row] phoneNumberArray] firstObject];//[[self getShowPhoneText:refd] firstObject];
-        contactId =[[conBookArray objectAtIndex:indexPath.row] recordID] ;// [NSString stringWithFormat:@"%d",ABRecordGetRecordID(refd)];
-        
+        name = [[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] fullName];
+        phone = [[[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] phoneNumberArray] firstObject];
+        contactId =[[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] recordID] ;
     }
     
     //把姓名号码传过去
@@ -543,18 +379,16 @@
     
     if (self.searchController.active) {
         
-        ABRecordRef ref = (__bridge ABRecordRef)([searchsArray objectAtIndex:indexPath.row]);
-        //msgdata.hisName = [self getShowNameText:ref];
-        msgdata.hisNumber = [[self getShowPhoneText:ref] firstObject];
+        msgdata.hisName = [[searchsArray objectAtIndex:indexPath.row] fullName];
+        msgdata.hisNumber = [[[searchsArray objectAtIndex:indexPath.row] phoneNumberArray] firstObject];
         if (msgdata.hisNumber.length >=7) {
             msgdata.hisHome = [txsql searchAreaWithHisNumber:[msgdata.hisNumber substringToIndex:7]];
         }else{msgdata.hisHome = @"";}
         msgDetail.datailDatas =msgdata;
     }else{
         NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
-        ABRecordRef refd = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
-        //msgdata.hisName = [self getShowNameText:refd];
-        msgdata.hisNumber = [[self getShowPhoneText:refd] firstObject];
+        msgdata.hisName = [[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] fullName];
+        msgdata.hisNumber = [[[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] phoneNumberArray] firstObject];
         if (msgdata.hisNumber.length >=7) {
             msgdata.hisHome = [txsql searchAreaWithHisNumber:[msgdata.hisNumber substringToIndex:7]];
         }else{msgdata.hisHome = @"";}
@@ -568,15 +402,17 @@
 -(void)editButtonClick:(UIButton *)btn{
     
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kHideTabBarAndCallBtn object:self]];
-    //NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     NSIndexPath *indexPath = self.currentIndexPath;
     
     if (self.searchController.active) {
-        ABRecordRef ref = (__bridge ABRecordRef)([searchsArray objectAtIndex:indexPath.row]);
+        ABRecordID abid =[[[searchsArray objectAtIndex:indexPath.row] recordID] intValue];
+        
+        ABRecordRef ref = ABAddressBookGetPersonWithRecordID(abBooksRef, abid);
         [self showPersonViewControllerWithRecordRef:ref];
     }else{
         NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
-        ABRecordRef refd = (__bridge ABRecordRef)([[sectionDict objectForKey:key] objectAtIndex:indexPath.row]);
+        ABRecordID abid = [[[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] recordID] intValue];
+        ABRecordRef refd = ABAddressBookGetPersonWithRecordID(abBooksRef, abid);
         [self showPersonViewControllerWithRecordRef:refd];
     }
     
@@ -585,10 +421,7 @@
 #pragma mark -- 跳转到编辑联系人
 //跳转到edit联系人
 -(void)showPersonViewControllerWithRecordRef:(ABRecordRef)recordRef{
-    
 
-    
-    
     [userDefaults setBool:NO forKey:IsUpdateContacts];
     ABPersonViewController *personViewController = [[ABPersonViewController alloc] init];
     personViewController.personViewDelegate = self;
@@ -617,44 +450,6 @@
     }
     
     NSString *searchString = [self.searchController.searchBar text];
-    /*
-    NSPredicate *preicate = [NSPredicate predicateWithFormat:@"SELF contains [c]  %@",searchString ];
-    NSMutableArray *nameP =[NSMutableArray arrayWithArray:[dataArray filteredArrayUsingPredicate:preicate]];
-    NSMutableArray *phoneP = [NSMutableArray arrayWithArray:[Allphones filteredArrayUsingPredicate:preicate]];
-    NSMutableArray *mArray = [[NSMutableArray alloc] init];
-    //过滤数据
-    for (NSString *s in nameP) {
-        if (![mArray containsObject:s]) {
-            NSArray *array = (__bridge NSArray *)(ABAddressBookCopyPeopleWithName(abBooksRef,(__bridge CFStringRef)s));//若已有名字号码，只能用名字查找
-            ABRecordRef recordRef = (__bridge ABRecordRef)([array lastObject]);
-            if (![searchsArray containsObject:(__bridge id)(recordRef)]) {
-                [searchsArray addObject:(__bridge id)(recordRef)];
-            }
-            
-        }
-        
-    }
-    
-    for (NSString *s in phoneP) {
-        int  i = 0 ;
-        for (NSMutableDictionary *dcit in nameNumberArray) {
-            if ([[dcit valueForKey:s] length] > 0) {
-                //NSLog(@"%@",[dcit valueForKey:s]);
-                i = [[dcit valueForKey:s] intValue];
-            }
-        }
-        //根据号码-> id -> ref ->判断使用名字还是号码
-        ABRecordID rid = i;
-        ABRecordRef reff = ABAddressBookGetPersonWithRecordID(abBooksRef, rid);
-        NSString *name =@"";// [self getShowNameText:reff];
-        
-        NSArray *array = (__bridge NSArray *)(ABAddressBookCopyPeopleWithName(abBooksRef,(__bridge CFStringRef)name));//若已有名字号码，只能用名字查找
-        ABRecordRef recordRef = (__bridge ABRecordRef)([array lastObject]);
-        if (![searchsArray containsObject:(__bridge id)(recordRef)]) {
-            [searchsArray addObject:(__bridge id)(recordRef)];
-        }
-    }
-    */
     
     NSPredicate *preicate = [NSPredicate predicateWithFormat:@"SELF contains [c]  %@",searchString ];
     for (ConBook *con in conBookArray) {
@@ -675,10 +470,7 @@
             }
         }
         
-        
     }
-    
-    //searchsArray = [NSMutableArray arrayWithArray:[mArray filteredArrayUsingPredicate:preicate]];
     
     VCLog(@"searchArray :%@",searchsArray);
     //VCLog(@"preicate :%@",preicate);

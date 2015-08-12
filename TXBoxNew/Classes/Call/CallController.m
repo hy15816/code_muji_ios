@@ -119,6 +119,8 @@ static NSMutableArray *mLastAllRegularsMapArray;
     
     [super viewDidLoad];
     
+    
+    
     ish = YES;
     self.title = @"电话";
     [self loadCallRecords];
@@ -291,7 +293,27 @@ static NSMutableArray *mLastAllRegularsMapArray;
         
         [mLastAllRegularsMapArray addObject:tempNumsRegularsMap];
     }
+    //获取标红的range
+    /*
+     9364 =     (
+     "-9364\\w*",
+     "-93\\w*-64\\w*"
+     );
+     
+     -> 需要得到(9,
+            96)
+     */
+#warning ++++++++++++++++++++++++++++未完
     if ([[tempNumsRegularsMap valueForKey:inUserInputsStr] count]>0) {
+        /*
+        NSMutableArray *rangeArr =[tempNumsRegularsMap valueForKey:inUserInputsStr];
+        NSMutableArray *rangeA = [[NSMutableArray alloc] init];
+        for (NSString *sa in rangeArr) {
+            //NSString *a = [self getSpecailText:sa];
+            [rangeA addObject:sa];
+        }
+        NSLog(@"rangeA:%@",rangeA);
+        */
         NSArray *arr =[[[tempNumsRegularsMap valueForKey:inUserInputsStr] lastObject] componentsSeparatedByString:@"-"] ;
         lengthString = [[NSMutableString alloc] init];
         
@@ -322,26 +344,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
 
 }
 
-//数据模型
--(void)setModel{
-    
-    NSMutableArray *arrayM = [NSMutableArray array];
-    for (NSDictionary *dict in searchResault) {
-        
-        Records *record = [[Records alloc] init];
-        // 给record赋值
-        [record setValuesForKeysWithDictionary:dict];//record:<Records: 0x7fa2f27207c0,personTel: 888-555-1212,personName: John Appleseed>
-        [arrayM addObject:record];
-        
-    }
-    //VCLog(@"arrayM:%@",arrayM);
-    dataList = arrayM;
-    //VCLog(@"arrayM-0:%@",[[arrayM objectAtIndex:0] valueForKey:@"personTel"]);
-    
-}
-
-#pragma mark -- Table view 
-
+#pragma mark -- Table view
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
     
     //隐藏tabbar和callBtn
@@ -402,37 +405,34 @@ static NSMutableArray *mLastAllRegularsMapArray;
         for (NSString *nameFirstChars in nameFirstCharsArray) {
             NSRange rangeName = [nameFirstChars rangeOfString:lengthString];
             if (rangeName.length > 0) {
-                NSMutableAttributedString *attributeString =[[NSMutableAttributedString alloc] initWithString:cell.hisName.text];
-                [attributeString setAttributes:@{NSForegroundColorAttributeName : [UIColor redColor],   NSFontAttributeName : [UIFont systemFontOfSize:18]} range:rangeName];
-                cell.hisName.attributedText = attributeString;
+                
+                cell.hisName.attributedText = [self attributedStr:rangeName str:cell.hisName.text];
                 
             }
 
         }
         
-        
         cell.hisNumber.hidden = YES;
         cell.callDirection.hidden = YES;
         cell.callLength.hidden = YES;
+        cell.callBeginTime.font = [UIFont systemFontOfSize:16];
         cell.callBeginTime.text = [[[searchResault objectAtIndex:indexPath.row] valueForKey:PersonTel] purifyString];
         NSRange rangeNumber  = [cell.callBeginTime.text rangeOfString:searcherString];
         if (rangeNumber.length > 0) {
-            NSMutableAttributedString *attributeString =[[NSMutableAttributedString alloc] initWithString:cell.callBeginTime.text];
-            [attributeString setAttributes:@{NSForegroundColorAttributeName : [UIColor redColor],   NSFontAttributeName : [UIFont systemFontOfSize:16]} range:rangeNumber];
-            cell.callBeginTime.attributedText = attributeString;
+            
+            cell.callBeginTime.attributedText = [self attributedStr:rangeNumber str:cell.callBeginTime.text];;
 
         }
         cell.hisHome.hidden = YES;
         cell.hisOperator.hidden = YES;
     }
     
-        //未输入，显示通话记录
+    //未输入，显示通话记录
     if(singleton.singletonValue.length <= 0 ) {
         
         //VCLog(@"CallRecords:%@,indexPath.row:%lu",CallRecords,indexPath.row);
         TXData *aRecord  = [CallRecords objectAtIndex:indexPath.row];
 
-        
         cell.callDirection.hidden = NO;
         cell.callLength.hidden = NO;
         cell.hisNumber.hidden = NO;
@@ -442,16 +442,17 @@ static NSMutableArray *mLastAllRegularsMapArray;
         cell.hisNumber.text = [[aRecord.hisNumber purifyString] insertStr];
         cell.callDirection.image = [self imageForRating:[aRecord.callDirection intValue]];
         cell.callLength.text = aRecord.callLength;
+        cell.callBeginTime.font = [UIFont systemFontOfSize:12];
         cell.callBeginTime.text = aRecord.callBeginTime;
         cell.hisHome.text = aRecord.hisHome;
         cell.hisOperator.text = aRecord.hisOperator;
-        //没有名字。显示为编辑图标
-        if (cell.hisName.text.length>0) {
-            [cell.PersonButton setImage:[UIImage imageNamed:@"icon_edit"] forState:UIControlStateNormal];
-        }
+        
      
     }
-    
+    //有名字。显示为编辑图标
+    if (cell.hisName.text.length>0) {
+        [cell.PersonButton setImage:[UIImage imageNamed:@"icon_edit"] forState:UIControlStateNormal];
+    }
     
     [cell.CallButton addTarget:self action:@selector(CallButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [cell.MsgButton addTarget:self action:@selector(MsgButtonClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -469,6 +470,15 @@ static NSMutableArray *mLastAllRegularsMapArray;
         case 2: return [UIImage imageNamed:@"icon_call_missed.png"];
     }
     return nil;
+}
+
+-(NSMutableAttributedString *)attributedStr:(NSRange)range str:(NSString *)text{
+    if (text.length<range.length) {
+        range = NSMakeRange(0, text.length);
+    }
+    NSMutableAttributedString *attributeString =[[NSMutableAttributedString alloc] initWithString:text];
+    [attributeString setAttributes:@{NSForegroundColorAttributeName : [UIColor redColor],   NSFontAttributeName : [UIFont systemFontOfSize:18]} range:range];
+    return attributeString;
 }
 
 #pragma mark -- 按钮的跳转
@@ -514,9 +524,6 @@ static NSMutableArray *mLastAllRegularsMapArray;
     TXData *mdata = [[TXData alloc] init];
     
     //获取归属地
-    
-
-    
     if (searcherString.length <= 0) {
         TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
         mdata.hisName = aRecord.hisName;

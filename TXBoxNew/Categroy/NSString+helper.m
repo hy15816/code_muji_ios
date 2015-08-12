@@ -74,7 +74,16 @@
     return [self stringByReplacingOccurrencesOfString:@"”" withString:@""];
     
 }
-
+#pragma mark --过滤字符串中的“*”
+-(NSString *) iPhoneStandardedXingMarkFormat{
+    return [self stringByReplacingOccurrencesOfString:@"*" withString:@""];
+    
+}
+#pragma mark --过滤字符串中的“\\w”
+-(NSString *) iPhoneStandardedWWMarkFormat{
+    return [self stringByReplacingOccurrencesOfString:@"\\w" withString:@""];
+    
+}
 
 #pragma mark --写入系统偏好
 -(void)saveToNSDefaultWithKey:(NSString*)key{
@@ -135,6 +144,8 @@
         string = [string iPhoneStandardedrightMarkFormat];
         //551 87896
         //123654896
+        //string = [string iPhoneStandardedWWMarkFormat];
+        //string = [string iPhoneStandardedXingMarkFormat];
     }
     return string;
 }
@@ -225,7 +236,7 @@
     }
     
 
-    VCLog(@"self:%@-----mutArray:%@",self,mutArray);
+    //VCLog(@"self:%@-----mutArray:%@",self,mutArray);
     
     return mutArray;
 }
@@ -259,27 +270,40 @@
     
     NSString *hanzi =  self;
     NSMutableArray *outStringListList = [[NSMutableArray alloc] init];
-    for(int i = 0;i < hanzi.length; i++){
-        NSString *currChar = [hanzi substringWithRange:NSMakeRange(i, 1)];
+    if (hanzi.length==1) {
         NSMutableArray *thisList = [[NSMutableArray alloc] init];
-        if ([self thisHanZi: [currChar characterAtIndex:0]]) {
-            NSMutableArray *allPY4CurrentHZ = (NSMutableArray*)[PinyinHelper toHanyuPinyinStringArrayWithChar:[currChar characterAtIndex:0]withHanyuPinyinOutputFormat:outputFormat];
+        NSMutableArray *allPY4CurrentHZ = (NSMutableArray*)[PinyinHelper toHanyuPinyinStringArrayWithChar:[hanzi characterAtIndex:0]withHanyuPinyinOutputFormat:outputFormat];
+        
+        if (allPY4CurrentHZ.count != 0) {
             
-            if (allPY4CurrentHZ.count != 0) {
-                for (int j = 0; j < allPY4CurrentHZ.count; j++) {
-                    allPY4CurrentHZ[j] = [allPY4CurrentHZ[j] substringToIndex:1];
-                }
-                [thisList addObject:allPY4CurrentHZ];
-            }
-        }else{//不是汉字
-            NSMutableArray *a = [[NSMutableArray alloc] initWithObjects:currChar, nil];
-            [thisList addObject:a];
+            [thisList addObject:allPY4CurrentHZ];
+            [outStringListList addObject:thisList];
         }
-        
-        [outStringListList addObject:thisList];
-        
+    }else{
+        for(int i = 0;i < hanzi.length; i++){
+            NSString *currChar = [hanzi substringWithRange:NSMakeRange(i, 1)];
+            NSMutableArray *thisList = [[NSMutableArray alloc] init];
+            if ([self thisHanZi: [currChar characterAtIndex:0]]) {
+                NSMutableArray *allPY4CurrentHZ = (NSMutableArray*)[PinyinHelper toHanyuPinyinStringArrayWithChar:[currChar characterAtIndex:0]withHanyuPinyinOutputFormat:outputFormat];
+                
+                if (allPY4CurrentHZ.count != 0) {
+                    for (int j = 0; j < allPY4CurrentHZ.count; j++) {
+                        allPY4CurrentHZ[j] = [allPY4CurrentHZ[j] substringToIndex:1];
+                    }
+                    [thisList addObject:allPY4CurrentHZ];
+                }
+            }else{//不是汉字
+                NSMutableArray *a = [[NSMutableArray alloc] initWithObjects:currChar, nil];
+                [thisList addObject:a];
+            }
+            
+            [outStringListList addObject:thisList];
+            
+        }
+
     }
     
+        
     NSMutableArray *mutArray =[[NSMutableArray alloc] initWithObjects:@"", nil];
     for (NSArray *ar in outStringListList) {//abc中的所有数组
         NSMutableArray *arr = [[NSMutableArray alloc] init];

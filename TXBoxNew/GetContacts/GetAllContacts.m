@@ -119,7 +119,7 @@
             name = [[NSString alloc] initWithFormat:@"%@",firstName];
         }else
         {
-            name = [[NSString alloc] initWithFormat:@"未知"];
+            name = [[NSString alloc] initWithFormat:@"未命名"];
         }
         
         //转拼音

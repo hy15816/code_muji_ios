@@ -180,11 +180,16 @@
     NSMutableString *str;
     //cmcc
     if ([[self getCarrier] isEqualToString:China_Mobile]) {
+        
         str = [[NSMutableString alloc] initWithFormat:@"**21*tel://%@#",string];
     }
     //unicom
     if ([[self getCarrier] isEqualToString:China_Unicom]) {
-        str = [[NSMutableString alloc] initWithFormat:@"**21*tel://%@*11#",string];
+        NSString *s = @"**21*";
+        NSString *s2 = @"*11#";
+        NSString *encodedValue = [s stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *encodedValue2 = [s2 stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        str = [[NSMutableString alloc] initWithFormat:@"tel://%@%@%@",encodedValue,string,encodedValue2];
     }
     //telecom
     if ([[self getCarrier] isEqualToString:China_Telecom]) {

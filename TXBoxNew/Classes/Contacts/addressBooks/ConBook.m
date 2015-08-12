@@ -50,6 +50,32 @@
     return _emailArray.count>0?_emailArray[0]:@"未命名";
     
 }
+/**
+ *  根据一条联系人记录(recordRef)获取ID
+ */
+-(ABRecordID)getRecordIDByRef:(ABRecordRef)recordRef{
+    ABRecordID abid = 0;
+    abid = ABRecordGetRecordID(recordRef);
+    return abid;
+}
+
+/**
+ *  根据ID和通讯录对象获取一条联系人记录(recordRef)
+ */
+-(ABRecordRef)getRccordRefWithAdBookRef:(ABAddressBookRef)bookRef byID:(ABRecordID)recordID{
+    ABRecordRef abRef = nil;
+    abRef = ABAddressBookGetPersonWithRecordID(bookRef, recordID);
+    return abRef;
+}
+/**
+ *  获取一个通讯录对象
+ */
+-(ABAddressBookRef)getAbAddressBookRef:(CFDictionaryRef)option error:(CFErrorRef *)error{
+    ABAddressBookRef addressbook = nil;
+    addressbook = ABAddressBookCreateWithOptions(option, error);
+    return addressbook;
+}
+
 
 @end
 

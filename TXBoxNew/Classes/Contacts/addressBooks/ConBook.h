@@ -29,4 +29,29 @@
  */
 -(NSString *)AssemblyName;
 
+
+//==========================================\\
+\\                通讯录相关                  \\
+\\==========================================//
+
+/**
+ *  根据一条联系人记录(recordRef)获取ID
+ */
+-(ABRecordID)getRecordIDByRef:(ABRecordRef)recordRef;
+
+/**
+ *  @method 根据ID和通讯录对象获取一条联系人记录(recordRef)
+ *  @pragma bookRef   ABAddressBookRef
+ *  @pragma recordID    ABRecordID
+ *  @return ABRecordRef
+ */
+-(ABRecordRef)getRccordRefWithAdBookRef:(ABAddressBookRef)bookRef byID:(ABRecordID)recordID;
+
+/**
+ *  获取一个通讯录对象
+ */
+-(ABAddressBookRef)getAbAddressBookRef:(CFDictionaryRef)option error:(CFErrorRef *)error;
+
+
+
 @end
