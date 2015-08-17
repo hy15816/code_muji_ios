@@ -17,6 +17,9 @@
 #import "ShareContentController.h"
 #import "HPGrowingTextView.h"
 #import "BLEmanager.h"
+#import "BLEHelper.h"
+#import "Messages.h"
+#import "NSString+helper.h"
 
 @interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate,ChangeRightMarginDelegate,HPGrowingTextViewDelegate,BLEmanagerDelegate>
 {
@@ -30,6 +33,8 @@
     UIView *contentView;
     CGFloat kHeight;
     BLEmanager *bManager;
+    NSMutableArray *mutDataArray;
+    NSMutableData *mutData;
 }
 @property (strong, nonatomic) NSMutableArray *detailArray;
 @property (strong, nonatomic) NSMutableArray *allMsgFrame;
@@ -129,6 +134,8 @@
     self.detailArray = [[NSMutableArray alloc] init];
     selectArray = [[NSMutableArray alloc] init];
     selectDict = [[NSMutableDictionary alloc] init];
+    mutData = [[NSMutableData alloc] init];
+    mutDataArray = [[NSMutableArray alloc] init];
     VCLog(@"datailDatas:%@",self.datailDatas);
     
     // 显示左边按钮
@@ -216,23 +223,16 @@
     // view hierachy
     [contentView addSubview:imageView];
     [contentView addSubview:textInput];
-    
-    UIImage *sendBtnBackground = [[UIImage imageNamed:@"MessageEntrySendButton.png"] stretchableImageWithLeftCapWidth:13 topCapHeight:0];
-    UIImage *selectedSendBtnBackground = [[UIImage imageNamed:@"MessageEntrySendButton.png"] stretchableImageWithLeftCapWidth:13 topCapHeight:0];
-    
+        
     UIButton *doneBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     doneBtn.frame = CGRectMake(contentView.frame.size.width - 69, 8, 63, 27);
     doneBtn.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
     [doneBtn setTitle:@"发送" forState:UIControlStateNormal];
     
     [doneBtn setTitleShadowColor:[UIColor colorWithWhite:0 alpha:0.4] forState:UIControlStateNormal];
-    //doneBtn.titleLabel.shadowOffset = CGSizeMake (0.0, -1.0);//阴影
     doneBtn.titleLabel.font = [UIFont systemFontOfSize:16];
-    
     [doneBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [doneBtn addTarget:self action:@selector(sendButtonClicks:) forControlEvents:UIControlEventTouchUpInside];
-    [doneBtn setBackgroundImage:sendBtnBackground forState:UIControlStateNormal];
-    [doneBtn setBackgroundImage:selectedSendBtnBackground forState:UIControlStateSelected];
     [contentView addSubview:doneBtn];
     contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
     
@@ -280,15 +280,18 @@
         [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
         //self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
         
+        textInput.text = nil;
+        
+        [self jumpToLastRow];
+        [self.tableview reloadData];
+        //[SVProgressHUD showImage:nil status:@"click"];
+        
+        //同时需要发送给设备
+        Messages *msgs = [[Messages alloc] init];
+        msgs.number = [self.nameLabel.text purifyString];
+        msgs.content = textInput.text;
+        [[BLEHelper shareHelper] requestTransmit:msgs withBLE:bManager];
     }
-    textInput.text = nil;
-    
-    [self jumpToLastRow];
-    [self.tableview reloadData];
-    //[SVProgressHUD showImage:nil status:@"click"];
-    
-    //同时需要发送给设备
-#warning 同时需要发送给设备
     
     
     
@@ -313,7 +316,68 @@
  *  @param hexString         16进制string
  *  @param curCharacteristic 当前特征
  */
--(void)managerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic;{}
+-(void)managerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic;{
+    //接收到数据之后
+    [self reciveActionWithData:data];
+}
+
+
+-(void)reciveActionWithData:(NSData *)data{
+    Byte *byte = (Byte *)[data bytes];
+    //是否接收透传,取前5位判断
+    if ([[BLEHelper shareHelper] willAccept:data by:0x5B]) {//对方接受
+        //发送数据
+        Messages *msgs = [[Messages alloc] init];
+        msgs.number = [self.nameLabel.text purifyString];
+        msgs.content = textInput.text;
+        [[BLEHelper shareHelper] sendDataWithMessage:msgs withBLE:bManager];
+        return;
+    }else if ([[BLEHelper shareHelper] willAccept:data by:0x5A]){//己方接收对方的透传
+        [bManager writeDatas:[[BLEHelper shareHelper] confirmHisTouchuan:byte[3] ]];
+        return;
+    }else{//接收到的短包<5a1900[0,0xEF]类型...>
+        [[BLEHelper shareHelper] didHappendActionWithData:data];
+        NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"string:%@",string);
+    }
+    
+    //如果是5a05...,那么接受所有数据到Array
+    if ([self isByte:data]) {
+        if (byte[2] <= 0x01) {//第一个子包
+            NSLog(@"receive:%@",data);
+        }else{//第二个子包开始，添加到数组
+            NSData *tempData = [data subdataWithRange:NSMakeRange(3, data.length-3)];
+            if (![mutDataArray containsObject:tempData]) {//不存在则添加
+                [mutDataArray addObject:tempData];
+            }
+            if (byte[2] == 0xFF || byte[2] == 0xEF) {
+                for (NSData *dt in mutDataArray) {
+                    [mutData appendData:dt];
+                }
+                NSLog(@"mutData:%@",mutData);
+                NSLog(@"dataStr:%@",[[NSString alloc] initWithData:mutData encoding:NSUTF8StringEncoding]);
+                [mutDataArray removeAllObjects];
+                
+            }
+        }
+    }
+    
+    //
+    
+    
+}
+
+-(BOOL)isByte:(NSData *)d{
+    Byte *byte = (Byte *)[d bytes];
+    
+    if (byte[0] == 0x5a && byte[1] == 0x05) {
+        
+        return YES;
+    }
+    
+    
+    return NO;
+}
 
 /**
  *  扫描到的所有外设并返回当前连接的哪一个

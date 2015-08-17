@@ -151,7 +151,7 @@
 #define TotalTime @"totalTime"
 
 //发送给设备蓝牙的数据长度
-#define kByte_count   20//数据长度
+#define kByte_count   20//数据长度，单个分包的字节长度
 #define keyWriteChc @"writeChc"//
 #define keyReadChc  @"readChc"
 

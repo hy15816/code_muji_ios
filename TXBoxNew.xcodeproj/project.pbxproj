@@ -76,6 +76,8 @@
 		63DEA67C1B0094FB003343A7 /* MsgDetailController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6761B0094FB003343A7 /* MsgDetailController.m */; };
 		63DEA67D1B0094FB003343A7 /* MsgFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6781B0094FB003343A7 /* MsgFrame.m */; };
 		63DEA6801B009512003343A7 /* NewMsgController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA67F1B009512003343A7 /* NewMsgController.m */; };
+		63DED3841B81798C00CAB80F /* BLEHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DED3811B81798C00CAB80F /* BLEHelper.m */; };
+		63DED3851B81798C00CAB80F /* Messages.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DED3831B81798C00CAB80F /* Messages.m */; };
 		63E1FAC71B09C8B8005C7258 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FAC61B09C8B8005C7258 /* SystemConfiguration.framework */; };
 		63E1FAC91B09C8C2005C7258 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */; };
 		63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FACA1B09C8D7005C7258 /* libicucore.dylib */; };
@@ -244,6 +246,10 @@
 		63DEA6781B0094FB003343A7 /* MsgFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MsgFrame.m; sourceTree = "<group>"; };
 		63DEA67E1B009512003343A7 /* NewMsgController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewMsgController.h; sourceTree = "<group>"; };
 		63DEA67F1B009512003343A7 /* NewMsgController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewMsgController.m; sourceTree = "<group>"; };
+		63DED3801B81798C00CAB80F /* BLEHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLEHelper.h; sourceTree = "<group>"; };
+		63DED3811B81798C00CAB80F /* BLEHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLEHelper.m; sourceTree = "<group>"; };
+		63DED3821B81798C00CAB80F /* Messages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Messages.h; sourceTree = "<group>"; };
+		63DED3831B81798C00CAB80F /* Messages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Messages.m; sourceTree = "<group>"; };
 		63E1FAC61B09C8B8005C7258 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		63E1FAC81B09C8C2005C7258 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		63E1FACA1B09C8D7005C7258 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
@@ -437,6 +443,10 @@
 		637005C11AE4C1D000B8BAFD /* bluetooth */ = {
 			isa = PBXGroup;
 			children = (
+				63DED3801B81798C00CAB80F /* BLEHelper.h */,
+				63DED3811B81798C00CAB80F /* BLEHelper.m */,
+				63DED3821B81798C00CAB80F /* Messages.h */,
+				63DED3831B81798C00CAB80F /* Messages.m */,
 				637005C21AE4C1D000B8BAFD /* BLEOperation.h */,
 				637005C31AE4C1D000B8BAFD /* BLEOperation.m */,
 				636FDE9B1B453BD40056F241 /* BLEmanager.h */,
@@ -937,6 +947,7 @@
 				63FA3A621B5E28FF0049EB1C /* AFHTTPRequestOperationManager.m in Sources */,
 				63DEA6801B009512003343A7 /* NewMsgController.m in Sources */,
 				63FA3A691B5E28FF0049EB1C /* AFURLSessionManager.m in Sources */,
+				63DED3841B81798C00CAB80F /* BLEHelper.m in Sources */,
 				63E200801B798B930002FAE8 /* SendData.m in Sources */,
 				637005D81AE4DE2400B8BAFD /* NSString+helper.m in Sources */,
 				637E41DE1B3961D20015F682 /* PopView.m in Sources */,
@@ -979,6 +990,7 @@
 				63DEA67B1B0094FB003343A7 /* MsgDetailCell.m in Sources */,
 				637B49E21B438E2900326937 /* CallAndDivert.m in Sources */,
 				632AC6391ADCE92F0023FAA9 /* TXData.m in Sources */,
+				63DED3851B81798C00CAB80F /* Messages.m in Sources */,
 				6371918A1B1F01B1005C09C8 /* HanyuPinyinOutputFormat.m in Sources */,
 				63912DBD1B69FB93000E097B /* MyAddressBooks.m in Sources */,
 				63FA3A671B5E28FF0049EB1C /* AFURLRequestSerialization.m in Sources */,

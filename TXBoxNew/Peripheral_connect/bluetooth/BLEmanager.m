@@ -105,7 +105,6 @@ static BLEmanager *sharedBLEmanger=nil;
         [peripheralArray addObject:peripheral];
         
         //保存到缓存目录
-        
         //[self savePeriphToCaches];
     }
     /*
@@ -251,6 +250,30 @@ static BLEmanager *sharedBLEmanger=nil;
         [cPeripheral setNotifyValue:NO forCharacteristic:characteristic];
     }
     
+    //接收到的事件，
+    //[self reciveActionWithData:characteristic.value];
+    
+    
+}
+
+
+
+-(NSData *)is5b190001:(Byte)byte{
+    
+    Byte is5b190001[20];
+    for (int i=0; i<kByte_count; i++) {
+        is5b190001[i] = 0;
+        
+    }
+    is5b190001[0] = 0x5b;
+    is5b190001[1] = 0x19;
+    is5b190001[2] = 0x00;
+    is5b190001[3] = byte;//长包0xff、短包0x00
+    is5b190001[4] = 0x01;//1表示接收，0否
+    
+    NSData *myData = [NSData dataWithBytes:&is5b190001 length:sizeof(is5b190001)];
+    NSLog(@"is5b190001 data:%@",myData);
+    return myData;
 }
 
 #pragma mark --若使用setNotifyValue:forCharacteristic:方法监听某特征，值改变后响应此方法

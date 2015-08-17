@@ -358,7 +358,10 @@
  *  @param hexString         16进制string
  *  @param curCharacteristic 当前特征
  */
--(void)managerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic;{}
+-(void)managerReceiveDataPeripheralData:(NSData *)data toHexString:(NSString *)hexString fromCharacteristic:(CBCharacteristic *)curCharacteristic;{
+
+
+}
 
 /**
  *  扫描到的所有外设并返回当前连接的哪一个
