@@ -123,16 +123,8 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ABRecordRef record = (__bridge ABRecordRef)([contactsRefArray objectAtIndex:indexPath.row]);
-    NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonFirstNameProperty));
-    NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonLastNameProperty));
-    
-    if (firstName.length == 0) {
-        firstName = @"";
-    }
-    if (lastName.length == 0) {
-        lastName = @"";
-    }
-    NSDictionary *dict=@{isRecordRef:(__bridge NSString *)record,isRead:@"1"};
+    ABRecordID  abid= ABRecordGetRecordID(record);
+    NSDictionary *dict=@{isRecordID:[NSString stringWithFormat:@"%d",abid],isRead:@"1"};
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"refnoti" object:self userInfo:dict];
     [userDefaults setBool:YES forKey:isRead];

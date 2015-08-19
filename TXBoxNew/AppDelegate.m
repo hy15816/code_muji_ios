@@ -10,13 +10,13 @@
 #define APPURL @"http://itunes.apple.com"
 
 #import "AppDelegate.h"
-#import "TXSqliteOperate.h"
 
 
 @interface AppDelegate ()<UIAlertViewDelegate>
 {
     NSString *appTrackViewURL;
     BOOL end;
+
 }
 @end
 
@@ -47,8 +47,11 @@
     
     [self addTimer];//延时
     
+    
+    
     return YES;
 }
+
 
 #pragma mark -- 延时
 -(void)addTimer{
@@ -64,52 +67,6 @@
     sleep(0);
     end=YES;
     
-}
-
-#pragma mark -- BLE Notifi
--(void)setBLEActionNoti{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(actionChange:) name:@"actionChanged" object:nil];
-    
-}
--(void)actionChange:(NSNotification *)noti{
-    NSString *aType = [[noti userInfo] objectForKey:@"type"];
-    NSData *data = [[noti userInfo] objectForKey:@"data"];
-    /*
-    NSString *aType;
-    switch ([age intValue]) {
-        case 0x01:
-            aType = @"拨入电话事件";//需得到然后号码显示
-            break;
-        case 0x02:
-            aType = @"calling";//需得到然后号码显示，改变状态为通话中
-            break;
-        case 0x03:
-            aType = @"callOut";//改变状态
-            break;
-        case 0x04:
-            aType = @"answer";//改变状态
-            break;
-        case 0x05:
-            aType = @"hangUp";//改变状态
-            break;
-        case 0x06:
-            aType = @"receiveMsg";//收到短信，解析得到号码，内容
-            break;
-        case 0x07:
-            aType = @"sendMsg";//发短信事件，设备回复状态+号码
-            break;
-        case 0x0D:
-            aType = @"设备时间已更改";//设备回复状态+日期时间
-            break;
-            
-        default:
-            aType = @"default";
-            break;
-    }
-    */
-    UIAlertView *a =[[UIAlertView alloc] initWithTitle:aType message:[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] delegate:self cancelButtonTitle:@"cancel" otherButtonTitles:@"OK", nil];
-    [a show];
-
 }
 
 #pragma mark -- Local Notifi

@@ -14,8 +14,9 @@
 #import "GuideView.h"
 #import "NSString+helper.h"
 #import "CallingView.h"
+#import "CallInView.h"
 
-@interface TabBarViewController ()<tabBarViewDelegate,UIAlertViewDelegate,GuideViewDelegate,KeyViewDelegate,CallingDelegate>
+@interface TabBarViewController ()<tabBarViewDelegate,UIAlertViewDelegate,GuideViewDelegate,KeyViewDelegate,CallingDelegate,CallInView>
 {
     CustomTabBarView *tabBarView;
     CustomTabBarBtn *previousBtn;
@@ -24,6 +25,7 @@
     CallingView *cv;
     CGFloat deviceHeight;
     BOOL isCallingButton;
+    CallInView *callIn;
 }
 @end
 
@@ -80,8 +82,54 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(customKeyboradAndTabViewHide:) name:nil object:nil];
     }
     [self respondsToSelector:@selector(changeViewController:)];
+    [self setBLEActionNoti];
+}
+
+#pragma mark -- Call In view
+-(void)addCallInView{
+
+    callIn = [[CallInView alloc] init];
+    callIn.frame = CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT);
+    callIn.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"calling_bg"]];
+    
+    callIn.hisName = @"ces";
+    callIn.hisNumber = @"13698006536";
+    callIn.hisHome=[[TXSqliteOperate shardSql] searchAreaWithHisNumber:[callIn.hisNumber substringToIndex:7]];
+    callIn.delegate = self;
+    [callIn initViews];
+    [self.view addSubview:callIn];
 
 }
+-(void)changedHeight{
+    [UIView animateWithDuration:.5 animations:^{
+        if (callIn.frame.origin.y<0) {
+            callIn.frame = CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT);
+        }else{
+            callIn.frame = CGRectMake(0, -DEVICE_HEIGHT+50, DEVICE_WIDTH, DEVICE_HEIGHT-1);
+        }
+    }];
+    [callIn packUpView];
+}
+
+-(void)answerOrHangUp:(UIButton *)btn{
+    BLEmanager *bleman = [BLEmanager sharedInstance];
+    [UIView animateWithDuration:.5 animations:^{
+        if (btn.tag == 1) {
+            NSLog(@"Answer");
+            [[BLEHelper shareHelper] sendOeder:OrderTypeAnswer withBLE:bleman];
+            [callIn hideAnswer];
+        }else{
+            NSLog(@"hangup");
+            callIn.alpha = 0;
+            //发送挂断指令
+            
+            [[BLEHelper shareHelper] sendOeder:OrderTypeHangUp withBLE:bleman];
+            
+        }
+            }];
+    
+}
+
 
 #pragma mark -- GuideView Delegate
 -(Guides *)getInfo
@@ -254,9 +302,9 @@
         isCallingButton = NO;
     }
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [cv startTimeLengthTimer];
-    });
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        [cv startTimeLengthTimer];
+//    });
 }
 
 #pragma mark -- keyView delegate
@@ -293,6 +341,52 @@
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"请输入正确的号码" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
     [alert show];
+    
+}
+
+#pragma mark -- BLE Notifi
+-(void)setBLEActionNoti{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(actionChange:) name:@"BLEHasReciveData" object:nil];
+    
+}
+-(void)actionChange:(NSNotification *)noti{
+    NSString *aType = [[noti userInfo] objectForKey:@"type"];
+    NSData *data = [[noti userInfo] objectForKey:@"data"];
+    /*
+     NSString *aType;
+     switch ([age intValue]) {
+     case 0x01:
+     aType = @"拨入电话事件";//需得到然后号码显示
+     break;
+     case 0x02:
+     aType = @"calling";//需得到然后号码显示，改变状态为通话中
+     break;
+     case 0x03:
+     aType = @"callOut";//改变状态
+     break;
+     case 0x04:
+     aType = @"answer";//改变状态
+     break;
+     case 0x05:
+     aType = @"hangUp";//改变状态
+     break;
+     case 0x06:
+     aType = @"receiveMsg";//收到短信，解析得到号码，内容
+     break;
+     case 0x07:
+     aType = @"sendMsg";//发短信事件，设备回复状态+号码
+     break;
+     case 0x0D:
+     aType = @"设备时间已更改";//设备回复状态+日期时间
+     break;
+     
+     default:
+     aType = @"default";
+     break;
+     }
+     */
+    UIAlertView *a =[[UIAlertView alloc] initWithTitle:aType message:[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] delegate:self cancelButtonTitle:@"cancel" otherButtonTitles:@"OK", nil];
+    [a show];
     
 }
 

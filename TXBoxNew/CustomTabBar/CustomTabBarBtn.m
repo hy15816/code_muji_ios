@@ -50,16 +50,12 @@
     
     //字的高度
     CGSize titleSize = CGSizeMake(self.frame.size.width, 12);
-    
     //设置图片，顶端对齐
     [self.imageView setContentMode:UIViewContentModeTop];
-    
     //图片大小
     self.imageView.frame = CGRectMake((DEVICE_WIDTH/4-image.size.width)/2, 0, image.size.width, image.size.height);
-    
     //imageview背景颜色
     //self.imageView.backgroundColor = RGBACOLOR(48, 182, 247, 1);
-    
     //image缩进
     [self setImageEdgeInsets:UIEdgeInsetsMake(-8.0,
                                               0.0,

@@ -159,7 +159,7 @@
 #define yyyy_M_d_HH_mm @"yyyy/M/d HH:mm"
 
 #define isRead @"isRead"
-#define isRecordRef @"isRecordRef"
+#define isRecordID @"isRecordID"
 
 //keyView
 #define InputFieldAllText @"textFieldAllText"

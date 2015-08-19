@@ -762,7 +762,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
     {
         NSLog(@"x");
     }
-    CFRelease(aContact);
+    //CFRelease(aContact);
 }
 
 #pragma mark -- unknow person
@@ -819,7 +819,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kInputCharNoti object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kDeleteCharNoti object:nil];
 
-    CFRelease(_addressBook);
+    //CFRelease(_addressBook);
     
 }
 - (void)didReceiveMemoryWarning {

@@ -23,7 +23,8 @@
     
     HPGrowingTextView *putViews;
     CGFloat tempHeight;
-    ABRecordRef ref;
+    ABRecordID reID;
+    ABAddressBookRef address;
     UIView *containerView;
     BOOL isSend;
     NSString *phoneNumberString;
@@ -45,7 +46,9 @@
 
 -(void)changeRecordRef:(NSNotification *)noti{
     
-    ref = (__bridge ABRecordRef)[[noti userInfo] valueForKey:isRecordRef];
+    reID = [[[noti userInfo] valueForKey:isRecordID] intValue];
+    address = ABAddressBookCreateWithOptions(nil, nil);
+    ABRecordRef ref = ABAddressBookGetPersonWithRecordID(address, reID);
     
     NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(ref, kABPersonFirstNameProperty));
     NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(ref, kABPersonLastNameProperty));
@@ -174,10 +177,11 @@
 
 -(void) initNewMsgInputView
 {
-    
+    //底栏=输入框+发送
     containerView = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 40, DEVICE_WIDTH, 40)];
     containerView.backgroundColor=[UIColor grayColor];
     
+    //输入框
     putViews = [[HPGrowingTextView alloc] initWithFrame:CGRectMake(6, 3, 240, 40)];
     putViews.isScrollable = NO;
     putViews.layer.cornerRadius = 5;
@@ -196,18 +200,8 @@
     putViews.backgroundColor = [UIColor whiteColor];
     putViews.placeholder = @"信息";
     
-    // textView.text = @"test\n\ntest";
-    // textView.animateHeightChange = NO; //turns off animation
-    
     [self.view addSubview:containerView];
-    /*
-    UIImage *rawEntryBackground = [UIImage imageNamed:@"MessageEntryInputField.png"];
-    UIImage *entryBackground = [rawEntryBackground stretchableImageWithLeftCapWidth:13 topCapHeight:22];
-    UIImageView *entryImageView = [[UIImageView alloc] initWithImage:entryBackground];
-    entryImageView.frame = CGRectMake(5, 0, 248, 40);
-    entryImageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    //entryImageView.backgroundColor =[UIColor greenColor];
-    */
+    
     UIImage *rawBackground = [UIImage imageNamed:@"MessageEntryBackground.png"];
     UIImage *background = [rawBackground stretchableImageWithLeftCapWidth:13 topCapHeight:22];
     UIImageView *imageView = [[UIImageView alloc] initWithImage:background];
@@ -220,24 +214,18 @@
     // view hierachy
     [containerView addSubview:imageView];
     [containerView addSubview:putViews];
-    //[containerView addSubview:entryImageView];
 
-    UIImage *sendBtnBackground = [[UIImage imageNamed:@"MessageEntrySendButton.png"] stretchableImageWithLeftCapWidth:13 topCapHeight:0];
-    UIImage *selectedSendBtnBackground = [[UIImage imageNamed:@"MessageEntrySendButton.png"] stretchableImageWithLeftCapWidth:13 topCapHeight:0];
-    
+    //发送
     UIButton *doneBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     doneBtn.frame = CGRectMake(containerView.frame.size.width - 69, 8, 63, 27);
     doneBtn.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
     [doneBtn setTitle:@"发送" forState:UIControlStateNormal];
     
     [doneBtn setTitleShadowColor:[UIColor colorWithWhite:0 alpha:0.4] forState:UIControlStateNormal];
-    //doneBtn.titleLabel.shadowOffset = CGSizeMake (0.0, -1.0);
     doneBtn.titleLabel.font = [UIFont systemFontOfSize:16];
     
     [doneBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [doneBtn addTarget:self action:@selector(sendButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    [doneBtn setBackgroundImage:sendBtnBackground forState:UIControlStateNormal];
-    [doneBtn setBackgroundImage:selectedSendBtnBackground forState:UIControlStateSelected];
     [containerView addSubview:doneBtn];
     containerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
 }
@@ -259,7 +247,6 @@
 
 
 #pragma mark -- send 消息
-
 -(void)rightButtonClick:(UIButton *)button{
     
     bmanagers = [BLEmanager sharedInstance];
@@ -275,6 +262,7 @@
     txdata.msgSender = @"1";
     txdata.msgTime = time;
     txdata.msgContent = putViews.text;
+    ABRecordRef ref = ABAddressBookGetPersonWithRecordID(address, reID);
     ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
     NSString *phone = [NSString stringWithFormat:@"%@",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
     txdata.msgAccepter = [phone purifyString];

@@ -86,7 +86,7 @@
     //NSMutableDictionary *dicts= [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",type],@"type",data,@"data", nil];//aType,@"actionType",
     
     NSMutableDictionary *dicts2= [[NSMutableDictionary alloc] initWithObjectsAndKeys:aType,@"type",data,@"data", nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"actionChanged" object:self userInfo:dicts2];//发出一个通知，在AppDelegate中接收
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"BLEHasReciveData" object:self userInfo:dicts2];//发出一个通知，在AppDelegate中接收
     
 }
 
@@ -133,7 +133,7 @@
     Byte *byteCon = (Byte *)[messContentData bytes];
     //len =类型(1) + 内容大小(2) +号码长度(1) + msg.length/2 + content.length
     NSInteger len = message.number.length/2 + messContentData.length+4;
-    NSString *mNumber ;
+    NSString *mNumber = message.number ;
     if (message.number.length%2 != 0) {
         mNumber = [NSString stringWithFormat:@"%@0",message.number];
     }
@@ -145,12 +145,14 @@
     content[1] = 0x00;//内容大小 = 号码长度(1) + msg.length/2 + content.length
     content[2] = 0x00;
     content[3] = length;//号码长度
-    //电话号码
-    int l=0;
-    for (int n=0; n<mNumber.length; n+=2) {
-        NSString *s =[mNumber substringWithRange:NSMakeRange(n, 2)];
-        content[l+4] = [s intValue];
-        l++;
+    
+#warning 处理电话号码
+    
+    NSData *data =  [self operationNumber:mNumber];
+    Byte * byte = (Byte *)[data bytes];
+
+    for (int n=0; n<data.length; n++) {
+            content[n +4] = byte[n];
     }
     for (int q=0; q<messContentData.length; q++) {
         content[mNumber.length/2+4+q] = byteCon[q];
@@ -161,6 +163,37 @@
 
     return contentData;
 }
+
+
+-(NSData *)operationNumber:(NSString *)number{
+    
+    Byte num[number.length/2];
+    for (int i=0; i<number.length/2; i++) {
+        NSString *s = [number substringWithRange:NSMakeRange(i*2, 1)];
+        NSString *s2 = [number substringWithRange:NSMakeRange(i*2+1, 1)];
+        int ss = [s intValue];
+        if ([s isEqualToString:@"A"]) {
+            ss =10;
+        }else if ([s isEqualToString:@"B"]){
+            ss = 11;
+        }else if ([s isEqualToString:@"C"]){
+            ss = 12;
+        }else if ([s isEqualToString:@"D"]){
+            ss = 13;
+        }else if ([s isEqualToString:@"E"]){
+            ss = 14;
+        }else if ([s isEqualToString:@"F"]){
+            ss = 15;
+        }
+        
+        int a = ss*16 + [s2 intValue];
+        num[i] = a;
+    }
+    NSData *data = [NSData dataWithBytes:&num length:sizeof(num)];
+    return data;
+    
+}
+
 
 //开始发送数据
 -(void)sendDataWithMessage:(Messages *)message withBLE:(BLEmanager *)manager{
@@ -213,7 +246,7 @@
     
     data01[5]  = 0x00;//包序号
     data01[6]  = packageNumber;
-    unsigned short crc= [self crc_ccitt:(Byte*)[data bytes] len:(int)data.length];//包CRC
+    unsigned short crc= [self crc_ccitt:data ];//包CRC
     data01[7]  = crc/256;//包CRC
     data01[8]  = crc%256;
     
@@ -374,16 +407,18 @@
 #pragma mark -- CRC校验码
 /**
  *  获取CRC校验码
- *  @pragma data    数据源(Byte*)
- *  @pragma lengths 数据源的length
+ *  @pragma data    数据源
  *  @return CRC校验码
  */
--(unsigned short)crc_ccitt:(unsigned char *)data len:(int)lengths{
+-(unsigned short)crc_ccitt:(NSData *)data {
     
     unsigned short crc = 0;
+    Byte *by = (Byte*)[data bytes];
+    int lengths = (int)data.length;
+
     while (lengths-- > 0){
         
-        crc = ccitt_table[(crc>> 8 ^ *data++) & 0xff] ^ (crc<< 8);
+        crc = ccitt_table[(crc>> 8 ^ *by++) & 0xff] ^ (crc<< 8);
     }
     return ~crc;
 }
@@ -410,11 +445,11 @@ static unsigned short ccitt_table[256] = {
     0x2E93, 0x3EB2, 0x0ED1, 0x1EF0
 };
 
-#pragma mark -- 发送短包（不包括短信）
--(void)sendShortPackage:(NSData *)data withBLE:(BLEmanager *)manager order:(OrderType)orderType{
+#pragma mark -- 发送短包
+-(void)sendShortPackage:(NSString *)content withBLE:(BLEmanager *)manager order:(OrderType)orderType{
     
+    NSData *data= [content dataUsingEncoding:NSUTF8StringEncoding];
     Byte *byte = (Byte *)[data bytes];
-    
     //发送数据5A19
     Byte shortPackage[20];
     for (int i=0; i<kByte_count; i++) {
@@ -426,8 +461,20 @@ static unsigned short ccitt_table[256] = {
     shortPackage[3] = 0x00;//关键字，[0,0xEF]短,[0xF0,0xFF]长
     
     //以下是将要发送的“包内容”
+    if (orderType == OrderTypeCallOut || orderType == OrderTypeSetFamilyNumber) {
+        /*需要发送电话号码的指令,特别处理（认为是短包）
+         1.拨打电话指令0x08，
+         2.设置亲情号码0x10
+         */
+        shortPackage[4] = orderType;//类型
+        shortPackage[5] = 0x00;//数据内容大小:根据号码而定
+        shortPackage[6] = content.length;
+        
+        NSData *myData = [NSData dataWithBytes:&shortPackage length:sizeof(shortPackage)];
+        [manager writeDatas:myData];
+        return;
+    }
     shortPackage[4] = orderType;//类型
-    
     shortPackage[5] = 0x00;//数据内容大小:根据内容而定
     shortPackage[6] = data.length;
     
@@ -474,6 +521,25 @@ static unsigned short ccitt_table[256] = {
     
 }
 
+-(void)sendOeder:(OrderType)order withBLE:(BLEmanager *)manager{
+    Byte sendType[20];
+    for (int i=0; i<kByte_count; i++) {
+        sendType[i] = 0;
+    }
+    sendType[0] = 0x5A;
+    sendType[1] = 0x19;//cmd
+    sendType[2] = 0x00;
+    sendType[3] = 0x00;//关键字，[0,0xEF]短,[0xF0,0xFF]长
+    sendType[4] = order;
+    NSData *myData = [NSData dataWithBytes:&sendType length:sizeof(sendType)];
+    [manager writeDatas:myData];
+    
+}
 
+-(void)errorWithMs:(NSString *)string{
+    
+    [SVProgressHUD showImage:nil status:string];
+    
+}
 
 @end

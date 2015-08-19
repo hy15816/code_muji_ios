@@ -252,10 +252,10 @@
 -(void)sendButtonClicks:(UIButton *)btn{
     bManager = [BLEmanager sharedInstance];
     bManager.managerDelegate = self;
-    [self rightButtonClick:btn];
+    [self sendData:btn];
     
 }
--(void)rightButtonClick:(UIButton *)button{
+-(void)sendData:(UIButton *)button{
     
     
     if (textInput.text.length>0) {

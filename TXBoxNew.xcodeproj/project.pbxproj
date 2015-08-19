@@ -69,6 +69,13 @@
 		63D4871C1B1835CA005F2E1A /* DiscoveryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D4871B1B1835CA005F2E1A /* DiscoveryController.m */; };
 		63D4871E1B183B24005F2E1A /* ble_connect.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D4871D1B183B24005F2E1A /* ble_connect.gif */; };
 		63D487201B183B72005F2E1A /* phone_connect.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D4871F1B183B72005F2E1A /* phone_connect.gif */; };
+		63DACA801B8439C300276FF5 /* CallInView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DACA7F1B8439C300276FF5 /* CallInView.m */; };
+		63DACA831B84741200276FF5 /* DBHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DACA821B84741200276FF5 /* DBHelper.m */; };
+		63DACA901B8474D600276FF5 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DACA871B8474D600276FF5 /* FMDatabase.m */; };
+		63DACA911B8474D600276FF5 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DACA891B8474D600276FF5 /* FMDatabaseAdditions.m */; };
+		63DACA921B8474D600276FF5 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DACA8B1B8474D600276FF5 /* FMDatabasePool.m */; };
+		63DACA931B8474D600276FF5 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DACA8D1B8474D600276FF5 /* FMDatabaseQueue.m */; };
+		63DACA941B8474D600276FF5 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DACA8F1B8474D600276FF5 /* FMResultSet.m */; };
 		63DBF8AC1B0303C500041321 /* TXNavgationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DBF8AB1B0303C500041321 /* TXNavgationController.m */; };
 		63DCF8971B731ACC00C897F2 /* ContactsData.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DCF8961B731ACC00C897F2 /* ContactsData.m */; };
 		63DEA6791B0094FB003343A7 /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DEA6711B0094FB003343A7 /* Message.m */; };
@@ -83,7 +90,6 @@
 		63E1FACB1B09C8D7005C7258 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FACA1B09C8D7005C7258 /* libicucore.dylib */; };
 		63E1FACD1B09C8E5005C7258 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */; };
 		63E1FACF1B09C8F2005C7258 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */; };
-		63E200801B798B930002FAE8 /* SendData.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E2007F1B798B930002FAE8 /* SendData.m */; };
 		63E200841B7991920002FAE8 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E200831B7991920002FAE8 /* AVOSCloud.framework */; };
 		63E200891B79E9DB0002FAE8 /* ConBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E200881B79E9DB0002FAE8 /* ConBook.m */; };
 		63FA3A611B5E28FF0049EB1C /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FA3A4F1B5E28FF0049EB1C /* AFHTTPRequestOperation.m */; };
@@ -232,6 +238,21 @@
 		63D4871B1B1835CA005F2E1A /* DiscoveryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoveryController.m; sourceTree = "<group>"; };
 		63D4871D1B183B24005F2E1A /* ble_connect.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = ble_connect.gif; sourceTree = "<group>"; };
 		63D4871F1B183B72005F2E1A /* phone_connect.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = phone_connect.gif; sourceTree = "<group>"; };
+		63DACA7E1B8439C300276FF5 /* CallInView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallInView.h; sourceTree = "<group>"; };
+		63DACA7F1B8439C300276FF5 /* CallInView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallInView.m; sourceTree = "<group>"; };
+		63DACA811B84741200276FF5 /* DBHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBHelper.h; sourceTree = "<group>"; };
+		63DACA821B84741200276FF5 /* DBHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBHelper.m; sourceTree = "<group>"; };
+		63DACA851B8474D600276FF5 /* FMDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDB.h; sourceTree = "<group>"; };
+		63DACA861B8474D600276FF5 /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
+		63DACA871B8474D600276FF5 /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
+		63DACA881B8474D600276FF5 /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
+		63DACA891B8474D600276FF5 /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
+		63DACA8A1B8474D600276FF5 /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
+		63DACA8B1B8474D600276FF5 /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
+		63DACA8C1B8474D600276FF5 /* FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseQueue.h; sourceTree = "<group>"; };
+		63DACA8D1B8474D600276FF5 /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
+		63DACA8E1B8474D600276FF5 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
+		63DACA8F1B8474D600276FF5 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		63DBF8AA1B0303C500041321 /* TXNavgationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXNavgationController.h; sourceTree = "<group>"; };
 		63DBF8AB1B0303C500041321 /* TXNavgationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXNavgationController.m; sourceTree = "<group>"; };
 		63DCF8951B731ACC00C897F2 /* ContactsData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsData.h; sourceTree = "<group>"; };
@@ -255,8 +276,6 @@
 		63E1FACA1B09C8D7005C7258 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		63E1FACC1B09C8E5005C7258 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		63E1FACE1B09C8F2005C7258 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
-		63E2007E1B798B930002FAE8 /* SendData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendData.h; sourceTree = "<group>"; };
-		63E2007F1B798B930002FAE8 /* SendData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SendData.m; sourceTree = "<group>"; };
 		63E200831B7991920002FAE8 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVOSCloud.framework; path = TXBoxNew/AVOSCloud.framework; sourceTree = "<group>"; };
 		63E200871B79E9DB0002FAE8 /* ConBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConBook.h; sourceTree = "<group>"; };
 		63E200881B79E9DB0002FAE8 /* ConBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConBook.m; sourceTree = "<group>"; };
@@ -327,6 +346,8 @@
 				632AC6361ADCE92F0023FAA9 /* TXData.m */,
 				632AC6371ADCE92F0023FAA9 /* TXSqliteOperate.h */,
 				632AC6381ADCE92F0023FAA9 /* TXSqliteOperate.m */,
+				63DACA811B84741200276FF5 /* DBHelper.h */,
+				63DACA821B84741200276FF5 /* DBHelper.m */,
 			);
 			path = Sqlite_3;
 			sourceTree = "<group>";
@@ -541,8 +562,8 @@
 			children = (
 				63719AFF1B44DBFC00AB7DE3 /* CallingView.h */,
 				63719B001B44DBFC00AB7DE3 /* CallingView.m */,
-				63E2007E1B798B930002FAE8 /* SendData.h */,
-				63E2007F1B798B930002FAE8 /* SendData.m */,
+				63DACA7E1B8439C300276FF5 /* CallInView.h */,
+				63DACA7F1B8439C300276FF5 /* CallInView.m */,
 			);
 			path = AboutCall;
 			sourceTree = "<group>";
@@ -675,6 +696,24 @@
 			path = "TXBoxNew/ StaticLibrarys";
 			sourceTree = "<group>";
 		};
+		63DACA841B8474D600276FF5 /* FMDB */ = {
+			isa = PBXGroup;
+			children = (
+				63DACA851B8474D600276FF5 /* FMDB.h */,
+				63DACA861B8474D600276FF5 /* FMDatabase.h */,
+				63DACA871B8474D600276FF5 /* FMDatabase.m */,
+				63DACA881B8474D600276FF5 /* FMDatabaseAdditions.h */,
+				63DACA891B8474D600276FF5 /* FMDatabaseAdditions.m */,
+				63DACA8A1B8474D600276FF5 /* FMDatabasePool.h */,
+				63DACA8B1B8474D600276FF5 /* FMDatabasePool.m */,
+				63DACA8C1B8474D600276FF5 /* FMDatabaseQueue.h */,
+				63DACA8D1B8474D600276FF5 /* FMDatabaseQueue.m */,
+				63DACA8E1B8474D600276FF5 /* FMResultSet.h */,
+				63DACA8F1B8474D600276FF5 /* FMResultSet.m */,
+			);
+			path = FMDB;
+			sourceTree = "<group>";
+		};
 		63DEA66E1B009425003343A7 /* msgDetail */ = {
 			isa = PBXGroup;
 			children = (
@@ -765,6 +804,7 @@
 				635299651ADE372E006840AC /* CustomTabBar */,
 				635299591ADE0296006840AC /* Singleton */,
 				632AC6341ADCE92F0023FAA9 /* Sqlite_3 */,
+				63DACA841B8474D600276FF5 /* FMDB */,
 				6378583E1B316F3F006D5155 /* GetContacts */,
 				637E41E11B3962B20015F682 /* External */,
 				63DBF8AA1B0303C500041321 /* TXNavgationController.h */,
@@ -945,10 +985,11 @@
 				637B49DF1B438DA000326937 /* SVProgressHUD.m in Sources */,
 				6352996B1ADE372E006840AC /* TabBarViewController.m in Sources */,
 				63FA3A621B5E28FF0049EB1C /* AFHTTPRequestOperationManager.m in Sources */,
+				63DACA911B8474D600276FF5 /* FMDatabaseAdditions.m in Sources */,
 				63DEA6801B009512003343A7 /* NewMsgController.m in Sources */,
+				63DACA931B8474D600276FF5 /* FMDatabaseQueue.m in Sources */,
 				63FA3A691B5E28FF0049EB1C /* AFURLSessionManager.m in Sources */,
 				63DED3841B81798C00CAB80F /* BLEHelper.m in Sources */,
-				63E200801B798B930002FAE8 /* SendData.m in Sources */,
 				637005D81AE4DE2400B8BAFD /* NSString+helper.m in Sources */,
 				637E41DE1B3961D20015F682 /* PopView.m in Sources */,
 				6371918D1B1F01B1005C09C8 /* PinyinHelper.m in Sources */,
@@ -977,6 +1018,7 @@
 				637191981B1F01CF005C09C8 /* NSString+AKNumericFormatter.m in Sources */,
 				637B49D91B438D7300326937 /* GuideView.m in Sources */,
 				639132431B2177A500F61E04 /* ShowContactsCell.m in Sources */,
+				63DACA941B8474D600276FF5 /* FMResultSet.m in Sources */,
 				63FA3A651B5E28FF0049EB1C /* AFSecurityPolicy.m in Sources */,
 				637E41DF1B3961D20015F682 /* RegisteViewController.m in Sources */,
 				63FA3A681B5E28FF0049EB1C /* AFURLResponseSerialization.m in Sources */,
@@ -990,9 +1032,12 @@
 				63DEA67B1B0094FB003343A7 /* MsgDetailCell.m in Sources */,
 				637B49E21B438E2900326937 /* CallAndDivert.m in Sources */,
 				632AC6391ADCE92F0023FAA9 /* TXData.m in Sources */,
+				63DACA921B8474D600276FF5 /* FMDatabasePool.m in Sources */,
 				63DED3851B81798C00CAB80F /* Messages.m in Sources */,
+				63DACA801B8439C300276FF5 /* CallInView.m in Sources */,
 				6371918A1B1F01B1005C09C8 /* HanyuPinyinOutputFormat.m in Sources */,
 				63912DBD1B69FB93000E097B /* MyAddressBooks.m in Sources */,
+				63DACA901B8474D600276FF5 /* FMDatabase.m in Sources */,
 				63FA3A671B5E28FF0049EB1C /* AFURLRequestSerialization.m in Sources */,
 				6352996A1ADE372E006840AC /* CustomTabBarBtn.m in Sources */,
 				63719B011B44DBFC00AB7DE3 /* CallingView.m in Sources */,
@@ -1001,6 +1046,7 @@
 				63FB5FD51ADBB58700A1A92B /* main.m in Sources */,
 				63DEA67D1B0094FB003343A7 /* MsgFrame.m in Sources */,
 				63B8F0A61B6775E700221AA4 /* ChatsInputView.m in Sources */,
+				63DACA831B84741200276FF5 /* DBHelper.m in Sources */,
 				636A29FB1B4A2DDA00B8F504 /* ContactController.m in Sources */,
 				6359D0941AE600AB00592201 /* MessageController.m in Sources */,
 			);

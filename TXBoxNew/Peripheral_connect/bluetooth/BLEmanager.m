@@ -117,8 +117,10 @@ static BLEmanager *sharedBLEmanger=nil;
     */
     
     if (peripheralArray.count >0) {
-        [managerDelegate searchedPeripheral:peripheralArray];
+        //[managerDelegate searchedPeripheral:peripheralArray];
+        [centralManager connectPeripheral:peripheralArray[0] options:nil];
     }
+    
     
 }
 
@@ -242,7 +244,15 @@ static BLEmanager *sharedBLEmanger=nil;
         
         //接收到的值传出去
         NSData *receiveData = characteristic.value;
-        [managerDelegate managerReceiveDataPeripheralData:receiveData toHexString:[self hexadecimalString:receiveData] fromCharacteristic:characteristic];
+        if ([self respondsToSelector:@selector(managerReceiveDataPeripheralData:toHexString:fromCharacteristic:)]) {
+            [managerDelegate managerReceiveDataPeripheralData:receiveData toHexString:[self hexadecimalString:receiveData] fromCharacteristic:characteristic];
+            
+        }else{
+        
+            NSMutableDictionary *dicts= [[NSMutableDictionary alloc] initWithObjectsAndKeys:receiveData,@"data", nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"BLEHasReciveData" object:self userInfo:dicts];
+        }
+        
         return;
     }
     //把不是读特征的监听置为NO

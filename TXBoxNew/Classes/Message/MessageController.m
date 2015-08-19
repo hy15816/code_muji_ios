@@ -22,8 +22,9 @@
 #import "TXSqliteOperate.h"
 #import "TXData.h"
 #import "NSString+helper.h"
+#import "MyAddressBooks.h"
 
-@interface MessageController ()<UISearchResultsUpdating,UISearchControllerDelegate>
+@interface MessageController ()<UISearchResultsUpdating,UISearchControllerDelegate,MyAddressBooksDelegate>
 {
     TXSqliteOperate *txsqlite;
     NSMutableDictionary *namesDicts;
@@ -46,11 +47,7 @@
 {
     [super viewWillAppear:animated];
     
-    CFErrorRef error;
-    _addressBooks =ABAddressBookCreateWithOptions(nil, &error);
-    _refMutArray = (__bridge NSMutableArray *)(ABAddressBookCopyArrayOfAllPeople(_addressBooks));
-    allRecords = ABAddressBookCopyArrayOfAllPeople(_addressBooks);
-    VCLog(@"allRecords:%@",allRecords);
+    
     
     namesDicts = [[NSMutableDictionary alloc] init];
     if (self.contactsArray || self.dataArray) {
@@ -117,6 +114,8 @@
     [super viewDidLoad];
     self.title = @"信息";
     
+    [MyAddressBooks sharedAddBooks].delegate = self;
+    [[MyAddressBooks sharedAddBooks] CreateAddressBooks];//第一次获取通讯录
     self.dataArray = [[NSMutableArray alloc] init];
     self.searchsArray = [[NSMutableArray alloc] init];
     self.contactsArray = [[NSMutableArray alloc] init];
@@ -128,6 +127,26 @@
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStyleDone target:nil action:nil];
 }
 
+#pragma mark -- MyAddressBooks
+/**
+ *  发送通知
+ *  0没有联系人  1无权限
+ */
+-(void)sendNotify:(MyBooksNotifity)noti;{
+    if (noti ==1) {
+        NSLog(@"MyBooksNotifity::::::::::::权限已关闭");
+        return;
+    }
+    NSLog(@"MyBooksNotifity:::::::::::::::::没有联系人");
+}
+-(void)noAuthority:(CFErrorRef)error;{}
+-(void)abAddressBooks:(ABAddressBookRef)bookRef allRefArray:(NSMutableArray *)array;{
+    _addressBooks = bookRef;
+    _refMutArray = array;
+    allRecords = ABAddressBookCopyArrayOfAllPeople(_addressBooks);
+    VCLog(@"allRecords:%@",allRecords);
+}
+-(void)SectionDicts:(NSMutableDictionary *)sectionDicts sortedArray:(NSArray *)sortedArray conbookArray:(NSMutableArray *)conbook;{}
 
 /**
  *  初始化搜索控制器
@@ -265,6 +284,9 @@
 -(NSString *)showContactsName:(NSString *)phones{
 
     NSString *name = @"";
+    if (allRecords ==nil) {
+        return @"";
+    }
     
     for (int i=0; i<CFArrayGetCount(allRecords); i++) {
         ABRecordRef record = CFArrayGetValueAtIndex(allRecords, i);
@@ -385,7 +407,7 @@
 
 -(void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
-    CFRelease(_addressBooks);
+    //CFRelease(_addressBooks);
 }
 
 @end

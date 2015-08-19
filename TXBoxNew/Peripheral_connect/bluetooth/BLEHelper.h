@@ -123,11 +123,16 @@ typedef NS_ENUM(UInt8, OrderType) {
  *@pragma manager 将要发送数据的BLE
  *@pragma orderType 指令类型
  */
--(void)sendShortPackage:(NSData *)data withBLE:(BLEmanager *)manager order:(OrderType)orderType;
+-(void)sendShortPackage:(NSString *)content withBLE:(BLEmanager *)manager order:(OrderType)orderType;
 
+/**
+ *@method 发送内容为空的指令
+ *@pragma order 指令类型
+ *@pragma manager 蓝牙
+ */
+-(void)sendOeder:(OrderType)order withBLE:(BLEmanager *)manager;
 
-
-
+-(void)errorWithMs:(NSString *)string;
 
 
 

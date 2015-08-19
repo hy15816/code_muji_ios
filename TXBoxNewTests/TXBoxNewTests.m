@@ -41,11 +41,12 @@
     
     BLEmanager *ble = [BLEmanager sharedInstance];
     Messages *m =[[Messages alloc] init];
-    m.number = @"13698006536";
+    m.number = @"A13713807497";
     m.content = @"这是一条短信，内容不知道有多长";
     [[BLEHelper shareHelper] requestTransmit:m withBLE:ble];
     [[BLEHelper shareHelper] sendDataWithMessage:m withBLE:ble];
     
+   
     [super tearDown];
 }
 
@@ -65,57 +66,29 @@
 }
 
 
-//将传入的NSData类型转换成NSString并返回
-- (NSString*)hexadecimalString:(NSData *)data{
-    
-    NSString* result;
-    static const unsigned char*dataBuffer;
-    dataBuffer = (const unsigned char*)[data bytes];
-    
-    if(!dataBuffer){
-        return nil;
-    }
-    NSUInteger dataLength =[data length];//20;
-    NSMutableString* hexString = [NSMutableString stringWithCapacity:(dataLength * 2)];
-    for(int i = 0; i < dataLength; i++){
-        
-        [hexString appendString:[NSString stringWithFormat:@"%02lx ", (unsigned long)dataBuffer[i]]];
-        
-    }
-    result = [NSString stringWithString:hexString];
-    return result;
-}
-
-
 /**
- *  16进制字符串转化为汉字
- *  @param hexString hexString
- *  @return string
+ *  字符串转换为十六进制
+ *  @param string string
+ *  @return hexString
  */
-- (NSString *)stringFromHexString:(NSString *)hexString {  // eg. hexString = @"8c376b4c"
-    
-    char *myBuffer = (char *)malloc((int)[hexString length] / 2 + 1);
-    bzero(myBuffer, [hexString length] / 2 + 1);
-    for (int i = 0; i < [hexString length] - 1; i += 2) {
-        unsigned int anInt;
-        NSString * hexCharStr = [hexString substringWithRange:NSMakeRange(i, 2)];
-        NSScanner * scanner = [[NSScanner alloc] initWithString:hexCharStr];
-        [scanner scanHexInt:&anInt];
-        myBuffer[i / 2] = (char)anInt;
+-(NSString *)hexStringFromString:(NSString *)string{
+    NSData *myD = [string dataUsingEncoding:NSUTF8StringEncoding];
+    Byte *bytes = (Byte *)[myD bytes];
+    //下面是Byte 转换为16进制。
+    NSString *hexStr=@"";
+    for(int i=0;i<[myD length];i++)
+        
+    {
+        NSString *newHexStr = [NSString stringWithFormat:@"%x",bytes[i]&0xff];//16进制数
+        
+        if([newHexStr length]==1)
+            
+            hexStr = [NSString stringWithFormat:@"%@0%@",hexStr,newHexStr];
+        
+        else
+            
+            hexStr = [NSString stringWithFormat:@"%@%@",hexStr,newHexStr];
     }
-    NSString *unicodeString = [NSString stringWithCString:myBuffer encoding:NSUnicodeStringEncoding];
-    //NSLog(@"unicodeString:%@",unicodeString);
-    free(myBuffer);
-    
-    NSString *temp1 = [unicodeString stringByReplacingOccurrencesOfString:@"\\u" withString:@"\\U"];
-    NSString *temp2 = [temp1 stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-    NSString *temp3 = [[@"\"" stringByAppendingString:temp2] stringByAppendingString:@"\""];
-    NSData *tempData = [temp3 dataUsingEncoding:NSUTF8StringEncoding];
-    NSString *temp4 = [NSPropertyListSerialization propertyListWithData:tempData options:NSPropertyListImmutable format:NULL error:NULL];
-    NSString *string = [temp4 stringByReplacingOccurrencesOfString:@"\\r\\n" withString:@"\n"];
-    
-    NSLog(@"%@----%@",hexString, string); //输出 谷歌
-    return string;
+    return hexStr;
 }
-
 @end

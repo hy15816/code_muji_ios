@@ -26,7 +26,6 @@
     UIView *hudview;
     UILabel *showString;
     
-    MyAddressBooks *abAddressBooks;
     ABAddressBookRef abBooksRef;
     NSMutableArray *peopleArray;
     NSMutableDictionary *sectionDict;
@@ -57,7 +56,7 @@
     
     if (![userDefaults boolForKey:IsUpdateContacts]) {
         [userDefaults setBool:YES forKey:IsUpdateContacts];
-        [abAddressBooks refReshContacts];//刷新联系人
+        [[MyAddressBooks sharedAddBooks] refReshContacts];//刷新联系人
         [self.tableView reloadData];
     }
     
@@ -76,9 +75,9 @@
     [super viewDidLoad];
     
     [self initll];
-    abAddressBooks = [MyAddressBooks sharedAddBooks];
-    abAddressBooks.delegate = self;
-    [abAddressBooks CreateAddressBooks];//第一次获取通讯录
+    
+    [MyAddressBooks sharedAddBooks].delegate = self;
+    [[MyAddressBooks sharedAddBooks] CreateAddressBooks];//第一次获取通讯录
     conBookArray = [[NSMutableArray alloc] init];
     
     [userDefaults setBool:NO forKey:IsUpdateContacts];

@@ -64,4 +64,5 @@
 -(NSMutableArray *)getFirstCharWithHanZi;
 
 -(NSString *)isMobileNumber:(NSString *)number;
+
 @end

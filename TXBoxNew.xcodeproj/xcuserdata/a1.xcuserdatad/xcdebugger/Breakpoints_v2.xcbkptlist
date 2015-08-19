@@ -84,11 +84,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TXBoxNew/AppDelegate.m"
-            timestampString = "461486711.510067"
+            timestampString = "461668853.316953"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "280"
-            endingLineNumber = "280"
+            startingLineNumber = "237"
+            endingLineNumber = "237"
             landmarkName = "-isOrNotUpdateVersion"
             landmarkType = "5">
          </BreakpointContent>
