@@ -132,7 +132,7 @@
 -(void)sendNotify:(MyBooksNotifity)noti{
     
     if (noti == kMyBooksNotifityStatusNoAuthority) {
-        UIAlertView *a =[[UIAlertView alloc] initWithTitle:@"a" message:@"权限已关闭,是否打开？" delegate:self cancelButtonTitle:@"0" otherButtonTitles:@"1", nil];
+        UIAlertView *a =[[UIAlertView alloc] initWithTitle:@"手机联系人" message:@"是否允许读取联系人？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
         [a show];
     }
 
@@ -162,14 +162,10 @@
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     
     if (buttonIndex == 0) {
-        NSLog(@"0");
         NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
             [[UIApplication sharedApplication] openURL:url];
         }
-    }else{
-        NSLog(@"1");
-        
     }
     
 }
@@ -271,6 +267,27 @@
     
 }
 
+-(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (editingStyle == UITableViewCellEditingStyleDelete){
+        
+        //
+        NSMutableArray *array = [[ NSMutableArray alloc ] init ];
+        [array addObject: indexPath];
+        
+        //移除数组的元素
+        
+        //删除联系人
+        
+        //删除单元格
+        [ self.tableView deleteRowsAtIndexPaths: array withRowAnimation: UITableViewRowAnimationLeft];
+        
+    }
+
+    
+    
+}
 //设置cell高度
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if ([indexPath isEqual:self.selectedIndexPath]) {

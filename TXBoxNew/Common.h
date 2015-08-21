@@ -47,9 +47,9 @@
 
 
 // =================通话记录表===========//
-#define CALL_RECORDS_TABLE_NAME @"CALL_RECORDS8_6_2"
+#define CALL_RECORDS_TABLE_NAME @"CALL_RECORDS8_20_2"
 //创建通话记录表的sql语句
-#define CALL_RECORDS_CREATE_TABLE_SQL @"create table if not exists %@(tel_id integer primary key AUTOINCREMENT,hisName text,hisNumber text,callDirection text,callLength text,callBeginTime text,hisHome text,hisOperator text,contactid,text)"
+#define CALL_RECORDS_CREATE_TABLE_SQL @"create table if not exists %@(tel_id integer primary key AUTOINCREMENT,hisName text,hisNumber text,callDirection text,callLength text,callBeginTime text,hisHome text,hisOperator text,contactid text)"
 //添加call——records
 #define CALL_RECORDS_ADDINFO_SQL @"insert into %@(hisName ,hisNumber ,callDirection ,callLength,callBeginTime ,hisHome ,hisOperator,contactid ) values(?,?,?,?,?,?,?,?)"
 //删除一条通话记录
@@ -57,11 +57,11 @@
 
 
 //===================信息表=============//
-#define MESSAGE_RECEIVE_RECORDS_TABLE_NAME @"MESSAGE_RECORDS8_7_1"
+#define MESSAGE_RECEIVE_RECORDS_TABLE_NAME @"MESSAGE_RECORDS8_21_2"
 //创建d短信记录表的sql语句
-#define MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL  @"create table if not exists %@(peopleId integer primary key AUTOINCREMENT,msgSender text,msgTime text,msgContent text,msgAccepter text,msgState text)"
+#define MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL  @"create table if not exists %@(peopleId integer primary key AUTOINCREMENT,msgSender text,msgTime text,msgContent text,msgAccepter text,msgState text,contactid text)"
 //添加msg记录
-#define MESSAGE_RECORDS_ADDINFO_SQL @"insert into %@(msgSender,msgTime,msgContent,msgAccepter,msgState) values(?,?,?,?,?)"
+#define MESSAGE_RECORDS_ADDINFO_SQL @"insert into %@(msgSender,msgTime,msgContent,msgAccepter,msgState,contactid) values(?,?,?,?,?,?)"
 //删除单条短信记录
 #define DELETE_MESSAGE_RECORD_SQL @"delete from %@ where msgSender=%@ and peopleId = %@"
 //删除整个短信会话

@@ -83,8 +83,8 @@
     [itembg setImage:[UIImage imageNamed:selected] forState:UIControlStateSelected];
     
     // 监听item的点击
-    [itembg addTarget:self action:@selector(itemClick:) forControlEvents:UIControlEventTouchUpInside];
     [itembg addTarget:self action:@selector(itemClickChangeView:) forControlEvents:UIControlEventTouchDown];
+    [itembg addTarget:self action:@selector(itemClick:) forControlEvents:UIControlEventTouchUpInside];
     [itembg addTarget:self action:@selector(itemClickChangecanel:) forControlEvents:UIControlEventTouchDragExit];
     if (itembg.tag ==11) {
         [itembg addGestureRecognizer:longPress];
@@ -132,12 +132,13 @@
     
     if (textFieldh.text.length>0){
         NSString *allText = [textFieldh.text substringToIndex:textFieldh.text.length-1];//删除之后的
-        
-        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
+    
+    
+    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
                               allText,InputFieldAllText,
                               @"0",AddOrDelete, nil];
         
-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
         
         textFieldh.text = [textFieldh.text substringToIndex:textFieldh.text.length-1];
         singleton.singletonValue = textFieldh.text;
@@ -154,6 +155,9 @@
 //touch up inside
 - (void)itemClick:(UIButton *)item
 {
+    if (hudv) {
+        [hudv removeFromSuperview];
+    }
     NSString *text = textFieldh.text;
     NSInteger tag = item.tag;
     //
@@ -173,22 +177,28 @@
             break;
     }
 
+    
     //利用单利保存呼叫的号码
-    singleton.singletonValue = textFieldh.text;    
+    singleton.singletonValue = textFieldh.text;
+    
+    
     NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
                           textFieldh.text , InputFieldAllText,
                           @"1",           AddOrDelete,nil];
     //2.通过通知中心发送通知
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
+    
+    
+    
     if (textFieldh.text.length>=1) {
+        
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:ktextChangeNotify object:self]];
+        
         textFieldh.font = [UIFont systemFontOfSize:22];
         textFieldh.placeholder = @"";
     }
     
-    if (hudv) {
-        [hudv removeFromSuperview];
-    }
+    
 
     
 }

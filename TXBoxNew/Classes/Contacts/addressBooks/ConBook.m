@@ -8,8 +8,15 @@
 
 #import "ConBook.h"
 
-@implementation ConBook
+@interface ConBook ()
+{
+    ABAddressBookRef addressBook;
+}
+@property (assign,nonatomic) ABAddressBookRef addressBook;
+@end
 
+@implementation ConBook
+@synthesize addressBook;
 @synthesize recordID = _recordID;
 
 @synthesize prefixName = _prefixName;
@@ -22,6 +29,29 @@
 @synthesize phoneNumberArray = _phoneNumberArray;
 @synthesize emailArray = _emailArray;
 
+
+
+
++(ConBook *)sharBook{
+    
+    ConBook *book;
+    
+    if (!book) {
+        book = [[ConBook alloc] init];
+    }
+    
+    return book;
+}
+-(id)init{
+    self = [super init];
+    if (self) {
+        //
+        addressBook = ABAddressBookCreateWithOptions(nil, nil);
+        
+    }
+    return self;
+    
+}
 
 -(NSString *)AssemblyName{
     
@@ -62,9 +92,9 @@
 /**
  *  根据ID和通讯录对象获取一条联系人记录(recordRef)
  */
--(ABRecordRef)getRccordRefWithAdBookRef:(ABAddressBookRef)bookRef byID:(ABRecordID)recordID{
+-(ABRecordRef)getRecordRefWithID:(ABRecordID)recordID{
     ABRecordRef abRef = nil;
-    abRef = ABAddressBookGetPersonWithRecordID(bookRef, recordID);
+    abRef = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
     return abRef;
 }
 /**
@@ -76,6 +106,112 @@
     return addressbook;
 }
 
+/**
+ *  获取组装的名字
+ *  @param abRef ABRecordRef
+ *  @return name
+ */
+-(NSString *)getNameWithRef:(ABRecordRef)abRef{
+    NSString *allName;
+    
+    NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(abRef, kABPersonFirstNameProperty));
+    NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(abRef, kABPersonLastNameProperty));
+    
+    if (firstName.length == 0) {
+        firstName = @"";
+    }
+    if (lastName.length == 0) {
+        lastName = @"";
+    }
+
+    allName = [NSString stringWithFormat:@"%@%@",lastName,firstName];
+    if (firstName.length == 0 && lastName.length == 0) {
+        //获取号码
+        ABMultiValueRef phoneNumber = ABRecordCopyValue(abRef, kABPersonPhoneProperty);
+        if (ABMultiValueGetCount(phoneNumber) > 0) {
+            NSString *phone = [NSString stringWithFormat:@"%@,",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
+            NSLog(@"phone:%@",phone);
+            allName = phone;
+        }
+        
+    }
+    
+    return allName.length>0?allName:@"";
+}
+
+/**
+ *  获取组装的名字
+ *  @param abid ABRecordID
+ *  @return name
+ */
+-(NSString *)getNameWithAbid:(ABRecordID)abid {
+    NSString *allName;
+     ABRecordRef ref = ABAddressBookGetPersonWithRecordID(addressBook, abid);
+    
+    NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(ref, kABPersonFirstNameProperty));
+    NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(ref, kABPersonLastNameProperty));
+    
+    if (firstName.length == 0) {
+        firstName = @"";
+    }
+    if (lastName.length == 0) {
+        lastName = @"";
+    }
+    
+    allName = [NSString stringWithFormat:@"%@%@",lastName,firstName];
+    if (firstName.length == 0 && lastName.length == 0) {
+        //获取号码
+        ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
+        if (ABMultiValueGetCount(phoneNumber) > 0) {
+            NSString *phone = [NSString stringWithFormat:@"%@,",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
+            NSLog(@"phone:%@",phone);
+            allName = phone;
+        }
+        
+    }
+
+    
+    return allName.length>0?allName:@"";
+}
+
+
+-(NSString *)getFirstNumber:(ABRecordID)abid {
+    NSString *number ;
+    NSMutableArray *phongArray = [[NSMutableArray alloc] init];
+    
+    ABRecordRef ref =  [self getRecordRefWithID:abid];
+    
+    ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
+    if (ABMultiValueGetCount(phoneNumber) > 0) {
+        for (int i=0; i<ABMultiValueGetCount(phoneNumber); i++) {
+            NSString *phone = [NSString stringWithFormat:@"%@",ABMultiValueCopyValueAtIndex(phoneNumber,i)];
+            [phongArray addObject:phone];
+        }
+        
+    }
+    number = phongArray[0];
+    
+    return number.length>0?number:@"";
+}
+
+-(NSMutableArray *)getNumberArray:(ABRecordID)abid{
+
+    NSMutableArray *phongArray = [[NSMutableArray alloc] init];
+    
+    ABRecordRef ref =  [self getRecordRefWithID:abid];
+    
+    ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
+    if (ABMultiValueGetCount(phoneNumber) > 0) {
+        for (int i=0; i<ABMultiValueGetCount(phoneNumber); i++) {
+            NSString *phone = [NSString stringWithFormat:@"%@",ABMultiValueCopyValueAtIndex(phoneNumber,i)];
+            [phongArray addObject:phone];
+        }
+        
+    }
+    
+    
+    return phongArray;
+}
 
 @end
 

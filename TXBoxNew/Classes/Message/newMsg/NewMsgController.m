@@ -15,6 +15,7 @@
 #import "NSString+helper.h"
 #import "BLEmanager.h"
 #import "HPGrowingTextView.h"
+#import "ConBook.h"
 
 @interface NewMsgController ()<UITextViewDelegate,UITextFieldDelegate,BLEmanagerDelegate,HPGrowingTextViewDelegate>
 {
@@ -24,10 +25,11 @@
     HPGrowingTextView *putViews;
     CGFloat tempHeight;
     ABRecordID reID;
-    ABAddressBookRef address;
+//    ABAddressBookRef address;
     UIView *containerView;
     BOOL isSend;
     NSString *phoneNumberString;
+    
 }
 
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *disMissBtn;
@@ -44,51 +46,7 @@
 @synthesize msgContent;
 
 
--(void)changeRecordRef:(NSNotification *)noti{
-    
-    reID = [[[noti userInfo] valueForKey:isRecordID] intValue];
-    address = ABAddressBookCreateWithOptions(nil, nil);
-    ABRecordRef ref = ABAddressBookGetPersonWithRecordID(address, reID);
-    
-    NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(ref, kABPersonFirstNameProperty));
-    NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(ref, kABPersonLastNameProperty));
-    
-    if (firstName.length == 0) {
-        firstName = @"";
-    }
-    if (lastName.length == 0) {
-        lastName = @"";
-    }
-    if ([userDefaults valueForKey:isRead]) {
-        
-        self.hisNumber.text = [NSString stringWithFormat:@"%@%@",firstName,lastName];
-        
-        if (firstName.length == 0 && lastName.length == 0) {
-            //获取号码
-            ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
-            if (ABMultiValueGetCount(phoneNumber) > 0) {
-                NSString *phone = [NSString stringWithFormat:@"%@,",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
-                
-                NSLog(@"phone:%@",phone);
-                self.hisNumber.text = phone;
-            }
-            
-        }
-        [userDefaults setBool:NO forKey:isRead];
-    }
-    
-    //获取号码
-    ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
-    if (ABMultiValueGetCount(phoneNumber) > 0) {
-        NSString *phone = [NSString stringWithFormat:@"%@",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
-        
-        phoneNumberString = phone;
-    }
 
-
-    VCLog(@"ref:%@ name:%@",ref,self.hisNumber.text);
-
-}
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -98,10 +56,16 @@
     //键盘隐藏消息
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardHiddenNotif:) name:UIKeyboardWillHideNotification object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeRecordRef:) name:@"refnoti" object:nil];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // code to be executed once
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeRecordRef:) name:@"refkkknoti" object:nil];
+    });
+
+    
      [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kHideCusotomTabBar object:self]];
     self.tabBarController.tabBar.hidden = YES;
-    [self initNewMsgInputView];
+    
 
     
 }
@@ -110,7 +74,33 @@
         putViews.text = [userDefaults valueForKey:@"putViewsText"];
     }
 }
+-(void)changeRecordRef:(NSNotification *)noti{
+    
+    reID = [[[noti userInfo] valueForKey:isRecordID] intValue];
 
+    NSString *name =[[ConBook sharBook] getNameWithAbid:reID];
+    
+    if ([userDefaults valueForKey:isRead]) {
+        NSString *agoName = [userDefaults valueForKey:@"self_hisNumberText"];
+        self.hisNumber.text = [NSString stringWithFormat:@"%@%@,",agoName,name];
+        if (name.length == 0) {
+            //获取号码
+            NSString *phone = [[ConBook sharBook] getFirstNumber:reID];
+            NSLog(@"phone:%@",phone);
+            NSString *lastPhone = [userDefaults valueForKey:@"self_hisNumberText"];
+            self.hisNumber.text = [NSString stringWithFormat:@"%@,%@",lastPhone,phone];
+        }
+        [userDefaults setBool:NO forKey:isRead];
+        [userDefaults setValue:self.hisNumber.text forKey:@"self_hisNumberText"];
+        
+    }
+    
+    //获取号码
+    phoneNumberString = [[ConBook sharBook] getFirstNumber:reID ];
+    [self.hisNumber becomeFirstResponder];
+    VCLog(@" name:%@",self.hisNumber.text);
+    
+}
 #pragma mark -- 键盘显示响应函数
 -(void)keyboardWillShowNotif:(NSNotification*)notif{
     CGRect keyboardBounds;
@@ -147,7 +137,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [userDefaults setValue:@"" forKey:@"self_hisNumberText"];
     isSend = NO;
+    
     
     self.title = @"新信息";
     self.disMissBtn.enabled = YES;
@@ -164,7 +156,7 @@
     UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(initSwipeRecognizer:)];
     swipe.direction = UISwipeGestureRecognizerDirectionDown;
     [self.view addGestureRecognizer:swipe];
-    
+    [self initNewMsgInputView];
 }
 /**
  *  swipe手势
@@ -182,7 +174,7 @@
     containerView.backgroundColor=[UIColor grayColor];
     
     //输入框
-    putViews = [[HPGrowingTextView alloc] initWithFrame:CGRectMake(6, 3, 240, 40)];
+    putViews = [[HPGrowingTextView alloc] initWithFrame:CGRectMake(6, 3, DEVICE_WIDTH-75, 40)];
     putViews.isScrollable = NO;
     putViews.layer.cornerRadius = 5;
     putViews.layer.borderWidth = .5;
@@ -262,11 +254,12 @@
     txdata.msgSender = @"1";
     txdata.msgTime = time;
     txdata.msgContent = putViews.text;
-    ABRecordRef ref = ABAddressBookGetPersonWithRecordID(address, reID);
+    ABRecordRef ref = [[ConBook sharBook] getRecordRefWithID:reID];
     ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
     NSString *phone = [NSString stringWithFormat:@"%@",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
     txdata.msgAccepter = [phone purifyString];
     txdata.msgStates = @"0";
+    txdata.contactID = [NSString stringWithFormat:@"%d",reID];
     /*
      BOOL connect = [[userDefaults valueForKey:BIND_STATE] intValue];
      if (!connect) {
@@ -290,6 +283,7 @@
             [userDefaults setValue:@"" forKey:@"HEHE"];
             [userDefaults setValue:@"" forKey:@"MEME"];
             [SVProgressHUD showImage:nil status:@"已发送"];
+            [userDefaults setValue:@"" forKey:@"putViewsText"];
             self.title = [self.hisNumber.text purifyString];
             self.disMissBtn.enabled = NO;
             [self disMissButton:nil];
@@ -350,21 +344,16 @@
     return cell;
 }
 
+//取消
 - (IBAction)disMissButton:(UIBarButtonItem *)sender {
     
     [putViews resignFirstResponder];
+    
     [self dismissViewControllerAnimated:YES completion:nil];
     
 }
 
--(void)viewWillDisappear:(BOOL)animated{
-    [super viewWillDisappear:animated];
-    if (isSend ==NO ) {
-        [userDefaults setValue:putViews.text forKey:@"putViewsText"];
-    }
-    
-    
-}
+
 
 #pragma mark -- BLEManager delegate
 -(void)systemBLEState:(CBCentralManagerState)state{
@@ -395,8 +384,18 @@
 }
 
 #pragma mark ---------^.^---------
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    if (isSend ==NO ) {
+        [userDefaults setValue:putViews.text forKey:@"putViewsText"];
+    }
+    
+}
 -(void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
+    
+    
+    
     [putViews resignFirstResponder];
 }
 - (void)idReceiveMemoryWarning {

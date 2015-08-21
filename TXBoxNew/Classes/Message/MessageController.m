@@ -29,6 +29,7 @@
     TXSqliteOperate *txsqlite;
     NSMutableDictionary *namesDicts;
     ABRecordRef allRecords;
+    NSString *inputString;
 }
 @property (assign,nonatomic) ABAddressBookRef addressBooks;
 @property (strong,nonatomic) NSMutableArray *refMutArray;
@@ -104,10 +105,6 @@
     
     VCLog(@"self.dataArray:%@",self.dataArray);
     
-    
-    
-    
-    
 }
 
 - (void)viewDidLoad {
@@ -121,7 +118,7 @@
     self.contactsArray = [[NSMutableArray alloc] init];
     
     [self initSearchController];
-    
+    inputString = [[NSString alloc] init];
     txsqlite = [[TXSqliteOperate alloc] init];
     
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStyleDone target:nil action:nil];
@@ -196,7 +193,7 @@
     
     
     NSString *searchString = [NSString stringWithFormat:@"%@%@%@",@"%",[self.searchController.searchBar text],@"%"];
-    
+    inputString = searchController.searchBar.text;
     VCLog(@"searchString:%@",searchString);
     
     if (self.searchsArray!= nil) {
@@ -262,10 +259,12 @@
     
     if (self.searchController.active) {
         TXData *sdata = [self.searchsArray objectAtIndex:indexPath.row];
-        cell.contactsLabel.text = sdata.msgAccepter;
+        cell.contactsLabel.text =[[ConBook sharBook] getNameWithAbid:[sdata.contactID intValue]]; //sdata.msgAccepter;
+        cell.contactsLabel.attributedText = [self getAttributedStr:inputString str:cell.contactsLabel.text];
         cell.contentsLabel.text = sdata.msgContent;
+        cell.contentsLabel.attributedText = [self getAttributedStr:inputString str:cell.contentsLabel.text];
         cell.dateLabel.text = sdata.msgTime;
-
+        cell.dateLabel.attributedText = [self getAttributedStr:inputString str:cell.dateLabel.text];
     }else{
         cell.contactsLabel.text =[self showContactsName:[self.contactsArray objectAtIndex:indexPath.row]].length > 0?[self showContactsName:[self.contactsArray objectAtIndex:indexPath.row]]:[self.contactsArray objectAtIndex:indexPath.row];//ddata.msgSender;
         cell.contentsLabel.text = ddata.msgContent;
@@ -276,6 +275,18 @@
   
     return cell;
 }
+
+//获取染色后的字
+-(NSMutableAttributedString *)getAttributedStr:(NSString *)inString str:(NSString *)textStr{
+    NSRange range = [textStr rangeOfString:inString];
+    if (textStr.length<range.length) {
+        range = NSMakeRange(0, textStr.length);
+    }
+    NSMutableAttributedString *attributeString =[[NSMutableAttributedString alloc] initWithString:textStr];
+    [attributeString setAttributes:@{NSForegroundColorAttributeName : [UIColor redColor],   NSFontAttributeName : [UIFont systemFontOfSize:14]} range:range];
+    return attributeString;
+}
+
 /**
  * @method  获取联系人名字
  * @pragma  phones 号码
@@ -331,10 +342,12 @@
     
     if (self.searchController.active) {
         TXData *searchdata = [self.searchsArray objectAtIndex:indexPath.row];//搜索后
-        detaildata.hisName = searchdata.msgAccepter;
+        detaildata.hisName = [[ConBook sharBook] getNameWithAbid:[searchdata.contactID intValue]];//searchdata.msgAccepter;
         detaildata.hisNumber = searchdata.msgAccepter;
-        detaildata.hisHome = searchdata.hisHome;
-        detaildata.contactID = [self getcontactsId:searchdata.hisName];
+        if (detaildata.hisNumber.length >=7) {
+            detaildata.hisHome = [txsqlite searchAreaWithHisNumber:[[detaildata.hisNumber purifyString] substringToIndex:7]];
+        }else{detaildata.hisHome  = @"";}
+        detaildata.contactID = searchdata.contactID;
     }else{
         //TXData *normaldata = [self.dataArray objectAtIndex:indexPath.row];
         detaildata.hisName = [namesDicts valueForKey:[self.contactsArray objectAtIndex:indexPath.row]];
@@ -342,7 +355,7 @@
         if (detaildata.hisNumber.length >=7) {
             detaildata.hisHome = [txsqlite searchAreaWithHisNumber:[[detaildata.hisNumber purifyString] substringToIndex:7]];
         }else{detaildata.hisHome  = @"";}
-        detaildata.contactID = [self getcontactsId:[namesDicts valueForKey:[self.contactsArray objectAtIndex:indexPath.row]]];
+        detaildata.contactID = [[self.dataArray objectAtIndex:indexPath.row] contactID];
     }
     MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
     DetailVC.datailDatas = detaildata;

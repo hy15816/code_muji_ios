@@ -17,8 +17,7 @@
 #import "GetAllContacts.h"
 #import "CallAndDivert.h"
 #import <CoreText/CoreText.h>
-
-static NSMutableArray *mLastAllRegularsMapArray;
+#import "DBHelper.h"
 
 @interface CallController ()<UITextFieldDelegate,ABUnknownPersonViewControllerDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,GetContactsDelegate,CallAndDivertDelegate>
 {
@@ -38,12 +37,13 @@ static NSMutableArray *mLastAllRegularsMapArray;
     NSMutableArray *zzArray;
         NSString *areaString;
     NSString *opeareString;
-    
+    NSMutableArray *mLastAllRegularsMapArray;
     BOOL ish ;
     CallAndDivert *callDivert;
     NSString *searcherString;
     BOOL canAdd;
-    NSMutableString *lengthString;//用于染色的length
+
+    NSMutableArray *colorArray;
 }
 
 @property (nonatomic,assign) ABAddressBookRef addressBook;
@@ -103,7 +103,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
     //显示tabbar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
     //获取联系人数据#pragma mark-- 获取通讯录联系人
-    [self loadContacts];
+    
     
 }
 
@@ -119,12 +119,15 @@ static NSMutableArray *mLastAllRegularsMapArray;
     
     [super viewDidLoad];
     
-    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        // something
+        [self loadContacts];
+    });
     
     ish = YES;
     self.title = @"电话";
     [self loadCallRecords];
-    
+    colorArray = [[NSMutableArray alloc] init];
     canAdd = YES;
     self.selectedIndexPath = nil;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;//tableview分割线
@@ -137,14 +140,20 @@ static NSMutableArray *mLastAllRegularsMapArray;
  
     callDivert =[[CallAndDivert alloc] init];
     mLastAllRegularsMapArray = [[NSMutableArray alloc] init];
+    
+    
+    
 }
 
 #pragma mark -- getContacts Delegate
 -(void)getAllPhoneArray:(NSMutableArray *)array SectionDict:(NSMutableDictionary *)sDict PhoneDict:(NSMutableDictionary *)pDict
 {
     mutPhoneArray = array;
+//    [mutPhoneArray addObjectsFromArray:mutPhoneArray];
+//    [mutPhoneArray addObjectsFromArray:mutPhoneArray];
+//    [mutPhoneArray addObjectsFromArray:array];
     
-    //VCLog(@"mutPhoneArray:%@",array);
+    VCLog(@"mutPhoneArray count:%lu",(unsigned long)mutPhoneArray.count);
 }
 
 //初始化
@@ -169,6 +178,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
 
 #pragma mark -- 用户输入时（增加或退格）
 -(void)inputTextDidChanged:(NSNotification*)notifi{
+
     //若结果集不为空，清空结果
     if (searchResault) {
         [searchResault removeAllObjects];
@@ -196,9 +206,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
     }
     
     BOOL isAdd = [[[notifi userInfo] valueForKey:AddOrDelete] intValue];//是否输入
-
     searcherString = inUserInputsStr;//类变量赋值，后续。。。
-    
     //1.2取出：上一次的正则表达式list <- 上一次的输入字符串 <- 当前的输入字符串
     NSString *keyForLastRegulars = [inUserInputsStr substringToIndex:(inUserInputsStr.length-1)];
     
@@ -245,7 +253,6 @@ static NSMutableArray *mLastAllRegularsMapArray;
 
     //2.匹配：结果 <- 正则表达式
     for (int i = 0 ; i <[[tempNumsRegularsMap valueForKey:inUserInputsStr] count ] ; i++) {//0,1
-
         NSString *regular = [[tempNumsRegularsMap valueForKey:inUserInputsStr] objectAtIndex:i];
         BOOL isRegular = FALSE;
         BOOL isNumRgular = FALSE;
@@ -253,7 +260,8 @@ static NSMutableArray *mLastAllRegularsMapArray;
             NSMutableArray *nameNumArray = [mutPhoneArray[k]valueForKey:PersonNameNum];
              NSString *phoneNum = [mutPhoneArray[k]valueForKey:PersonTelNum];//第k个元素的号码
             for (NSString *nameNum in nameNumArray) {
-                //匹配号码
+                
+                //匹配名字
                 NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regular options:NSRegularExpressionCaseInsensitive | NSRegularExpressionDotMatchesLineSeparators|NSRegularExpressionUseUnicodeWordBoundaries error:nil];
                 NSTextCheckingResult *result = [regex firstMatchInString:nameNum options:NSMatchingReportCompletion range:NSMakeRange(0, nameNum.length)];
                 
@@ -261,16 +269,23 @@ static NSMutableArray *mLastAllRegularsMapArray;
                     isRegular = true;
                     if (![searchResault containsObject:mutPhoneArray[k]]) {
                         [searchResault addObject:mutPhoneArray[k]];
-                        
+                        //染色
+                        NSArray *arr =[[[tempNumsRegularsMap valueForKey:inUserInputsStr] lastObject] componentsSeparatedByString:@"-"];
+                        [self getColorArray:arr];
                     }
                     
-                }else{
+                }else{//匹配号码，
                     NSRange pRange = [phoneNum  rangeOfString:inUserInputsStr];
                     NSRange rRange = [regular  rangeOfString:inUserInputsStr];
                     if(pRange.length && rRange.length){//在正则式和数据源中都存在inUserInputsStr，添加到结果数组
                         isNumRgular = true;
                         if (![searchResault containsObject:mutPhoneArray[k]]) {
                             [searchResault addObject:mutPhoneArray[k]];
+
+                            NSArray *arr =[[[tempNumsRegularsMap valueForKey:inUserInputsStr] lastObject] componentsSeparatedByString:@"-"];
+                            [self getColorArray:arr];
+                            
+                            
                         }
                         
                     }
@@ -280,7 +295,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
             
         }
         
-        //3.去重：对结果
+        //3.去重：对于两者都没有匹配到的
         if (!isRegular && !isNumRgular) {
             
             [[tempNumsRegularsMap valueForKey:inUserInputsStr] removeObjectAtIndex:i];//去重之后，数组count减少，所以i = i-1
@@ -289,59 +304,37 @@ static NSMutableArray *mLastAllRegularsMapArray;
         }
     }
     
-    if (isAdd) {
-        
+    if (isAdd) {//是输入，则添加表达式
         [mLastAllRegularsMapArray addObject:tempNumsRegularsMap];
-    }
-    //获取标红的range
-    /*
-     9364 =     (
-     "-9364\\w*",
-     "-93\\w*-64\\w*"
-     );
-     
-     -> 需要得到(9,
-            96)
-     */
-#warning ++++++++++++++++++++++++++++未完
-    if ([[tempNumsRegularsMap valueForKey:inUserInputsStr] count]>0) {
-        /*
-        NSMutableArray *rangeArr =[tempNumsRegularsMap valueForKey:inUserInputsStr];
-        NSMutableArray *rangeA = [[NSMutableArray alloc] init];
-        for (NSString *sa in rangeArr) {
-            //NSString *a = [self getSpecailText:sa];
-            [rangeA addObject:sa];
-        }
-        NSLog(@"rangeA:%@",rangeA);
-        */
-        NSArray *arr =[[[tempNumsRegularsMap valueForKey:inUserInputsStr] lastObject] componentsSeparatedByString:@"-"] ;
-        lengthString = [[NSMutableString alloc] init];
-        
-        for (NSString *s in arr) {
-            if (s.length>0) {
-                [lengthString appendString:[s substringToIndex:1]];
-            }
-            
-        }
-        VCLog(@"lengthString:%@",lengthString);
-
     }
     
     [self.tableView reloadData];
     
-    //NSLog(@"searchResault.count:%lu- %@",(unsigned long)searchResault.count,searchResault);
-    //NSLog(@"匹配后mLastAllRegularsMapArray:%@",mLastAllRegularsMapArray);
-    NSLog(@"tempNumsRegularsMap:%@",tempNumsRegularsMap);
-   
-    //输入的数字达到7个，且还没有结果时
+    //输入的数字达到7个，且还没有结果时显示运营商归属地
     if (searchResault.count == 0 && searcherString.length >= 7) {
-        
         areaString = [sqlite searchAreaWithHisNumber:[singleton.singletonValue substringToIndex:7]];
         VCLog(@"areaString:%@",areaString);
         opeareString = [singleton.singletonValue isMobileNumberWhoOperation];
-        
     }
 
+    
+}
+
+/**
+ *  获取要染色的字串数组
+ */
+-(void)getColorArray:(NSArray *)arr{
+    NSMutableString *str = [[NSMutableString alloc] init];
+    for (NSString *s in arr) {
+        if (s.length>0) {
+            [str appendString:[s substringToIndex:1]];
+            
+        }
+        
+    }
+    if (![colorArray containsObject:str]) {
+        [colorArray addObject:str];
+    }
 }
 
 #pragma mark -- Table view
@@ -397,31 +390,27 @@ static NSMutableArray *mLastAllRegularsMapArray;
 
     //用户输入时
     if (searcherString.length > 0 &&searchResault.count > 0 ) {
-        //Records *record = dataList[indexPath.row];
-        cell.hisName.text = [[searchResault objectAtIndex:indexPath.row] valueForKey:PersonName];//;record.personName;
-        
-        //NSString *nameFirstChars = ;
+        cell.hisName.text = [[searchResault objectAtIndex:indexPath.row] valueForKey:PersonName];
+        //对字体染色
         NSMutableArray *nameFirstCharsArray = [[searchResault objectAtIndex:indexPath.row] valueForKey:FirstNameChars];
         for (NSString *nameFirstChars in nameFirstCharsArray) {
-            NSRange rangeName = [nameFirstChars rangeOfString:lengthString];
-            if (rangeName.length > 0) {
-                
-                cell.hisName.attributedText = [self attributedStr:rangeName str:cell.hisName.text];
-                
+            for (NSString *strs in colorArray) {
+                NSRange rangeName = [nameFirstChars rangeOfString:strs];
+                if (rangeName.length > 0) {
+                    cell.hisName.attributedText = [self attributedStr:rangeName str:cell.hisName.text];
+                }
             }
-
         }
-        
         cell.hisNumber.hidden = YES;
         cell.callDirection.hidden = YES;
         cell.callLength.hidden = YES;
         cell.callBeginTime.font = [UIFont systemFontOfSize:16];
         cell.callBeginTime.text = [[[searchResault objectAtIndex:indexPath.row] valueForKey:PersonTel] purifyString];
-        NSRange rangeNumber  = [cell.callBeginTime.text rangeOfString:searcherString];
-        if (rangeNumber.length > 0) {
-            
-            cell.callBeginTime.attributedText = [self attributedStr:rangeNumber str:cell.callBeginTime.text];;
-
+        for (NSString *strr in colorArray) {
+            NSRange rangeNumber  = [cell.callBeginTime.text rangeOfString:strr];
+            if (rangeNumber.length > 0) {
+                cell.callBeginTime.attributedText = [self attributedStr:rangeNumber str:cell.callBeginTime.text];;
+            }
         }
         cell.hisHome.hidden = YES;
         cell.hisOperator.hidden = YES;
@@ -472,6 +461,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
     return nil;
 }
 
+//获取染色后的字
 -(NSMutableAttributedString *)attributedStr:(NSRange)range str:(NSString *)text{
     if (text.length<range.length) {
         range = NSMakeRange(0, text.length);
@@ -626,6 +616,7 @@ static NSMutableArray *mLastAllRegularsMapArray;
         TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
 
         [sqlite deleteContacterWithNumber:[aRecord.hisNumber purifyString] formTable:CALL_RECORDS_TABLE_NAME peopleId:nil withSql:DELETE_CALL_RECORD_SQL];
+        //[[DBHelper sharedDBHelper] deleteACallRecord:aRecord.tel_id];
         
         NSMutableArray *array = [ [ NSMutableArray alloc ] init ];
         [array addObject: indexPath];

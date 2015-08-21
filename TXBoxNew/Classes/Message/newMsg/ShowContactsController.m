@@ -126,10 +126,10 @@
     ABRecordID  abid= ABRecordGetRecordID(record);
     NSDictionary *dict=@{isRecordID:[NSString stringWithFormat:@"%d",abid],isRead:@"1"};
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"refnoti" object:self userInfo:dict];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"refkkknoti" object:self userInfo:dict];
     [userDefaults setBool:YES forKey:isRead];
     [self dismissViewControllerAnimated:YES completion:nil];
-
+NSLog(@"popopopops");
     
 }
 

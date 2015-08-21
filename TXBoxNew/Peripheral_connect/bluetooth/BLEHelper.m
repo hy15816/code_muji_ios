@@ -94,7 +94,7 @@
 #pragma mark -- 发送长包(只要是短信都认为是长包)
 //请求长包透传
 -(void)requestTransmit:(Messages *)message withBLE:(BLEmanager *)manager{
-    NSString *number;
+    NSString *number = message.number;
     if (message.number.length%2 != 0) {
         number = [NSString stringWithFormat:@"%@0",message.number];
     }
@@ -146,14 +146,13 @@
     content[2] = 0x00;
     content[3] = length;//号码长度
     
-#warning 处理电话号码
-    
+    //电话号码
     NSData *data =  [self operationNumber:mNumber];
     Byte * byte = (Byte *)[data bytes];
-
     for (int n=0; n<data.length; n++) {
             content[n +4] = byte[n];
     }
+    //内容
     for (int q=0; q<messContentData.length; q++) {
         content[mNumber.length/2+4+q] = byteCon[q];
     }
@@ -164,9 +163,19 @@
     return contentData;
 }
 
-
+//格式化电话号码，
 -(NSData *)operationNumber:(NSString *)number{
-    
+    if (number.length%2 != 0) {
+        number = [NSString stringWithFormat:@"%@0",number];
+    }
+    //电话号码中的字符转换
+    number = [number stringByReplacingOccurrencesOfString:@"+" withString:@"A"];
+    number = [number stringByReplacingOccurrencesOfString:@"p" withString:@"B"];
+    number = [number stringByReplacingOccurrencesOfString:@"w" withString:@"C"];
+    number = [number stringByReplacingOccurrencesOfString:@"#" withString:@"D"];
+    number = [number stringByReplacingOccurrencesOfString:@"*" withString:@"E"];
+    number = [number stringByReplacingOccurrencesOfString:@"\0" withString:@"F"];
+    //号码压缩字节处理，
     Byte num[number.length/2];
     for (int i=0; i<number.length/2; i++) {
         NSString *s = [number substringWithRange:NSMakeRange(i*2, 1)];
@@ -186,14 +195,13 @@
             ss = 15;
         }
         
-        int a = ss*16 + [s2 intValue];
+        int a = ss*16 + [s2 intValue];//拼接
         num[i] = a;
     }
     NSData *data = [NSData dataWithBytes:&num length:sizeof(num)];
     return data;
     
 }
-
 
 //开始发送数据
 -(void)sendDataWithMessage:(Messages *)message withBLE:(BLEmanager *)manager{
@@ -256,8 +264,6 @@
     NSData *myData = [NSData dataWithBytes:&data01 length:sizeof(data01)];
     NSLog(@"======data01:%@",myData);
     //[manager writeDatas:myData];
-
-    
     
 }
 
@@ -445,7 +451,7 @@ static unsigned short ccitt_table[256] = {
     0x2E93, 0x3EB2, 0x0ED1, 0x1EF0
 };
 
-#pragma mark -- 发送短包
+#pragma mark -- 发送短包(拨打电话指令/)
 -(void)sendShortPackage:(NSString *)content withBLE:(BLEmanager *)manager order:(OrderType)orderType{
     
     NSData *data= [content dataUsingEncoding:NSUTF8StringEncoding];
@@ -461,22 +467,28 @@ static unsigned short ccitt_table[256] = {
     shortPackage[3] = 0x00;//关键字，[0,0xEF]短,[0xF0,0xFF]长
     
     //以下是将要发送的“包内容”
-    if (orderType == OrderTypeCallOut || orderType == OrderTypeSetFamilyNumber) {
+    //=================内容中含有号码类型==================
+    if (orderType == OrderTypeCallOut ) {
         /*需要发送电话号码的指令,特别处理（认为是短包）
          1.拨打电话指令0x08，
-         2.设置亲情号码0x10
          */
-        shortPackage[4] = orderType;//类型
+        shortPackage[4] = OrderTypeCallOut;//类型
         shortPackage[5] = 0x00;//数据内容大小:根据号码而定
-        shortPackage[6] = content.length;
+        shortPackage[6] = content.length/2;
+        NSData *numdata = [self operationNumber:content];
+        Byte *byt =(Byte *)[numdata bytes];
+        for (int t=0; t<content.length/2; t++) {
+            shortPackage[t+7] = byt[t];
+        }
         
         NSData *myData = [NSData dataWithBytes:&shortPackage length:sizeof(shortPackage)];
         [manager writeDatas:myData];
         return;
     }
+    //================普通类型==========================
     shortPackage[4] = orderType;//类型
-    shortPackage[5] = 0x00;//数据内容大小:根据内容而定
-    shortPackage[6] = data.length;
+    shortPackage[5] = 0x00;
+    shortPackage[6] = data.length;//数据内容大小:根据内容而定
     
     //数据内容
     for (int j=0; j<dataContentLength; j++) {
@@ -488,6 +500,11 @@ static unsigned short ccitt_table[256] = {
     
 }
 
+/**
+ *获取信息内容
+ *@pragma adataArray 收到的长包数据数组(所有)
+ *@return Message 内容实体
+ */
 -(Messages *)MessagesWithReceiveData:(NSMutableArray *)dataArray{
     NSMutableData *mutData = [[NSMutableData alloc] init];
     for (int i=0;i<dataArray.count;i++) {
@@ -501,7 +518,7 @@ static unsigned short ccitt_table[256] = {
     }
     
     Byte *byte = (Byte *)[mutData bytes];
-    NSInteger numberLength = byte[3];//号码长度
+    NSInteger numberLength = byte[3];//(此字节为号码长度)
     if (numberLength <= 0) {//<0
         return nil;
     }
@@ -520,7 +537,11 @@ static unsigned short ccitt_table[256] = {
     return message;
     
 }
-
+/**
+ *  发送内容为空的指令 查询设备日期/接听/挂断
+ *  @param  order 指令类型
+ *  @param  manager 蓝牙
+ */
 -(void)sendOeder:(OrderType)order withBLE:(BLEmanager *)manager{
     Byte sendType[20];
     for (int i=0; i<kByte_count; i++) {
@@ -536,6 +557,136 @@ static unsigned short ccitt_table[256] = {
     
 }
 
+/**
+ *  更改时间指令
+ *  @param date 日期
+ */
+-(void)changedDate:(NSDate *)date withBLE:(BLEmanager *)manager{
+    NSDateFormatter *dft = [[NSDateFormatter alloc] init];
+    [dft setDateFormat:@"yyMMddHHmmss"];//150820102000 <- 15/08/20 10:20:00
+    NSString *dateString = [dft stringFromDate:date];
+    
+    Byte changDate[20];
+    for (int i=0; i<kByte_count; i++) {
+        changDate[i] = 0;
+    }
+    changDate[0] = 0x5A;
+    changDate[1] = 0x19;//cmd
+    changDate[2] = 0x00;
+    changDate[3] = 0x00;//关键字，[0,0xEF]短,[0xF0,0xFF]长
+    changDate[4] = OrderTypeSetDate;//类型
+    changDate[5] = 0x00;
+    changDate[6] = 0x07;//内容大小=dateString.length/2 ＋1
+    changDate[7] = 0x01;//操作0x00查询，0x01设置
+    for (int j=0; j<dateString.length/2; j+=2) {
+        changDate[j+7] = [[dateString substringWithRange:NSMakeRange(j, 2)] intValue];
+    }
+    
+    NSData *myData = [NSData dataWithBytes:&changDate length:sizeof(changDate)];
+    NSLog(@"changeDate:%@",myData);
+    [manager writeDatas:myData];
+}
+
+/**
+ *  设置亲情号码
+ *  @param numberArray 号码数组
+ */
+-(void)setFamilyNumber:(NSArray *)numberArray withBLE:(BLEmanager *)manager{
+    NSString *number = [numberArray objectAtIndex:0];
+    Byte familyNumber[20];
+    for (int i=0; i<kByte_count; i++) {
+        familyNumber[i] = 0;
+    }
+    familyNumber[0] = 0x5A;
+    familyNumber[1] = 0x19;//cmd
+    familyNumber[2] = 0x00;
+    familyNumber[3] = 0x00;//关键字，[0,0xEF]短,[0xF0,0xFF]长
+    familyNumber[4] = OrderTypeSetFamilyNumber;
+    familyNumber[5] = 0x00;
+    familyNumber[6] = number.length/2;//内容大小
+    
+    NSData *numdata = [self operationNumber:number];
+    Byte *byt =(Byte *)[numdata bytes];
+    for (int t=0; t<number.length/2; t++) {
+        familyNumber[t+7] = byt[t];
+    }
+    
+    NSData *myData = [NSData dataWithBytes:&familyNumber length:sizeof(familyNumber)];
+    [manager writeDatas:myData];
+
+    
+}
+
+/**
+ *  回复事件状态
+ *  @param  type 事件执行结果
+ *  @param  byte 0x00失败，0x01成功
+ */
+-(void)replyState:(Byte)state action:(ActionType)type withBLE:(BLEmanager *)manager{
+    Byte acState[20];
+    for (int i=0; i<kByte_count; i++) {
+        acState[i] = 0;
+    }
+    acState[0] = 0x5A;
+    acState[1] = 0x19;//cmd
+    acState[2] = 0x00;
+    acState[3] = 0x00;//关键字，[0,0xEF]短,[0xF0,0xFF]长
+    acState[4] = type;
+    acState[5] = 0x00;
+    acState[6] = 0x00;
+    acState[7] = state;
+    NSData *myData = [NSData dataWithBytes:&acState length:sizeof(acState)];
+    NSLog(@"replyState:%@",myData);
+    [manager writeDatas:myData];
+}
+
+
+//=======================================
+/**
+ *  事件，(拨入电话/通话中/拨出/接听/挂断/发短信事件)
+ *  @return 电话号码
+ */
+-(NSString *)isActionWithData:(NSData *)data{
+    //Byte *byte = (Byte *)[data bytes];
+    NSString *numner;
+    return numner;
+}
+
+/**
+ *  拨打电话指令回复，
+ *  @return @{number:?,state:?}
+ */
+-(NSDictionary *)isCallOutOrderWithData:(NSData *)data{
+    Byte *byte = (Byte *)[data bytes];
+    
+    NSString *number;
+    NSString *state = [NSString stringWithFormat:@"%d",byte[7]];//状态0失败，1成功
+    
+    
+    NSDictionary *dict = @{@"number":number,@"state":state};
+    return dict;
+}
+
+/**
+ *  指令状态，(接听指令/挂断指令/发送短信指令)
+ *  @return @{order:?,state:?}
+ */
+-(NSDictionary *)isOrderStateWithData:(NSData *)data{
+    Byte *byte = (Byte *)[data bytes];
+    
+    NSString *oeder;
+    NSString *state = [NSString stringWithFormat:@"%d",byte[7]];//状态0失败，1成功
+    
+    NSDictionary *dict = @{@"oeder":oeder,@"state":state};
+    return dict;
+}
+
+
+
+/**
+ *  发生错误
+ *  @param  string 提示文字
+ */
 -(void)errorWithMs:(NSString *)string{
     
     [SVProgressHUD showImage:nil status:string];

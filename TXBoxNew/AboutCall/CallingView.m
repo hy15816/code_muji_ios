@@ -321,8 +321,8 @@
     
     _isCall = @"通话结束";
     [self stopTimer];
-    if ([self.delegateCalling respondsToSelector:@selector(packUpCallingView)]) {
-        [self.delegateCalling packUpCallingView];
+    if ([self.delegateCalling respondsToSelector:@selector(disMissCallingView)]) {
+        [self.delegateCalling disMissCallingView];
     }
     
     

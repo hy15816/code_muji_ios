@@ -21,7 +21,7 @@
 #import "Messages.h"
 #import "NSString+helper.h"
 
-@interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate,ChangeRightMarginDelegate,HPGrowingTextViewDelegate,BLEmanagerDelegate>
+@interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate,HPGrowingTextViewDelegate,BLEmanagerDelegate>
 {
     TXSqliteOperate *txsqlite;
     UILongPressGestureRecognizer *longPress;
@@ -163,11 +163,6 @@
     swipe.direction = UISwipeGestureRecognizerDirectionDown;
     [self.tableview addGestureRecognizer:swipe];
     [self.view addGestureRecognizer:swipe];
-
-    //返回按钮
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(arearBtnClick:)];
-    tap.numberOfTapsRequired = 1;
-    [view addGestureRecognizer:tap];
     
     [view addSubview:self.nameLabel];
     [view addSubview:self.arearLabel];
@@ -191,7 +186,7 @@
     contentView = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 40, DEVICE_WIDTH, 40)];
     contentView.backgroundColor=[UIColor grayColor];
     
-    textInput = [[HPGrowingTextView alloc] initWithFrame:CGRectMake(6, 3, 240, 40)];
+    textInput = [[HPGrowingTextView alloc] initWithFrame:CGRectMake(6, 3, DEVICE_WIDTH-75, 40)];
     textInput.isScrollable = NO;
     textInput.layer.cornerRadius = 5;
     textInput.layer.borderWidth = .5;
@@ -460,7 +455,7 @@
 -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //移除再次选中的
-    if ([self.arearLabel.text isEqualToString:@"取消"]) {
+    if ([self.callOutBtn.title isEqualToString:@"取消"]) {
         [selectDict removeObjectForKey:indexPath];
         
         if ([selectArray containsObject:indexPath]) {
@@ -490,7 +485,7 @@
     
     //[selectArray addObject:checkDatas];
     //
-    if ([self.arearLabel.text isEqualToString:@"取消"]) {
+    if ([self.callOutBtn.title isEqualToString:@"取消"]) {
         VCLog(@"self.detailArray:%@",self.detailArray);
         [selectDict setObject:[self.detailArray objectAtIndex:indexPath.row] forKey:indexPath];
         if (![selectArray containsObject:indexPath]) {
@@ -533,7 +528,7 @@
     for (TXData *data in self.detailArray) {
         
         MsgFrame *messageFrame = [[MsgFrame alloc] init];
-        messageFrame.delegate = self;
+
         Message *message = [[Message alloc] init];
         
         message.data = data;
@@ -561,27 +556,11 @@
     [self.allMsgFrame addObject:mf];
 }
 
-
-
-
-
-//返回上一层界面
--(void)arearBtnClick:(UIGestureRecognizer *)recognizer
-{
-    if ([self.arearLabel.text isEqualToString:@"取消"]) {
-        
-        [self cancelCheckCell];
-        
-    }else{
-        [self.navigationController popToRootViewControllerAnimated:YES];
-    }
-    
-}
-
 //取消选中cell
 -(void)cancelCheckCell
 {
     [self.tableview setEditing:NO animated:YES];
+    [selectArray removeAllObjects];
     [self setArearLabelTitle];
     [UIView animateWithDuration:.5 animations:^{
         editView.frame = CGRectMake(0, DEVICE_HEIGHT, DEVICE_WIDTH, 50);
@@ -651,17 +630,8 @@
     }
     
 }
-#pragma mark - -changerightMargin delegate
--(CGFloat)changeRightMargin
-{
-    /*
-    if (editView.frame.origin.y == DEVICE_HEIGHT-50) {
-        return 30;
-    }
-     */
-    return 0;
-    
-}
+
+
 
 -(void)longPressAction:(UIGestureRecognizer *)recongizer
 {
@@ -679,6 +649,7 @@
 
     }
     [self getResouce];
+    
     
 }
 

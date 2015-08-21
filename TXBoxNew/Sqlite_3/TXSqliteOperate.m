@@ -132,6 +132,7 @@
             sqlite3_bind_text(stmt, 3, [data.msgContent UTF8String], -1, NULL);
             sqlite3_bind_text(stmt, 4, [data.msgAccepter UTF8String], -1, NULL);
             sqlite3_bind_text(stmt, 5, [data.msgStates UTF8String], -1, NULL);
+            sqlite3_bind_text(stmt, 6, [data.contactID UTF8String], -1, NULL);
         }
         
         
@@ -223,6 +224,7 @@
                 NSString *content=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 3) encoding:NSUTF8StringEncoding];
                 NSString *accepter=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 4) encoding:NSUTF8StringEncoding];
                 NSString *state = [NSString stringWithCString:(char *)sqlite3_column_text(stmt, 5) encoding:NSUTF8StringEncoding];
+                NSString *contactId = [NSString stringWithCString:(char *)sqlite3_column_text(stmt, 6) encoding:NSUTF8StringEncoding];
                 //VCLog(@"id = %d,date = %@",tid,date);
                 
                 TXData *data=[[TXData alloc] init];
@@ -232,6 +234,7 @@
                 data.msgContent = content;
                 data.msgAccepter = accepter;
                 data.msgStates = state;
+                data.contactID =contactId;
                 [mutArray addObject:data];//
                 
             }
@@ -338,6 +341,7 @@
             NSString *content=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 3) encoding:NSUTF8StringEncoding];
             NSString *accepter=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 4) encoding:NSUTF8StringEncoding];
             NSString *state=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 5) encoding:NSUTF8StringEncoding];
+            NSString *contactID=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 6) encoding:NSUTF8StringEncoding];
             //VCLog(@"id = %d,date = %@",tid,date);
             
             TXData *data=[[TXData alloc] init];
@@ -347,6 +351,7 @@
             data.msgContent = content;
             data.msgAccepter = accepter;
             data.msgStates = state;
+            data.contactID = contactID;
             [recordsArray addObject:data];//
             VCLog(@"id:%d, sd:%@, st:%@, sc:%@, sa:%@, ss:%@",tid,sender,beginTime,content,accepter,state);
         }
@@ -389,6 +394,8 @@
             NSString *beginTime=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 2) encoding:NSUTF8StringEncoding];
             NSString *content=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 3) encoding:NSUTF8StringEncoding];
             NSString *accepter=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 4) encoding:NSUTF8StringEncoding];
+            NSString *state=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 5) encoding:NSUTF8StringEncoding];
+            NSString *contactID=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 6) encoding:NSUTF8StringEncoding];
             
             //VCLog(@"id = %d,date = %@",tid,date);
             data.peopleId = tid;
@@ -396,6 +403,8 @@
             data.msgTime=beginTime;
             data.msgContent = content;
             data.msgAccepter = accepter;
+            data.msgStates = state;
+            data.contactID = contactID;
         }
         [conversationArray addObject:data];//只取最后一个
         
@@ -435,6 +444,8 @@
             NSString *beginTime=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 2) encoding:NSUTF8StringEncoding];
             NSString *content=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 3) encoding:NSUTF8StringEncoding];
             NSString *accepter=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 4) encoding:NSUTF8StringEncoding];
+            NSString *state=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 5) encoding:NSUTF8StringEncoding];
+            NSString *contactID=[NSString stringWithCString:(char *)sqlite3_column_text(stmt, 6) encoding:NSUTF8StringEncoding];
             
             //VCLog(@"id = %d,date = %@",tid,date);
             
@@ -443,7 +454,8 @@
             data.msgTime=beginTime;
             data.msgContent = content;
             data.msgAccepter = accepter;
-            
+            data.msgStates = state;
+            data.contactID = contactID;
             if (![allContent containsObject:data]) {
                 [allContent addObject:data];
             }

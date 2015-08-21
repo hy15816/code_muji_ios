@@ -32,6 +32,7 @@
 		637005CC1AE4C1D000B8BAFD /* TXMessageProcessing.m in Sources */ = {isa = PBXBuildFile; fileRef = 637005C91AE4C1D000B8BAFD /* TXMessageProcessing.m */; };
 		637005D81AE4DE2400B8BAFD /* NSString+helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 637005D51AE4DE2400B8BAFD /* NSString+helper.m */; };
 		637005D91AE4DE2400B8BAFD /* TXGeneral+helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 637005D71AE4DE2400B8BAFD /* TXGeneral+helper.m */; };
+		6371850D1B858A500080D5FA /* DBDatas.m in Sources */ = {isa = PBXBuildFile; fileRef = 6371850C1B858A500080D5FA /* DBDatas.m */; };
 		637191891B1F01B1005C09C8 /* ChineseToPinyinResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 6371917D1B1F01B1005C09C8 /* ChineseToPinyinResource.m */; };
 		6371918A1B1F01B1005C09C8 /* HanyuPinyinOutputFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 6371917F1B1F01B1005C09C8 /* HanyuPinyinOutputFormat.m */; };
 		6371918B1B1F01B1005C09C8 /* NSString+PinYin4Cocoa.m in Sources */ = {isa = PBXBuildFile; fileRef = 637191811B1F01B1005C09C8 /* NSString+PinYin4Cocoa.m */; };
@@ -48,6 +49,7 @@
 		637B49DE1B438DA000326937 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 637B49DB1B438DA000326937 /* SVProgressHUD.bundle */; };
 		637B49DF1B438DA000326937 /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 637B49DD1B438DA000326937 /* SVProgressHUD.m */; };
 		637B49E21B438E2900326937 /* CallAndDivert.m in Sources */ = {isa = PBXBuildFile; fileRef = 637B49E11B438E2900326937 /* CallAndDivert.m */; };
+		637DFFC91B87192B0078114F /* MsgModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 637DFFC81B87192B0078114F /* MsgModel.m */; };
 		637E41DD1B3961D20015F682 /* LoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E41D41B3961D20015F682 /* LoginController.m */; };
 		637E41DE1B3961D20015F682 /* PopView.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E41D61B3961D20015F682 /* PopView.m */; };
 		637E41DF1B3961D20015F682 /* RegisteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 637E41D91B3961D20015F682 /* RegisteViewController.m */; };
@@ -169,6 +171,8 @@
 		637005D51AE4DE2400B8BAFD /* NSString+helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+helper.m"; sourceTree = "<group>"; };
 		637005D61AE4DE2400B8BAFD /* TXGeneral+helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TXGeneral+helper.h"; sourceTree = "<group>"; };
 		637005D71AE4DE2400B8BAFD /* TXGeneral+helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TXGeneral+helper.m"; sourceTree = "<group>"; };
+		6371850B1B858A500080D5FA /* DBDatas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBDatas.h; sourceTree = "<group>"; };
+		6371850C1B858A500080D5FA /* DBDatas.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBDatas.m; sourceTree = "<group>"; };
 		6371917C1B1F01B1005C09C8 /* ChineseToPinyinResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChineseToPinyinResource.h; sourceTree = "<group>"; };
 		6371917D1B1F01B1005C09C8 /* ChineseToPinyinResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChineseToPinyinResource.m; sourceTree = "<group>"; };
 		6371917E1B1F01B1005C09C8 /* HanyuPinyinOutputFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HanyuPinyinOutputFormat.h; sourceTree = "<group>"; };
@@ -201,6 +205,8 @@
 		637B49DD1B438DA000326937 /* SVProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVProgressHUD.m; sourceTree = "<group>"; };
 		637B49E01B438E2900326937 /* CallAndDivert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallAndDivert.h; sourceTree = "<group>"; };
 		637B49E11B438E2900326937 /* CallAndDivert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallAndDivert.m; sourceTree = "<group>"; };
+		637DFFC71B87192B0078114F /* MsgModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MsgModel.h; sourceTree = "<group>"; };
+		637DFFC81B87192B0078114F /* MsgModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MsgModel.m; sourceTree = "<group>"; };
 		637E41D31B3961D20015F682 /* LoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginController.h; sourceTree = "<group>"; };
 		637E41D41B3961D20015F682 /* LoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginController.m; sourceTree = "<group>"; };
 		637E41D51B3961D20015F682 /* PopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopView.h; sourceTree = "<group>"; };
@@ -348,6 +354,8 @@
 				632AC6381ADCE92F0023FAA9 /* TXSqliteOperate.m */,
 				63DACA811B84741200276FF5 /* DBHelper.h */,
 				63DACA821B84741200276FF5 /* DBHelper.m */,
+				6371850B1B858A500080D5FA /* DBDatas.h */,
+				6371850C1B858A500080D5FA /* DBDatas.m */,
 			);
 			path = Sqlite_3;
 			sourceTree = "<group>";
@@ -729,6 +737,8 @@
 				6367B0B51B16E1AE0005F4B0 /* EditView.m */,
 				638773571B4F894600771AF2 /* ShareContentController.h */,
 				638773581B4F894600771AF2 /* ShareContentController.m */,
+				637DFFC71B87192B0078114F /* MsgModel.h */,
+				637DFFC81B87192B0078114F /* MsgModel.m */,
 			);
 			path = msgDetail;
 			sourceTree = "<group>";
@@ -977,6 +987,7 @@
 				63AE3B041B60EFFD0035DE87 /* ProvisionViewController.m in Sources */,
 				63FB5FD81ADBB58700A1A92B /* AppDelegate.m in Sources */,
 				63FA3A641B5E28FF0049EB1C /* AFNetworkReachabilityManager.m in Sources */,
+				6371850D1B858A500080D5FA /* DBDatas.m in Sources */,
 				6350035F1ADFBB750051377F /* Records.m in Sources */,
 				6352995C1ADE0296006840AC /* TXTelNumSingleton.m in Sources */,
 				6371918C1B1F01B1005C09C8 /* PinyinFormatter.m in Sources */,
@@ -990,6 +1001,7 @@
 				63DACA931B8474D600276FF5 /* FMDatabaseQueue.m in Sources */,
 				63FA3A691B5E28FF0049EB1C /* AFURLSessionManager.m in Sources */,
 				63DED3841B81798C00CAB80F /* BLEHelper.m in Sources */,
+				637DFFC91B87192B0078114F /* MsgModel.m in Sources */,
 				637005D81AE4DE2400B8BAFD /* NSString+helper.m in Sources */,
 				637E41DE1B3961D20015F682 /* PopView.m in Sources */,
 				6371918D1B1F01B1005C09C8 /* PinyinHelper.m in Sources */,

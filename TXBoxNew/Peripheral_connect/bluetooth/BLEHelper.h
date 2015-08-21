@@ -69,9 +69,7 @@ typedef NS_ENUM(UInt8, OrderType) {
 -(void)didHappendActionWithData:(NSData*)data;
 
 
-/**************************************************
- *           send long package                    *
- **************************************************/
+//================================================================
 /**
  *@method 0请求长包透传
  *@pragma sendData 将要发送的数据
@@ -114,9 +112,7 @@ typedef NS_ENUM(UInt8, OrderType) {
 -(Messages *)MessagesWithReceiveData:(NSMutableArray *)dataArray;
 
 
-/**************************************************
- *           send short package                   *
- **************************************************/
+//==============================================================
 /**
  *@method 发送数据-短包透传
  *@pragma data 将要发送的数据
@@ -126,21 +122,55 @@ typedef NS_ENUM(UInt8, OrderType) {
 -(void)sendShortPackage:(NSString *)content withBLE:(BLEmanager *)manager order:(OrderType)orderType;
 
 /**
- *@method 发送内容为空的指令
+ *@method 发送内容为nil的指令，查询设备日期/接听/挂断
  *@pragma order 指令类型
  *@pragma manager 蓝牙
  */
 -(void)sendOeder:(OrderType)order withBLE:(BLEmanager *)manager;
 
+
+/**
+ *  更改时间指令
+ *  @param date 日期
+ */
+-(void)changedDate:(NSDate *)date withBLE:(BLEmanager *)manager;
+
+/**
+ *  设置亲情号码(暂时只支持一个)
+ *  @param numberArray 号码数组
+ */
+-(void)setFamilyNumber:(NSArray *)numberArray withBLE:(BLEmanager *)manager;
+
+/**
+ *  回复事件状态(收短信事件/通话记录事件)
+ *  @param  type 事件执行结果
+ *  @param  byte 0x00失败，0x01成功
+ */
+-(void)replyState:(Byte)state action:(ActionType)type withBLE:(BLEmanager *)manager;
+
+/**
+ *  发生错误
+ *  @param  string 提示文字
+ */
 -(void)errorWithMs:(NSString *)string;
 
+//======================设备回复(发送)============================
+/**
+ *  事件，(拨入电话/通话中/拨出/接听/挂断/发短信事件)
+ *  @return 电话号码
+ */
+-(NSString *)isActionWithData:(NSData *)data;
 
+/**
+ *  拨打电话指令回复，
+ *  @return @{number:?,state:?}
+ */
+-(NSDictionary *)isCallOutOrderWithData:(NSData *)data;
 
-
-
-
-
-
-
+/**
+ *  指令状态，(接听指令/挂断指令/发送短信指令)
+ *  @return @{order:?,state:?}
+ */
+-(NSDictionary *)isOrderStateWithData:(NSData *)data;
 
 @end

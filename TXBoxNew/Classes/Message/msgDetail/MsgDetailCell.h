@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Message.h"
 
 @class MsgFrame;
 
@@ -18,4 +19,7 @@
 }
 @property (strong,nonatomic) UIButton *contentBtn;
 @property (strong,nonatomic) MsgFrame *msgFrame;
+
+@property (strong,nonatomic) Message *message;
+
 @end

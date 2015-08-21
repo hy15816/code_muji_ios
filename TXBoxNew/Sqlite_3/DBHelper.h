@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "FMDatabase.h"
+#import "DBDatas.h"
 
 @interface DBHelper : NSObject
 
@@ -38,20 +39,74 @@
  */
 -(void)createTable;
 
-
 /**
  *  根据SQL语句创建表
  *  @param sql SQL语句
  */
 -(void)createTableForSql:(NSString *)sql;
 
-#pragma mark 基本数据查询
-//==================================================================
-//获取所有通话记录
+#pragma mark -- CALL RECORDS
+/**
+ *  添加通话记录数据
+ *  @param datas DBDatas
+ */
+-(void)addDatasToCallRecord:(DBDatas *)datas;
+
+/**
+ *  获取所有通话记录
+ *  @return mutArray(DBDatas,)
+ */
 -(NSMutableArray *)getAllCallRecords;
-//获取所有信息记录
+
+/**
+ *  删除一条通话记录
+ *  @param tel_id 每条记录的id
+ */
+-(void)deleteACallRecord:(int)tel_id;
+
+
+#pragma mark -- MSG RECORDS
+//==================================================================
+
+/**
+ *  添加信息记录数据
+ *  @param datas DBDatas
+ */
+-(void)addDatasToMsgRecord:(DBDatas *)datas;
+
+/**
+ *  获取所有信息记录
+ *  @return mutArray(DBDatas,)
+ */
 -(NSMutableArray *)getAllMessages;
 
+/**
+ *  删除一个信息会话
+ *  @param number 对方号码
+ */
+-(void)deleteAConversation:(NSString *)number;
+
+/**
+ *  删除一个信息会话里的一条
+ *  @param propleid id
+ */
+-(void)deleteAMsgRecord:(int)peopleid;
+
+/**
+ *  查询一个会话的最后一条记录
+ *  @param hisNumber 对方号码
+ */
+-(DBDatas *)getLastMsgRecord:(NSString *)hisNumber;
+
+/**
+ *  查询所有与输入相匹配的信息内容，
+ *  @param string 输入
+ *  @return mutArray(会话)
+ */
+-(NSMutableArray *)getAllMsgFromInput:(NSString *)string;
+
+
+#pragma mark -- NUMBER AREAS
 /**
  *  获取号码归属地
  *  @param number 号码

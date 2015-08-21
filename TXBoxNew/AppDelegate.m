@@ -10,7 +10,7 @@
 #define APPURL @"http://itunes.apple.com"
 
 #import "AppDelegate.h"
-
+#import "DBHelper.h"
 
 @interface AppDelegate ()<UIAlertViewDelegate>
 {

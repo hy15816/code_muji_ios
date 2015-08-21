@@ -27,11 +27,6 @@
 
 @class Message;
 
-@protocol ChangeRightMarginDelegate <NSObject>
-
--(CGFloat)changeRightMargin;
-
-@end
 
 @interface MsgFrame : UIView
 
@@ -43,6 +38,5 @@
 @property (nonatomic, strong) Message *message;
 @property (nonatomic, assign) BOOL showTime;    //显示时间
 
-@property (assign,nonatomic) id<ChangeRightMarginDelegate> delegate;
 
 @end

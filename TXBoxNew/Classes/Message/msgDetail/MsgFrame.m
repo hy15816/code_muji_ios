@@ -10,7 +10,7 @@
 #import "Message.h"
 
 @implementation MsgFrame
-@synthesize delegate;
+
 
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
@@ -32,7 +32,7 @@
         CGSize timeSize = [_message.time sizeWithAttributes:@{NSFontAttributeName:kTimeFont}];
         //VCLog(@"----%@", NSStringFromCGSize(timeSize));
         //=480-77-10-20-?
-        timeX = DEVICE_WIDTH - timeSize.width-DEVICE_WIDTH/20-kEdging-[self getMargin];//
+        timeX = DEVICE_WIDTH - timeSize.width-DEVICE_WIDTH/20-kEdging;//
         if (_message.type == MessageTypeHe) {
             timeX = DEVICE_WIDTH/20;//+kEdging;
         }
@@ -68,11 +68,5 @@
     //_cellHeight = MAX(CGRectGetMaxY(_contentF), CGRectGetMaxY(_iconF));
 }
 
-
--(CGFloat)getMargin
-{
-    VCLog(@"%f",[self.delegate changeRightMargin]);
-    return [self.delegate changeRightMargin];
-}
 
 @end

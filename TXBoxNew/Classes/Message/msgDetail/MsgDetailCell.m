@@ -7,7 +7,6 @@
 //
 
 #import "MsgDetailCell.h"
-#import "Message.h"
 #import "MsgFrame.h"
 
 @implementation MsgDetailCell
@@ -49,32 +48,7 @@
 
 - (void)awakeFromNib {
     
-    // 设置透明
-    //self.backgroundColor = [UIColor clearColor];
-    
-    // 创建时间标签
-    timeBtn = [[UIButton alloc] init];
-    timeBtn.frame = CGRectMake(50, 0, 30, 20);
-    [timeBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    timeBtn.titleLabel.font = kTimeFont;
-    timeBtn.enabled = NO;
-    [timeBtn setBackgroundImage:[UIImage imageNamed:@"chat_timeline_bg.png"] forState:UIControlStateNormal];
-    [self.contentView addSubview:timeBtn];
-    
-    // 2、创建头像
-    iconView = [[UIImageView alloc] init];
-    //[self.contentView addSubview:iconView];
-    
-    // 创建内容
-    contentBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [contentBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    contentBtn.titleLabel.font = kContentFont;
-    contentBtn.titleLabel.numberOfLines = 0;
-    [self.contentView addSubview:contentBtn];
-    
 }
-
-
 
 -(void)setMsgFrame:(MsgFrame *)msgFrame
 {
@@ -125,6 +99,7 @@
     // Configure the view for the selected state
 }
 
+/*
 -(void)layoutSubviews
 {
     [super layoutSubviews];
@@ -135,9 +110,7 @@
         self.backgroundColor = [UIColor clearColor]; //
         //self.cellRockImageView.backgroundColor = [UIColor clearColor];
         
-    }
-    
-    
+    }    
 }
-
+*/
 @end

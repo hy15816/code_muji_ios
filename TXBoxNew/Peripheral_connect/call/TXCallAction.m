@@ -8,6 +8,8 @@
 
 #import "TXCallAction.h"
 #import "NSString+helper.h"
+#import "DBHelper.h"
+#import "DBDatas.h"
 
 @interface TXCallAction ()
 
@@ -15,7 +17,7 @@
 @end
 
 @implementation TXCallAction
-@synthesize data,txSqlite,startDate;
+@synthesize txSqlite,startDate,data;
 
 -(id)init
 {
@@ -140,6 +142,7 @@
         _contactsID = @"";
     }
     
+    //DBDatas *data = [[DBDatas alloc] init];
     //data.tel_id =singleton.telID;//不需要存id，
     data.hisNumber = strNunmber;
     data.callBeginTime = strDate;
@@ -149,6 +152,8 @@
     data.callDirection = direction;
     data.callLength = strCallLength;
     data.contactID = _contactsID;
+    
+    //[[DBHelper sharedDBHelper] addDatasToCallRecord:data];
     
     [txSqlite addInfo:data inTable:CALL_RECORDS_TABLE_NAME withSql:CALL_RECORDS_ADDINFO_SQL];
 }
