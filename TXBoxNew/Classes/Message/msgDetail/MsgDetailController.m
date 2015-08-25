@@ -21,6 +21,8 @@
 #import "Messages.h"
 #import "NSString+helper.h"
 
+
+
 @interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate,HPGrowingTextViewDelegate,BLEmanagerDelegate>
 {
     TXSqliteOperate *txsqlite;
@@ -36,6 +38,8 @@
     NSMutableArray *mutDataArray;
     NSMutableData *mutData;
 }
+
+
 @property (strong, nonatomic) NSMutableArray *detailArray;
 @property (strong, nonatomic) NSMutableArray *allMsgFrame;
 
@@ -46,7 +50,6 @@
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *contactsInfoBtn;
 
 - (IBAction)callOutBtn:(UIBarButtonItem *)sender;
-//- (IBAction)ContactsInfo:(UIBarButtonItem *)sender;
 
 @property (nonatomic,strong) UITableView *tableview;
 @property (nonatomic,strong) NSMutableArray *resultArray;
@@ -76,6 +79,12 @@
     editView.backgroundColor = [UIColor whiteColor];
     editView.delegate  =self;
     [self.view addSubview:editView];
+}
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    textInput.text = [userDefaults valueForKey:[self.datailDatas.hisNumber purifyString]];
+    
 }
 #pragma mark - 键盘action
 -(void)initKeyBoardNotif{
@@ -148,12 +157,12 @@
         self.nameLabel.text = self.datailDatas.hisName;
     }
     //self.nameLabel.text = @"这里是名字";
-    self.nameLabel.textColor = [UIColor whiteColor];
+    self.nameLabel.textColor = LightColor;
     
     self.arearLabel = [[UILabel alloc] initWithFrame:CGRectMake(-20, -2, 230, 20)];
     self.arearLabel.font =[UIFont systemFontOfSize:14];
     [self setArearLabelTitle];
-    self.arearLabel.textColor = [UIColor whiteColor];
+    self.arearLabel.textColor = LightColor;
     
     [self.callOutBtn setImage:[UIImage imageNamed:@"actionbar_call_hub32"]];
     
@@ -272,8 +281,6 @@
         txdata.msgAccepter = self.datailDatas.hisNumber;//@"1";//
         txdata.msgStates = @"0";//@"0"
         
-        [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
-        //self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
         
         textInput.text = nil;
         
@@ -286,11 +293,15 @@
         msgs.number = [self.nameLabel.text purifyString];
         msgs.content = textInput.text;
         [[BLEHelper shareHelper] requestTransmit:msgs withBLE:bManager];
+        [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
     }
+
     
     
-    
+    //发送失败
+    //[userDefaults setValue:textInput.text forKey:[self.datailDatas.hisName purifyString]];
 }
+
 -(void)initMsgSwipeRecognizer:(UISwipeGestureRecognizer*)swipe{
     [textInput resignFirstResponder];
 }
@@ -521,16 +532,13 @@
 
 -(void) getResouce
 {
-   
     self.allMsgFrame = [[NSMutableArray alloc] init];
     NSString *previousTime = nil;
     
     for (TXData *data in self.detailArray) {
         
         MsgFrame *messageFrame = [[MsgFrame alloc] init];
-
         Message *message = [[Message alloc] init];
-        
         message.data = data;
         messageFrame.showTime = 1;//![previousTime isEqualToString:message.time];
         messageFrame.message = message;
@@ -686,7 +694,12 @@
     
 }
 
-
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    if (textInput.text.length > 0) {
+        [userDefaults setValue:textInput.text forKey:[self.datailDatas.hisNumber purifyString]];
+    }
+}
 
 /*
 -(void)viewWillDisappear:(BOOL)animated{

@@ -4,7 +4,7 @@
 //
 //  Created by Naron on 15/6/1.
 //  Copyright (c) 2015年 playtime. All rights reserved.
-//
+//  注册页面
 
 #import "RegisteViewController.h"
 #import "LoginController.h"
@@ -15,6 +15,7 @@
     int secondsCountDown;
     NSTimer *countDownTimer;
 }
+
 @property (weak, nonatomic) IBOutlet UITextField *regNumberField;   //注册账号
 @property (weak, nonatomic) IBOutlet UITextField *regPwdField;      //reg密码
 @property (weak, nonatomic) IBOutlet UIButton *registerBtn;         //regButton
@@ -47,7 +48,7 @@
     [self.enterSmsCode addGestureRecognizer:swipe];
     
     
-    [self.registerBtn setBackgroundColor:RGBACOLOR(100, 211, 100, 1)];
+    [self.registerBtn setBackgroundColor:LightColor];
     [self.registerBtn setEnabled:NO];
     self.registerBtn.alpha =.5;
 }
@@ -93,9 +94,6 @@
         [self registerUser];
     }
     
-    //[self closeKeyBoard];
-    //
-    //[self loginUserAccount];
     return YES;
 }
 
@@ -196,15 +194,8 @@
             }
         }];
         
-        
-        
-        
-        
-        
     }
     
-    
-
     /*
     //========GCD
     __block int timeout = 60;
@@ -233,16 +224,7 @@
     });
     dispatch_resume(timer);
     */
-    
-    
-    
-    
-    
-    
-    
-    
-   
-    
+ 
 }
 
 -(void)timeFireMethod{

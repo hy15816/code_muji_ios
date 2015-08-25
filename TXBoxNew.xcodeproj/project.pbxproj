@@ -67,6 +67,7 @@
 		63B8F0A61B6775E700221AA4 /* ChatsInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B8F0A11B6775E700221AA4 /* ChatsInputView.m */; };
 		63B8F0A71B6775E700221AA4 /* HPGrowingTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B8F0A31B6775E700221AA4 /* HPGrowingTextView.m */; };
 		63B8F0A81B6775E700221AA4 /* HPTextViewInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B8F0A51B6775E700221AA4 /* HPTextViewInternal.m */; };
+		63CE6CCD1B8B24AF007E05A0 /* CModle.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CE6CCC1B8B24AF007E05A0 /* CModle.m */; };
 		63D34AFD1AF9C6DD00C8B533 /* board.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D34AFC1AF9C6DD00C8B533 /* board.gif */; };
 		63D4871C1B1835CA005F2E1A /* DiscoveryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D4871B1B1835CA005F2E1A /* DiscoveryController.m */; };
 		63D4871E1B183B24005F2E1A /* ble_connect.gif in Resources */ = {isa = PBXBuildFile; fileRef = 63D4871D1B183B24005F2E1A /* ble_connect.gif */; };
@@ -239,6 +240,8 @@
 		63B8F0A31B6775E700221AA4 /* HPGrowingTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPGrowingTextView.m; sourceTree = "<group>"; };
 		63B8F0A41B6775E700221AA4 /* HPTextViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPTextViewInternal.h; sourceTree = "<group>"; };
 		63B8F0A51B6775E700221AA4 /* HPTextViewInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPTextViewInternal.m; sourceTree = "<group>"; };
+		63CE6CCB1B8B24AF007E05A0 /* CModle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CModle.h; sourceTree = "<group>"; };
+		63CE6CCC1B8B24AF007E05A0 /* CModle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CModle.m; sourceTree = "<group>"; };
 		63D34AFC1AF9C6DD00C8B533 /* board.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = board.gif; sourceTree = "<group>"; };
 		63D4871A1B1835CA005F2E1A /* DiscoveryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscoveryController.h; sourceTree = "<group>"; };
 		63D4871B1B1835CA005F2E1A /* DiscoveryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscoveryController.m; sourceTree = "<group>"; };
@@ -405,6 +408,8 @@
 				635299791ADE3AF7006840AC /* CallController.m */,
 				6352997A1ADE3AF7006840AC /* CallRecordsCell.h */,
 				6352997B1ADE3AF7006840AC /* CallRecordsCell.m */,
+				63CE6CCB1B8B24AF007E05A0 /* CModle.h */,
+				63CE6CCC1B8B24AF007E05A0 /* CModle.m */,
 			);
 			path = Call;
 			sourceTree = "<group>";
@@ -1037,6 +1042,7 @@
 				63975E6D1AE73C040076E849 /* CustomTabBarView.m in Sources */,
 				639132401B21778B00F61E04 /* ShowContactsController.m in Sources */,
 				636FDE9D1B453BD40056F241 /* BLEmanager.m in Sources */,
+				63CE6CCD1B8B24AF007E05A0 /* CModle.m in Sources */,
 				637005CB1AE4C1D000B8BAFD /* TXCallAction.m in Sources */,
 				637005D91AE4DE2400B8BAFD /* TXGeneral+helper.m in Sources */,
 				63FA3A661B5E28FF0049EB1C /* AFURLConnectionOperation.m in Sources */,

@@ -25,7 +25,6 @@
     HPGrowingTextView *putViews;
     CGFloat tempHeight;
     ABRecordID reID;
-//    ABAddressBookRef address;
     UIView *containerView;
     BOOL isSend;
     NSString *phoneNumberString;
@@ -71,7 +70,8 @@
 }
 -(void)viewDidAppear:(BOOL)animated{
     if (isSend == NO) {
-        putViews.text = [userDefaults valueForKey:@"putViewsText"];
+
+        putViews.text = [userDefaults valueForKey:@"textInput"];
     }
 }
 -(void)changeRecordRef:(NSNotification *)noti{
@@ -82,13 +82,13 @@
     
     if ([userDefaults valueForKey:isRead]) {
         NSString *agoName = [userDefaults valueForKey:@"self_hisNumberText"];
-        self.hisNumber.text = [NSString stringWithFormat:@"%@%@,",agoName,name];
+        self.hisNumber.text = [NSString stringWithFormat:@"%@%@;",agoName,name];
         if (name.length == 0) {
             //获取号码
             NSString *phone = [[ConBook sharBook] getFirstNumber:reID];
             NSLog(@"phone:%@",phone);
             NSString *lastPhone = [userDefaults valueForKey:@"self_hisNumberText"];
-            self.hisNumber.text = [NSString stringWithFormat:@"%@,%@",lastPhone,phone];
+            self.hisNumber.text = [NSString stringWithFormat:@"%@;%@",lastPhone,phone];
         }
         [userDefaults setBool:NO forKey:isRead];
         [userDefaults setValue:self.hisNumber.text forKey:@"self_hisNumberText"];
@@ -254,10 +254,8 @@
     txdata.msgSender = @"1";
     txdata.msgTime = time;
     txdata.msgContent = putViews.text;
-    ABRecordRef ref = [[ConBook sharBook] getRecordRefWithID:reID];
-    ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
-    NSString *phone = [NSString stringWithFormat:@"%@",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
-    txdata.msgAccepter = [phone purifyString];
+    NSString *firstNumber = [[ConBook sharBook] getFirstNumber:reID];
+    txdata.msgAccepter = [firstNumber purifyString];
     txdata.msgStates = @"0";
     txdata.contactID = [NSString stringWithFormat:@"%d",reID];
     /*
@@ -283,7 +281,7 @@
             [userDefaults setValue:@"" forKey:@"HEHE"];
             [userDefaults setValue:@"" forKey:@"MEME"];
             [SVProgressHUD showImage:nil status:@"已发送"];
-            [userDefaults setValue:@"" forKey:@"putViewsText"];
+            [userDefaults setValue:@"" forKey:@"textInput"];
             self.title = [self.hisNumber.text purifyString];
             self.disMissBtn.enabled = NO;
             [self disMissButton:nil];
@@ -387,7 +385,8 @@
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     if (isSend ==NO ) {
-        [userDefaults setValue:putViews.text forKey:@"putViewsText"];
+
+        [userDefaults setValue:putViews.text forKey:@"textInput"];
     }
     
 }

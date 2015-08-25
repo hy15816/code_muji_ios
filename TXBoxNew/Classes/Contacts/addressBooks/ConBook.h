@@ -82,4 +82,11 @@
  */
 -(NSMutableArray *)getNumberArray:(ABRecordID)abid;
 
+/**
+ *  添加联系人到通讯录
+ */
+-(BOOL)addPerson:(ConBook *)conbook;
+
+
+
 @end

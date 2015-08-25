@@ -4,7 +4,7 @@
 //
 //  Created by Naron on 15/6/2.
 //  Copyright (c) 2015年 playtime. All rights reserved.
-//
+//  更新密码
 
 #import "UpdatePwdController.h"
 
@@ -142,7 +142,7 @@
     if(secondsCountDowns==0){
         [countDownTimer invalidate];
         [self.updSmsCodeBtn setTitle:@"重新获取" forState:UIControlStateNormal];
-        [self.updSmsCodeBtn setTitleColor:RGBACOLOR(0, 120, 230, 1) forState:UIControlStateNormal];
+        [self.updSmsCodeBtn setTitleColor:LightColor forState:UIControlStateNormal];
         [self.updSmsCodeBtn setEnabled:YES];
     }
 }

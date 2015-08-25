@@ -129,7 +129,7 @@
         //获取号码
         ABMultiValueRef phoneNumber = ABRecordCopyValue(abRef, kABPersonPhoneProperty);
         if (ABMultiValueGetCount(phoneNumber) > 0) {
-            NSString *phone = [NSString stringWithFormat:@"%@,",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
+            NSString *phone = [NSString stringWithFormat:@"%@;",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
             NSLog(@"phone:%@",phone);
             allName = phone;
         }
@@ -163,7 +163,7 @@
         //获取号码
         ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
         if (ABMultiValueGetCount(phoneNumber) > 0) {
-            NSString *phone = [NSString stringWithFormat:@"%@,",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
+            NSString *phone = [NSString stringWithFormat:@"%@;",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
             NSLog(@"phone:%@",phone);
             allName = phone;
         }
@@ -176,7 +176,7 @@
 
 
 -(NSString *)getFirstNumber:(ABRecordID)abid {
-    NSString *number ;
+    NSString *number = @"" ;
     NSMutableArray *phongArray = [[NSMutableArray alloc] init];
     
     ABRecordRef ref =  [self getRecordRefWithID:abid];
@@ -189,7 +189,10 @@
         }
         
     }
-    number = phongArray[0];
+    if (phongArray.count >0) {
+        number = phongArray[0];
+    }
+    
     
     return number.length>0?number:@"";
 }
@@ -213,6 +216,36 @@
     return phongArray;
 }
 
+/**
+ *  添加联系人到通讯录
+ *
+ */
+-(BOOL)addPerson:(ConBook *)conbook{
+    CFErrorRef error;
+    //abAddressBookRef = ABAddressBookCreateWithOptions(NULL, &error);
+    //创建一条联系人记录
+    ABRecordRef tmpRecord = ABPersonCreate();
+    BOOL tmpSuccess = NO;
+    
+    CFStringRef lastName = (__bridge CFStringRef)conbook.lastName;
+    tmpSuccess = ABRecordSetValue(tmpRecord, kABPersonLastNameProperty, lastName, &error);
+    
+    CFStringRef middleName = (__bridge CFStringRef)conbook.middleName;
+    tmpSuccess = ABRecordSetValue(tmpRecord, kABPersonMiddleNameProperty, middleName, &error);
+    
+    CFStringRef firstName = (__bridge CFStringRef)conbook.firstName;
+    tmpSuccess = ABRecordSetValue(tmpRecord, kABPersonFirstNameProperty, firstName, &error);
+    
+    CFTypeRef tmpPhones = (__bridge CFStringRef)conbook.phoneNumberArray[0];
+    ABMutableMultiValueRef tmpMutableMultiPhones = ABMultiValueCreateMutable(kABPersonPhoneProperty);
+    ABMultiValueAddValueAndLabel(tmpMutableMultiPhones, tmpPhones, kABPersonPhoneMobileLabel, NULL);
+    tmpSuccess = ABRecordSetValue(tmpRecord, kABPersonPhoneProperty, tmpMutableMultiPhones, &error);
+    
+    tmpSuccess = ABAddressBookAddRecord(addressBook, tmpRecord, &error);
+    tmpSuccess = ABAddressBookSave(addressBook, &error);
+    
+    return tmpSuccess;
+}
 @end
 
 

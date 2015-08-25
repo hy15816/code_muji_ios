@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "CallRecordsCell.h"
 #import "TXData.h"
+#import "CModle.h"
 
 @interface CallController : UITableViewController
 

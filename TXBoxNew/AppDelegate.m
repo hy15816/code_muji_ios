@@ -33,9 +33,6 @@
     [sqlite createTable:CALL_RECORDS_TABLE_NAME withSql:CALL_RECORDS_CREATE_TABLE_SQL];
     [sqlite createTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL];
     
-    //修改导航栏的sytle
-    [self changeNavigationBarStyle];
-    
     
     if ([[UIApplication sharedApplication]currentUserNotificationSettings].types!=UIUserNotificationTypeNone) {
         //[self addLocalNotification];
@@ -43,12 +40,10 @@
         [[UIApplication sharedApplication]registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound  categories:nil]];
     }
     
-    [self isOrNotUpdateVersion];
-    
+    [self changeNavigationBarStyle];//修改导航栏的sytle
+    [self isOrNotUpdateVersion];//检测更新
     [self addTimer];//延时
-    
-    
-    
+
     return YES;
 }
 
@@ -108,16 +103,17 @@
 -(void) changeNavigationBarStyle
 {
     //背景颜色
-    [[UINavigationBar appearance] setBarTintColor:RGBACOLOR(35, 35, 35, 1)];
+    //[[UINavigationBar appearance] setBarTintColor:RGBACOLOR(246, 246, 246, 1)];
     //背景图片
     //[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"nav_bg.png"] forBarMetrics:UIBarMetricsDefault];
     
     //设置返回按钮字体颜色
-    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+    [[UINavigationBar appearance] setTintColor:RGBACOLOR(29, 169, 240, 1)];
     
     //设置返回按钮图片
-    [[UINavigationBar appearance] setBackIndicatorImage:[UIImage imageNamed:@"back_btn.png"]];
-    [[UINavigationBar appearance] setBackIndicatorTransitionMaskImage:[UIImage imageNamed:@"back_btn.png"]];
+    //[[UINavigationBar appearance] setBackIndicatorImage:[UIImage imageNamed:@"back_btn.png"]];
+    //[[UINavigationBar appearance] setBackIndicatorTransitionMaskImage:[UIImage imageNamed:@"back_btn.png"]];
+    
     
     
     /**
@@ -131,9 +127,10 @@
     
     //修改导航栏标题的字体
     NSShadow *shadow = [[NSShadow alloc] init];
-    shadow.shadowColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.8];
-    shadow.shadowOffset = CGSizeMake(0, 1);
-    [[UINavigationBar appearance] setTitleTextAttributes:  [NSDictionary dictionaryWithObjectsAndKeys:                                                         [UIColor colorWithRed:245.0/255.0 green:245.0/255.0 blue:245.0/255.0 alpha:1.0], NSForegroundColorAttributeName,   shadow, NSShadowAttributeName,[UIFont fontWithName:@"HelveticaNeue-CondensedBlack" size:21.0], NSFontAttributeName, nil]];
+    shadow.shadowColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0];
+    shadow.shadowOffset = CGSizeMake(0, 0);
+    //标题字体
+    [[UINavigationBar appearance] setTitleTextAttributes:  [NSDictionary dictionaryWithObjectsAndKeys:                                                         [UIColor blackColor], NSForegroundColorAttributeName, shadow, NSShadowAttributeName,[UIFont fontWithName:@"Arial-BoldMT" size:21.0], NSFontAttributeName, nil]];
     
     //修改导航栏标题为图片
     //self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"appcoda-logo.png"]];
@@ -147,7 +144,7 @@
      */
     
     //修改状态栏的风格
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
     
     //隐藏状态栏
     /**

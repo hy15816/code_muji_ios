@@ -195,51 +195,94 @@
     NSString *inSeperator = @"-";
     
     NSString *hanzi =  self;
-    NSMutableArray *outStringListList = [[NSMutableArray alloc] init];
-    for(int i = 0;i < hanzi.length; i++){
-       NSString *currChar = [hanzi substringWithRange:NSMakeRange(i, 1)];
-        NSMutableArray *thisList = [[NSMutableArray alloc] init];
-        if ([self thisHanZi: [currChar characterAtIndex:0]]) {
-            NSMutableArray *allPY4CurrentHZ = (NSMutableArray*)[PinyinHelper toHanyuPinyinStringArrayWithChar:[currChar characterAtIndex:0]withHanyuPinyinOutputFormat:outputFormat];
-        
-        if (allPY4CurrentHZ.count != 0) {
-            for (int j = 0; j < allPY4CurrentHZ.count; j++) {
-                allPY4CurrentHZ[j] = [NSString stringWithFormat:@"%@%@",inSeperator,allPY4CurrentHZ[j]];
-            }
-            [thisList addObject:allPY4CurrentHZ];
-        }
-        }else{//不是汉字
-            NSMutableArray *a = [[NSMutableArray alloc] initWithObjects:[NSString stringWithFormat:@"%@%@",inSeperator,currChar], nil];
-            [thisList addObject:a];
-        }
-    
-        [outStringListList addObject:thisList];
-        
-    }
-    
-    NSMutableArray *mutArray =[[NSMutableArray alloc] initWithObjects:@"", nil];
-    for (NSArray *ar in outStringListList) {//abc中的所有数组
-        NSMutableArray *arr = [[NSMutableArray alloc] init];
-        for (NSArray *s in ar) {//abc中数组里的所有元素
-            for (NSString *a in s) {
-                for (NSString *ss in mutArray) {//mutArray中的所有元素
-                    if (![arr containsObject:[NSString stringWithFormat:@"%@%@",ss,a]]) {
-                        [arr addObject:[NSString stringWithFormat:@"%@%@",ss,a]];
+    if (hanzi.length <= 5) {
+        NSMutableArray *outStringListList = [[NSMutableArray alloc] init];
+        for(int i = 0;i < hanzi.length; i++){
+            NSString *currChar = [hanzi substringWithRange:NSMakeRange(i, 1)];//取出每个汉字
+            NSMutableArray *thisList = [[NSMutableArray alloc] init];
+            if ([self thisHanZi: [currChar characterAtIndex:0]]) {
+                NSMutableArray *allPY4CurrentHZ = (NSMutableArray*)[PinyinHelper toHanyuPinyinStringArrayWithChar:[currChar characterAtIndex:0]withHanyuPinyinOutputFormat:outputFormat];//转化成拼音，若是多音字则有多个
+                
+                if (allPY4CurrentHZ.count != 0) {
+                    for (int j = 0; j < allPY4CurrentHZ.count; j++) {
+                        allPY4CurrentHZ[j] = [NSString stringWithFormat:@"%@%@",inSeperator,allPY4CurrentHZ[j]];//格式化，加上‘-’
                     }
-                    
+                    [thisList addObject:allPY4CurrentHZ];
                 }
+            }else{//不是汉字，直接添加，
+                NSMutableArray *a = [[NSMutableArray alloc] initWithObjects:[NSString stringWithFormat:@"%@%@",inSeperator,currChar], nil];
+                [thisList addObject:a];
             }
             
+            [outStringListList addObject:thisList];
+            
         }
+        
+        //字符串长度小于5个
+        NSMutableArray *mutArray =[[NSMutableArray alloc] initWithObjects:@"", nil];
+        for (NSArray *ar in outStringListList) {//abc中的所有数组
+
+            NSMutableArray *arr = [[NSMutableArray alloc] init];
+            for (NSArray *s in ar) {//abc中数组里的所有元素
+
+                for (NSString *a in s) {
+
+                    for (NSString *ss in mutArray) {//mutArray中的所有元素
+                        if (![arr containsObject:[NSString stringWithFormat:@"%@%@",ss,a]]) {
+                            [arr addObject:[NSString stringWithFormat:@"%@%@",ss,a]];
+                        }
+                        
+                    }
+                }
+                
+                
+            }
+            mutArray = arr;//把arr赋给mutArray
+        }
+        return mutArray;
+    }else{//长度大于5
+        
+        NSMutableArray *outStringListList = [[NSMutableArray alloc] init];
+        for(int i = 0;i < hanzi.length; i++){
+            NSString *currChar = [hanzi substringWithRange:NSMakeRange(i, 1)];//取出每个汉字
+            NSMutableArray *thisList = [[NSMutableArray alloc] init];
+            if ([self thisHanZi: [currChar characterAtIndex:0]]) {
+                NSMutableArray *allPY4CurrentHZ = (NSMutableArray*)[PinyinHelper toHanyuPinyinStringArrayWithChar:[currChar characterAtIndex:0]withHanyuPinyinOutputFormat:outputFormat];//转化成拼音，若是多音字则有多个
+                
+                if (allPY4CurrentHZ.count != 0) {
+                    for (int j = 0; j < allPY4CurrentHZ.count; j++) {
+                        allPY4CurrentHZ[j] = [NSString stringWithFormat:@"%@%@",inSeperator,allPY4CurrentHZ[j]];//格式化，加上‘-’
+                    }
+                    [thisList addObject:allPY4CurrentHZ];
+                }
+            }else{//不是汉字，直接添加，
+                NSMutableArray *a = [[NSMutableArray alloc] initWithObjects:[NSString stringWithFormat:@"%@%@",inSeperator,currChar], nil];
+                [thisList addObject:a];
+            }
+            
+            [outStringListList addObject:thisList];
+            
+        }
+        NSMutableArray *mutArray =[[NSMutableArray alloc] initWithObjects:@"", nil];
+        NSMutableString *string = [[NSMutableString alloc] initWithString:@""];
+        NSMutableArray *arr = [[NSMutableArray alloc] init];
+        for (NSArray *ar in outStringListList) {//abc中的所有数组
+            for (NSArray *a in ar) {
+                for (NSString *s in a) {
+                    [string appendString:s];
+                }
+            }
+        }
+        [arr addObject:string];
         mutArray = arr;//把arr赋给mutArray
+        return mutArray;
         
     }
     
-
     //VCLog(@"self:%@-----mutArray:%@",self,mutArray);
-    
-    return mutArray;
+    return nil;
 }
+
 
 /**
  *  @method

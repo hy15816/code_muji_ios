@@ -4,7 +4,9 @@
 //
 //  Created by Naron on 15/5/29.
 //  Copyright (c) 2015年 playtime. All rights reserved.
-//
+//  发现主页
+
+#define RedColor    [UIColor colorWithRed:244/255.0f green:55/255.0f blue:57/255.0f alpha:1.f]
 
 #define TagToLoginAlert     4000
 #define TagWithShowAlert    4001
@@ -56,14 +58,10 @@
 @property (weak, nonatomic) IBOutlet UILabel *mujiNumber;//拇机号码
 
 //静态图片
-@property (weak, nonatomic) IBOutlet UIView *BLEView;//蓝牙
-@property (weak, nonatomic) IBOutlet UIView *connectView;//通讯
+@property (weak, nonatomic) IBOutlet UIImageView *BLEView;//蓝牙
+@property (weak, nonatomic) IBOutlet UIImageView *connectView;//通讯
 @property (strong, nonatomic) IBOutlet UIImageView *callAnotherImgView;//呼转
 @property (strong, nonatomic) IBOutlet UIImageView *callingImgView;//来电
-
-//gif图
-@property (weak, nonatomic) IBOutlet UIView *BLEgifView;//蓝牙
-@property (weak, nonatomic) IBOutlet UIView *connectGifView;//通讯
 
 //button
 @property (strong, nonatomic) IBOutlet UIButton *callAnotherButton;//呼转
@@ -92,10 +90,7 @@
     //键盘活动  键盘出现时
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disvViewDidShow:) name:KRefreshDisvView object:nil];
-    
-    //通知显示tabBar
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
-    
+
     [self initLoginAndConfigButtons];
     [self refreshBindButton];
     
@@ -116,22 +111,12 @@
     self.tableView.separatorStyle =UITableViewCellSeparatorStyleNone;
     
     //self.firstImageView的背景
-    UIImage *rawEntryBackground = [UIImage imageNamed:@"NodeBkg"];
-    UIImage *entryBackground = [rawEntryBackground stretchableImageWithLeftCapWidth:10 topCapHeight:10];
-    self.firstImageView.image = entryBackground;
+    UIImage *upImg = [UIImage imageNamed:@"xuxianUp"];
+    //UIImage *upBackground = [upImg stretchableImageWithLeftCapWidth:10 topCapHeight:9];
+    self.firstImageView.image = upImg;
     //self.secondImageView
-    self.secondImageView.layer.borderWidth = .3;
-    self.secondImageView.layer.borderColor = [UIColor grayColor].CGColor;
-    self.secondImageView.layer.cornerRadius = 4;
-    
-    //静态图
-    con_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 40, 23)];
-    ble_imgv = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 40, 23)];
-    ble_imgv.image = [UIImage imageNamed:@"flow_ble"];
-    con_imgv.image = [UIImage imageNamed:@"flow_phone"];
-    
-    [self.BLEView addSubview:ble_imgv];
-    [self.connectView addSubview:con_imgv];
+    UIImage *downImg = [UIImage imageNamed:@"xuxianDown"];
+    self.secondImageView.image = downImg;
     
     //隐藏号码
     self.phoneNumber.hidden = YES;
@@ -155,6 +140,8 @@
 
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
+    //通知显示tabBar
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
     //自动登录
     //缓存当前用户
     
@@ -252,42 +239,26 @@
     if (loginState) {//已登录
         self.phoneNumber.hidden = NO;
         [self.loginButton setTitle:@"  退出  " forState:UIControlStateNormal];
-        [self.loginButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];
+        [self.loginButton setBackgroundColor:RedColor];
         NSString *pnum = [defaults valueForKey:CurrentUser];
         self.phoneNumber.text = [NSString stringWithFormat:@"%@****%@",[pnum substringToIndex:3],[pnum substringWithRange:NSMakeRange(pnum.length -4, 4)]];
     }else{
         self.phoneNumber.hidden = YES;
         [self.loginButton setTitle:@"  登录  " forState:UIControlStateNormal];
-        [self.loginButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
-        self.connectGifView.hidden = YES;
-        self.connectView.hidden = NO;
+        [self.loginButton setBackgroundColor:LightColor];
     }
     
     if (configState) {//已配置
         [self.configureButton setTitle:@"  修改  " forState:UIControlStateNormal];
-        [self.configureButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];
+        [self.configureButton setBackgroundColor:RedColor];
         self.mujiNumber.hidden = NO;
         NSString *pnum = [defaults valueForKey:muji_bind_number];
         self.mujiNumber.text = [NSString stringWithFormat:@"%@****%@",[pnum substringToIndex:3],[pnum substringWithRange:NSMakeRange(pnum.length -4, 4)]];
         
-        //显示gif图片
-        if (loginState) {
-            self.connectView.hidden = YES;
-            self.connectGifView.hidden = NO;
-            [self initAnimatedWithFileName:@"phone_connect" andType:@"gif" view:self.connectGifView];
-        }else {
-            self.connectGifView.hidden = YES;
-            self.connectView.hidden = NO;
-        }
-        
     }else{
         
-        //显示静态图片
-        self.connectView.hidden = NO;
-        self.connectGifView.hidden = YES;
-
         [self.configureButton setTitle:@"  配置  " forState:UIControlStateNormal];
-        [self.configureButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
+        [self.configureButton setBackgroundColor:LightColor];
         self.mujiNumber.hidden = YES;
         
     }
@@ -295,13 +266,13 @@
     //呼转
     if (callState) {
         [self.callAnotherButton setTitle:@"  取消  " forState:UIControlStateNormal];
-        [self.callAnotherButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];
+        [self.callAnotherButton setBackgroundColor:RedColor];
         self.callAnotherImgView.image = [UIImage imageNamed:@"callAnother_light"];
         
     }else{
         [self.callAnotherButton setTitle:@"  呼转  " forState:UIControlStateNormal];
         self.callAnotherImgView.image = [UIImage imageNamed:@"callAnother_gray"];
-        [self.callAnotherButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
+        [self.callAnotherButton setBackgroundColor:LightColor];
     }
     
     
@@ -313,71 +284,18 @@
     BOOL controlState = [[defaults valueForKey:CONTROL_STATE] intValue];
     if (controlState) {//已绑定
         [self.bindButton setTitle:@"  解除  " forState:UIControlStateNormal];
-        [self.bindButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];//ble_connect
-        self.BLEView.hidden = YES;
-        self.BLEgifView.hidden = NO;
+        [self.bindButton setBackgroundColor:RedColor];//ble_connect
         
-        //显示gif图片
-        [self initAnimatedWithFileName:@"ble_connect" andType:@"gif" view:self.BLEgifView];
+        //显示亮色图片
+        self.BLEView.image = [UIImage imageNamed:@"flow_ble_HL"];
         
     }else{
-        //显示静态图片
-        self.BLEView.hidden = NO;
-        self.BLEgifView.hidden = YES;
-        
+        //显示灰色图片
+        self.BLEView.image = [UIImage imageNamed:@"flow_ble"];
         [self.bindButton setTitle:@"  控制  " forState:UIControlStateNormal];
-        [self.bindButton setBackgroundColor:RGBACOLOR(25, 180, 8, 1)];
+        [self.bindButton setBackgroundColor:LightColor];
         
     }
-}
-
-#pragma mark -- 加载gif图片
--(void)initAnimatedWithFileName :(NSString *)fileName andType:(NSString *)type view:(UIView *)vview
-{
-    //解码图片
-    NSString *imagePath =[[NSBundle mainBundle] pathForResource:fileName ofType:type];
-    CGImageSourceRef  cImageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)[NSURL fileURLWithPath:imagePath], NULL);
-    //读取动画的每一帧
-    size_t imageCount = CGImageSourceGetCount(cImageSource);
-    NSMutableArray *images = [[NSMutableArray alloc] initWithCapacity:imageCount];
-    NSMutableArray *times = [[NSMutableArray alloc] initWithCapacity:imageCount];
-    NSMutableArray *keyTimes = [[NSMutableArray alloc] initWithCapacity:imageCount];
-    
-    //显示时间
-    float totalTime = 0;
-    CGSize size;
-    for (size_t i = 0; i < imageCount; i++) {
-        CGImageRef cgimage= CGImageSourceCreateImageAtIndex(cImageSource, i, NULL);
-        [images addObject:(__bridge id)cgimage];
-        CGImageRelease(cgimage);
-        
-        NSDictionary *properties = (__bridge NSDictionary *)CGImageSourceCopyPropertiesAtIndex(cImageSource, i, NULL);
-        NSDictionary *gifProperties = [properties valueForKey:(__bridge NSString *)kCGImagePropertyGIFDictionary];
-        NSString *gifDelayTime = [gifProperties valueForKey:(__bridge NSString* )kCGImagePropertyGIFDelayTime];
-        [times addObject:gifDelayTime];
-        totalTime += [gifDelayTime floatValue];
-        
-        size.width = [[properties valueForKey:(NSString*)kCGImagePropertyPixelWidth] floatValue];
-        size.height = [[properties valueForKey:(NSString*)kCGImagePropertyPixelHeight] floatValue];
-    }
-    
-    float currentTime = 0;
-    for (size_t i = 0; i < times.count; i++) {
-        float keyTime = currentTime / totalTime;
-        [keyTimes addObject:[NSNumber numberWithFloat:keyTime]];
-        currentTime += [[times objectAtIndex:i] floatValue];
-    }
-    
-    //执行CAKeyFrameAnimation动画
-    CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"contents"];
-    [animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
-    [animation setValues:images];
-    [animation setKeyTimes:keyTimes];
-    animation.duration = totalTime;
-    animation.repeatCount = HUGE_VALF;
-    
-    [vview.layer addAnimation:animation forKey:@"gifAnimation"];
-
 }
 
 #pragma mark -- hide popView
@@ -481,7 +399,7 @@
             [defaults setValue:@"1" forKey:CONFIG_STATE];
             //
             [self.configureButton setTitle:@"  修改  " forState:UIControlStateNormal];
-            [self.configureButton setBackgroundColor:RGBACOLOR(252, 57, 59, 1)];
+            [self.configureButton setBackgroundColor:RedColor];
             
             VCLog(@"save-->number:%@",number);
             [sfield resignFirstResponder];
@@ -587,7 +505,6 @@
     BOOL loginstate = [[defaults valueForKey:LOGIN_STATE] intValue];
     if (loginstate) {
         [self loginOut];
-        self.connectGifView.hidden = YES;
         
         //更新ui
         [self initLoginAndConfigButtons];

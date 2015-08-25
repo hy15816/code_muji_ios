@@ -4,7 +4,7 @@
 //
 //  Created by Naron on 15/6/1.
 //  Copyright (c) 2015年 playtime. All rights reserved.
-//
+//  登录页面
 
 #import "LoginController.h"
 #import "RegisteViewController.h"
@@ -56,7 +56,7 @@
     
     //Login
     self.loginBtn.layer.cornerRadius = 3;
-    [self.loginBtn setBackgroundColor:RGBACOLOR(100, 211, 100, 1)];
+    [self.loginBtn setBackgroundColor:LightColor];
     self.loginBtn.alpha = .5f;
 }
 

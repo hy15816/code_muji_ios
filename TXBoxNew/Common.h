@@ -30,6 +30,8 @@
 
 // 颜色
 #define RGBACOLOR(r,g,b,a) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:(a)/1.f]
+#define LightColor  [UIColor colorWithRed:29/255.0f green:169/255.0f blue:240/255.0f alpha:1.f]//青蓝色
+
 
 // 设备版本
 #define IOS_DEVICE_VERSION [[UIDevice currentDevice].systemVersion floatValue]

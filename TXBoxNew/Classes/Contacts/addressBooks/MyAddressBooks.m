@@ -96,10 +96,16 @@ static MyAddressBooks *shareBooks = nil;
     abAddressBookRef = ABAddressBookCreateWithOptions(NULL, &error);
     _AllPeopleRefArray = (__bridge NSMutableArray *)(ABAddressBookCopyArrayOfAllPeople(abAddressBookRef));
     if (abAddressBookRef && _AllPeopleRefArray) {
-        [self.delegate abAddressBooks:abAddressBookRef allRefArray:_AllPeopleRefArray];
+        if ([self.delegate respondsToSelector:@selector(abAddressBooks:allRefArray:)]) {
+            [self.delegate abAddressBooks:abAddressBookRef allRefArray:_AllPeopleRefArray];
+        }
+        
         [self setSectionDicts];
     }else{
-        [self.delegate sendNotify:kMyBooksNotifityStatusNoBody];
+        if ([self.delegate respondsToSelector:@selector(sendNotify:)]) {
+            [self.delegate sendNotify:kMyBooksNotifityStatusNoBody];
+        }
+        
     }
     
 }
@@ -186,8 +192,10 @@ static MyAddressBooks *shareBooks = nil;
     
     _sortedArray =[_sectionArray sortedArrayUsingSelector:@selector(compare:)];//排序
     //NSLog(@"_sectionDict:%@",_sectionDicts);
-
-    [self.delegate SectionDicts:_sectionDicts sortedArray:_sortedArray conbookArray:_conBooksArr ];
+    if ([self.delegate respondsToSelector:@selector(SectionDicts:sortedArray:conbookArray:)]) {
+        [self.delegate SectionDicts:_sectionDicts sortedArray:_sortedArray conbookArray:_conBooksArr ];
+    }
+    
     
     
 }

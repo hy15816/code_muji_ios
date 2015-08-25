@@ -60,6 +60,12 @@
     [sectionDicts setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'~']];
     
     
+    for (int s=0; s<1000; s++) {
+        [self adds];
+    }
+    
+    
+    
     //初始化电话簿
     ABAddressBookRef myAddressBook = nil;
     CFErrorRef *error = nil;
@@ -118,8 +124,11 @@
         }else if (firstName.length >0 && lastName.length==0){
             name = [[NSString alloc] initWithFormat:@"%@",firstName];
         }else
-        {
-            name = [[NSString alloc] initWithFormat:@"未命名"];
+        {   ABMultiValueRef personPhone = ABRecordCopyValue(record, kABPersonPhoneProperty);
+            if (ABMultiValueGetCount(personPhone)>0) {
+                name = (__bridge NSString*)ABMultiValueCopyValueAtIndex(personPhone, 0);
+                name = [name purifyString];
+            }else{name = @"未命名";}
         }
         
         //转拼音
@@ -170,6 +179,83 @@
      */
     
     
+}
+
+-(void)adds{
+    //int delta = 0x9fa5-0x4e00 + 1;
+        NSString *phoneNumber = [NSString stringWithFormat:@"1%d%d%d%d%d%d%d%d%d%d",arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8)];
+    NSString *name = [NSString stringWithFormat:@"%@%@%d%d%d",[self getHanzi],[self getPinyin],arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8)];
+    [self addContacts:name number:phoneNumber];
+    
+}
+
+//高效费舍尔茨洗牌(这里只获取前3个字)
+-(NSString *)getPinyin{
+    
+    NSString *alphabet = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    
+    // Get the characters into a C array for efficient shuffling
+    NSUInteger numberOfCharacters = [alphabet length];
+    unichar *characters = calloc(numberOfCharacters, sizeof(unichar));
+    [alphabet getCharacters:characters range:NSMakeRange(0, numberOfCharacters)];
+    
+    // Perform a Fisher-Yates shuffle
+    for (NSUInteger i = 0; i < numberOfCharacters; ++i) {
+        NSUInteger j = (NSInteger)arc4random_uniform(numberOfCharacters - i) + i;
+        unichar c = characters[i];
+        characters[i] = characters[j];
+        characters[j] = c;
+    }
+    
+    // Turn the result back into a string
+    NSString *result = [NSString stringWithCharacters:characters length:numberOfCharacters];
+    free(characters);
+    return [result substringToIndex:3];
+    
+    
+}
+
+
+-(NSString *)getHanzi{
+    NSMutableString *sname = [[NSMutableString alloc] initWithString:@""];;
+    for (int i=0; i<3; i++) {
+        NSStringEncoding gbkEncoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
+        NSInteger randomH = 0xA1+arc4random()%(0xFE - 0xA1+1);
+        NSInteger randomL = 0xB0+arc4random()%(0xF7 - 0xB0+1);
+        
+        NSInteger number = (randomH<<8)+randomL;
+        NSData *data = [NSData dataWithBytes:&number length:2];
+        
+        NSString *string = [[NSString alloc] initWithData:data encoding:gbkEncoding];
+        
+        [sname appendFormat:@"%@",string];
+        
+    }
+    return (NSString *)sname;
+}
+
+-(void)addContacts:(NSString *)name number:(NSString *)numbers{
+    
+    NSMutableDictionary *tempDic = [[NSMutableDictionary alloc] init];
+    //转拼音
+    NSMutableArray *namePinYinArray = [name hanziTopinyin];
+    for (int l=0;l<namePinYinArray.count;l++) {
+        namePinYinArray[l] = [namePinYinArray[l] pinyinTrimIntNumber];
+    }
+    
+    NSMutableArray *nameFirstCharsArr = [name getFirstCharWithHanZi] ;
+    for (int j=0;j<nameFirstCharsArr.count;j++) {
+        nameFirstCharsArr[j] = [nameFirstCharsArr[j] pinyinTrimIntNumber];
+    }
+    NSString *rid = [NSString stringWithFormat:@"%d",(arc4random()%200)+100];
+    
+    [tempDic setObject:numbers forKey:PersonTel];
+    [tempDic setObject:numbers forKey:PersonTelNum];//-数字号码
+    [tempDic setObject:name forKey:PersonName];//把名字存为key:"personName"的Value
+    [tempDic setObject:namePinYinArray forKey:PersonNameNum];
+    [tempDic setObject:rid forKey:PersonRecordRef];
+    [tempDic setObject:nameFirstCharsArr forKey:FirstNameChars];
+    [phonesArray addObject:tempDic];
 }
 
 -(void)getContacts

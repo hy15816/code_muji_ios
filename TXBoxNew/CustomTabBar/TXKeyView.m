@@ -134,11 +134,11 @@
         NSString *allText = [textFieldh.text substringToIndex:textFieldh.text.length-1];//删除之后的
     
     
-    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
-                              allText,InputFieldAllText,
-                              @"0",AddOrDelete, nil];
-        
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
+        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
+                                  allText,InputFieldAllText,
+                                  @"0",AddOrDelete, nil];
+            
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
         
         textFieldh.text = [textFieldh.text substringToIndex:textFieldh.text.length-1];
         singleton.singletonValue = textFieldh.text;
@@ -155,10 +155,8 @@
 //touch up inside
 - (void)itemClick:(UIButton *)item
 {
-    if (hudv) {
-        [hudv removeFromSuperview];
-    }
-    NSString *text = textFieldh.text;
+    
+        NSString *text = textFieldh.text;
     NSInteger tag = item.tag;
     //
     switch (tag) {
@@ -177,10 +175,12 @@
             break;
     }
 
-    
     //利用单利保存呼叫的号码
     singleton.singletonValue = textFieldh.text;
-    
+    if (hudv) {
+        [hudv removeFromSuperview];
+    }
+
     
     NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
                           textFieldh.text , InputFieldAllText,
