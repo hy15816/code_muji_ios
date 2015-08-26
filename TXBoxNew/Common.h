@@ -41,54 +41,6 @@
 #define DEVICE_HEIGHT ([UIScreen mainScreen].bounds.size.height)
 
 
-
-// =================数据库==============//
-#define DB_NAME @"txboxSecond.sqlite"
-#define DB_PHONE_AREAR_NAME @"PhoneArea.db"
-#define SELECT_ALL_SQL @"select *from %@"
-
-
-// =================通话记录表===========//
-#define CALL_RECORDS_TABLE_NAME @"CALL_RECORDS8_20_2"
-//创建通话记录表的sql语句
-#define CALL_RECORDS_CREATE_TABLE_SQL @"create table if not exists %@(tel_id integer primary key AUTOINCREMENT,hisName text,hisNumber text,callDirection text,callLength text,callBeginTime text,hisHome text,hisOperator text,contactid text)"
-//添加call——records
-#define CALL_RECORDS_ADDINFO_SQL @"insert into %@(hisName ,hisNumber ,callDirection ,callLength,callBeginTime ,hisHome ,hisOperator,contactid ) values(?,?,?,?,?,?,?,?)"
-//删除一条通话记录
-#define DELETE_CALL_RECORD_SQL @"delete from %@ where hisNumber=%@"
-
-
-//===================信息表=============//
-#define MESSAGE_RECEIVE_RECORDS_TABLE_NAME @"MESSAGE_RECORDS8_21_2"
-//创建d短信记录表的sql语句
-#define MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL  @"create table if not exists %@(peopleId integer primary key AUTOINCREMENT,msgSender text,msgTime text,msgContent text,msgAccepter text,msgState text,contactid text)"
-//添加msg记录
-#define MESSAGE_RECORDS_ADDINFO_SQL @"insert into %@(msgSender,msgTime,msgContent,msgAccepter,msgState,contactid) values(?,?,?,?,?,?)"
-//删除单条短信记录
-#define DELETE_MESSAGE_RECORD_SQL @"delete from %@ where msgSender=%@ and peopleId = %@"
-//删除整个短信会话
-#define DELETE_MESSAGE_RECORD_CONVERSATION_SQL  @"delete from %@ where msgSender=%@ or msgAccepter = %@"
-
-//查询某一次整个会话
-#define SELECT_A_CONVERSATION_SQL @"select *from %@ where msgSender=%@ or msgAccepter = %@"
-//查询某一次会话的最后一条
-#define SELECT_A_LAST_MESSAGE_RECORDS @"select *from %@ where msgSender=%@ or msgAccepter=%@"
-
-//查询所有短信联系人,不需要重复显示
-#define SELECT_ALL_MSG_CONTACTER_SQL @"select msgAccepter from %@ "
-
-//查询所有与输入匹配的短信内容
-#define SELECT_ALL_COINTENT_FROM_MSG @"select *from %@ where msgSender LIKE '%@' or msgAccepter LIKE '%@' or msgContent LIKE '%@' "
-
-//===================================//
-//保存联系人的数据库
-#define CONTACTS_TABLE_NAME @"CONTACTS_TABLE"
-#define CREATE_CONTACTS_TABLE_SQL @"create table if not exists %@(contacterId integer primary key AUTOINCREMENT,contactName text,contactNumber text)"
-#define CONTACTS_TABLE_ADDINFO_SQL @"insert into %@(contactName,contactNumber) values(?,?)"
-#define SELECT_NAME_FROM_NUMBER @"select contacterName from %@ where contacterNumber=%@"
-#define SELECT_NUMBER_FROM_NAME @"select contacterNumber from %@ where contacterName=%@"
-
-
 //===================================//
 // 首页输入框的view
 #define InputBoxViewHeight 50.f
@@ -178,7 +130,7 @@
 #define PersonNameNum @"personNameNum"
 #define PersonTel   @"personTel"
 #define PersonTelNum @"personTelNum"
-#define PersonRecordRef @"recordRef"
+#define PersonRecordID @"recordID"
 /*
 //联系人dict格式：{
  personName = "",

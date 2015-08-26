@@ -7,7 +7,6 @@
 //
 
 #import "CallController.h"
-#import "TXSqliteOperate.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import "NSString+helper.h"
 #import "MsgDetailController.h"
@@ -23,7 +22,6 @@
 @interface CallController ()<UITextFieldDelegate,ABUnknownPersonViewControllerDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,GetContactsDelegate,CallAndDivertDelegate>
 {
     NSMutableArray *CallRecords;
-    TXSqliteOperate *sqlite;
     
     UIWebView *webView;
     NSUserDefaults *defaults;
@@ -82,7 +80,7 @@
     }
     
     //查询数据库获取通话记录
-    NSMutableArray *array = [sqlite searchInfoFromTable:CALL_RECORDS_TABLE_NAME];
+    NSMutableArray *array = [[DBHelper sharedDBHelper] getAllCallRecords];
     //排序
     CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
     [self.tableView reloadData];
@@ -172,7 +170,6 @@
     CallRecords = [[NSMutableArray alloc] init];
     mutPhoneArray =[[NSMutableArray alloc] init];
     phoneDic = [[NSMutableDictionary alloc] init];
-    sqlite = [[TXSqliteOperate alloc] init];
     defaults = [NSUserDefaults standardUserDefaults];
     singleton = [TXTelNumSingleton sharedInstance];
     searchResault = [[NSMutableArray alloc] init];
@@ -212,7 +209,7 @@
     }else{
         [mLastAllRegularsMapArray removeAllObjects];
         [colorArray removeAllObjects];
-        NSMutableArray *array = [sqlite searchInfoFromTable:CALL_RECORDS_TABLE_NAME];
+        NSMutableArray *array = [[DBHelper sharedDBHelper] getAllCallRecords];
         //排序
         CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
         [self.tableView reloadData];
@@ -330,7 +327,7 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
     
     //输入的数字达到7个，且还没有结果时显示运营商归属地
     if (searchResault.count == 0 && searcherString.length >= 7) {
-        areaString = [sqlite searchAreaWithHisNumber:[singleton.singletonValue substringToIndex:7]];
+        areaString =[[DBHelper sharedDBHelper] getAreaWithNumber:singleton.singletonValue];
         VCLog(@"areaString:%@",areaString);
         opeareString = [singleton.singletonValue isMobileNumberWhoOperation];
     }
@@ -450,14 +447,14 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
     if(singleton.singletonValue.length <= 0 ) {
         
         //VCLog(@"CallRecords:%@,indexPath.row:%lu",CallRecords,indexPath.row);
-        TXData *aRecord  = [CallRecords objectAtIndex:indexPath.row];
+        DBDatas *aRecord  = [CallRecords objectAtIndex:indexPath.row];
 
         cell.callDirection.hidden = NO;
         cell.callLength.hidden = NO;
         cell.hisNumber.hidden = NO;
         cell.hisHome.hidden = NO;
         cell.hisOperator.hidden = NO;
-        cell.hisName.text = aRecord.hisName;
+        cell.hisName.text = [[ConBook sharBook] getNameWithAbid:[aRecord.contactID intValue]];//aRecord.hisName;
         cell.hisNumber.text = [[aRecord.hisNumber purifyString] insertStr];
         cell.callDirection.image = [self imageForRating:[aRecord.callDirection intValue]];
         cell.callLength.text = aRecord.callLength;
@@ -510,25 +507,22 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
     NSIndexPath *indexPath = self.ccurrentIndexPath;
     NSString *name;
     NSString *nber;
-    ABRecordRef recordReff = NULL;
+    NSString *abid;
     if (searcherString.length>0) {//输入后
-        NSDictionary *dict = [searchResault objectAtIndex:indexPath.row];
-        name = [dict valueForKey:PersonName];
-        nber = [dict valueForKey:PersonTel];
-        recordReff = (__bridge ABRecordRef)([((__bridge NSArray *)(ABAddressBookCopyPeopleWithName(_addressBook, (__bridge CFStringRef)name))) lastObject]);//根据名字获取对象
+        CModle  *m = [searchResault objectAtIndex:indexPath.row];
+        name = [m.contactInfo valueForKey:PersonName];
+        nber = [m.contactInfo valueForKey:PersonTel];
+        abid = [m.contactInfo valueForKey:PersonRecordID];
     }
     if (searcherString.length<=0) {
-        TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
+        DBDatas *aRecord = [CallRecords objectAtIndex:indexPath.row];
         name = aRecord.hisName;
         nber = aRecord.hisNumber;
-        recordReff = (__bridge ABRecordRef)([((__bridge NSArray *)(ABAddressBookCopyPeopleWithName(_addressBook, (__bridge CFStringRef)(aRecord.hisName)))) lastObject]);
+        abid = aRecord.contactID;
     }
     
-    ABRecordID abid = ABRecordGetRecordID(recordReff);
-    NSString *contactId = [NSString stringWithFormat:@"%d",abid];
-    
     //把姓名号码和id传过去
-    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:name,@"hisName",nber,@"hisNumber",contactId,@"hisContactId", nil];
+    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:name,@"hisName",nber,@"hisNumber",abid,@"hisContactId", nil];
     //点击callBtn
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kCallingBtnClick object:self userInfo:dict]];
     
@@ -541,20 +535,20 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
     //当前选中行
     //NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     NSIndexPath *indexPath = self.ccurrentIndexPath;
-    TXData *mdata = [[TXData alloc] init];
+    DBDatas *mdata = [[DBDatas alloc] init];
     
     //获取归属地
-    if (searcherString.length <= 0) {
-        TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
-        mdata.hisName = aRecord.hisName;
+    if (singleton.singletonValue.length <= 0) {
+        DBDatas *aRecord = [CallRecords objectAtIndex:indexPath.row];
+        mdata.hisName = [[ConBook sharBook] getNameWithAbid:[aRecord.contactID  intValue]];
         mdata.hisNumber = aRecord.hisNumber;
         mdata.hisHome = aRecord.hisHome;
     }else{
-        NSDictionary *dict = [searchResault objectAtIndex:indexPath.row];
-        mdata.hisName = [dict valueForKey:PersonName];
-        mdata.hisNumber = [dict valueForKey:PersonTel];
+        CModle *dict = [searchResault objectAtIndex:indexPath.row];
+        mdata.hisName = [dict.contactInfo valueForKey:PersonName];
+        mdata.hisNumber = [dict.contactInfo valueForKey:PersonTel];
         if (mdata.hisNumber.length >=7) {
-            mdata.hisHome  = [sqlite searchAreaWithHisNumber:[[mdata.hisNumber purifyString] substringToIndex:7]];
+            mdata.hisHome  = [[DBHelper sharedDBHelper] getAreaWithNumber:[mdata.hisNumber purifyString]];
         }else{mdata.hisHome =   @"";}
         
     }
@@ -575,13 +569,12 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
     //当前选中行
     //NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     NSIndexPath *indexPath = self.ccurrentIndexPath;
-    TXData *aRecord;
+    DBDatas *aRecord;
     ABRecordRef recordReff;
     if (searcherString.length <= 0) {
         aRecord = [CallRecords objectAtIndex:indexPath.row];
-        recordReff = (__bridge ABRecordRef)([((__bridge NSArray *)(ABAddressBookCopyPeopleWithName(_addressBook, (__bridge CFStringRef)(aRecord.hisName)))) lastObject]);//根据名字获取对象
-        VCLog(@"==================hisname:%@",aRecord.hisName);
-        if (aRecord.hisName.length==0 || [aRecord.hisName isEqualToString:@""] || aRecord.hisName ==nil) {
+        recordReff =[[ConBook sharBook] getRecordRefWithID:[aRecord.contactID intValue]];
+        if (aRecord.contactID.length <= 0) {
             //跳转到添加联系人
             
             [self showUnknownPersonViewController:[aRecord.hisNumber purifyString]];
@@ -593,9 +586,9 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
             [self showPersonViewControllerWithRecordRefs:recordReff];
         }
     }else{
-        NSDictionary *dict = [searchResault objectAtIndex:indexPath.row];
-        NSString *name = [dict valueForKey:PersonName];
-        recordReff = (__bridge ABRecordRef)([dict valueForKey:PersonRecordRef]);
+        CModle *dict = [searchResault objectAtIndex:indexPath.row];
+        NSString *name = [dict.contactInfo valueForKey:PersonName];
+        recordReff = [[ConBook sharBook] getRecordRefWithID:[[dict.contactInfo valueForKey:PersonRecordID] intValue]];
         VCLog(@"==================hisname:%@",aRecord.hisName);
         if ([name length]==0 || [name isEqualToString:@""] || name ==nil) {
             //跳转到添加联系人
@@ -643,11 +636,9 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
         
     {
         //删除数据库的数据
-        TXData *aRecord = [CallRecords objectAtIndex:indexPath.row];
-
-        [sqlite deleteContacterWithNumber:[aRecord.hisNumber purifyString] formTable:CALL_RECORDS_TABLE_NAME peopleId:nil withSql:DELETE_CALL_RECORD_SQL];
-        //[[DBHelper sharedDBHelper] deleteACallRecord:aRecord.tel_id];
-        
+        DBDatas *aRecord = [CallRecords objectAtIndex:indexPath.row];
+        [[DBHelper sharedDBHelper] deleteACallRecord:aRecord.tel_id];
+                
         NSMutableArray *array = [ [ NSMutableArray alloc ] init ];
         [array addObject: indexPath];
         

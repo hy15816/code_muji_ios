@@ -7,14 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "TXData.h"
-#import "TXSqliteOperate.h"
-
+#import "DBDatas.h"
 
 @interface TXCallAction : NSObject
 
-@property (nonatomic,strong) TXData *data;
-@property (nonatomic,strong) TXSqliteOperate *txSqlite;
+@property (nonatomic,strong) DBDatas *data;
 
 @property (nonatomic,strong) NSDate *startDate;
 

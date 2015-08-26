@@ -11,7 +11,6 @@
 #import "Message.h"
 #import "MsgFrame.h"
 #import "MsgDetailCell.h"
-#import "TXSqliteOperate.h"
 #import "EditView.h"
 #import "NewMsgController.h"
 #import "ShareContentController.h"
@@ -22,10 +21,8 @@
 #import "NSString+helper.h"
 
 
-
 @interface MsgDetailController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UIGestureRecognizerDelegate,EditViewDelegate,HPGrowingTextViewDelegate,BLEmanagerDelegate>
 {
-    TXSqliteOperate *txsqlite;
     UILongPressGestureRecognizer *longPress;
     EditView *editView;
     NSMutableArray *selectArray;
@@ -64,7 +61,7 @@
 {
     [super viewWillAppear:animated];
     
-    self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
+    self.detailArray = [[DBHelper sharedDBHelper] getAConversation:self.datailDatas.hisNumber];
     
     VCLog(@"self.detailArray %@",self.detailArray);
     [self getResouce];
@@ -73,7 +70,7 @@
     [self initKeyBoardNotif];
     [self initInputView];
     
-    
+    [self cancelCheckCell];
     //编辑时显示
     editView =[[EditView alloc] initWithFrame:CGRectMake(0, DEVICE_HEIGHT, DEVICE_WIDTH, 50)];
     editView.backgroundColor = [UIColor whiteColor];
@@ -84,7 +81,7 @@
     [super viewDidAppear:animated];
     
     textInput.text = [userDefaults valueForKey:[self.datailDatas.hisNumber purifyString]];
-    
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kHideCusotomTabBar object:self]];
 }
 #pragma mark - 键盘action
 -(void)initKeyBoardNotif{
@@ -139,7 +136,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    txsqlite =[[TXSqliteOperate alloc] init];
     self.detailArray = [[NSMutableArray alloc] init];
     selectArray = [[NSMutableArray alloc] init];
     selectDict = [[NSMutableDictionary alloc] init];
@@ -271,16 +267,15 @@
         [self addMessageWithContent:textInput.text time:time];
         
         //关闭键盘
-        [textInput resignFirstResponder];
+        //[textInput resignFirstResponder];
         
         //保存到数据库
-        TXData *txdata =  [[TXData alloc] init];
-        txdata.msgSender = @"1";//self.datailDatas.hisNumber;//
+        DBDatas *txdata =  [[DBDatas alloc] init];
+        txdata.msgHisNum = self.datailDatas.hisNumber;//
         txdata.msgTime = time;
         txdata.msgContent = textInput.text;
-        txdata.msgAccepter = self.datailDatas.hisNumber;//@"1";//
-        txdata.msgStates = @"0";//@"0"
-        
+        txdata.msgState = @"0";//@"0"
+        txdata.contactID = self.datailDatas.contactID;
         
         textInput.text = nil;
         
@@ -293,7 +288,13 @@
         msgs.number = [self.nameLabel.text purifyString];
         msgs.content = textInput.text;
         [[BLEHelper shareHelper] requestTransmit:msgs withBLE:bManager];
-        [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
+        [[DBHelper sharedDBHelper] addDatasToMsgRecord:txdata];
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            // something
+                self.detailArray =[[DBHelper sharedDBHelper] getAConversation:self.datailDatas.hisNumber];
+        });
+        
+    
     }
 
     
@@ -420,19 +421,16 @@
 //转发
 -(void)shareContent
 {
-    /*
+    
     NSIndexPath *path = [self.tableview indexPathForSelectedRow];
     //跳转到newMsg
     NewMsgController *newMsgVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"newMsgID"];
-
-    ShareContentController *newvc = [[ShareContentController alloc] initWithNibName:@"ShareContentController" bundle:[NSBundle bundleWithIdentifier:@"ShareContentController"]];
     
     newMsgVC.msgContent = [[self.detailArray objectAtIndex:path.row] msgContent];
-    UINavigationController *nav =[[UINavigationController alloc] initWithRootViewController:newvc];
+    UINavigationController *nav =[[UINavigationController alloc] initWithRootViewController:newMsgVC];
         
     [self presentViewController:nav animated:YES completion:^{VCLog(@"share");}];
-    */
-    VCLog(@"share");
+    
 }
 
 //删除所选
@@ -441,21 +439,21 @@
     //删除选中的条目
     //数据库
     for (NSIndexPath *index in selectArray) {
-        NSString *number =[NSString stringWithFormat:@"%@",[self.detailArray[index.row] msgSender]];
-        NSString *peopld =[NSString stringWithFormat:@"%d",[self.detailArray[index.row] peopleId]];
+        //NSString *number =[NSString stringWithFormat:@"%@",[self.detailArray[index.row] msgHisNum]];
+        int peopleId = [self.detailArray[index.row] peopleId];
         
-        [txsqlite deleteContacterWithNumber: number formTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME peopleId:peopld withSql:DELETE_MESSAGE_RECORD_SQL];
+        [[DBHelper sharedDBHelper] deleteAMsgRecord:peopleId];
+        
     }
     
     //重新获取数据
-    self.detailArray =[txsqlite searchARecordWithNumber:self.datailDatas.hisNumber fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_A_CONVERSATION_SQL];
+    self.detailArray =[[DBHelper sharedDBHelper] getAConversation:self.datailDatas.hisNumber];
     
     VCLog(@"self.detailArray:%@ ",self.detailArray);
     
     //[self.detailArray removeObjectsInArray:[selectDict allValues]];
     VCLog(@"allKeys:%@",[selectDict allKeys]);
     
-    //[self.tableview deleteRowsAtIndexPaths:selectArray withRowAnimation:UITableViewRowAnimationFade];
     
     [self getResouce];
     [self cancelCheckCell];
@@ -498,7 +496,6 @@
     //
     if ([self.callOutBtn.title isEqualToString:@"取消"]) {
         VCLog(@"self.detailArray:%@",self.detailArray);
-        [selectDict setObject:[self.detailArray objectAtIndex:indexPath.row] forKey:indexPath];
         if (![selectArray containsObject:indexPath]) {
             [selectArray addObject:indexPath];
         }
@@ -535,7 +532,7 @@
     self.allMsgFrame = [[NSMutableArray alloc] init];
     NSString *previousTime = nil;
     
-    for (TXData *data in self.detailArray) {
+    for (DBDatas *data in self.detailArray) {
         
         MsgFrame *messageFrame = [[MsgFrame alloc] init];
         Message *message = [[Message alloc] init];
@@ -562,6 +559,7 @@
     mf.message = msg;
     
     [self.allMsgFrame addObject:mf];
+    
 }
 
 //取消选中cell
@@ -570,7 +568,7 @@
     [self.tableview setEditing:NO animated:YES];
     [selectArray removeAllObjects];
     [self setArearLabelTitle];
-    [UIView animateWithDuration:.5 animations:^{
+    [UIView animateWithDuration:.25 animations:^{
         editView.frame = CGRectMake(0, DEVICE_HEIGHT, DEVICE_WIDTH, 50);
     }];
     
@@ -597,8 +595,11 @@
     return self.allMsgFrame.count;
     //return _resultArray.count;
 }
-
-
+/*
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    cell.backgroundColor = [UIColor clearColor];
+}
+ */
 //cell行高
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -629,7 +630,7 @@
 }
 -(void)jumpToLastRow
 {
-    if (self.allMsgFrame.count>7) {
+    if (self.detailArray.count>0) {
         //滚动到当前信息
         NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:self.detailArray.count-1 inSection:0];
         [self.tableview scrollToRowAtIndexPath:lastIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
@@ -648,7 +649,7 @@
         VCLog(@"longPress");
         //
         [self.tableview setEditing:YES animated:YES];
-        [UIView animateWithDuration:.5 animations:^{
+        [UIView animateWithDuration:.25 animations:^{
             editView.frame = CGRectMake(0, DEVICE_HEIGHT-50, DEVICE_WIDTH, 50);
         }];
         
@@ -656,7 +657,7 @@
         [self.callOutBtn setTitle:@"取消"];
 
     }
-    [self getResouce];
+    //[self getResouce];
     
     
 }

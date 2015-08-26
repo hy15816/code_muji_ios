@@ -10,4 +10,8 @@
 
 @interface MsgModel : NSObject
 
+@property (strong,nonatomic) NSString *rid;
+@property (strong,nonatomic) NSString *name;
+@property (strong,nonatomic) NSString *phone;
+
 @end

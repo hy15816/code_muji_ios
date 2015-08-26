@@ -15,6 +15,7 @@
 #import "NSString+helper.h"
 #import "CallingView.h"
 #import "CallInView.h"
+#import "DBHelper.h"
 
 @interface TabBarViewController ()<tabBarViewDelegate,UIAlertViewDelegate,GuideViewDelegate,KeyViewDelegate,CallingDelegate,CallInView>
 {
@@ -94,7 +95,7 @@
     
     callIn.hisName = @"ces";
     callIn.hisNumber = @"13698006536";
-    callIn.hisHome=[[TXSqliteOperate shardSql] searchAreaWithHisNumber:[callIn.hisNumber substringToIndex:7]];
+    callIn.hisHome=[[DBHelper sharedDBHelper] getAreaWithNumber:callIn.hisNumber];
     callIn.delegate = self;
     [callIn initViews];
     [self.view addSubview:callIn];

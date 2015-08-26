@@ -35,6 +35,11 @@
 - (FMDatabase *)createDatabase;
 
 /**
+ *  使用本地数据库
+ */
+-(FMDatabase *)createDatabaseWith:(NSString *)path;
+
+/**
  *  创建表
  */
 -(void)createTable;
@@ -79,6 +84,12 @@
  *  @return mutArray(DBDatas,)
  */
 -(NSMutableArray *)getAllMessages;
+
+/**
+ *  查询一个会话的所有内容 
+ *  @param  number 号码
+ */
+-(NSMutableArray *)getAConversation:(NSString *)number;
 
 /**
  *  删除一个信息会话

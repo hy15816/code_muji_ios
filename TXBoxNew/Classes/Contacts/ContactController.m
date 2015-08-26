@@ -5,7 +5,7 @@
 //  Created by Naron on 15/7/6.
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
-#define HeaderViewColor [[UIColor alloc]initWithRed:239/255.f green:239/255.f blue:240/255.f alpha:1];
+#define HeaderViewColor [[UIColor alloc]initWithRed:239/255.f green:239/255.f blue:240/255.f alpha:1];//sectionHeader 视图背景色
 #define IsUpdateContacts @"iscontacts"
 
 #import "ContactController.h"
@@ -13,16 +13,15 @@
 #import <AddressBookUI/AddressBookUI.h>
 #import "NSString+helper.h"
 #import "MsgDetailController.h"
-#import "TXData.h"
-#import "TXSqliteOperate.h"
+#import "DBDatas.h"
 #import "MyAddressBooks.h"
 #import "ConBook.h"
+#import "DBHelper.h"
 
 @interface ContactController ()<UISearchResultsUpdating,UISearchControllerDelegate,ABNewPersonViewControllerDelegate,ABPersonViewControllerDelegate,MyAddressBooksDelegate>
 {
     
-    TXData *msgdata;
-    TXSqliteOperate *txsql;
+    DBDatas *msgdata;
     UIView *hudview;
     UILabel *showString;
     
@@ -56,6 +55,7 @@
     
     if (![userDefaults boolForKey:IsUpdateContacts]) {
         [userDefaults setBool:YES forKey:IsUpdateContacts];
+        
         [[MyAddressBooks sharedAddBooks] refReshContacts];//刷新联系人
         [self.tableView reloadData];
     }
@@ -103,8 +103,7 @@
     sectionDict = [[NSMutableDictionary alloc] init];
     _sortedArray = [[NSArray alloc] init];
     dataArray = [[NSMutableArray alloc] init];
-    msgdata = [[TXData alloc] init];
-    txsql=[[TXSqliteOperate alloc] init];
+    msgdata = [[DBDatas alloc] init];
     nameNumberArray = [[NSMutableArray alloc] init];
     Allphones =[[NSMutableArray alloc] init];
     searchsArray = [[NSMutableArray alloc] init];
@@ -344,8 +343,6 @@
     }
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width-20, 18)];
     headerView.backgroundColor = HeaderViewColor;
-    
-    
     UILabel *title = [[UILabel alloc] init];
     title.backgroundColor = [UIColor clearColor];
     //title.textColor = [UIColor redColor];
@@ -398,16 +395,19 @@
         msgdata.hisName = [[searchsArray objectAtIndex:indexPath.row] fullName];
         msgdata.hisNumber = [[[searchsArray objectAtIndex:indexPath.row] phoneNumberArray] firstObject];
         if (msgdata.hisNumber.length >=7) {
-            msgdata.hisHome = [txsql searchAreaWithHisNumber:[msgdata.hisNumber substringToIndex:7]];
+            msgdata.hisHome = [[DBHelper sharedDBHelper] getAreaWithNumber:[msgdata.hisNumber purifyString]];
         }else{msgdata.hisHome = @"";}
+        msgdata.contactID = [[searchsArray objectAtIndex:indexPath.row] contactID];
         msgDetail.datailDatas =msgdata;
+        
     }else{
         NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
         msgdata.hisName = [[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] fullName];
         msgdata.hisNumber = [[[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] phoneNumberArray] firstObject];
         if (msgdata.hisNumber.length >=7) {
-            msgdata.hisHome = [txsql searchAreaWithHisNumber:[msgdata.hisNumber substringToIndex:7]];
+            msgdata.hisHome = [[DBHelper sharedDBHelper] getAreaWithNumber:[msgdata.hisNumber purifyString]];
         }else{msgdata.hisHome = @"";}
+        msgdata.contactID = [[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] contactID];
         msgDetail.datailDatas =msgdata;
         
     }

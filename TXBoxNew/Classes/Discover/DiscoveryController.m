@@ -20,7 +20,6 @@
 #import "PopView.h"
 #import <ImageIO/ImageIO.h>
 #import "LoginController.h"
-#import "TXSqliteOperate.h"
 #import "BLEmanager.h"
 #import "CallAndDivert.h"
 
@@ -33,7 +32,6 @@
     
     UIImageView *con_imgv;  //
     UIImageView *ble_imgv;  //蓝牙图片
-    TXSqliteOperate *txsqlite;
     BOOL isConnecting;
     
     CBPeripheral *currentPeripheral;    //当前外设
@@ -101,7 +99,6 @@
     [userDefaults setBool:NO forKey:@"al"];
     isState = NO;
     defaults = [NSUserDefaults standardUserDefaults];
-    txsqlite = [[TXSqliteOperate alloc] init];
     callAndDivert = [[CallAndDivert alloc] init];
     callAndDivert.divertDelegate = self;
     dwebView = [[UIWebView alloc] init];

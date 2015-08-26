@@ -19,14 +19,12 @@
 #import "MessageCell.h"
 #import "MsgDetailController.h"
 #import "BLEOperation.h"
-#import "TXSqliteOperate.h"
-#import "TXData.h"
+#import "DBDatas.h"
 #import "NSString+helper.h"
 #import "MyAddressBooks.h"
 
 @interface MessageController ()<UISearchResultsUpdating,UISearchControllerDelegate,MyAddressBooksDelegate>
 {
-    TXSqliteOperate *txsqlite;
     NSMutableDictionary *namesDicts;
     ABRecordRef allRecords;
     NSString *inputString;
@@ -60,9 +58,9 @@
     //[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"indexMessage" object:self]];
     
     //显示会话的所有联系人，但不重复
-    NSMutableArray *aa = [txsqlite searchInfoFromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME];
-    for (TXData *d in aa) {
-        NSString *accp = d.msgAccepter;
+    NSMutableArray *aa = [[DBHelper sharedDBHelper] getAllMessages];
+    for (DBDatas *d in aa) {
+        NSString *accp = d.msgHisNum;
         
         if (![self.contactsArray containsObject:accp]) {
             [self.contactsArray addObject:accp];
@@ -87,9 +85,10 @@
  */
 -(void)searchLastMsgRecord
 {
-    TXData *dd = [[TXData alloc] init];
+    DBDatas *dd = [[DBDatas alloc] init];
     for (int i=0 ;i<self.contactsArray.count;i++) {
-        dd =[txsqlite searchConversationFromtable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME hisNumber:self.contactsArray[i] wihtSqlString:SELECT_A_LAST_MESSAGE_RECORDS];
+    
+        dd = [[DBHelper sharedDBHelper] getLastMsgRecord:self.contactsArray[i] ];
         if (self.dataArray.count>=self.contactsArray.count) {
             [self.dataArray removeAllObjects];
             
@@ -119,7 +118,6 @@
     
     [self initSearchController];
     inputString = [[NSString alloc] init];
-    txsqlite = [[TXSqliteOperate alloc] init];
     
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStyleDone target:nil action:nil];
 }
@@ -206,7 +204,7 @@
      *
      */
     if (self.searchController.searchBar.text.length >=1) {
-        self.searchsArray = [txsqlite searchContentWithInputText:searchString fromTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:SELECT_ALL_COINTENT_FROM_MSG];
+        self.searchsArray = [[DBHelper sharedDBHelper] getAllMsgFromInput:inputString];
     }
     
     
@@ -255,10 +253,10 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     //VCLog(@"self.dataArray:%@",self.dataArray);
-    TXData *ddata = [self.dataArray objectAtIndex:indexPath.row];
+    DBDatas *ddata = [self.dataArray objectAtIndex:indexPath.row];
     
     if (self.searchController.active) {
-        TXData *sdata = [self.searchsArray objectAtIndex:indexPath.row];
+        DBDatas *sdata = [self.searchsArray objectAtIndex:indexPath.row];
         cell.contactsLabel.text =[[ConBook sharBook] getNameWithAbid:[sdata.contactID intValue]]; //sdata.msgAccepter;
         cell.contactsLabel.attributedText = [self getAttributedStr:inputString str:cell.contactsLabel.text];
         cell.contentsLabel.text = sdata.msgContent;
@@ -338,14 +336,14 @@
     //传值，hisName,hisNumber,hisHome，hisContactId
     
     VCLog(@"namesDicts:%@",namesDicts);
-    TXData *detaildata = [[TXData alloc] init];//传值data
+    DBDatas *detaildata = [[DBDatas alloc] init];//传值data
     
     if (self.searchController.active) {
-        TXData *searchdata = [self.searchsArray objectAtIndex:indexPath.row];//搜索后
+        DBDatas *searchdata = [self.searchsArray objectAtIndex:indexPath.row];//搜索后
         detaildata.hisName = [[ConBook sharBook] getNameWithAbid:[searchdata.contactID intValue]];//searchdata.msgAccepter;
-        detaildata.hisNumber = searchdata.msgAccepter;
+        detaildata.hisNumber = searchdata.msgHisNum;
         if (detaildata.hisNumber.length >=7) {
-            detaildata.hisHome = [txsqlite searchAreaWithHisNumber:[[detaildata.hisNumber purifyString] substringToIndex:7]];
+            detaildata.hisHome = [[DBHelper sharedDBHelper] getAreaWithNumber:[detaildata.hisNumber purifyString]];
         }else{detaildata.hisHome  = @"";}
         detaildata.contactID = searchdata.contactID;
     }else{
@@ -353,7 +351,7 @@
         detaildata.hisName = [namesDicts valueForKey:[self.contactsArray objectAtIndex:indexPath.row]];
         detaildata.hisNumber = [self.contactsArray objectAtIndex:indexPath.row];//data.msgSender;
         if (detaildata.hisNumber.length >=7) {
-            detaildata.hisHome = [txsqlite searchAreaWithHisNumber:[[detaildata.hisNumber purifyString] substringToIndex:7]];
+            detaildata.hisHome = [[DBHelper sharedDBHelper] getAreaWithNumber:[detaildata.hisNumber purifyString]];
         }else{detaildata.hisHome  = @"";}
         detaildata.contactID = [[self.dataArray objectAtIndex:indexPath.row] contactID];
     }
@@ -402,7 +400,7 @@
         
         //删除数据库数据,整个会话
         NSString *hisNumbers = [self.contactsArray objectAtIndex:indexPath.row];
-        [txsqlite deleteContacterWithNumber:[hisNumbers purifyString] formTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME peopleId:@"" withSql:DELETE_MESSAGE_RECORD_CONVERSATION_SQL];
+        [[DBHelper sharedDBHelper] deleteAConversation:hisNumbers];
         
         //删除数组
         [self.dataArray removeObjectAtIndex:indexPath.row];//移除数组的元素

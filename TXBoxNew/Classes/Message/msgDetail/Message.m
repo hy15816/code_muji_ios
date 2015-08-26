@@ -10,14 +10,14 @@
 
 @implementation Message
 
-- (void)setData:(TXData *)ddata{
+- (void)setData:(DBDatas *)ddata{
     
     _data = ddata;
     
     //self.icon = ddata.icon;
     self.time = ddata.msgTime;
     self.content = ddata.msgContent;
-    self.type = [ddata.msgStates intValue];
+    self.type = [ddata.msgState intValue];
 }
 
 

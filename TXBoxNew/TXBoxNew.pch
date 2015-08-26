@@ -23,9 +23,9 @@
 #import <AVOSCloud/AVOSCloud.h>
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
-#import "TXSqliteOperate.h"
 #import "BLEHelper.h"
 #import "BLEmanager.h"
+#import "DBHelper.h"
 
 #ifdef DEBUG
 #define VCLog(...) NSLog(__VA_ARGS__)

@@ -7,19 +7,21 @@
 //
 
 #define INPUT_HEIGHT 49.f
+#define RIDRecord   @"recordIdHistory"
 
 #import "NewMsgController.h"
 #import "ShowContactsController.h"
-#import "TXSqliteOperate.h"
 #import "MsgDetailController.h"
 #import "NSString+helper.h"
 #import "BLEmanager.h"
 #import "HPGrowingTextView.h"
 #import "ConBook.h"
+#import "MsgModel.h"
+
 
 @interface NewMsgController ()<UITextViewDelegate,UITextFieldDelegate,BLEmanagerDelegate,HPGrowingTextViewDelegate>
 {
-    TXSqliteOperate *txsqlite;
+
     BLEmanager *bmanagers;
     
     HPGrowingTextView *putViews;
@@ -27,7 +29,8 @@
     ABRecordID reID;
     UIView *containerView;
     BOOL isSend;
-    NSString *phoneNumberString;
+    
+    NSMutableArray *mutIDArray;
     
 }
 
@@ -65,38 +68,69 @@
      [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kHideCusotomTabBar object:self]];
     self.tabBarController.tabBar.hidden = YES;
     
-
+    putViews.text = msgContent.length>0?msgContent:nil;
     
 }
 -(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
     if (isSend == NO) {
-
-        putViews.text = [userDefaults valueForKey:@"textInput"];
+        if (msgContent.length <=0 ) {
+            putViews.text = [userDefaults valueForKey:@"textInput"];
+        }
+        
     }
 }
 -(void)changeRecordRef:(NSNotification *)noti{
     
-    reID = [[[noti userInfo] valueForKey:isRecordID] intValue];
-
-    NSString *name =[[ConBook sharBook] getNameWithAbid:reID];
+    /**
+     *  1.selectVC通过通知每次发送一个id，
+     *  2.newVC 接收，保存到userDefaults
+     *      1）得到名字号码，数组
+     *
+     *
+     */
     
-    if ([userDefaults valueForKey:isRead]) {
-        NSString *agoName = [userDefaults valueForKey:@"self_hisNumberText"];
-        self.hisNumber.text = [NSString stringWithFormat:@"%@%@;",agoName,name];
-        if (name.length == 0) {
-            //获取号码
-            NSString *phone = [[ConBook sharBook] getFirstNumber:reID];
-            NSLog(@"phone:%@",phone);
-            NSString *lastPhone = [userDefaults valueForKey:@"self_hisNumberText"];
-            self.hisNumber.text = [NSString stringWithFormat:@"%@;%@",lastPhone,phone];
+    NSString *currID = [[noti userInfo] valueForKey:isRecordID];//当次选择的联系人ID
+    NSString *lastID = [userDefaults valueForKey:RIDRecord];//取出上一次的ID串
+    if (lastID.length <= 0) {
+        [userDefaults setValue:[NSString stringWithFormat:@"-%@",currID] forKey:RIDRecord];
+    }else{
+        [userDefaults setValue:[NSString stringWithFormat:@"%@-%@",lastID,currID] forKey:RIDRecord];
         }
+    
+    NSString *ridString = [userDefaults valueForKey:RIDRecord];//id字符串:-1-2-45
+    if ([userDefaults valueForKey:isRead]) {
+        NSMutableArray *array = (NSMutableArray *)[ridString componentsSeparatedByString:@"-"];//以-分割成为数组
+        for (int i=0; i<array.count; i++) {
+            if ([array[i] length] == 0) {
+                [array removeObjectAtIndex:i];
+            }
+        }
+        [mutIDArray removeAllObjects];
+        for (NSString *sid in array) {
+            if (sid.length <= 0) {
+                self.hisNumber.text =@"";
+            }else{
+                MsgModel *model = [[MsgModel alloc] init];
+                model.rid = sid;
+                model.name = [[ConBook sharBook] getNameWithAbid:[sid intValue]];
+                model.phone= [[ConBook sharBook] getFirstNumber:[sid  intValue]];
+                
+                [mutIDArray addObject:model];
+            }
+            
+        }
+        NSMutableString *nameString = [[NSMutableString alloc] initWithString:@""];//名字
+        for (MsgModel *msg in mutIDArray) {
+            [nameString appendFormat:@"%@;",msg.name.length>0?msg.name:msg.phone];//没有名字取号码当做名字
+        }
+        self.hisNumber.text = nameString;
+        
         [userDefaults setBool:NO forKey:isRead];
-        [userDefaults setValue:self.hisNumber.text forKey:@"self_hisNumberText"];
+        //[userDefaults setValue:[NSString stringWithFormat:@"-%@",currID] forKey:RIDRecord];
         
     }
     
-    //获取号码
-    phoneNumberString = [[ConBook sharBook] getFirstNumber:reID ];
     [self.hisNumber becomeFirstResponder];
     VCLog(@" name:%@",self.hisNumber.text);
     
@@ -132,18 +166,16 @@
     
 }
 
-
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [userDefaults setValue:@"" forKey:@"self_hisNumberText"];
+    [userDefaults setValue:@"" forKey:RIDRecord];
     isSend = NO;
-    
     
     self.title = @"新信息";
     self.disMissBtn.enabled = YES;
-    txsqlite = [[TXSqliteOperate alloc] init];
+    mutIDArray = [[NSMutableArray alloc] init];
+    
     //输入收件人
     self.hisNumber.delegate =self;
     self.hisNumber.contentMode = UIViewContentModeTopLeft;
@@ -188,9 +220,11 @@
     putViews.returnKeyType = UIReturnKeyGo; //just as an example
     putViews.font = [UIFont systemFontOfSize:15.0f];
     putViews.delegate = self;
+    
     putViews.internalTextView.scrollIndicatorInsets = UIEdgeInsetsMake(5, 0, 5, 0);
     putViews.backgroundColor = [UIColor whiteColor];
     putViews.placeholder = @"信息";
+
     
     [self.view addSubview:containerView];
     
@@ -250,14 +284,22 @@
     fmt.dateFormat = yyyy_M_d_HH_mm;
     NSString *time = [fmt stringFromDate:date];
     
-    TXData *txdata =  [[TXData alloc] init];
-    txdata.msgSender = @"1";
+    DBDatas *txdata =  [[DBDatas alloc] init];
     txdata.msgTime = time;
     txdata.msgContent = putViews.text;
-    NSString *firstNumber = [[ConBook sharBook] getFirstNumber:reID];
-    txdata.msgAccepter = [firstNumber purifyString];
-    txdata.msgStates = @"0";
-    txdata.contactID = [NSString stringWithFormat:@"%d",reID];
+    txdata.msgState = @"0";
+    for (int i=0; i<mutIDArray.count; i++) {
+        MsgModel *mmodel = mutIDArray[i];
+        NSString *firstNumber = [[ConBook sharBook] getFirstNumber:[mmodel.rid intValue]];
+        txdata.msgHisNum = [firstNumber purifyString];
+        txdata.contactID = mmodel.rid;
+        [self sendWithData:txdata];
+    }
+    
+}
+
+-(void)sendWithData:(DBDatas *)txdata {
+    
     /*
      BOOL connect = [[userDefaults valueForKey:BIND_STATE] intValue];
      if (!connect) {
@@ -267,16 +309,15 @@
      return;
      }
      */
-    BOOL ismobile = [[phoneNumberString purifyString] isMobileNumber:[phoneNumberString purifyString]];
-    
-    if (putViews.text.length > 0 && ismobile && phoneNumberString.length >= 11) {
+    //BOOL ismobile = [[phoneNumberString purifyString] isMobileNumber:[phoneNumberString purifyString]];
+    if (putViews.text.length > 0 && txdata.msgHisNum.length >= 11) {
         
         //向蓝牙发送信息
         //[bmanager writeDatas:[self getdata]];
         BOOL senderSuc = YES;
         if (senderSuc) {
             //保存到本地
-            [txsqlite addInfo:txdata inTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECORDS_ADDINFO_SQL];
+            [[DBHelper sharedDBHelper] addDatasToMsgRecord:txdata];
             
             [userDefaults setValue:@"" forKey:@"HEHE"];
             [userDefaults setValue:@"" forKey:@"MEME"];
@@ -295,7 +336,7 @@
         [SVProgressHUD showImage:nil status:@"收件人不能为空!"];
         self.disMissBtn.enabled = YES;
     }
-    
+
 }
 
 -(NSData *)getdata{

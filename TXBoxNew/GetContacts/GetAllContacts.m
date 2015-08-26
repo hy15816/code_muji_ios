@@ -59,11 +59,11 @@
     }
     [sectionDicts setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'~']];
     
-    
+    /*
     for (int s=0; s<1000; s++) {
         [self adds];
     }
-    
+    */
     
     
     //初始化电话簿
@@ -161,7 +161,7 @@
         }
         [tempDic setObject:name forKey:PersonName];//把名字存为key:"personName"的Value
         [tempDic setObject:namePinYinArray forKey:PersonNameNum];
-        [tempDic setObject:(__bridge id)(record) forKey:PersonRecordRef];
+        [tempDic setObject:[NSString stringWithFormat:@"%d",recordID] forKey:PersonRecordID];
         [tempDic setObject:nameFirstCharsArr forKey:FirstNameChars];
         //VCLog(@"tempDictemp：%@",tempDic);
         [phonesArray addObject:tempDic];//把tempDic赋给phoneArray数组
@@ -180,7 +180,9 @@
     
     
 }
-
+/**
+ *  添加测试数据，模拟联系人数据
+ */
 -(void)adds{
     //int delta = 0x9fa5-0x4e00 + 1;
         NSString *phoneNumber = [NSString stringWithFormat:@"1%d%d%d%d%d%d%d%d%d%d",arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8)];
@@ -189,7 +191,9 @@
     
 }
 
-//高效费舍尔茨洗牌(这里只获取前3个字)
+/**
+ *  高效费舍尔茨洗牌(这里只获取前3个字)
+ */
 -(NSString *)getPinyin{
     
     NSString *alphabet = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -215,7 +219,9 @@
     
 }
 
-
+/**
+ *  随机获取3个汉字
+ */
 -(NSString *)getHanzi{
     NSMutableString *sname = [[NSMutableString alloc] initWithString:@""];;
     for (int i=0; i<3; i++) {
@@ -233,7 +239,9 @@
     }
     return (NSString *)sname;
 }
-
+/**
+ *  转化成为数据源，提供搜索
+ */
 -(void)addContacts:(NSString *)name number:(NSString *)numbers{
     
     NSMutableDictionary *tempDic = [[NSMutableDictionary alloc] init];
@@ -253,7 +261,7 @@
     [tempDic setObject:numbers forKey:PersonTelNum];//-数字号码
     [tempDic setObject:name forKey:PersonName];//把名字存为key:"personName"的Value
     [tempDic setObject:namePinYinArray forKey:PersonNameNum];
-    [tempDic setObject:rid forKey:PersonRecordRef];
+    [tempDic setObject:rid forKey:PersonRecordID];
     [tempDic setObject:nameFirstCharsArr forKey:FirstNameChars];
     [phonesArray addObject:tempDic];
 }

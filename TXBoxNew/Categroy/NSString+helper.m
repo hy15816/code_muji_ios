@@ -64,7 +64,7 @@
     
 }
 
-#pragma mark --过滤字符串中的““”
+#pragma mark --过滤字符串中的““”,
 -(NSString *) iPhoneStandardedleftMarkFormat{
     return [self stringByReplacingOccurrencesOfString:@"“" withString:@""];
     
@@ -253,7 +253,9 @@
                     for (int j = 0; j < allPY4CurrentHZ.count; j++) {
                         allPY4CurrentHZ[j] = [NSString stringWithFormat:@"%@%@",inSeperator,allPY4CurrentHZ[j]];//格式化，加上‘-’
                     }
-                    [thisList addObject:allPY4CurrentHZ];
+                    NSArray *arr = [NSArray arrayWithObject:[allPY4CurrentHZ objectAtIndex:0]];
+                    [thisList addObject:arr];
+                    
                 }
             }else{//不是汉字，直接添加，
                 NSMutableArray *a = [[NSMutableArray alloc] initWithObjects:[NSString stringWithFormat:@"%@%@",inSeperator,currChar], nil];

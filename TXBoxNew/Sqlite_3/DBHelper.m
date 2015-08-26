@@ -31,7 +31,7 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     
-    NSString *dbPath = [documentsDirectory stringByAppendingPathComponent:@"saveData.db"];
+    NSString *dbPath = [documentsDirectory stringByAppendingPathComponent:@"saveData_8_26.db"];
     return dbPath;
 }
 
@@ -67,14 +67,27 @@
 }
 
 /**
+ *  使用本地数据库
+ */
+-(FMDatabase *)createDatabaseWith:(NSString *)path{
+    FMDatabase *db = [FMDatabase databaseWithPath:path];
+    if (![db open])
+    {
+        return nil;
+    }
+    
+    return db;
+}
+
+/**
  *  创建表
  */
 -(void)createTable{
     //通话记录
-    NSString *callRecord=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (tel_id integer primary key AUTOINCREMENT,hisName TEXT,hisNumber TEXT,callDirection TEXT,callLength TEXT,callBeginTime TEXT,hisHome TEXT,hisOperator TEXT,contactid,TEXT)",CALL_RECORD];
+    NSString *callRecord=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (tel_id integer primary key AUTOINCREMENT,hisNumber TEXT,callDirection TEXT,callLength TEXT,callBeginTime TEXT,hisHome TEXT,hisOperator TEXT,contactid,TEXT)",CALL_RECORD];
     
     //信息记录
-    NSString *messageRecord=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (peopleId integer primary key AUTOINCREMENT,msgHisName TEXT,msgHisNum TEXT,msgTime TEXT,msgContent TEXT,msgState TEXT)",MSG_RECORD ];
+    NSString *messageRecord=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (peopleId integer primary key AUTOINCREMENT,msgHisNum TEXT,msgTime TEXT,msgContent TEXT,msgState TEXT)",MSG_RECORD ];
     
     NSArray *sqlArray = @[callRecord,messageRecord];
     for(NSString *sql in sqlArray){
@@ -104,8 +117,8 @@
  */
 -(void)addDatasToCallRecord:(DBDatas *)datas{
     FMDatabase *db=[self createDatabase];
-    NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO %@ (hisName ,hisNumber ,callDirection ,callLength,callBeginTime ,hisHome ,hisOperator,contactid ) values(?,?,?,?,?,?,?,?)",CALL_RECORD];
-    BOOL result = [db executeUpdate:insertSql,datas.hisName,datas.hisNumber,datas.callDirection,datas.callLength,datas.callBeginTime,datas.hisHome,datas.hisOperator,datas.contactID];
+    NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO %@ (hisNumber ,callDirection ,callLength,callBeginTime ,hisHome ,hisOperator,contactid ) values(?,?,?,?,?,?,?)",CALL_RECORD];
+    BOOL result = [db executeUpdate:insertSql,datas.hisNumber,datas.callDirection,datas.callLength,datas.callBeginTime,datas.hisHome,datas.hisOperator,datas.contactID];
     if (!result) {
         NSLog(@"保存通话记录失败");
     }
@@ -126,7 +139,6 @@
         
         DBDatas *datas = [[DBDatas alloc] init];
         datas.tel_id = [rs intForColumn:@"tel_id"];
-        datas.hisName = [rs stringForColumn:@"hisName"];
         datas.hisNumber = [rs stringForColumn:@"hisNumber"];
         datas.callDirection = [rs stringForColumn:@"callDirection"];
         datas.callLength = [rs stringForColumn:@"callLength"];
@@ -139,7 +151,6 @@
     }
     [rs close];
     
-    
     return mutArray;
 }
 
@@ -147,10 +158,10 @@
  *  删除一条通话记录
  *  @param tel_id 每条记录的id
  */
--(void)deleteACallRecord:(int)tel_id{
+-(void)deleteACallRecord:(int )tel_id{
     
     FMDatabase *db = [self createDatabase];
-    BOOL delete = [db executeUpdate:@"DELETE FROM ? WHERE tel_id =?",CALL_RECORD,tel_id];
+    BOOL delete = [db executeUpdate:@"delete from CALL_RECORDS WHERE tel_id = ?",[NSNumber numberWithInt:tel_id]];
     if (!delete) {
         NSLog(@"删除记录失败");
     }
@@ -164,10 +175,10 @@
  *  @param datas DBDatas
  */
 -(void)addDatasToMsgRecord:(DBDatas *)datas{
-    //msgHisName TEXT,msgHisNum TEXT,msgTime TEXT,msgContent TEXT,msgState TEXT
+
     FMDatabase *db=[self createDatabase];
-    NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO %@(msgHisName,msgHisNum,msgTime,msgContent,msgState) values(?,?,?,?,?)",MSG_RECORD];
-    BOOL result = [db executeUpdate:insertSql,datas.msgHisName,datas.msgHisNum,datas.msgTime,datas.msgContent,datas.msgState];
+    NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO %@(msgHisNum,msgTime,msgContent,msgState) values(?,?,?,?)",MSG_RECORD];
+    BOOL result = [db executeUpdate:insertSql,datas.msgHisNum,datas.msgTime,datas.msgContent,datas.msgState];
     if (!result) {
         NSLog(@"保存信息记录失败");
     }
@@ -189,7 +200,6 @@
         
         DBDatas *datas = [[DBDatas alloc] init];
         datas.peopleId = [rs intForColumn:@"peopleId"];
-        datas.msgHisName = [rs stringForColumn:@"msgHisName"];
         datas.msgHisNum = [rs stringForColumn:@"msgHisNum"];
         datas.msgTime = [rs stringForColumn:@"msgTime"];
         datas.msgContent = [rs stringForColumn:@"msgContent"];
@@ -202,6 +212,30 @@
     
     return mutArray;
 }
+
+/**
+ *  查询一个会话的所有内容
+ *  @param  number 号码
+ */
+-(NSMutableArray *)getAConversation:(NSString *)number{
+    NSMutableArray *mutArray = [[NSMutableArray alloc] init];
+    number = [number purifyString];
+    DBDatas *datas = [[DBDatas alloc] init];
+    
+    FMDatabase *db=[self createDatabase];
+    FMResultSet *rs=[db executeQuery:@"SELECT *FROM MSG_RECORD  where msgHisNum=? ",number];
+    while ([rs next]) {
+        datas.peopleId = [rs intForColumn:@"peopleId"];
+        datas.msgHisNum = [rs stringForColumn:@"msgHisNum"];
+        datas.msgTime = [rs stringForColumn:@"msgTime"];
+        datas.msgContent = [rs stringForColumn:@"msgContent"];
+        datas.msgState = [rs stringForColumn:@"msgState"];
+        [mutArray addObject:datas];
+    }
+    
+    return mutArray;
+}
+
 
 /**
  *  删除一个信息会话
@@ -225,9 +259,8 @@
  */
 -(void)deleteAMsgRecord:(int)peopleid{
     
-    NSString *deleteSql = [NSString stringWithFormat:@"DELETE FROM %@ WHERE peopleId= %d",MSG_RECORD,peopleid];
     FMDatabase *db=[self createDatabase];
-    BOOL delete = [db executeUpdate:deleteSql];
+    BOOL delete = [db executeUpdate:@"DELETE FROM MSG_RECORD WHERE peopleId = ?",[NSNumber numberWithInt:peopleid]];
     if (!delete) {
         NSLog(@"删除单条信息失败");
     }
@@ -241,12 +274,11 @@
 -(DBDatas *)getLastMsgRecord:(NSString *)hisNumber{
     hisNumber = [hisNumber purifyString];
     DBDatas *datas = [[DBDatas alloc] init];
-    
+
     FMDatabase *db=[self createDatabase];
-    FMResultSet *rs=[db executeQuery:@"SELECT * FROM %@  where msgHisNum=%@ order by id desc limit 1",MSG_RECORD,hisNumber];
+    FMResultSet *rs=[db executeQuery:@"SELECT *FROM MSG_RECORD  where msgHisNum=? order by peopleId desc limit 1",hisNumber];
     while ([rs next]) {
         datas.peopleId = [rs intForColumn:@"peopleId"];
-        datas.msgHisName = [rs stringForColumn:@"msgHisName"];
         datas.msgHisNum = [rs stringForColumn:@"msgHisNum"];
         datas.msgTime = [rs stringForColumn:@"msgTime"];
         datas.msgContent = [rs stringForColumn:@"msgContent"];
@@ -264,12 +296,11 @@
 -(NSMutableArray *)getAllMsgFromInput:(NSString *)string{
     NSMutableArray *mutArray = [[NSMutableArray alloc] init];
     FMDatabase *db=[self createDatabase];
-    NSString *selectSql = [NSString stringWithFormat:@"SELECT *FROM %@ WHERE msgHisName LIKE '%@' OR msgHisNum LIKE '%@' OR msgContent LIKE '%@' ",MSG_RECORD,string,string,string];
+    NSString *selectSql = [NSString stringWithFormat:@"SELECT *FROM %@ WHERE  msgHisNum LIKE '%@' OR msgContent LIKE '%@' ",MSG_RECORD,string,string];
     FMResultSet *rs=[db executeQuery:selectSql];
     while ([rs next]) {
         DBDatas *datas = [[DBDatas alloc] init];
         datas.peopleId = [rs intForColumn:@"peopleId"];
-        datas.msgHisName = [rs stringForColumn:@"msgHisName"];
         datas.msgHisNum = [rs stringForColumn:@"msgHisNum"];
         datas.msgTime = [rs stringForColumn:@"msgTime"];
         datas.msgContent = [rs stringForColumn:@"msgContent"];
@@ -288,11 +319,14 @@
  */
 -(NSString *)getAreaWithNumber:(NSString *)number{
     number = [number purifyString];
+    if ([[number substringToIndex:3] isEqualToString:@"+86"]) {
+        number = [number substringFromIndex:3];
+    }
     if (number.length >=7) {
         number = [number substringToIndex:7];//获取号码钱7位即可查询
     }
-    NSString *dbPath = [[NSBundle mainBundle] pathForResource:@"PhoneAreas" ofType:@"sqlite"];
-    FMDatabase *db = [FMDatabase databaseWithPath:dbPath];
+    NSString *dbPath = [[NSBundle mainBundle] pathForResource:@"PhoneArea" ofType:@"db"];
+    FMDatabase *db = [self createDatabaseWith:dbPath];
     NSString *area = [[NSString alloc] init];
     NSString *areaCode ;
     NSString *selectSql = [NSString stringWithFormat:@"select * from numarea where number = %@",number];
@@ -305,6 +339,9 @@
     FMResultSet *rsa = [db executeQuery:selectAreaSql];//根据地区码查询归属地，
     while ([rsa next]) {
         area = [rsa stringForColumn:@"area"];
+        area = [area purifyString];
+        area = [area substringFromIndex:1];
+        area = [area substringToIndex:area.length -1];
     }
     
     return area.length>0?area:@"未知地区";

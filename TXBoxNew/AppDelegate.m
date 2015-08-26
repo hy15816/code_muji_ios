@@ -29,10 +29,7 @@
     [AVOSCloud setApplicationId:@"85m0pvb0vv1iluti5sk0xsou1mkftzn06a3f1ompvza9xc7z" clientKey:@"orluh89ufnpvl773b68w5gcdk4dxfrahzwaahz7c46ettn44"];
     
     //创建数据库-和表
-    TXSqliteOperate *sqlite = [[TXSqliteOperate alloc] init];
-    [sqlite createTable:CALL_RECORDS_TABLE_NAME withSql:CALL_RECORDS_CREATE_TABLE_SQL];
-    [sqlite createTable:MESSAGE_RECEIVE_RECORDS_TABLE_NAME withSql:MESSAGE_RECEIVE_RECORDS_CREATE_TABLE_SQL];
-    
+    [[DBHelper sharedDBHelper] createTable];
     
     if ([[UIApplication sharedApplication]currentUserNotificationSettings].types!=UIUserNotificationTypeNone) {
         //[self addLocalNotification];
@@ -43,10 +40,55 @@
     [self changeNavigationBarStyle];//修改导航栏的sytle
     [self isOrNotUpdateVersion];//检测更新
     [self addTimer];//延时
-
+    //[self testFMDb];
+    
     return YES;
 }
 
+/**
+ *  测试fmdb
+ */
+-(void)testFMDb{
+    
+    /*
+    datas.hisNumber = @"13698006532";
+    datas.callBeginTime = @"15-8-26 14:38:20";
+    datas.hisOperator = @"运营商2";
+    datas.hisHome = @"江西南昌2";
+    datas.hisName = @"名字2";
+    datas.callDirection = @"1";
+    datas.callLength = @"05:30";
+    datas.contactID = @"220";
+     
+    //通话记录add，delete，search，已ok
+    //[[DBHelper sharedDBHelper] createTable];
+    //[[DBHelper sharedDBHelper] addDatasToCallRecord:datas];
+    //NSLog(@"allRecords:%@",[[DBHelper sharedDBHelper] getAllCallRecords]);
+    //[[DBHelper sharedDBHelper] deleteACallRecord:1];
+    */
+    
+    //=================================
+    for (int i=0; i<10; i++) {
+        DBDatas *datas = [[DBDatas alloc] init];
+        datas.msgHisNum = [NSString stringWithFormat:@"1369800653%d",i];
+        datas.msgState = [NSString stringWithFormat:@"%d",i%1];
+        datas.msgContent =[NSString stringWithFormat:@"1这是一条详细信息53%d",i];
+        datas.msgTime =[NSString stringWithFormat:@"15-8-26 16:3%d:20",i];
+        datas.contactID = [NSString stringWithFormat:@"22%d",i];
+        //[[DBHelper sharedDBHelper] addDatasToMsgRecord:datas];
+    }
+    
+    NSLog(@"allMsgRecord:%@",[[DBHelper sharedDBHelper] getAllMessages]);
+    
+    
+    //[[DBHelper sharedDBHelper] deleteAConversation:@"13698006536"];//删除一个会话.ok
+    //NSLog(@"allMsgRecord:%@",[[DBHelper sharedDBHelper] getLastMsgRecord:@"13698006536"]);//查询一个会话的最后一条。ok
+    
+    //[[DBHelper sharedDBHelper] deleteAMsgRecord:20];//删除一个会话的其中一条.ok
+    //NSLog(@"address:%@",[[DBHelper sharedDBHelper] getAreaWithNumber:@"13698006536"]) ;//查询归属地，ok
+    //查询输入匹配的结果
+    [[DBHelper sharedDBHelper] getAllMsgFromInput:@"698"];
+}
 
 #pragma mark -- 延时
 -(void)addTimer{

@@ -11,7 +11,7 @@
 @implementation DBDatas
 
 @synthesize tel_id;
-@synthesize hisName;
+//@synthesize hisName;
 @synthesize hisNumber;
 @synthesize callDirection;
 @synthesize callLength;
@@ -21,7 +21,7 @@
 
 
 @synthesize peopleId;
-@synthesize msgHisName;
+//@synthesize msgHisName;
 @synthesize msgHisNum;
 @synthesize msgTime;
 @synthesize msgContent;

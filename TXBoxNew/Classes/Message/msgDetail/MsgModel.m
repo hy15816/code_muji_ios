@@ -10,4 +10,6 @@
 
 @implementation MsgModel
 
+@synthesize rid,name,phone;
+
 @end

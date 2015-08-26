@@ -38,6 +38,5 @@ typedef CF_ENUM(NSInteger, MyBooksNotifity) {
 
 -(void)CreateAddressBooks;
 -(void)refReshContacts;
--(BOOL)addPerson:(ConBook *)conbook;
 
 @end

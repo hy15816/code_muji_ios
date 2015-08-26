@@ -9,10 +9,10 @@
 #import "CallingView.h"
 #import <ImageIO/ImageIO.h>
 #import "TXCallAction.h"
-#import "TXSqliteOperate.h"
 #import "NSString+helper.h"
 #import "BLEmanager.h"
 #import "BLEHelper.h"
+#import "DBHelper.h"
 
 @interface CallingView ()<BLEmanagerDelegate>
 {
@@ -101,10 +101,8 @@
             [button setTitle:hisNames forState:UIControlStateNormal];
         }
         if (i == 1) {
-            //获取归属地
-            TXSqliteOperate *txsqlite = [[TXSqliteOperate alloc] init];
             if (hisNumbers.length >=7) {
-                _hisHome = [txsqlite searchAreaWithHisNumber:[[hisNumbers purifyString] substringToIndex:7]];
+                _hisHome = [[DBHelper sharedDBHelper] getAreaWithNumber:[hisNumbers purifyString]];
             }else{_hisHome = @"";}
             
             [button setTitle:[NSString stringWithFormat:@"%@ %@",hisNumbers,_hisHome] forState:UIControlStateNormal];

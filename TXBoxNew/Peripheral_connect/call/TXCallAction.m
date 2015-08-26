@@ -9,7 +9,6 @@
 #import "TXCallAction.h"
 #import "NSString+helper.h"
 #import "DBHelper.h"
-#import "DBDatas.h"
 
 @interface TXCallAction ()
 
@@ -17,14 +16,12 @@
 @end
 
 @implementation TXCallAction
-@synthesize txSqlite,startDate,data;
+@synthesize startDate,data;
 
 -(id)init
 {
     if (self = [super init]) {
-        
-        txSqlite = [[TXSqliteOperate alloc] init];
-        data = [[TXData alloc] init];
+        data = [[DBDatas alloc] init];
         startDate = [[NSDate alloc] init];
         _contactsID = [[NSString alloc] init];
     }
@@ -106,16 +103,7 @@
     
     //通话时长
     NSString *strCallLength = times;
-    //姓名
-    NSString *strName = [[NSString alloc] init];
-    if (hisName.length>0) {
-        
-        strName  =hisName;
-    }else
-    {
-        strName = @"";
-    }
-    //姓名
+    //号码
     NSString *strNunmber = [[NSString alloc] init];
     if (hisNumber.length>0) {
         
@@ -133,7 +121,7 @@
     NSString *strAddress = [[NSString alloc] init];
     if (hisNumber.length >=7) {
         
-        strAddress = [txSqlite searchAreaWithHisNumber:[[hisNumber purifyString] substringToIndex:7]];
+        strAddress = [[DBHelper sharedDBHelper] getAreaWithNumber:[hisNumber purifyString]];
         
     }else{
         strAddress = @"";
@@ -148,18 +136,13 @@
     data.callBeginTime = strDate;
     data.hisOperator = strOperators;
     data.hisHome = strAddress;
-    data.hisName = strName;
     data.callDirection = direction;
     data.callLength = strCallLength;
     data.contactID = _contactsID;
     
-    //[[DBHelper sharedDBHelper] addDatasToCallRecord:data];
+    [[DBHelper sharedDBHelper] addDatasToCallRecord:data];
     
-    [txSqlite addInfo:data inTable:CALL_RECORDS_TABLE_NAME withSql:CALL_RECORDS_ADDINFO_SQL];
 }
-
-
-
 
 // 时间转字符串，
 -(NSString *) dateTurnStringWithDate:(NSDate *)date dateFormate:(NSString *)formate

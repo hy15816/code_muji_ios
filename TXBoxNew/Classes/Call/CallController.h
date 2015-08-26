@@ -8,13 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "CallRecordsCell.h"
-#import "TXData.h"
+#import "DBDatas.h"
 #import "CModle.h"
 
 @interface CallController : UITableViewController
 
 
 //data对象数组：通话记录
-@property TXData *data;
+@property DBDatas *data;
 
 @end

@@ -7,11 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TXData.h"
+#import "DBDatas.h"
 
 @interface MsgDetailController : UIViewController
 
-@property (nonatomic,strong) TXData *datailDatas;
+@property (nonatomic,strong) DBDatas *datailDatas;
 
 
 @end

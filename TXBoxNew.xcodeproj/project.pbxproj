@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		632AC6391ADCE92F0023FAA9 /* TXData.m in Sources */ = {isa = PBXBuildFile; fileRef = 632AC6361ADCE92F0023FAA9 /* TXData.m */; };
-		632AC63A1ADCE92F0023FAA9 /* TXSqliteOperate.m in Sources */ = {isa = PBXBuildFile; fileRef = 632AC6381ADCE92F0023FAA9 /* TXSqliteOperate.m */; };
 		632AC6441ADCF0240023FAA9 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 632AC6431ADCF0240023FAA9 /* libsqlite3.dylib */; };
 		63315A521B12D5FF00BD9817 /* Addresser.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63315A511B12D5FF00BD9817 /* Addresser.plist */; };
 		6350035C1ADFB9710051377F /* pinyin.c in Sources */ = {isa = PBXBuildFile; fileRef = 6350035A1ADFB9710051377F /* pinyin.c */; };
@@ -59,6 +57,7 @@
 		6382AE9E1B660D6A00745285 /* ContactsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6382AE9C1B660D6A00745285 /* ContactsTableViewCell.xib */; };
 		6387735A1B4F894600771AF2 /* ShareContentController.m in Sources */ = {isa = PBXBuildFile; fileRef = 638773581B4F894600771AF2 /* ShareContentController.m */; };
 		6387735D1B4FB0A000771AF2 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6387735C1B4FB0A000771AF2 /* Launch Screen.xib */; };
+		6387D5FF1B8DA42A003F60F0 /* PhoneArea.db in Resources */ = {isa = PBXBuildFile; fileRef = 6387D5FE1B8DA42A003F60F0 /* PhoneArea.db */; };
 		63912DBD1B69FB93000E097B /* MyAddressBooks.m in Sources */ = {isa = PBXBuildFile; fileRef = 63912DBC1B69FB93000E097B /* MyAddressBooks.m */; };
 		639132401B21778B00F61E04 /* ShowContactsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6391323F1B21778B00F61E04 /* ShowContactsController.m */; };
 		639132431B2177A500F61E04 /* ShowContactsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 639132421B2177A500F61E04 /* ShowContactsCell.m */; };
@@ -109,7 +108,6 @@
 		63FB5FDE1ADBB58700A1A92B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63FB5FDC1ADBB58700A1A92B /* Main.storyboard */; };
 		63FB5FE01ADBB58700A1A92B /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63FB5FDF1ADBB58700A1A92B /* Images.xcassets */; };
 		63FB5FEF1ADBB58800A1A92B /* TXBoxNewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB5FEE1ADBB58800A1A92B /* TXBoxNewTests.m */; };
-		63FE286E1B20196A00A1C901 /* PhoneAreas.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 63FE286D1B20196A00A1C901 /* PhoneAreas.sqlite */; };
 		63FF5E951B4D2148007D791F /* TextViewInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FF5E931B4D2148007D791F /* TextViewInput.m */; };
 		63FF5E961B4D2148007D791F /* abcd.png in Resources */ = {isa = PBXBuildFile; fileRef = 63FF5E941B4D2148007D791F /* abcd.png */; };
 /* End PBXBuildFile section */
@@ -125,10 +123,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		632AC6351ADCE92F0023FAA9 /* TXData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXData.h; sourceTree = "<group>"; };
-		632AC6361ADCE92F0023FAA9 /* TXData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXData.m; sourceTree = "<group>"; };
-		632AC6371ADCE92F0023FAA9 /* TXSqliteOperate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXSqliteOperate.h; sourceTree = "<group>"; };
-		632AC6381ADCE92F0023FAA9 /* TXSqliteOperate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TXSqliteOperate.m; sourceTree = "<group>"; };
 		632AC63C1ADCEA760023FAA9 /* TXBoxNew.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXBoxNew.pch; sourceTree = "<group>"; };
 		632AC63E1ADCEB7C0023FAA9 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		632AC6431ADCF0240023FAA9 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
@@ -224,6 +218,7 @@
 		638773571B4F894600771AF2 /* ShareContentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareContentController.h; sourceTree = "<group>"; };
 		638773581B4F894600771AF2 /* ShareContentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareContentController.m; sourceTree = "<group>"; };
 		6387735C1B4FB0A000771AF2 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
+		6387D5FE1B8DA42A003F60F0 /* PhoneArea.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = PhoneArea.db; sourceTree = "<group>"; };
 		63912DBB1B69FB93000E097B /* MyAddressBooks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyAddressBooks.h; sourceTree = "<group>"; };
 		63912DBC1B69FB93000E097B /* MyAddressBooks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyAddressBooks.m; sourceTree = "<group>"; };
 		6391323E1B21778B00F61E04 /* ShowContactsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowContactsController.h; sourceTree = "<group>"; };
@@ -317,7 +312,6 @@
 		63FB5FE81ADBB58800A1A92B /* TXBoxNewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TXBoxNewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		63FB5FED1ADBB58800A1A92B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		63FB5FEE1ADBB58800A1A92B /* TXBoxNewTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TXBoxNewTests.m; sourceTree = "<group>"; };
-		63FE286D1B20196A00A1C901 /* PhoneAreas.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = PhoneAreas.sqlite; sourceTree = "<group>"; };
 		63FF5E921B4D2148007D791F /* TextViewInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextViewInput.h; sourceTree = "<group>"; };
 		63FF5E931B4D2148007D791F /* TextViewInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextViewInput.m; sourceTree = "<group>"; };
 		63FF5E941B4D2148007D791F /* abcd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = abcd.png; sourceTree = "<group>"; };
@@ -351,10 +345,6 @@
 		632AC6341ADCE92F0023FAA9 /* Sqlite_3 */ = {
 			isa = PBXGroup;
 			children = (
-				632AC6351ADCE92F0023FAA9 /* TXData.h */,
-				632AC6361ADCE92F0023FAA9 /* TXData.m */,
-				632AC6371ADCE92F0023FAA9 /* TXSqliteOperate.h */,
-				632AC6381ADCE92F0023FAA9 /* TXSqliteOperate.m */,
 				63DACA811B84741200276FF5 /* DBHelper.h */,
 				63DACA821B84741200276FF5 /* DBHelper.m */,
 				6371850B1B858A500080D5FA /* DBDatas.h */,
@@ -403,7 +393,7 @@
 		635299771ADE3AF7006840AC /* Call */ = {
 			isa = PBXGroup;
 			children = (
-				63FE286D1B20196A00A1C901 /* PhoneAreas.sqlite */,
+				6387D5FE1B8DA42A003F60F0 /* PhoneArea.db */,
 				635299781ADE3AF7006840AC /* CallController.h */,
 				635299791ADE3AF7006840AC /* CallController.m */,
 				6352997A1ADE3AF7006840AC /* CallRecordsCell.h */,
@@ -956,13 +946,13 @@
 				63D34AFD1AF9C6DD00C8B533 /* board.gif in Resources */,
 				63FB5FDE1ADBB58700A1A92B /* Main.storyboard in Resources */,
 				63D487201B183B72005F2E1A /* phone_connect.gif in Resources */,
+				6387D5FF1B8DA42A003F60F0 /* PhoneArea.db in Resources */,
 				63FF5E961B4D2148007D791F /* abcd.png in Resources */,
 				6382AE9E1B660D6A00745285 /* ContactsTableViewCell.xib in Resources */,
 				6363DA681B2AD369005EF820 /* MessageCell.xib in Resources */,
 				635F818B1B3AAB5900A7A7D1 /* line.gif in Resources */,
 				63D4871E1B183B24005F2E1A /* ble_connect.gif in Resources */,
 				6371918E1B1F01B1005C09C8 /* unicode_to_hanyu_pinyin.txt in Resources */,
-				63FE286E1B20196A00A1C901 /* PhoneAreas.sqlite in Resources */,
 				637B49DE1B438DA000326937 /* SVProgressHUD.bundle in Resources */,
 				635F81811B3A851300A7A7D1 /* ff.gif in Resources */,
 				63FB5FE01ADBB58700A1A92B /* Images.xcassets in Resources */,
@@ -988,7 +978,6 @@
 				6350035C1ADFB9710051377F /* pinyin.c in Sources */,
 				637005CA1AE4C1D000B8BAFD /* BLEOperation.m in Sources */,
 				63D4871C1B1835CA005F2E1A /* DiscoveryController.m in Sources */,
-				632AC63A1ADCE92F0023FAA9 /* TXSqliteOperate.m in Sources */,
 				63AE3B041B60EFFD0035DE87 /* ProvisionViewController.m in Sources */,
 				63FB5FD81ADBB58700A1A92B /* AppDelegate.m in Sources */,
 				63FA3A641B5E28FF0049EB1C /* AFNetworkReachabilityManager.m in Sources */,
@@ -1049,7 +1038,6 @@
 				637E41DD1B3961D20015F682 /* LoginController.m in Sources */,
 				63DEA67B1B0094FB003343A7 /* MsgDetailCell.m in Sources */,
 				637B49E21B438E2900326937 /* CallAndDivert.m in Sources */,
-				632AC6391ADCE92F0023FAA9 /* TXData.m in Sources */,
 				63DACA921B8474D600276FF5 /* FMDatabasePool.m in Sources */,
 				63DED3851B81798C00CAB80F /* Messages.m in Sources */,
 				63DACA801B8439C300276FF5 /* CallInView.m in Sources */,

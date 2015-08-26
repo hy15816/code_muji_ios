@@ -23,7 +23,7 @@
 
 //===============短信
 @property (assign, nonatomic) int peopleId;
-@property (strong, nonatomic) NSString *msgHisName;         //对方号码
+//@property (strong, nonatomic) NSString *msgHisName;         //对方名字
 @property (strong, nonatomic) NSString *msgHisNum;         //对方号码
 @property (strong, nonatomic) NSString *msgTime;        //信息时间
 @property (strong, nonatomic) NSString *msgContent;     //短信内容
