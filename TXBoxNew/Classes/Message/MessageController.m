@@ -4,16 +4,8 @@
 //
 //  Created by Naron on 15/4/21.
 //  Copyright (c) 2015年 playtime. All rights reserved.
-/*
-//  搜索的结果。resaults{
-            contacts1{@“abc”,@"def",...},
-            contacts2{@“ahg”,@"dlp",...},
-            contacts3{@“ayu”,@"dmn",...},
-            ...
-}
- 
- *  找出所有匹配的contents和contacts，再根据contact分类
- */
+//  短信页面
+
 
 #import "MessageController.h"
 #import "MessageCell.h"
@@ -25,12 +17,8 @@
 
 @interface MessageController ()<UISearchResultsUpdating,UISearchControllerDelegate,MyAddressBooksDelegate>
 {
-    NSMutableDictionary *namesDicts;
-    ABRecordRef allRecords;
     NSString *inputString;
 }
-@property (assign,nonatomic) ABAddressBookRef addressBooks;
-@property (strong,nonatomic) NSMutableArray *refMutArray;
 
 @property (strong,nonatomic) NSMutableArray *dataArray;     //短信信息
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
@@ -46,18 +34,12 @@
 {
     [super viewWillAppear:animated];
     
-    
-    
-    namesDicts = [[NSMutableDictionary alloc] init];
     if (self.contactsArray || self.dataArray) {
         [self.dataArray removeAllObjects];
         [self.contactsArray removeAllObjects];
     }
     
-    
-    //[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"indexMessage" object:self]];
-    
-    //显示会话的所有联系人，但不重复
+    //显示会话的所有联系人，重复的只取一个
     NSMutableArray *aa = [[DBHelper sharedDBHelper] getAllMessages];
     for (DBDatas *d in aa) {
         NSString *accp = d.msgHisNum;
@@ -110,8 +92,6 @@
     [super viewDidLoad];
     self.title = @"信息";
     
-    [MyAddressBooks sharedAddBooks].delegate = self;
-    [[MyAddressBooks sharedAddBooks] CreateAddressBooks];//第一次获取通讯录
     self.dataArray = [[NSMutableArray alloc] init];
     self.searchsArray = [[NSMutableArray alloc] init];
     self.contactsArray = [[NSMutableArray alloc] init];
@@ -122,26 +102,6 @@
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStyleDone target:nil action:nil];
 }
 
-#pragma mark -- MyAddressBooks
-/**
- *  发送通知
- *  0没有联系人  1无权限
- */
--(void)sendNotify:(MyBooksNotifity)noti;{
-    if (noti ==1) {
-        NSLog(@"MyBooksNotifity::::::::::::权限已关闭");
-        return;
-    }
-    NSLog(@"MyBooksNotifity:::::::::::::::::没有联系人");
-}
--(void)noAuthority:(CFErrorRef)error;{}
--(void)abAddressBooks:(ABAddressBookRef)bookRef allRefArray:(NSMutableArray *)array;{
-    _addressBooks = bookRef;
-    _refMutArray = array;
-    allRecords = ABAddressBookCopyArrayOfAllPeople(_addressBooks);
-    VCLog(@"allRecords:%@",allRecords);
-}
--(void)SectionDicts:(NSMutableDictionary *)sectionDicts sortedArray:(NSArray *)sortedArray conbookArray:(NSMutableArray *)conbook;{}
 
 /**
  *  初始化搜索控制器
@@ -188,37 +148,19 @@
 //返回搜索结果
 -(void) updateSearchResultsForSearchController:(UISearchController *)searchController
 {
-    
-    
-    NSString *searchString = [NSString stringWithFormat:@"%@%@%@",@"%",[self.searchController.searchBar text],@"%"];
     inputString = searchController.searchBar.text;
-    VCLog(@"searchString:%@",searchString);
-    
     if (self.searchsArray!= nil) {
         [self.searchsArray removeAllObjects];
     }
-    //短信搜索
-    //根据输入，搜索匹配的会话内容,找出sender
-    /**
-     *  sender  accepter content
-     *
-     */
     if (self.searchController.searchBar.text.length >=1) {
         self.searchsArray = [[DBHelper sharedDBHelper] getAllMsgFromInput:inputString];
     }
-    
-    
     VCLog(@"self.searchsArray :%@",self.searchsArray);
-    
     //刷新表格
     [self.tableViewController.tableView reloadData];
     [self.tableView reloadData];
 }
-- (void)didReceiveMemoryWarning {
-    
-    [super didReceiveMemoryWarning];
 
-}
 
 #pragma mark - Table view data source
 
@@ -240,36 +182,29 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     static NSString *CellIdentifier = @"messageCellId";
-    
     MessageCell *cell = (MessageCell*)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
     if (cell == nil){
         //加载cell-xib
         cell = [[[NSBundle mainBundle] loadNibNamed:@"MessageCell" owner:self options:nil] objectAtIndex:0];
         
-        
     }
     //取消cell 选中背景色
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
     //VCLog(@"self.dataArray:%@",self.dataArray);
     DBDatas *ddata = [self.dataArray objectAtIndex:indexPath.row];
-    
     if (self.searchController.active) {
         DBDatas *sdata = [self.searchsArray objectAtIndex:indexPath.row];
-        cell.contactsLabel.text =[[ConBook sharBook] getNameWithAbid:[sdata.contactID intValue]]; //sdata.msgAccepter;
+        cell.contactsLabel.text =sdata.msgHisName.length>0?sdata.msgHisName:sdata.msgHisNum ; //sdata.msgAccepter;
         cell.contactsLabel.attributedText = [self getAttributedStr:inputString str:cell.contactsLabel.text];
         cell.contentsLabel.text = sdata.msgContent;
         cell.contentsLabel.attributedText = [self getAttributedStr:inputString str:cell.contentsLabel.text];
         cell.dateLabel.text = sdata.msgTime;
         cell.dateLabel.attributedText = [self getAttributedStr:inputString str:cell.dateLabel.text];
     }else{
-        cell.contactsLabel.text =[self showContactsName:[self.contactsArray objectAtIndex:indexPath.row]].length > 0?[self showContactsName:[self.contactsArray objectAtIndex:indexPath.row]]:[self.contactsArray objectAtIndex:indexPath.row];//ddata.msgSender;
+        cell.contactsLabel.text = ddata.msgHisName.length>0?ddata.msgHisName:ddata.msgHisNum;
         cell.contentsLabel.text = ddata.msgContent;
         cell.dateLabel.text = ddata.msgTime;
     }
-    
-    // Configure the cell...
   
     return cell;
 }
@@ -281,100 +216,38 @@
         range = NSMakeRange(0, textStr.length);
     }
     NSMutableAttributedString *attributeString =[[NSMutableAttributedString alloc] initWithString:textStr];
-    [attributeString setAttributes:@{NSForegroundColorAttributeName : [UIColor redColor],   NSFontAttributeName : [UIFont systemFontOfSize:14]} range:range];
+    [attributeString setAttributes:@{NSForegroundColorAttributeName:[UIColor redColor]} range:range];//NSFontAttributeName:[UIFont systemFontOfSize:14]//不加字体大小，会保持原来的
     return attributeString;
 }
 
-/**
- * @method  获取联系人名字
- * @pragma  phones 号码
- * @return  NSString name
- */
--(NSString *)showContactsName:(NSString *)phones{
-
-    NSString *name = @"";
-    if (allRecords ==nil) {
-        return @"";
-    }
-    
-    for (int i=0; i<CFArrayGetCount(allRecords); i++) {
-        ABRecordRef record = CFArrayGetValueAtIndex(allRecords, i);
-        CFTypeRef items = ABRecordCopyValue(record, kABPersonPhoneProperty);
-        CFArrayRef phoneNums = ABMultiValueCopyArrayOfAllValues(items);
-        
-        if (phoneNums) {
-            for (int j=0; j<CFArrayGetCount(phoneNums); j++) {
-                NSString *phone = (NSString*)CFArrayGetValueAtIndex(phoneNums, j);
-                phone = [phone purifyString];
-                if ([phone isEqualToString:phones]) {
-                    NSString  *firstName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonFirstNameProperty));
-                    NSString  *lastName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonLastNameProperty));
-                    
-                    if (firstName.length == 0) {
-                        firstName = @"";
-                    }
-                    if (lastName.length == 0) {
-                        lastName = @"";
-                    }
-
-                    name = [NSString stringWithFormat:@"%@%@",firstName,lastName];
-                    [namesDicts setObject:name forKey:phones];
-                    return name;
-                }
-            }
-        }
-    }
-    
-    [namesDicts setObject:name forKey:phones];
-    
-    return @"";
-
-}
 //选中某行
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //传值，hisName,hisNumber,hisHome，hisContactId
     
-    VCLog(@"namesDicts:%@",namesDicts);
     DBDatas *detaildata = [[DBDatas alloc] init];//传值data
     
     if (self.searchController.active) {
         DBDatas *searchdata = [self.searchsArray objectAtIndex:indexPath.row];//搜索后
-        detaildata.hisName = [[ConBook sharBook] getNameWithAbid:[searchdata.contactID intValue]];//searchdata.msgAccepter;
+        detaildata.hisName =searchdata.msgHisName.length>0?searchdata.msgHisName:searchdata.msgHisNum;
         detaildata.hisNumber = searchdata.msgHisNum;
-        if (detaildata.hisNumber.length >=7) {
-            detaildata.hisHome = [[DBHelper sharedDBHelper] getAreaWithNumber:[detaildata.hisNumber purifyString]];
-        }else{detaildata.hisHome  = @"";}
+        detaildata.hisHome = [[DBHelper sharedDBHelper] getAreaWithNumber:[detaildata.hisNumber purifyString]];
         detaildata.contactID = searchdata.contactID;
     }else{
-        //TXData *normaldata = [self.dataArray objectAtIndex:indexPath.row];
-        detaildata.hisName = [namesDicts valueForKey:[self.contactsArray objectAtIndex:indexPath.row]];
-        detaildata.hisNumber = [self.contactsArray objectAtIndex:indexPath.row];//data.msgSender;
-        if (detaildata.hisNumber.length >=7) {
-            detaildata.hisHome = [[DBHelper sharedDBHelper] getAreaWithNumber:[detaildata.hisNumber purifyString]];
-        }else{detaildata.hisHome  = @"";}
-        detaildata.contactID = [[self.dataArray objectAtIndex:indexPath.row] contactID];
+        DBDatas *deta = [self.dataArray objectAtIndex:indexPath.row];
+        detaildata.hisName = deta.msgHisName.length>0?deta.msgHisName:deta.msgHisNum;
+        detaildata.hisNumber = deta.msgHisNum;
+        detaildata.hisHome = [[DBHelper sharedDBHelper] getAreaWithNumber:[deta.msgHisNum purifyString]];
+        detaildata.contactID = deta.contactID;
     }
     MsgDetailController *DetailVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"msgDetail"];
     DetailVC.datailDatas = detaildata;
     
     [self.navigationController pushViewController:DetailVC animated:YES];
-    
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kHideCusotomTabBar object:self]];
     
 }
 
--(NSString *)getcontactsId:(NSString *)name{
-    
-    
-    ABRecordRef recordReff = (__bridge ABRecordRef)([((__bridge NSArray *)(ABAddressBookCopyPeopleWithName(_addressBooks, (__bridge CFStringRef)name))) lastObject]);//根据名字获取对象
-    
-    ABRecordID abid = ABRecordGetRecordID(recordReff);
-    NSString *contactId = [NSString stringWithFormat:@"%d",abid];
-    
-    return contactId;
-    
-}
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (self.searchController.active) {
@@ -420,5 +293,9 @@
     [super viewDidDisappear:animated];
     //CFRelease(_addressBooks);
 }
-
+- (void)didReceiveMemoryWarning {
+    
+    [super didReceiveMemoryWarning];
+    
+}
 @end

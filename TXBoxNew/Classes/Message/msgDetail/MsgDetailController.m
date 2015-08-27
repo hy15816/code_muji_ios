@@ -162,7 +162,6 @@
     
     [self.callOutBtn setImage:[UIImage imageNamed:@"actionbar_call_hub32"]];
     
-    
     //注册手势
     UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(initMsgSwipeRecognizer:)];
     swipe.direction = UISwipeGestureRecognizerDirectionDown;
@@ -200,7 +199,7 @@
     
     textInput.minNumberOfLines = 1;
     textInput.maxNumberOfLines = 6;
-    // you can also set the maximum height in points with maxHeight
+    
     // textView.maxHeight = 200.0f;
     textInput.returnKeyType = UIReturnKeyGo; //just as an example
     textInput.font = [UIFont systemFontOfSize:15.0f];
@@ -271,6 +270,7 @@
         
         //保存到数据库
         DBDatas *txdata =  [[DBDatas alloc] init];
+        txdata.msgHisName = self.datailDatas.hisName;
         txdata.msgHisNum = self.datailDatas.hisNumber;//
         txdata.msgTime = time;
         txdata.msgContent = textInput.text;

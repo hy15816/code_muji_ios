@@ -195,7 +195,7 @@
     NSString *inSeperator = @"-";
     
     NSString *hanzi =  self;
-    if (hanzi.length <= 5) {
+    if (hanzi.length <= 0) {
         NSMutableArray *outStringListList = [[NSMutableArray alloc] init];
         for(int i = 0;i < hanzi.length; i++){
             NSString *currChar = [hanzi substringWithRange:NSMakeRange(i, 1)];//取出每个汉字

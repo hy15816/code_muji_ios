@@ -98,6 +98,7 @@
     NSString *msgState = @"1";
     
     //data.peopleId =;//不需要存id，
+    _data.msgHisName = @"";
     _data.msgHisNum = msgSender;
     _data.msgTime = msgTime;
     _data.msgContent = msgContent;

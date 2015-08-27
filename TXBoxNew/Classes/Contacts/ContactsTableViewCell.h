@@ -10,12 +10,8 @@
 
 @interface ContactsTableViewCell : UITableViewCell
 
-@property (weak  ,nonatomic) IBOutlet UILabel *nameLabel;
-@property (weak  ,nonatomic) IBOutlet UILabel *numberLabel;
-@property (strong,nonatomic) UIImageView *imgView;
-@property (weak, nonatomic) IBOutlet UIButton *msgsBtn;
-@property (weak, nonatomic) IBOutlet UIButton *editBtn;
-@property (strong, nonatomic) IBOutlet UIButton *callBtns;
-
+@property (strong  ,nonatomic)  UILabel *nameLabel;
+@property (strong  ,nonatomic)  UILabel *numberLabel;
+@property (strong  ,nonatomic) UIImageView *imgView;
 
 @end

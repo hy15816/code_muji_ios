@@ -25,7 +25,6 @@ typedef CF_ENUM(NSInteger, MyBooksNotifity) {
 -(void)sendNotify:(MyBooksNotifity)noti;
 -(void)noAuthority:(CFErrorRef)error;
 -(void)abAddressBooks:(ABAddressBookRef)bookRef allRefArray:(NSMutableArray *)array;
--(void)SectionDicts:(NSMutableDictionary *)sectionDicts sortedArray:(NSArray *)sortedArray conbookArray:(NSMutableArray *)conbook;
 
 @end
 

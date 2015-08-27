@@ -290,6 +290,7 @@
     txdata.msgState = @"0";
     for (int i=0; i<mutIDArray.count; i++) {
         MsgModel *mmodel = mutIDArray[i];
+        txdata.msgHisName = mmodel.name;
         NSString *firstNumber = [[ConBook sharBook] getFirstNumber:[mmodel.rid intValue]];
         txdata.msgHisNum = [firstNumber purifyString];
         txdata.contactID = mmodel.rid;

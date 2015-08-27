@@ -59,11 +59,11 @@
     }
     [sectionDicts setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'~']];
     
-    /*
+    
     for (int s=0; s<1000; s++) {
-        [self adds];
+        //[self adds];
     }
-    */
+    
     
     
     //初始化电话簿
@@ -101,10 +101,7 @@
     CFMutableArrayRef mresults=CFArrayCreateMutableCopy(kCFAllocatorDefault,CFArrayGetCount(results),results);
     
     //将结果按照拼音排序，将结果放入mresults数组中
-    CFArraySortValues(mresults,
-                      CFRangeMake(0, CFArrayGetCount(results)),
-                      (CFComparatorFunction) ABPersonComparePeopleByName,
-                      ((void*)ABPersonGetSortOrdering()));
+    //CFArraySortValues(mresults,CFRangeMake(0, CFArrayGetCount(results)),(CFComparatorFunction) ABPersonComparePeopleByName,((void*)ABPersonGetSortOrdering()));
     
     //遍历所有联系人
     for (int k=0;k<CFArrayGetCount(mresults);k++) {

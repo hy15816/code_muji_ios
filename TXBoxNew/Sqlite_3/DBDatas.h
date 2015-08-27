@@ -21,9 +21,9 @@
 @property (strong, nonatomic) NSString *hisOperator;//对方的归属运营商
 
 
-//===============短信
+//===============短信(若在通讯录中存在？名字：@“”)//用于短信搜索
 @property (assign, nonatomic) int peopleId;
-//@property (strong, nonatomic) NSString *msgHisName;         //对方名字
+@property (strong, nonatomic) NSString *msgHisName;         //对方名字
 @property (strong, nonatomic) NSString *msgHisNum;         //对方号码
 @property (strong, nonatomic) NSString *msgTime;        //信息时间
 @property (strong, nonatomic) NSString *msgContent;     //短信内容

@@ -31,7 +31,7 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     
-    NSString *dbPath = [documentsDirectory stringByAppendingPathComponent:@"saveData_8_26.db"];
+    NSString *dbPath = [documentsDirectory stringByAppendingPathComponent:@"saveData_8_27.db"];
     return dbPath;
 }
 
@@ -84,10 +84,10 @@
  */
 -(void)createTable{
     //通话记录
-    NSString *callRecord=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (tel_id integer primary key AUTOINCREMENT,hisNumber TEXT,callDirection TEXT,callLength TEXT,callBeginTime TEXT,hisHome TEXT,hisOperator TEXT,contactid,TEXT)",CALL_RECORD];
+    NSString *callRecord=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (tel_id integer primary key AUTOINCREMENT,hisNumber TEXT,callDirection TEXT,callLength TEXT,callBeginTime TEXT,hisHome TEXT,hisOperator TEXT,contactid TEXT)",CALL_RECORD];
     
     //信息记录
-    NSString *messageRecord=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (peopleId integer primary key AUTOINCREMENT,msgHisNum TEXT,msgTime TEXT,msgContent TEXT,msgState TEXT)",MSG_RECORD ];
+    NSString *messageRecord=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (peopleId integer primary key AUTOINCREMENT,msgHisName TEXT,msgHisNum TEXT,msgTime TEXT,msgContent TEXT,msgState TEXT,contactid TEXT)",MSG_RECORD ];
     
     NSArray *sqlArray = @[callRecord,messageRecord];
     for(NSString *sql in sqlArray){
@@ -177,8 +177,8 @@
 -(void)addDatasToMsgRecord:(DBDatas *)datas{
 
     FMDatabase *db=[self createDatabase];
-    NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO %@(msgHisNum,msgTime,msgContent,msgState) values(?,?,?,?)",MSG_RECORD];
-    BOOL result = [db executeUpdate:insertSql,datas.msgHisNum,datas.msgTime,datas.msgContent,datas.msgState];
+    NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO %@(msgHisName,msgHisNum,msgTime,msgContent,msgState,contactid) values(?,?,?,?,?,?)",MSG_RECORD];
+    BOOL result = [db executeUpdate:insertSql,datas.msgHisName, datas.msgHisNum,datas.msgTime,datas.msgContent,datas.msgState,datas.contactID];
     if (!result) {
         NSLog(@"保存信息记录失败");
     }
@@ -200,11 +200,12 @@
         
         DBDatas *datas = [[DBDatas alloc] init];
         datas.peopleId = [rs intForColumn:@"peopleId"];
+        datas.msgHisName = [rs stringForColumn:@"msgHisName"];
         datas.msgHisNum = [rs stringForColumn:@"msgHisNum"];
         datas.msgTime = [rs stringForColumn:@"msgTime"];
         datas.msgContent = [rs stringForColumn:@"msgContent"];
         datas.msgState = [rs stringForColumn:@"msgState"];
-        
+        datas.contactID = [rs stringForColumn:@"contactid"];
         [mutArray addObject:datas];
     }
     [rs close];
@@ -226,10 +227,12 @@
     FMResultSet *rs=[db executeQuery:@"SELECT *FROM MSG_RECORD  where msgHisNum=? ",number];
     while ([rs next]) {
         datas.peopleId = [rs intForColumn:@"peopleId"];
+        datas.msgHisName = [rs stringForColumn:@"msgHisName"];
         datas.msgHisNum = [rs stringForColumn:@"msgHisNum"];
         datas.msgTime = [rs stringForColumn:@"msgTime"];
         datas.msgContent = [rs stringForColumn:@"msgContent"];
         datas.msgState = [rs stringForColumn:@"msgState"];
+        datas.contactID = [rs stringForColumn:@"contactid"];
         [mutArray addObject:datas];
     }
     
@@ -279,10 +282,12 @@
     FMResultSet *rs=[db executeQuery:@"SELECT *FROM MSG_RECORD  where msgHisNum=? order by peopleId desc limit 1",hisNumber];
     while ([rs next]) {
         datas.peopleId = [rs intForColumn:@"peopleId"];
+        datas.msgHisName = [rs stringForColumn:@"msgHisName"];
         datas.msgHisNum = [rs stringForColumn:@"msgHisNum"];
         datas.msgTime = [rs stringForColumn:@"msgTime"];
         datas.msgContent = [rs stringForColumn:@"msgContent"];
         datas.msgState = [rs stringForColumn:@"msgState"];
+        datas.contactID = [rs stringForColumn:@"contactid"];
     }
     
     return datas;
@@ -294,17 +299,20 @@
  *  @return mutArray(会话)
  */
 -(NSMutableArray *)getAllMsgFromInput:(NSString *)string{
+    string = [NSString stringWithFormat:@"%@%@%@",@"%",string,@"%"];
     NSMutableArray *mutArray = [[NSMutableArray alloc] init];
     FMDatabase *db=[self createDatabase];
-    NSString *selectSql = [NSString stringWithFormat:@"SELECT *FROM %@ WHERE  msgHisNum LIKE '%@' OR msgContent LIKE '%@' ",MSG_RECORD,string,string];
+    NSString *selectSql = [NSString stringWithFormat:@"SELECT *FROM MSG_RECORD WHERE msgHisName LIKE '%@' OR msgHisNum LIKE '%@' OR msgContent LIKE '%@' ",string,string,string];
     FMResultSet *rs=[db executeQuery:selectSql];
     while ([rs next]) {
         DBDatas *datas = [[DBDatas alloc] init];
         datas.peopleId = [rs intForColumn:@"peopleId"];
+        datas.msgHisName = [rs stringForColumn:@"msgHisName"];
         datas.msgHisNum = [rs stringForColumn:@"msgHisNum"];
         datas.msgTime = [rs stringForColumn:@"msgTime"];
         datas.msgContent = [rs stringForColumn:@"msgContent"];
         datas.msgState = [rs stringForColumn:@"msgState"];
+        datas.contactID = [rs stringForColumn:@"contactid"];
         [mutArray addObject:datas];
     }
     

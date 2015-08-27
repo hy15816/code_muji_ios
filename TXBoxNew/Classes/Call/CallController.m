@@ -184,13 +184,10 @@
 
 #pragma mark -- 用户输入时（增加或退格）
 -(void)inputTextDidChanged:(NSNotification*)notifi{
-
-    
-        
-        
+  
    
     //若结果集不为空，清空结果
-    if (searchResault) {
+    if (searchResault.count >0) {
         [searchResault removeAllObjects];
     }
     NSString *abcRegular = ZZExpression;
@@ -285,10 +282,13 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
                     modle.contactInfo = mutPhoneArray[k];
                     modle.range = ranges;
                     modle.phone = phoneNum;
+                    if (![searchResault containsObject:modle]) {
+                        [searchResault addObject:modle];
+                    }/*
                     if ([self hasThisRecord:modle]) {
                         [searchResault addObject:modle];
                     }
-
+                      */
                     
                 }else{//匹配号码，
                     NSRange pRange = [phoneNum  rangeOfString:inUserInputsStr];
@@ -298,9 +298,14 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
                         CModle *modle = [[CModle alloc] init];
                         modle.contactInfo = mutPhoneArray[k];
                         modle.phone = phoneNum;
+                        if (![searchResault containsObject:modle]) {
+                            [searchResault addObject:modle];
+                        }
+                        /*
                         if ([self hasThisRecord:modle]) {
                             [searchResault addObject:modle];
                         }
+                         */
                         
                     }
                 }
@@ -357,7 +362,11 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
 -(BOOL)hasThisRecord:(CModle *)modle{
     NSString *phone = [modle.contactInfo valueForKey:PersonTelNum];
     NSMutableArray *aar = [[NSMutableArray alloc] init];
+    if (searchResault.count==0) {
+        return YES;
+    }
     for (int i=0; i<searchResault.count; i++) {
+        
         CModle *cm = searchResault[i];
         NSString *sPhone = [cm.contactInfo valueForKey:PersonTelNum];
         sPhone = sPhone.length>0?sPhone:@"";
@@ -488,13 +497,18 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
     return nil;
 }
 
-//获取染色后的字
+/**
+ *  获取染色后的字体
+ *  @param  range 染色的range
+ *  @param  text  原先的string
+ *  @return NSMutableAttributedString
+ */
 -(NSMutableAttributedString *)attributedStr:(NSRange)range str:(NSString *)text{
     if (text.length<range.length) {
         range = NSMakeRange(0, text.length);
     }
     NSMutableAttributedString *attributeString =[[NSMutableAttributedString alloc] initWithString:text];
-    [attributeString setAttributes:@{NSForegroundColorAttributeName : [UIColor redColor],   NSFontAttributeName : [UIFont systemFontOfSize:18]} range:range];
+    [attributeString setAttributes:@{NSForegroundColorAttributeName:[UIColor redColor]} range:range];//   NSFontAttributeName : [UIFont systemFontOfSize:18]
     return attributeString;
 }
 

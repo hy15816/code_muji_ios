@@ -167,12 +167,12 @@
      */
     
     CGRect endRect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    if (DEVICE_HEIGHT-PopViewHeight-endRect.size.height< endRect.size.height) {
+    //if (DEVICE_HEIGHT-PopViewHeight-endRect.size.height< endRect.size.height) {
         [UIView animateWithDuration:0.15 animations:^{
             popview.alpha = 1.0;
             popview.frame = CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, DEVICE_HEIGHT-PopViewHeight-endRect.size.height-10, PopViewWidth, PopViewHeight);
         }];
-    }
+    //}
     
     //VCLog(@"·······%f",endRect.size.height);
     
@@ -336,6 +336,7 @@
     popview = [[PopView alloc] initWithFrame:CGRectMake((DEVICE_WIDTH-PopViewWidth)/2, -PopViewHeight, PopViewWidth, PopViewHeight)];
     popview.alpha = 0.5;
     popview.delegate = self;
+    NSLog(@"popview:%f%f%f%f",popview.frame.origin.x,popview.frame.origin.y, popview.frame.size.width,popview.frame.size.height);
     [self.view.window addSubview:popview];
     
     if ([[userDefaults valueForKey:CONFIG_STATE] intValue]) {

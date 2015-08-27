@@ -164,14 +164,12 @@
         ABMultiValueRef phoneNumber = ABRecordCopyValue(ref, kABPersonPhoneProperty);
         if (ABMultiValueGetCount(phoneNumber) > 0) {
             NSString *phone = [NSString stringWithFormat:@"%@;",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
-            NSLog(@"phone:%@",phone);
             allName = phone;
         }
         
     }
-
     
-    return allName.length>0?allName:@"";
+    return allName.length>0?allName:@"1无名称";
 }
 
 

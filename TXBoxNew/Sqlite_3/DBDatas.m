@@ -21,7 +21,7 @@
 
 
 @synthesize peopleId;
-//@synthesize msgHisName;
+@synthesize msgHisName;
 @synthesize msgHisNum;
 @synthesize msgTime;
 @synthesize msgContent;
