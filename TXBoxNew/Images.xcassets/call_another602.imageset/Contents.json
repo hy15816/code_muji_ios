@@ -2,18 +2,16 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "discovery@32x32.png"
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "discovery@48x48.png"
+      "filename" : "呼叫转移_60x60.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x",
-      "filename" : "discovery@72x72.png"
+      "scale" : "3x"
     }
   ],
   "info" : {

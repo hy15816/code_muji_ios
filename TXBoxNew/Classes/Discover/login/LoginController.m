@@ -191,7 +191,7 @@
                 //登录成功，返回上一页面
                 
                 [SVProgressHUD showSuccessWithStatus:@"登录成功"];
-                
+                [defaults setValue:@"1" forKey:CONFIG_STATE];
                 [defaults setValue:@"1" forKey:LOGIN_STATE];
                 [defaults setValue:self.numberField.text forKey:CurrentUser];
                 VCLog(@"user:%@",user);

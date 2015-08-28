@@ -13,7 +13,8 @@
 
 typedef CF_ENUM(NSInteger, MyBooksNotifity) {
     kMyBooksNotifityStatusNoBody = 0,
-    kMyBooksNotifityStatusNoAuthority
+    kMyBooksNotifityStatusNoAuthority,
+    kMyBooksNotifityStatusLoading
 };
 
 @protocol MyAddressBooksDelegate <NSObject>
@@ -25,7 +26,7 @@ typedef CF_ENUM(NSInteger, MyBooksNotifity) {
 -(void)sendNotify:(MyBooksNotifity)noti;
 -(void)noAuthority:(CFErrorRef)error;
 -(void)abAddressBooks:(ABAddressBookRef)bookRef allRefArray:(NSMutableArray *)array;
-
+-(void)sortArray:(NSArray *)sort secDic:(NSMutableDictionary *)secDict;
 @end
 
 @interface MyAddressBooks : NSObject
@@ -36,6 +37,9 @@ typedef CF_ENUM(NSInteger, MyBooksNotifity) {
 @property (assign,nonatomic) id<MyAddressBooksDelegate> delegate;
 
 -(void)CreateAddressBooks;
+-(void)getAllABRecordRefs;
 -(void)refReshContacts;
-
+-(NSArray *)getSortArray;
+-(NSMutableDictionary *)getSecDicts;
+-(void)outToTimes;
 @end

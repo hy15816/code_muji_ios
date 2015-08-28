@@ -35,7 +35,7 @@
         self.clipsToBounds = YES;
         
         self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 170, 20)];
-        self.numberLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width-170, 10, 150, 20)];
+        self.numberLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.contentView.frame.size.width-165, 10, 150, 20)];
         self.numberLabel.textAlignment = NSTextAlignmentRight;
         self.numberLabel.font = [UIFont systemFontOfSize:16];
         //[self.numberLabel sizeToFit];

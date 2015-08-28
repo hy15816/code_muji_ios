@@ -43,6 +43,7 @@
     BOOL canAdd;
 
     NSMutableArray *colorArray;
+    NSMutableArray *nameArray;
 }
 
 @property (nonatomic,assign) ABAddressBookRef addressBook;
@@ -119,6 +120,8 @@
     
     [super viewDidLoad];
     
+    //[self.navigationController.navigationBar setTintColor:nil];
+    
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         // something
         [self loadContacts];
@@ -137,19 +140,10 @@
     zzArray =[[NSMutableArray alloc] init];
     areaString = [[NSString alloc] init];
     opeareString = [[NSString alloc] init];
- 
+    nameArray = [[NSMutableArray alloc] init];
     callDivert =[[CallAndDivert alloc] init];
     mLastAllRegularsMapArray = [[NSMutableArray alloc] init];
-    /*
-    //////////////////////
-    ConBook *book = [[ConBook alloc] init];
-    book.lastName = @"邻居";
-    book.middleName = @"家的";
-    book.firstName = @"猫";
-    NSMutableArray *array = [NSMutableArray arrayWithObjects:@"13698006539", nil];
-    book.phoneNumberArray = array;
-    [[ConBook sharBook] addPerson:book];
-     */
+    
 }
 
 #pragma mark -- getContacts Delegate
@@ -160,7 +154,7 @@
 //    [mutPhoneArray addObjectsFromArray:mutPhoneArray];
 //    [mutPhoneArray addObjectsFromArray:array];
     
-    VCLog(@"mutPhoneArray count:%lu",(unsigned long)mutPhoneArray.count);
+    //VCLog(@"mutPhoneArray count:%lu",(unsigned long)mutPhoneArray.count);
 }
 
 //初始化
@@ -189,6 +183,7 @@
     //若结果集不为空，清空结果
     if (searchResault.count >0) {
         [searchResault removeAllObjects];
+        [nameArray removeAllObjects];
     }
     NSString *abcRegular = ZZExpression;
     NSMutableArray *tempRegularList = [[NSMutableArray alloc] init];//多个正则list
@@ -258,7 +253,7 @@
     if(isAdd){
         [tempNumsRegularsMap setObject:tempRegularList forKey:inUserInputsStr];
     }
-dispatch_async(	dispatch_get_global_queue(0, 0), ^{
+//dispatch_async(	dispatch_get_global_queue(0, 0), ^{
     //2.匹配：结果 <- 正则表达式
     for (int i = 0 ; i <[[tempNumsRegularsMap valueForKey:inUserInputsStr] count ] ; i++) {//0,1
         NSString *regular = [[tempNumsRegularsMap valueForKey:inUserInputsStr] objectAtIndex:i];
@@ -282,6 +277,10 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
                     modle.contactInfo = mutPhoneArray[k];
                     modle.range = ranges;
                     modle.phone = phoneNum;
+                    if (![nameArray containsObject:phoneNum]) {
+                        [searchResault addObject:modle];
+                    }
+                    /*
                     if (![searchResault containsObject:modle]) {
                         [searchResault addObject:modle];
                     }/*
@@ -298,6 +297,10 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
                         CModle *modle = [[CModle alloc] init];
                         modle.contactInfo = mutPhoneArray[k];
                         modle.phone = phoneNum;
+                        if (![nameArray containsObject:phoneNum]) {
+                            [searchResault addObject:modle];
+                        }
+                        /*
                         if (![searchResault containsObject:modle]) {
                             [searchResault addObject:modle];
                         }
@@ -327,8 +330,8 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
         [mLastAllRegularsMapArray addObject:tempNumsRegularsMap];
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^{[self.tableView reloadData];});
     
+    [self.tableView reloadData];
     
     //输入的数字达到7个，且还没有结果时显示运营商归属地
     if (searchResault.count == 0 && searcherString.length >= 7) {
@@ -337,7 +340,7 @@ dispatch_async(	dispatch_get_global_queue(0, 0), ^{
         opeareString = [singleton.singletonValue isMobileNumberWhoOperation];
     }
 
-     });
+//     });
 }
 //-123-56-89
 -(NSRange)getRange:(NSString *)colorStr pinyin:(NSString *)firstPinyin{

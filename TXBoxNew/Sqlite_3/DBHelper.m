@@ -221,11 +221,11 @@
 -(NSMutableArray *)getAConversation:(NSString *)number{
     NSMutableArray *mutArray = [[NSMutableArray alloc] init];
     number = [number purifyString];
-    DBDatas *datas = [[DBDatas alloc] init];
     
     FMDatabase *db=[self createDatabase];
     FMResultSet *rs=[db executeQuery:@"SELECT *FROM MSG_RECORD  where msgHisNum=? ",number];
     while ([rs next]) {
+        DBDatas *datas = [[DBDatas alloc] init];
         datas.peopleId = [rs intForColumn:@"peopleId"];
         datas.msgHisName = [rs stringForColumn:@"msgHisName"];
         datas.msgHisNum = [rs stringForColumn:@"msgHisNum"];

@@ -36,44 +36,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TXBoxNew/AppDelegate.m"
-            timestampString = "462341378.914427"
+            timestampString = "462429287.630278"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "233"
-            endingLineNumber = "233"
+            startingLineNumber = "242"
+            endingLineNumber = "242"
             landmarkName = "-isOrNotUpdateVersion"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "TXBoxNew/Classes/Contacts/addressBooks/ConBook.m"
-            timestampString = "462372170.563329"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "229"
-            endingLineNumber = "229"
-            landmarkName = "-addPerson:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "TXBoxNew/Sqlite_3/DBHelper.m"
-            timestampString = "462341378.914427"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "265"
-            endingLineNumber = "265"
-            landmarkName = "-deleteAMsgRecord:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -100,11 +68,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TXBoxNew/Classes/Call/CallController.m"
-            timestampString = "462365489.731425"
+            timestampString = "462452627.395315"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "555"
-            endingLineNumber = "555"
+            startingLineNumber = "558"
+            endingLineNumber = "558"
             landmarkName = "-MsgButtonClick:"
             landmarkType = "5">
          </BreakpointContent>
@@ -116,11 +84,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TXBoxNew/Classes/Call/CallController.m"
-            timestampString = "462365489.731425"
+            timestampString = "462452627.395315"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "591"
-            endingLineNumber = "591"
+            startingLineNumber = "594"
+            endingLineNumber = "594"
             landmarkName = "-PersonButtonClick:"
             landmarkType = "5">
          </BreakpointContent>
@@ -147,22 +115,6 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "TXBoxNew/Classes/Message/msgDetail/MsgDetailController.m"
-            timestampString = "462340074.91403"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "278"
-            endingLineNumber = "278"
-            landmarkName = "-sendData:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "TXBoxNew/Classes/Contacts/ContactsTableViewCell.m"
             timestampString = "462371522.73043"
             startingColumnNumber = "9223372036854775807"
@@ -179,13 +131,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "TXBoxNew/Classes/Contacts/ContactController.m"
-            timestampString = "462373079.190481"
+            filePath = "TXBoxNew/Classes/Message/msgDetail/MsgDetailController.m"
+            timestampString = "462451893.918796"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "555"
-            endingLineNumber = "555"
-            landmarkName = "-msgsBtnClick:"
+            startingLineNumber = "447"
+            endingLineNumber = "447"
+            landmarkName = "-deleteButtonClick:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

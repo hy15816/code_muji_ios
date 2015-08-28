@@ -145,6 +145,7 @@
 		6359D0931AE600AB00592201 /* MessageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageController.m; sourceTree = "<group>"; };
 		635B1A3C1AEC968B003F37B5 /* UIImage+helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+helper.h"; sourceTree = "<group>"; };
 		635B1A3D1AEC968B003F37B5 /* UIImage+helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+helper.m"; sourceTree = "<group>"; };
+		635BFD171B903B85004E1874 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		635F81801B3A851300A7A7D1 /* ff.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = ff.gif; sourceTree = "<group>"; };
 		635F818A1B3AAB5900A7A7D1 /* line.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = line.gif; sourceTree = "<group>"; };
 		6363DA671B2AD369005EF820 /* MessageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessageCell.xib; sourceTree = "<group>"; };
@@ -302,7 +303,6 @@
 		63FA3A5F1B5E28FF0049EB1C /* AFURLSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLSessionManager.h; sourceTree = "<group>"; };
 		63FA3A601B5E28FF0049EB1C /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLSessionManager.m; sourceTree = "<group>"; };
 		63FB5FCF1ADBB58700A1A92B /* TXBoxNew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TXBoxNew.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		63FB5FD31ADBB58700A1A92B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		63FB5FD41ADBB58700A1A92B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		63FB5FD61ADBB58700A1A92B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		63FB5FD71ADBB58700A1A92B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -823,8 +823,8 @@
 		63FB5FD21ADBB58700A1A92B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				635BFD171B903B85004E1874 /* Info.plist */,
 				632AC63E1ADCEB7C0023FAA9 /* Common.h */,
-				63FB5FD31ADBB58700A1A92B /* Info.plist */,
 				63FB5FD41ADBB58700A1A92B /* main.m */,
 				632AC63C1ADCEA760023FAA9 /* TXBoxNew.pch */,
 			);

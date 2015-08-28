@@ -114,9 +114,9 @@
     delBtn.frame = CGRectMake(DEVICE_WIDTH-80, 5, 46, 44);
     [delBtn setImage:[UIImage imageNamed:@"com_Keyboard_Backspace"] forState:UIControlStateNormal];
 
-    [delBtn addTarget:self action:@selector(del) forControlEvents:UIControlEventTouchUpInside];
+    [delBtn addTarget:self action:@selector(del:) forControlEvents:UIControlEventTouchUpInside];
     UILongPressGestureRecognizer *longPress=[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(dleLongPressKey:)];
-
+    
     longPress.minimumPressDuration = 1;
     [delBtn addGestureRecognizer:longPress];
     [self addSubview:delBtn];
@@ -127,19 +127,22 @@
 
 
 #pragma mark 删除号码
--(void)del
+-(void)del:(UIButton *)delBtnn
 {
+    //防止按钮快速点击造成多次响应
+    [[self class] cancelPreviousPerformRequestsWithTarget:self selector:@selector(todoSomething:) object:delBtnn];
+    [self performSelector:@selector(todoSomething:) withObject:delBtnn afterDelay:0.05f];
     
+}
+
+-(void)todoSomething:(UIButton *)btn{
     if (textFieldh.text.length>0){
         NSString *allText = [textFieldh.text substringToIndex:textFieldh.text.length-1];//删除之后的
-    
-    
         NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                  allText,InputFieldAllText,
-                                  @"0",AddOrDelete, nil];
-            
-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
+                              allText,InputFieldAllText,
+                              @"0",AddOrDelete, nil];
         
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kInputCharNoti object:self userInfo:dict]];
         textFieldh.text = [textFieldh.text substringToIndex:textFieldh.text.length-1];
         singleton.singletonValue = textFieldh.text;
     }
@@ -149,8 +152,8 @@
     }
     textFieldh.placeholder = @"";
     [self.keyDelegate inputTextLength:textFieldh.text];
-    
 }
+
 #pragma mark 监听item点击
 //touch up inside
 - (void)itemClick:(UIButton *)item

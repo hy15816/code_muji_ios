@@ -61,7 +61,7 @@
     
     
     for (int s=0; s<1000; s++) {
-        //[self adds];
+       // [self adds];
     }
     
     
@@ -166,7 +166,7 @@
     }
     CFIndex nPeople = ABAddressBookGetPersonCount(myAddressBook);
     VCLog(@"people count %ld",nPeople);
-    VCLog(@"phoneArray：%@",phonesArray);
+    VCLog(@"phoneArray[0]：%@",phonesArray[0]);
     //return phonesArray;
     
     /***
@@ -180,10 +180,10 @@
 /**
  *  添加测试数据，模拟联系人数据
  */
--(void)adds{
+-(void)adds:(int)i{
     //int delta = 0x9fa5-0x4e00 + 1;
         NSString *phoneNumber = [NSString stringWithFormat:@"1%d%d%d%d%d%d%d%d%d%d",arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8)];
-    NSString *name = [NSString stringWithFormat:@"%@%@%d%d%d",[self getHanzi],[self getPinyin],arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8)];
+    NSString *name = [NSString stringWithFormat:@"%d%@%@%d%d%d",i,[self getHanzi],[self getPinyin],arc4random_uniform(8),arc4random_uniform(8),arc4random_uniform(8)];
     [self addContacts:name number:phoneNumber];
     
 }

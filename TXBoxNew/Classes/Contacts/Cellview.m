@@ -21,7 +21,7 @@
             UIButton *btn = [[UIButton alloc] init];
             btn.frame = CGRectMake((frame.size.width/3)*i, 0,(frame.size.width/3), 40);
             btn.tag = i;
-            [btn setImage:[UIImage imageNamed:@"icon_edit"] forState:UIControlStateNormal];
+            [btn setImage:[UIImage imageNamed:[NSString stringWithFormat:@"images_%d",i+1]] forState:UIControlStateNormal];
             [btn addTarget:self action:@selector(buttonClickAction:) forControlEvents:UIControlEventTouchUpInside];
             [self addSubview:btn];
         }

@@ -2,18 +2,16 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "发现32.png"
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x",
-      "filename" : "发现48.png"
+      "scale" : "2x"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "发现72.png"
+      "filename" : "images_1.png"
     }
   ],
   "info" : {

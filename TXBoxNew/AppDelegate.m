@@ -11,6 +11,7 @@
 
 #import "AppDelegate.h"
 #import "DBHelper.h"
+#import "MyAddressBooks.h"
 
 @interface AppDelegate ()<UIAlertViewDelegate>
 {
@@ -24,6 +25,14 @@
 
 #pragma mark -- app 启动
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    [[MyAddressBooks sharedAddBooks] CreateAddressBooks];//第一次获取通讯录
+        [[MyAddressBooks sharedAddBooks] getAllABRecordRefs];
+    });
+    
+    
     
     //leanCloud 服务器
     [AVOSCloud setApplicationId:@"85m0pvb0vv1iluti5sk0xsou1mkftzn06a3f1ompvza9xc7z" clientKey:@"orluh89ufnpvl773b68w5gcdk4dxfrahzwaahz7c46ettn44"];

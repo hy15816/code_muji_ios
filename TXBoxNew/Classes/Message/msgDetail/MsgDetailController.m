@@ -274,7 +274,7 @@
         txdata.msgHisNum = self.datailDatas.hisNumber;//
         txdata.msgTime = time;
         txdata.msgContent = textInput.text;
-        txdata.msgState = @"0";//@"0"
+        txdata.msgState = [NSString stringWithFormat:@"%d",(arc4random_uniform(2))];//@"0"
         txdata.contactID = self.datailDatas.contactID;
         
         textInput.text = nil;
@@ -289,10 +289,8 @@
         msgs.content = textInput.text;
         [[BLEHelper shareHelper] requestTransmit:msgs withBLE:bManager];
         [[DBHelper sharedDBHelper] addDatasToMsgRecord:txdata];
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            // something
-                self.detailArray =[[DBHelper sharedDBHelper] getAConversation:self.datailDatas.hisNumber];
-        });
+
+        self.detailArray =[[DBHelper sharedDBHelper] getAConversation:self.datailDatas.hisNumber];
         
     
     }
@@ -445,7 +443,9 @@
         [[DBHelper sharedDBHelper] deleteAMsgRecord:peopleId];
         
     }
-    
+#warning +++++++++++++
+    [self.detailArray removeObjectsInArray:[selectDict allValues]];
+    //[self.tableview deleteRowsAtIndexPaths:[selectDict allKeys] withRowAnimation:UITableViewRowAnimationLeft];
     //重新获取数据
     self.detailArray =[[DBHelper sharedDBHelper] getAConversation:self.datailDatas.hisNumber];
     
@@ -499,6 +499,7 @@
         if (![selectArray containsObject:indexPath]) {
             [selectArray addObject:indexPath];
         }
+        [selectDict setObject:[self.detailArray objectAtIndex:indexPath.row] forKey:indexPath];
     }
     VCLog(@"selectDict:%@",selectDict);
     VCLog(@"selectArray:%@",selectArray);
@@ -510,6 +511,13 @@
 
     }
 
+}
+/**
+ *  缩进
+ */
+- (BOOL)tableView:(UITableView *)tableView shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return NO;
 }
 
 -(void)setArearLabelTitle
@@ -651,6 +659,8 @@
         [self.tableview setEditing:YES animated:YES];
         [UIView animateWithDuration:.25 animations:^{
             editView.frame = CGRectMake(0, DEVICE_HEIGHT-50, DEVICE_WIDTH, 50);
+            
+            
         }];
         
         [self.callOutBtn setImage:[UIImage imageNamed:@""]];

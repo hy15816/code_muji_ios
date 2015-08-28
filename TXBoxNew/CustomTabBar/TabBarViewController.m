@@ -39,7 +39,7 @@
     [super viewWillAppear:animated];
 
     //[tabBarView showPromptWithTag:1];
-    //[tabBarView showPromptWithTag:0];
+    [tabBarView showPromptWithTag:3];
     //显示tabBar
     tabBarView.hidden = NO;
     //第一次，则加载引导页
@@ -451,7 +451,6 @@
     if (loginS) {
         //获取拇机号码,
         NSString *phoneNumber = [userDefaults valueForKey:muji_bind_number];
-        
         //已有number
         if (phoneNumber.length>0 ) {
             //获取呼转状态

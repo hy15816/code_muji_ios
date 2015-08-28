@@ -2,18 +2,16 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "上拉32.png"
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "上拉48.png"
+      "filename" : "call_other_hl.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x",
-      "filename" : "上拉72.png"
+      "scale" : "3x"
     }
   ],
   "info" : {

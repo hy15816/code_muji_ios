@@ -115,8 +115,8 @@
 }
 -(UIImageView *)view:(UIImageView *)imgv withButton:(UIButton *)btn{
     
-    imgv.frame = CGRectMake(btn.frame.size.width-btn.frame.size.width/3, 10, 6, 6);
-    imgv.image = [UIImage imageNamed:@"point_state.png"];
+    imgv.frame = CGRectMake(btn.frame.size.width-btn.frame.size.width/3, 10, 8, 8);
+    imgv.image = [UIImage imageNamed:@"text_new_badge"];
     imgv.tag = btn.tag;
     imgv.hidden = YES;
     imgv.backgroundColor = [UIColor clearColor];

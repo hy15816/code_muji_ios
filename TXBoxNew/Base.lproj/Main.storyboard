@@ -56,7 +56,7 @@
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <imageView userInteractionEnabled="NO" alpha="0.89999999999999991" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalCompressionResistancePriority="749" misplaced="YES" image="icon_call_missed" translatesAutoresizingMaskIntoConstraints="NO" id="VXa-oh-Smt">
+                                        <imageView userInteractionEnabled="NO" alpha="0.89999999999999991" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalCompressionResistancePriority="749" image="icon_call_missed" translatesAutoresizingMaskIntoConstraints="NO" id="VXa-oh-Smt">
                                             <rect key="frame" x="294" y="11" width="12" height="15"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="19" id="E1K-JJ-F7n"/>
@@ -2643,35 +2643,6 @@
                                     </mask>
                                 </variation>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qqR-4T-HI4">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="22" id="TUM-qE-CWP">
-                                        <variation key="widthClass=compact" constant="30"/>
-                                    </constraint>
-                                    <constraint firstAttribute="height" constant="22" id="cRy-ea-3w7">
-                                        <variation key="widthClass=compact" constant="30"/>
-                                    </constraint>
-                                </constraints>
-                                <state key="normal">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="TUM-qE-CWP"/>
-                                        <exclude reference="cRy-ea-3w7"/>
-                                    </mask>
-                                </variation>
-                                <variation key="widthClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="TUM-qE-CWP"/>
-                                        <include reference="cRy-ea-3w7"/>
-                                    </mask>
-                                </variation>
-                                <connections>
-                                    <segue destination="ng6-1z-eVb" kind="presentation" id="irA-sw-rtt"/>
-                                </connections>
-                            </button>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="16" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="gbg-En-CiH">
                                 <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                 <constraints>
@@ -2710,6 +2681,37 @@
                                     </mask>
                                 </variation>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qqR-4T-HI4">
+                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="22" id="TUM-qE-CWP">
+                                        <variation key="widthClass=compact" constant="30"/>
+                                    </constraint>
+                                    <constraint firstAttribute="height" constant="22" id="cRy-ea-3w7">
+                                        <variation key="widthClass=compact" constant="30"/>
+                                    </constraint>
+                                </constraints>
+                                <color key="tintColor" red="0.11372549019607843" green="0.66274509803921566" blue="0.94117647058823528" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="TUM-qE-CWP"/>
+                                        <exclude reference="cRy-ea-3w7"/>
+                                    </mask>
+                                </variation>
+                                <variation key="widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="354" y="68" width="30" height="30"/>
+                                    <mask key="constraints">
+                                        <include reference="TUM-qE-CWP"/>
+                                        <include reference="cRy-ea-3w7"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <segue destination="ng6-1z-eVb" kind="presentation" id="irA-sw-rtt"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -2739,9 +2741,9 @@
                         <variation key="default">
                             <mask key="subviews">
                                 <exclude reference="M08-n1-ijt"/>
-                                <exclude reference="qqR-4T-HI4"/>
                                 <exclude reference="gbg-En-CiH"/>
                                 <exclude reference="tOL-3u-cna"/>
+                                <exclude reference="qqR-4T-HI4"/>
                             </mask>
                             <mask key="constraints">
                                 <exclude reference="Pcp-b5-74H"/>
@@ -2759,9 +2761,9 @@
                         <variation key="widthClass=compact">
                             <mask key="subviews">
                                 <include reference="M08-n1-ijt"/>
-                                <include reference="qqR-4T-HI4"/>
                                 <include reference="gbg-En-CiH"/>
                                 <include reference="tOL-3u-cna"/>
+                                <include reference="qqR-4T-HI4"/>
                             </mask>
                             <mask key="constraints">
                                 <include reference="Pcp-b5-74H"/>
@@ -2779,6 +2781,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="新信息" id="dl4-5G-pof">
                         <barButtonItem key="rightBarButtonItem" title="取消" id="EGP-VE-BrO">
+                            <color key="tintColor" red="0.1137254902" green="0.66274509800000003" blue="0.94117647059999998" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <action selector="disMissButton:" destination="HHv-MX-gZi" id="oOW-XW-yeG"/>
                             </connections>

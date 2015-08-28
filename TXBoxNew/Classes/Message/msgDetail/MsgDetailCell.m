@@ -38,6 +38,7 @@
         [contentBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         contentBtn.titleLabel.font = kContentFont;
         contentBtn.titleLabel.numberOfLines = 0;
+        contentBtn.autoresizesSubviews = NO;
         [self.contentView addSubview:contentBtn];
 
 
@@ -95,7 +96,18 @@
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
-
+    self.multipleSelectionBackgroundView = [[UIView alloc] init];//多选时，背景颜色
+    self.indentationLevel = 1;
+    if (self.editing) {
+        
+//        //
+//        UIImageView *imgv = [[UIImageView alloc] initWithFrame:self.frame];
+//        imgv.backgroundColor = [UIColor whiteColor];
+//        self.backgroundView = imgv;
+    }else{
+//        self.backgroundView = nil;
+    }
+    
     // Configure the view for the selected state
 }
 

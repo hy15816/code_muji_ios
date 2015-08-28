@@ -28,17 +28,15 @@
     UIView *hudview;
     UILabel *showString;
     
-    ABAddressBookRef abBooksRef;
     NSMutableArray *peopleArray;
     NSMutableDictionary *sectionDict;
-    NSMutableArray *sectionArray;
-    NSMutableArray *dataArray;
                  //排序后的数组
     NSMutableArray *nameNumberArray;//
     NSMutableArray *Allphones;
     NSMutableArray *searchsArray;          //搜索后的结果数组
     NSMutableArray *conBookArray;
     BOOL showIcon;
+
 }
 
 @property (strong,nonatomic) UISearchController *searchController;  //实现disPlaySearchBar
@@ -61,9 +59,11 @@
     if (![userDefaults boolForKey:IsUpdateContacts]) {
         [userDefaults setBool:YES forKey:IsUpdateContacts];
         
-        [[MyAddressBooks sharedAddBooks] refReshContacts];//刷新联系人
+        //[[MyAddressBooks sharedAddBooks] refReshContacts];//刷新联系人
         [self.tableView reloadData];
     }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(noauths:) name:@"NotifityStatusNoAuthority" object:nil];
     
 }
 
@@ -75,32 +75,22 @@
     [self changedTableViewIndex];//改变索引属性
     
 }
--(void)doMainDosome{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // something
-        [self.tableView reloadData];
-    });
-}
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     [self initll];
     showIcon = NO;
     
-    [[MyAddressBooks sharedAddBooks] CreateAddressBooks];//第一次获取通讯录
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        
-        // something
-        [MyAddressBooks sharedAddBooks].delegate = self;
-        [self performSelector:@selector(doMainDosome) withObject:nil afterDelay:0.0];
-        
-        
-    });
+    [[MyAddressBooks sharedAddBooks] CreateAddressBooks];//是否有权限获取通讯录
+    [MyAddressBooks sharedAddBooks].delegate = self;
     
+    self.sortedArray =  [[MyAddressBooks sharedAddBooks] getSortArray];
+    sectionDict = [[MyAddressBooks sharedAddBooks] getSecDicts];
     
     [userDefaults setBool:NO forKey:IsUpdateContacts];
     self.title = @"通讯录";
-    
     
     self.navigationItem.backBarButtonItem =[[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     //self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -117,10 +107,8 @@
 
 -(void)initll{
     peopleArray = [[NSMutableArray alloc] init];
-    sectionArray = [[NSMutableArray alloc] init];
     sectionDict = [[NSMutableDictionary alloc] init];
     _sortedArray = [[NSArray alloc] init];
-    dataArray = [[NSMutableArray alloc] init];
     msgdata = [[DBDatas alloc] init];
     nameNumberArray = [[NSMutableArray alloc] init];
     Allphones =[[NSMutableArray alloc] init];
@@ -144,7 +132,10 @@
     self.definesPresentationContext = YES;//输入时显示状态栏，
     
 }
-
+-(void)noauths{
+    UIAlertView *a =[[UIAlertView alloc] initWithTitle:@"手机联系人" message:@"是否允许读取联系人？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+    [a show];
+}
 #pragma mark -- MyAddressBooks Delegate
 -(void)sendNotify:(MyBooksNotifity)noti{
     
@@ -152,103 +143,33 @@
         UIAlertView *a =[[UIAlertView alloc] initWithTitle:@"手机联系人" message:@"是否允许读取联系人？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
         [a show];
     }
-
+    
+    if (noti == kMyBooksNotifityStatusLoading) {
+        [SVProgressHUD showWithStatus:@"正在加载" maskType:SVProgressHUDMaskTypeNone];
+        [self performSelector:@selector(outTimes) withObject:self afterDelay:10];
+    }
+    
 }
-
+-(void)outTimes{
+    [[MyAddressBooks sharedAddBooks] outToTimes];
+    [SVProgressHUD dismiss];
+}
 -(void)noAuthority:(CFErrorRef)error{
     NSLog(@"error:%@",error);
 }
 -(void)abAddressBooks:(ABAddressBookRef)bookRef allRefArray:(NSMutableArray *)array{
     //NSLog(@"bookRef:%@ array:%@,conut:%lu",bookRef,array,(unsigned long)array.count);
-    peopleArray = array;
-    abBooksRef = bookRef;
-    
-    [self setSectionDicts];
-}
-
-//生成分组
--(void)setSectionDicts{
-    
-    //设置分组的key
-    for (int i = 0; i < 26; i++){
-        
-        [sectionDict setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'A'+i]];
-    }
-    [sectionDict setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'~']];
-    
-    //设置联系人属性到ConBook
-    conBookArray = [[NSMutableArray alloc] init];
-    for (int i = 0; i<peopleArray.count; i++) {
-        ABRecordRef record = (__bridge ABRecordRef)([peopleArray objectAtIndex:i]);
-        /*
-        ConBook *conBook = [[ConBook alloc] init];
-        //获取联系人属性
-        conBook.recordID = [NSString stringWithFormat:@"%d",(int)ABRecordGetRecordID(record)];
-        conBook.prefixName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonPrefixProperty));
-        conBook.lastName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonLastNameProperty));
-        conBook.middleName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonMiddleNameProperty));;
-        conBook.firstName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonFirstNameProperty));
-        conBook.suffixName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonSuffixProperty));
-        //号码
-        ABMultiValueRef phoneNumber = ABRecordCopyValue(record, kABPersonPhoneProperty);
-        NSMutableArray *pArray = [[NSMutableArray alloc] init];
-        if (ABMultiValueGetCount(phoneNumber) > 0) {//取所有号码
-            for (int k=0; k<ABMultiValueGetCount(phoneNumber); k++) {
-                NSString *phone = (__bridge NSString *)(ABMultiValueCopyValueAtIndex(phoneNumber,k));
-                [pArray addObject:phone];
-            }
-            
-        }
-        conBook.phoneNumberArray = pArray;
-        conBook.fullName = [conBook AssemblyName];
-        
-        //获取联系人邮箱
-        ABMutableMultiValueRef emailMulti = ABRecordCopyValue(record, kABPersonEmailProperty);
-        NSMutableArray *emailArr = [[NSMutableArray alloc] init];
-        for (int h = 0;h < ABMultiValueGetCount(emailMulti); h++)
-        {
-            NSString *emailAdress = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailMulti, h);
-            [emailArr addObject:emailAdress];
-        }
-        conBook.emailArray = emailArr;
-//        [conBookArray addObject:conBook];//改8.27
-         */
-        [conBookArray addObject:[NSString stringWithFormat:@"%d",(int)ABRecordGetRecordID(record)]];
-    }
-    
-    //NSLog(@"_conBooksArr:%@",_conBooksArr);
-    [self sortingRecordArray];
+    //peopleArray = array;
+    //abBooksRef = bookRef;
     
 }
 
-//对数组元素排序
--(void)sortingRecordArray{
-    
-    NSString *sectionName;
-    for (int i=0; i<conBookArray.count; i++) {
-        
-        NSString *nameString = [[ConBook sharBook] getNameWithAbid:[conBookArray[i] intValue]];//名字的第一个字
-        
-        char firstChar = pinyinFirstLetter([nameString characterAtIndex:0]);//名字的第一个字的字母;
-        if ((firstChar >='a' && firstChar<='z')||(firstChar>='A' && firstChar<='Z')) {
-            
-            sectionName = [[NSString stringWithFormat:@"%c",firstChar] uppercaseString];
-            
-        }else {
-            sectionName=[[NSString stringWithFormat:@"%c",'~'] uppercaseString];
-        }
-        
-        //把phoneArray[i]添加到sectionDic的key中
-        [[sectionDict objectForKey:sectionName] addObject:conBookArray[i]];
-        if (![sectionArray containsObject:sectionName]) {
-            [sectionArray addObject:sectionName];
-        }
-        
-    }
-    
-    _sortedArray =[sectionArray sortedArrayUsingSelector:@selector(compare:)];//排序
-    
+-(void)sortArray:(NSArray *)sort secDic:(NSMutableDictionary *)secDict{
+    self.sortedArray =  sort;
+    sectionDict = secDict;
+    [self.tableView reloadData];
 }
+
 
 #pragma mark --alertView
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
@@ -351,16 +272,16 @@
         cell = [[ContactsTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
         Cellview *cellv = [[Cellview alloc] initWithFrame:CGRectMake(0, 40, cell.contentView.frame.size.width, 40)];
         cellv.delegate = self;
-        cellv.backgroundColor = [UIColor blackColor];
+        cellv.backgroundColor = [UIColor whiteColor];
         [cell.contentView addSubview:cellv];
     }
     
     //取消cell 选中背景色
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
-    int abid = [[[sectionDict objectForKey:key]  objectAtIndex:indexPath.row] intValue];
-    cell.nameLabel.text = [[ConBook sharBook] getNameWithAbid:abid];
-    cell.numberLabel.text = [[ConBook sharBook] getFirstNumber:abid];
+    ConBook *book = [[sectionDict objectForKey:key]  objectAtIndex:indexPath.row];
+    cell.nameLabel.text = book.fullName;
+    cell.numberLabel.text = [book.phoneNumberArray firstObject];
 
     return cell;
     
@@ -417,26 +338,7 @@
     
 }
 
--(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
-    
-    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (editingStyle == UITableViewCellEditingStyleDelete){
-        
-        //
-        NSMutableArray *array = [[ NSMutableArray alloc ] init ];
-        [array addObject: indexPath];
-        
-        //移除数组的元素
-        //删除联系人
-        
-        //删除单元格
-        //[ self.tableView deleteRowsAtIndexPaths: array withRowAnimation: UITableViewRowAnimationLeft];
-        
-    }
 
-    
-    
-}
 //设置cell高度
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if ([indexPath isEqual:self.selectedIndexPath]) {
@@ -518,7 +420,7 @@
         contactId = [[searchsArray objectAtIndex:indexPath.row] recordID];
     }else{
         NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
-        int abid = [[[sectionDict objectForKey:key]  objectAtIndex:indexPath.row] intValue];
+        int abid = [[[[sectionDict objectForKey:key]  objectAtIndex:indexPath.row] recordID]intValue];
         name = [[ConBook sharBook] getNameWithAbid:abid];
         phone = [[ConBook sharBook] getFirstNumber:abid];
         contactId =[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] ;
@@ -553,7 +455,7 @@
         
     }else{
         NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
-        int abid = [[[sectionDict objectForKey:key]  objectAtIndex:indexPath.row] intValue];
+        int abid = [[[[sectionDict objectForKey:key]  objectAtIndex:indexPath.row] recordID]intValue];
         msgdata.hisName = [[ConBook sharBook] getNameWithAbid:abid];
         msgdata.hisNumber = [[ConBook sharBook] getFirstNumber:abid];
         msgdata.hisHome = [[DBHelper sharedDBHelper] getAreaWithNumber:[msgdata.hisNumber purifyString]];
@@ -573,12 +475,12 @@
     if (self.searchController.active) {
         ABRecordID abid =[[[searchsArray objectAtIndex:indexPath.row] recordID] intValue];
         
-        ABRecordRef ref = ABAddressBookGetPersonWithRecordID(abBooksRef, abid);
+        ABRecordRef ref = [[ConBook sharBook] getRecordRefWithID:abid];
         [self showPersonViewControllerWithRecordRef:ref];
     }else{
         NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
-        ABRecordID abid = [[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] intValue];
-        ABRecordRef refd = ABAddressBookGetPersonWithRecordID(abBooksRef, abid);
+        ABRecordID abid = [[[[sectionDict objectForKey:key] objectAtIndex:indexPath.row] recordID]intValue];
+        ABRecordRef refd = [[ConBook sharBook] getRecordRefWithID:abid];
         [self showPersonViewControllerWithRecordRef:refd];
     }
     
@@ -666,8 +568,8 @@
     if (person) {
         CFErrorRef error = NULL;
         
-        ABAddressBookAddRecord(abBooksRef, person, &error);
-        ABAddressBookSave(abBooksRef, &error);
+        //ABAddressBookAddRecord(abBooksRef, person, &error);
+        //ABAddressBookSave(abBooksRef, &error);
         
         if (error != NULL) {
             NSLog(@"An error occurred");
