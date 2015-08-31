@@ -83,6 +83,11 @@
 -(NSMutableArray *)getNumberArray:(ABRecordID)abid;
 
 /**
+ *  根据联系人名字获取recordref
+ *
+ */
+-(NSString *)getRecordRefWithName:(NSString *)name;
+/**
  *  添加联系人到通讯录
  */
 -(BOOL)addPerson:(ConBook *)conbook;

@@ -113,6 +113,8 @@
         strNunmber = @"";
     }
     
+    NSString *name = [[NSString alloc] init];
+    name = hisName.length>0?hisName:@"";
     //运营商
     NSString *strOperators = [[NSString alloc] init];
     strOperators = [hisNumber isMobileNumberWhoOperation];
@@ -132,6 +134,7 @@
     
     //DBDatas *data = [[DBDatas alloc] init];
     //data.tel_id =singleton.telID;//不需要存id，
+    data.hisName = name;
     data.hisNumber = strNunmber;
     data.callBeginTime = strDate;
     data.hisOperator = strOperators;

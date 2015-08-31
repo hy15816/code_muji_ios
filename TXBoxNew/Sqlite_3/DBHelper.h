@@ -124,4 +124,29 @@
  */
 -(NSString *)getAreaWithNumber:(NSString *)number;
 
+
+
+#pragma mark -- CONTACTS
+/**
+ *  保存通讯录联系人
+ */
+-(void)saveContacts:(DBDatas *)datas;
+
+/**
+ *  获取所有联系人信息
+ */
+-(NSMutableArray *)getAllPeopleInfo;
+
+/**
+ *  更新联系人数据
+ */
+-(void)updateContactsInfo:(DBDatas *)datas;
+
+/**
+ *  获取联系人名字
+ *  @param number 号码
+ *  @return 名字
+ */
+-(NSString *)getNameWithNumber:(NSString *)number;
+
 @end

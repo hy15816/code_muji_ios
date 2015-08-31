@@ -338,14 +338,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		632AC6341ADCE92F0023FAA9 /* Sqlite_3 */ = {
+		632AC6341ADCE92F0023FAA9 /* DB */ = {
 			isa = PBXGroup;
 			children = (
+				63DACA841B8474D600276FF5 /* FMDB */,
 				63DACA811B84741200276FF5 /* DBHelper.h */,
 				63DACA821B84741200276FF5 /* DBHelper.m */,
 				6371850B1B858A500080D5FA /* DBDatas.h */,
 				6371850C1B858A500080D5FA /* DBDatas.m */,
 			);
+			name = DB;
 			path = Sqlite_3;
 			sourceTree = "<group>";
 		};
@@ -710,7 +712,8 @@
 				63DACA8E1B8474D600276FF5 /* FMResultSet.h */,
 				63DACA8F1B8474D600276FF5 /* FMResultSet.m */,
 			);
-			path = FMDB;
+			name = FMDB;
+			path = ../FMDB;
 			sourceTree = "<group>";
 		};
 		63DEA66E1B009425003343A7 /* msgDetail */ = {
@@ -804,8 +807,7 @@
 				637005C01AE4C1D000B8BAFD /* Peripheral_connect */,
 				635299651ADE372E006840AC /* CustomTabBar */,
 				635299591ADE0296006840AC /* Singleton */,
-				632AC6341ADCE92F0023FAA9 /* Sqlite_3 */,
-				63DACA841B8474D600276FF5 /* FMDB */,
+				632AC6341ADCE92F0023FAA9 /* DB */,
 				6378583E1B316F3F006D5155 /* GetContacts */,
 				637E41E11B3962B20015F682 /* External */,
 				63DBF8AA1B0303C500041321 /* TXNavgationController.h */,

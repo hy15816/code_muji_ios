@@ -179,7 +179,9 @@
 #pragma mark -- 用户输入时（增加或退格）
 -(void)inputTextDidChanged:(NSNotification*)notifi{
   
-   
+    dispatch_sync(dispatch_get_global_queue(0, 0), ^{
+        
+    
     //若结果集不为空，清空结果
     if (searchResault.count >0) {
         [searchResault removeAllObjects];
@@ -253,7 +255,7 @@
     if(isAdd){
         [tempNumsRegularsMap setObject:tempRegularList forKey:inUserInputsStr];
     }
-//dispatch_async(	dispatch_get_global_queue(0, 0), ^{
+
     //2.匹配：结果 <- 正则表达式
     for (int i = 0 ; i <[[tempNumsRegularsMap valueForKey:inUserInputsStr] count ] ; i++) {//0,1
         NSString *regular = [[tempNumsRegularsMap valueForKey:inUserInputsStr] objectAtIndex:i];
@@ -278,16 +280,12 @@
                     modle.range = ranges;
                     modle.phone = phoneNum;
                     if (![nameArray containsObject:phoneNum]) {
+                        if (phoneNum.length>0) {
+                            [nameArray addObject:phoneNum];
+                        }
                         [searchResault addObject:modle];
                     }
-                    /*
-                    if (![searchResault containsObject:modle]) {
-                        [searchResault addObject:modle];
-                    }/*
-                    if ([self hasThisRecord:modle]) {
-                        [searchResault addObject:modle];
-                    }
-                      */
+                    
                     
                 }else{//匹配号码，
                     NSRange pRange = [phoneNum  rangeOfString:inUserInputsStr];
@@ -298,17 +296,12 @@
                         modle.contactInfo = mutPhoneArray[k];
                         modle.phone = phoneNum;
                         if (![nameArray containsObject:phoneNum]) {
+                            if (phoneNum.length>0) {
+                                [nameArray addObject:phoneNum];
+                            }
+                            
                             [searchResault addObject:modle];
                         }
-                        /*
-                        if (![searchResault containsObject:modle]) {
-                            [searchResault addObject:modle];
-                        }
-                        /*
-                        if ([self hasThisRecord:modle]) {
-                            [searchResault addObject:modle];
-                        }
-                         */
                         
                     }
                 }
@@ -330,17 +323,20 @@
         [mLastAllRegularsMapArray addObject:tempNumsRegularsMap];
     }
     
-    
-    [self.tableView reloadData];
-    
-    //输入的数字达到7个，且还没有结果时显示运营商归属地
-    if (searchResault.count == 0 && searcherString.length >= 7) {
-        areaString =[[DBHelper sharedDBHelper] getAreaWithNumber:singleton.singletonValue];
-        VCLog(@"areaString:%@",areaString);
-        opeareString = [singleton.singletonValue isMobileNumberWhoOperation];
-    }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // something
+            [self.tableView reloadData];
+            
+            //输入的数字达到7个，且还没有结果时显示运营商归属地
+            if (searchResault.count == 0 && searcherString.length >= 7) {
+                areaString =[[DBHelper sharedDBHelper] getAreaWithNumber:singleton.singletonValue];
+                VCLog(@"areaString:%@",areaString);
+                opeareString = [singleton.singletonValue isMobileNumberWhoOperation];
+            }
 
-//     });
+        });
+    
+     });
 }
 //-123-56-89
 -(NSRange)getRange:(NSString *)colorStr pinyin:(NSString *)firstPinyin{

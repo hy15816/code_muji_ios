@@ -215,6 +215,19 @@
 }
 
 /**
+ *  根据联系人号码获取名字
+ *
+ */
+-(NSString *)getRecordRefWithName:(NSString *)name{
+    NSString *nameString = [[NSString alloc] init];
+    CFStringRef cfName = (__bridge CFStringRef)name;
+    NSArray *array = (__bridge NSArray *)(ABAddressBookCopyPeopleWithName(addressBook, cfName));
+    ABRecordRef ref = CFBridgingRetain(array[0]);
+    nameString = [self getNameWithRef:ref];
+    return nameString;
+}
+
+/**
  *  添加联系人到通讯录
  *
  */

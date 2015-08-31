@@ -89,6 +89,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disvViewDidShow:) name:KRefreshDisvView object:nil];
 
+    //[[NSNotificationCenter defaultCenter] postNotificationName:@"callinAction" object:self];
     [self initLoginAndConfigButtons];
     [self refreshBindButton];
     

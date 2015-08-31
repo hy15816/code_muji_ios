@@ -7,6 +7,7 @@
 //
 #define CALL_RECORD @"CALL_RECORDS"
 #define MSG_RECORD @"MSG_RECORD"
+#define CONTACTSINFO @"contactsInfo"
 
 #import "DBHelper.h"
 #import "NSString+helper.h"
@@ -31,7 +32,7 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     
-    NSString *dbPath = [documentsDirectory stringByAppendingPathComponent:@"saveData_8_27.db"];
+    NSString *dbPath = [documentsDirectory stringByAppendingPathComponent:@"saveData_8_31_3.db"];
     return dbPath;
 }
 
@@ -84,12 +85,14 @@
  */
 -(void)createTable{
     //通话记录
-    NSString *callRecord=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (tel_id integer primary key AUTOINCREMENT,hisNumber TEXT,callDirection TEXT,callLength TEXT,callBeginTime TEXT,hisHome TEXT,hisOperator TEXT,contactid TEXT)",CALL_RECORD];
+    NSString *callRecord=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (tel_id integer primary key AUTOINCREMENT,hisNumber TEXT,hisName text,callDirection TEXT,callLength TEXT,callBeginTime TEXT,hisHome TEXT,hisOperator TEXT,contactid TEXT)",CALL_RECORD];
     
     //信息记录
     NSString *messageRecord=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (peopleId integer primary key AUTOINCREMENT,msgHisName TEXT,msgHisNum TEXT,msgTime TEXT,msgContent TEXT,msgState TEXT,contactid TEXT)",MSG_RECORD ];
+    //联系人信息
+    NSString *contactsInfo = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@(contactsID integer,conName text,conNumber text)",CONTACTSINFO];
     
-    NSArray *sqlArray = @[callRecord,messageRecord];
+    NSArray *sqlArray = @[callRecord,messageRecord,contactsInfo];
     for(NSString *sql in sqlArray){
         [self createTableForSql:sql];
     }
@@ -117,8 +120,8 @@
  */
 -(void)addDatasToCallRecord:(DBDatas *)datas{
     FMDatabase *db=[self createDatabase];
-    NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO %@ (hisNumber ,callDirection ,callLength,callBeginTime ,hisHome ,hisOperator,contactid ) values(?,?,?,?,?,?,?)",CALL_RECORD];
-    BOOL result = [db executeUpdate:insertSql,datas.hisNumber,datas.callDirection,datas.callLength,datas.callBeginTime,datas.hisHome,datas.hisOperator,datas.contactID];
+    NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO %@ (hisNumber,hisName ,callDirection ,callLength,callBeginTime ,hisHome ,hisOperator,contactid ) values(?,?,?,?,?,?,?,?)",CALL_RECORD];
+    BOOL result = [db executeUpdate:insertSql,datas.hisNumber,datas.hisName,datas.callDirection,datas.callLength,datas.callBeginTime,datas.hisHome,datas.hisOperator,datas.contactID];
     if (!result) {
         NSLog(@"保存通话记录失败");
     }
@@ -139,6 +142,7 @@
         
         DBDatas *datas = [[DBDatas alloc] init];
         datas.tel_id = [rs intForColumn:@"tel_id"];
+        datas.hisName = [rs stringForColumn:@"hisName"];
         datas.hisNumber = [rs stringForColumn:@"hisNumber"];
         datas.callDirection = [rs stringForColumn:@"callDirection"];
         datas.callLength = [rs stringForColumn:@"callLength"];
@@ -355,5 +359,71 @@
     return area.length>0?area:@"未知地区";
 }
 
+#pragma mark -- CONTACTS
+/**
+ *  保存通讯录联系人
+ */
+-(void)saveContacts:(DBDatas *)datas{
+    FMDatabase *db=[self createDatabase];
+    NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO %@(contactsID,conName ,conNumber ) values(?,?,?)",CONTACTSINFO];
+    BOOL result = [db executeUpdate:insertSql,datas.contactID, datas.hisName,datas.hisNumber];
+    if (!result) {
+        NSLog(@"保存联系人信息失败");
+    }
+    [db close];
+
+}
+
+/**
+ *  获取所有联系人信息
+ */
+-(NSMutableArray *)getAllPeopleInfo{
+    NSMutableArray *mutArray = [[NSMutableArray alloc] init];
+    NSString *sql = [NSString stringWithFormat:@"SELECT *FROM %@",CONTACTSINFO];
+    FMDatabase *db=[self createDatabase];
+    FMResultSet *rs = [db executeQuery:sql];
+    while ([rs next]) {
+        
+        DBDatas *datas = [[DBDatas alloc] init];
+        datas.peopleId = [rs intForColumn:@"contactsID"];
+        datas.msgHisName = [rs stringForColumn:@"conName"];
+        datas.msgHisNum = [rs stringForColumn:@"conNumber"];
+        [mutArray addObject:datas];
+    }
+    [rs close];
+    
+    return mutArray;
+}
+
+/**
+ *  更新联系人数据
+ */
+-(void)updateContactsInfo:(DBDatas *)datas{
+    
+    FMDatabase *db=[self createDatabase];
+    BOOL update = [db executeUpdate:@"UPDATE CONTACTSINFO SET conName=?,conNumber=? where contactsID=? ",datas.hisName,datas.hisNumber,[NSNumber numberWithInt:[datas.contactID  intValue]]];
+    if (!update) {
+        NSLog(@"更新失败");
+    }
+}
+
+/**
+ *  获取联系人名字
+ *  @param number 号码
+ *  @return 名字
+ */
+-(NSString *)getNameWithNumber:(NSString *)number{
+    
+    NSString *names =[[NSString alloc] init];
+    FMDatabase *db=[self createDatabase];
+    NSString *selectSql = [NSString stringWithFormat:@"select * from %@ where conNumber = %@",CONTACTSINFO,number];
+    FMResultSet *rs = [db executeQuery:selectSql];//查询地区码，
+    while ([rs next]) {
+        NSString *name = [rs stringForColumn:@"conName"];
+        names = name;
+    }
+    
+    return names.length>0?names:@"";
+}
 
 @end

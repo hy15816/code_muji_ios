@@ -84,23 +84,35 @@
     }
     [self respondsToSelector:@selector(changeViewController:)];
     [self setBLEActionNoti];
+    
+    //[self addCallInView];
 }
 
 #pragma mark -- Call In view
--(void)addCallInView{
+//来电
+-(void)addCallInView:(NSString *)name phone:(NSString *)phone{
 
+    name = [[DBHelper sharedDBHelper] getNameWithNumber:[phone purifyString]];
     callIn = [[CallInView alloc] init];
     callIn.frame = CGRectMake(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT);
     callIn.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"calling_bg"]];
-    
-    callIn.hisName = @"ces";
-    callIn.hisNumber = @"13698006536";
+    callIn.alpha = 0;
+    callIn.hisName = name.length>0?name:@"";
+    callIn.hisNumber = phone;
     callIn.hisHome=[[DBHelper sharedDBHelper] getAreaWithNumber:callIn.hisNumber];
     callIn.delegate = self;
     [callIn initViews];
     [self.view addSubview:callIn];
-
+    [self changedCallInAlpha];
+    
 }
+//显示
+-(void)changedCallInAlpha{
+    [UIView animateWithDuration:.5 animations:^{callIn.alpha = 1;}];
+}
+/**
+ *  收起&展开
+ */
 -(void)changedHeight{
     [UIView animateWithDuration:.5 animations:^{
         if (callIn.frame.origin.y<0) {
@@ -111,7 +123,9 @@
     }];
     [callIn packUpView];
 }
-
+/**
+ *  接听或挂断
+ */
 -(void)answerOrHangUp:(UIButton *)btn{
     BLEmanager *bleman = [BLEmanager sharedInstance];
     [UIView animateWithDuration:.5 animations:^{
@@ -351,13 +365,14 @@
     
 }
 -(void)actionChange:(NSNotification *)noti{
-    NSString *aType = [[noti userInfo] objectForKey:@"type"];
+    NSString *type = [[noti userInfo] objectForKey:@"type"];
     NSData *data = [[noti userInfo] objectForKey:@"data"];
-    /*
+    
      NSString *aType;
-     switch ([age intValue]) {
+     switch ([type intValue]) {
      case 0x01:
      aType = @"拨入电话事件";//需得到然后号码显示
+             
      break;
      case 0x02:
      aType = @"calling";//需得到然后号码显示，改变状态为通话中
@@ -385,8 +400,8 @@
      aType = @"default";
      break;
      }
-     */
-    UIAlertView *a =[[UIAlertView alloc] initWithTitle:aType message:[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] delegate:self cancelButtonTitle:@"cancel" otherButtonTitles:@"OK", nil];
+    
+    UIAlertView *a =[[UIAlertView alloc] initWithTitle:type message:[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] delegate:self cancelButtonTitle:@"cancel" otherButtonTitles:@"OK", nil];
     [a show];
     
 }
@@ -442,6 +457,10 @@
         //
         [self thisIsDiscv:1];
         
+    }
+    
+    if ([notifi.name isEqualToString:@"callinAction"]) {
+        [self addCallInView:@"zs" phone:@"13025318621"];
     }
 }
 

@@ -59,13 +59,6 @@
     }
     [sectionDicts setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'~']];
     
-    
-    for (int s=0; s<1000; s++) {
-       // [self adds];
-    }
-    
-    
-    
     //初始化电话簿
     ABAddressBookRef myAddressBook = nil;
     CFErrorRef *error = nil;

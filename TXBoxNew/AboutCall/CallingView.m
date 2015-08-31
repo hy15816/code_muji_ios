@@ -244,6 +244,14 @@
     //VCLog(@"timeLength :%@",self.isCall);
     //VCLog(@"%d",[_isCall intValue]);
 }
+
+-(void)updateViewStatus:(int)type{
+    if (type == 2) {//通话中事件
+        //
+        
+    }
+}
+
 #pragma mark -- 加载gif
 - (void)initWithGifFrame:(CGRect)frame filePath:(NSString *)filePath
 {
