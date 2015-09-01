@@ -41,7 +41,6 @@
 		637191981B1F01CF005C09C8 /* NSString+AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 637191941B1F01CF005C09C8 /* NSString+AKNumericFormatter.m */; };
 		637191991B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 637191961B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m */; };
 		63719B011B44DBFC00AB7DE3 /* CallingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63719B001B44DBFC00AB7DE3 /* CallingView.m */; };
-		637858471B317BEB006D5155 /* GetAllContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 637858461B317BEB006D5155 /* GetAllContacts.m */; };
 		637B49D81B438D7300326937 /* Guides.m in Sources */ = {isa = PBXBuildFile; fileRef = 637B49D51B438D7300326937 /* Guides.m */; };
 		637B49D91B438D7300326937 /* GuideView.m in Sources */ = {isa = PBXBuildFile; fileRef = 637B49D71B438D7300326937 /* GuideView.m */; };
 		637B49DE1B438DA000326937 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 637B49DB1B438DA000326937 /* SVProgressHUD.bundle */; };
@@ -188,8 +187,6 @@
 		637191961B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+AKNumericFormatter.m"; sourceTree = "<group>"; };
 		63719AFF1B44DBFC00AB7DE3 /* CallingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallingView.h; sourceTree = "<group>"; };
 		63719B001B44DBFC00AB7DE3 /* CallingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallingView.m; sourceTree = "<group>"; };
-		637858451B317BEB006D5155 /* GetAllContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetAllContacts.h; sourceTree = "<group>"; };
-		637858461B317BEB006D5155 /* GetAllContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetAllContacts.m; sourceTree = "<group>"; };
 		637B49D41B438D7300326937 /* Guides.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Guides.h; sourceTree = "<group>"; };
 		637B49D51B438D7300326937 /* Guides.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Guides.m; sourceTree = "<group>"; };
 		637B49D61B438D7300326937 /* GuideView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuideView.h; sourceTree = "<group>"; };
@@ -569,15 +566,6 @@
 			path = AboutCall;
 			sourceTree = "<group>";
 		};
-		6378583E1B316F3F006D5155 /* GetContacts */ = {
-			isa = PBXGroup;
-			children = (
-				637858451B317BEB006D5155 /* GetAllContacts.h */,
-				637858461B317BEB006D5155 /* GetAllContacts.m */,
-			);
-			path = GetContacts;
-			sourceTree = "<group>";
-		};
 		637B49CF1B438BA400326937 /* CallAndDivert */ = {
 			isa = PBXGroup;
 			children = (
@@ -808,7 +796,6 @@
 				635299651ADE372E006840AC /* CustomTabBar */,
 				635299591ADE0296006840AC /* Singleton */,
 				632AC6341ADCE92F0023FAA9 /* DB */,
-				6378583E1B316F3F006D5155 /* GetContacts */,
 				637E41E11B3962B20015F682 /* External */,
 				63DBF8AA1B0303C500041321 /* TXNavgationController.h */,
 				63DBF8AB1B0303C500041321 /* TXNavgationController.m */,
@@ -986,7 +973,6 @@
 				637E41DE1B3961D20015F682 /* PopView.m in Sources */,
 				6371918D1B1F01B1005C09C8 /* PinyinHelper.m in Sources */,
 				637B49D81B438D7300326937 /* Guides.m in Sources */,
-				637858471B317BEB006D5155 /* GetAllContacts.m in Sources */,
 				6359D08E1AE5F28E00592201 /* MessageCell.m in Sources */,
 				637191991B1F01CF005C09C8 /* UITextField+AKNumericFormatter.m in Sources */,
 				637191891B1F01B1005C09C8 /* ChineseToPinyinResource.m in Sources */,

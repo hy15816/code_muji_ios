@@ -124,23 +124,6 @@
 #define ZZExpression @"\\w*"
 #define ReplaceIdentifi @"-"
 
-//联系人
-#define FirstNameChars @"firstNameChars"
-#define PersonName @"personName"
-#define PersonNameNum @"personNameNum"
-#define PersonTel   @"personTel"
-#define PersonTelNum @"personTelNum"
-#define PersonRecordID @"recordID"
-/*
-//联系人dict格式：{
- personName = "",
- personNameNum = "",
- personTel = "",
- personTelNum,
- recordRef = ""
- 
-}
-*/
 
 
 

@@ -90,7 +90,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"信息";
     
     self.dataArray = [[NSMutableArray alloc] init];
     self.searchsArray = [[NSMutableArray alloc] init];

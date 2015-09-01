@@ -60,8 +60,6 @@
         [self.tableView reloadData];
     }
     
-    
-
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -77,16 +75,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    CGFloat width = self.view.frame.size.width;
     [self initll];
     showIcon = NO;
     
     [self authorizStatus];
     
     [userDefaults setBool:NO forKey:IsUpdateContacts];
-    self.title = @"通讯录";
-    
     self.navigationItem.backBarButtonItem =[[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-    //self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     //索引相关
     self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
     self.tableView.sectionIndexColor = [UIColor grayColor];
@@ -100,7 +97,7 @@
 /**
  *  获取通讯录
  */
--(void)authorizStatus{
+-(BOOL)authorizStatus{
     ABAuthorizationStatus authStatus = ABAddressBookGetAuthorizationStatus();
     
     if (authStatus == kABAuthorizationStatusAuthorized){
@@ -119,14 +116,58 @@
             dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
             
         }
-        
-        [self getAllPeoples];
-        
-        if (ABAddressBookGetPersonCount(_abAddressBookRef) == 0) {
+
+        return YES;
+    }
+
+    return NO;
+}
+
+/**
+ *  获取所有联系人
+ */
+-(void)getAllPeoples{
+    if ([self authorizStatus]) {
+        //设置分组的key
+        for (int i = 0; i < 26; i++){
             
-            NSLog(@"no people");
-            
+            [_sectionDict setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'A'+i]];
         }
+        [_sectionDict setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'~']];
+        
+        CFErrorRef error;
+        _abAddressBookRef = ABAddressBookCreateWithOptions(NULL, &error);
+        if (ABAddressBookGetPersonCount(_abAddressBookRef) == 0) {
+            [SVProgressHUD showImage:nil status:@"0位联系人"];
+            return;
+        }
+        //取得本地所有联系人记录
+        CFArrayRef results = ABAddressBookCopyArrayOfAllPeople(_abAddressBookRef);
+        CFMutableArrayRef mresults=CFArrayCreateMutableCopy(kCFAllocatorDefault,CFArrayGetCount(results),results);
+        NSMutableArray *peoleArray = [[NSMutableArray alloc] init];
+        for (int i=0; i<CFArrayGetCount(results); i++) {
+            
+            NSMutableDictionary *tempDic = [[NSMutableDictionary alloc] init];
+            //获取联系人属性
+            ABRecordRef record=CFArrayGetValueAtIndex(mresults,i);
+            NSString *compositeName = (__bridge NSString *)ABRecordCopyCompositeName(record);
+            NSString *cid = [NSString stringWithFormat:@"%d",(int)ABRecordGetRecordID(record)];
+            ABMultiValueRef phoneNumber = ABRecordCopyValue(record, kABPersonPhoneProperty);
+            NSString *phone;
+            if (ABMultiValueGetCount(phoneNumber) > 0) {//取所有号码
+                phone = (__bridge NSString *)(ABMultiValueCopyValueAtIndex(phoneNumber,0));//获取一个号码
+                [tempDic setObject:phone forKey:PHONE];
+                
+            }
+            compositeName = compositeName.length>0?compositeName:phone;
+            [tempDic setObject:compositeName.length>0?compositeName:@"1无名称" forKey:NAME];
+            [tempDic setObject:cid forKey:PID];//
+            
+            [peoleArray addObject:tempDic];
+        }
+        Allphones = peoleArray;
+        
+        [self sortingRecordArray];
     }else{
         NSLog(@"no author");
         
@@ -134,78 +175,10 @@
         [a show];
         
     }
-
-}
-
-/**
- *  获取所有联系人
- */
--(void)getAllPeoples{
-    //设置分组的key
-    for (int i = 0; i < 26; i++){
-        
-        [_sectionDict setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'A'+i]];
-    }
-    [_sectionDict setObject:[NSMutableArray array] forKey:[NSString stringWithFormat:@"%c",'~']];
-    
-    CFErrorRef error;
-    _abAddressBookRef = ABAddressBookCreateWithOptions(NULL, &error);
-    //取得本地所有联系人记录
-    CFArrayRef results = ABAddressBookCopyArrayOfAllPeople(_abAddressBookRef);
-    CFMutableArrayRef mresults=CFArrayCreateMutableCopy(kCFAllocatorDefault,CFArrayGetCount(results),results);
-    NSMutableArray *peoleArray = [[NSMutableArray alloc] init];
-    for (int i=0; i<CFArrayGetCount(results); i++) {
-        NSMutableDictionary *tempDic = [[NSMutableDictionary alloc] init];
-        //获取联系人属性
-        ABRecordRef record=CFArrayGetValueAtIndex(mresults,i);
-        NSString *cid = [NSString stringWithFormat:@"%d",(int)ABRecordGetRecordID(record)];
-        NSString *prefixName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonPrefixProperty));
-        NSString *lastn = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonLastNameProperty));
-        NSString *middleName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonMiddleNameProperty));
-        NSString *firstn = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonFirstNameProperty));
-        NSString *suffixName = (__bridge NSString *)(ABRecordCopyValue(record, kABPersonSuffixProperty));
-        ABMultiValueRef phoneNumber = ABRecordCopyValue(record, kABPersonPhoneProperty);
-        if (ABMultiValueGetCount(phoneNumber) > 0) {//取所有号码
-            NSString *phone = (__bridge NSString *)(ABMultiValueCopyValueAtIndex(phoneNumber,0));
-            [tempDic setObject:phone forKey:PHONE];
-        }
-        NSString *name = [self AssemblyName:prefixName lastn:lastn middleName:middleName firstn:firstn suffixName:suffixName];
-        [tempDic setObject:name forKey:NAME];
-        [tempDic setObject:cid forKey:PID];//
-        
-        [peoleArray addObject:tempDic];
-    }
-    Allphones = peoleArray;
-    
-    [self sortingRecordArray];
-}
-
-/**
- *  组合名字
- */
--(NSString *)AssemblyName:(NSString *)prefixName lastn:(NSString *)lastn middleName:(NSString *)middleName firstn:(NSString *)firstn suffixName:(NSString *)suffixName{
-    
-    NSString *fullName;
-    if (prefixName.length<=0) {
-        prefixName = @"";
-    }
-    if (lastn.length<=0) {
-        lastn = @"";
-    }
-    if (middleName.length<=0) {
-        middleName = @"";
-    }
-    if (firstn.length<=0) {
-        firstn = @"";
-    }
-    if (suffixName.length<=0) {
-        suffixName = @"";
-    }
-    
-    fullName = [NSString stringWithFormat:@"%@%@%@%@%@",prefixName,lastn,middleName,firstn,suffixName];
-    return fullName.length>0?fullName:@"1无名称";
     
 }
+
+
 
 
 //对数组元素排序
@@ -294,6 +267,7 @@
         [hudview removeFromSuperview];
     }
 }
+
 //否则返回分区个数
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 
@@ -340,9 +314,9 @@
     }else{
     NSString *key=[NSString stringWithFormat:@"%@",_sortedArray[indexPath.section]];
     NSMutableDictionary *dict = [[_sectionDict objectForKey:key]  objectAtIndex:indexPath.row];
-    //ConBook *book = [[_sectionDict objectForKey:key]  objectAtIndex:indexPath.row];
     cell.nameLabel.text = [dict objectForKey:NAME];
     cell.numberLabel.text = [dict objectForKey:PHONE];
+        //NSLog(@"cid:%@,%@",[dict objectForKey:PID],cell.nameLabel.text);
     }
     return cell;
     
@@ -425,7 +399,11 @@
 -(NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index{
     
     [self.view.window addSubview:[self hudView:title]];
-    
+    if (hudview) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            //[hudview removeFromSuperview];
+        });
+    }
     return index;
 }
 

@@ -5,6 +5,11 @@
 //  Created by Naron on 15/4/13.
 //  Copyright (c) 2015年 playtime. All rights reserved.
 //
+#define PNAME           @"p_name"
+#define PNAME_NUMBER    @"p_name_number"
+#define PNAME_FIRSTC    @"p_name_firstC"
+#define PNUMBER         @"p_number"
+#define PCID            @"p_contactID"
 
 #import "CallController.h"
 #import <AddressBookUI/AddressBookUI.h>
@@ -13,20 +18,17 @@
 #import "TXTelNumSingleton.h"
 #import "Records.h"
 #import "DiscoveryController.h"
-#import "GetAllContacts.h"
 #import "CallAndDivert.h"
 #import <CoreText/CoreText.h>
 #import "DBHelper.h"
 #import "ConBook.h"
 
-@interface CallController ()<UITextFieldDelegate,ABUnknownPersonViewControllerDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,GetContactsDelegate,CallAndDivertDelegate>
+@interface CallController ()<UITextFieldDelegate,ABUnknownPersonViewControllerDelegate,ABPersonViewControllerDelegate,ABNewPersonViewControllerDelegate,CallAndDivertDelegate,UIAlertViewDelegate>
 {
     NSMutableArray *CallRecords;
     
     UIWebView *webView;
-    NSUserDefaults *defaults;
     NSMutableArray *mutPhoneArray;
-    NSMutableDictionary *phoneDic;      //同一个人的手机号码dic
 
     TXTelNumSingleton *singleton;   //获取输入的号码
     NSMutableArray *searchResault;
@@ -34,10 +36,9 @@
     DiscoveryController *discoveryCtrol;
     
     NSMutableArray *zzArray;
-        NSString *areaString;
+    NSString *areaString;
     NSString *opeareString;
     NSMutableArray *mLastAllRegularsMapArray;
-    BOOL ish ;
     CallAndDivert *callDivert;
     NSString *searcherString;
     BOOL canAdd;
@@ -86,55 +87,33 @@
     CallRecords = (NSMutableArray *)[[array reverseObjectEnumerator] allObjects];
     [self.tableView reloadData];
     //VCLog(@"int max:%i",INT_MAX);
-    
-    
-    
-    
+
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    CFErrorRef error = NULL;
-    _addressBook  = ABAddressBookCreateWithOptions(nil, &error);
-//    CFIndex nPeople = ABAddressBookGetPersonCount(_addressBook);
-//    NSLog(@"People count：%ld",nPeople);
 
     //显示tabbar
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kShowCusotomTabBar object:self]];
-    //获取联系人数据#pragma mark-- 获取通讯录联系人
-    
-    
-}
-
--(void)loadContacts{
-    
-    GetAllContacts *contacts = [[GetAllContacts alloc] init];
-    contacts.getContactsDelegate = self;
-    [contacts getContacts];
     
 }
 
 - (void)viewDidLoad {
     
     [super viewDidLoad];
-    
-    //[self.navigationController.navigationBar setTintColor:nil];
+    [self loadCallRecords];
     
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         // something
-        [self loadContacts];
+        [self getAllContacts];
     });
     
-    ish = YES;
-    self.title = @"电话";
-    [self loadCallRecords];
     colorArray = [[NSMutableArray alloc] init];
     canAdd = YES;
     self.selectedIndexPath = nil;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;//tableview分割线
-    //self.tableView.tableFooterView = [[UIView alloc] init];
+    self.tableView.tableFooterView = [[UIView alloc] init];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStyleDone target:nil action:nil];
     
     zzArray =[[NSMutableArray alloc] init];
@@ -146,28 +125,39 @@
     
 }
 
-#pragma mark -- getContacts Delegate
--(void)getAllPhoneArray:(NSMutableArray *)array SectionDict:(NSMutableDictionary *)sDict PhoneDict:(NSMutableDictionary *)pDict
-{
-    mutPhoneArray = array;
-//    [mutPhoneArray addObjectsFromArray:mutPhoneArray];
-//    [mutPhoneArray addObjectsFromArray:mutPhoneArray];
-//    [mutPhoneArray addObjectsFromArray:array];
-    
-    //VCLog(@"mutPhoneArray count:%lu",(unsigned long)mutPhoneArray.count);
-}
-
 //初始化
 - (void) loadCallRecords{
     
     //创建data对象的数组
     CallRecords = [[NSMutableArray alloc] init];
     mutPhoneArray =[[NSMutableArray alloc] init];
-    phoneDic = [[NSMutableDictionary alloc] init];
-    defaults = [NSUserDefaults standardUserDefaults];
     singleton = [TXTelNumSingleton sharedInstance];
     searchResault = [[NSMutableArray alloc] init];
     
+}
+
+- (BOOL)addPhone:(ABRecordRef)person phone:(NSString*)phone
+{
+    ABMutableMultiValueRef multi = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+    
+    CFErrorRef anError = NULL;
+    
+    // The multivalue identifier of the new value isn't used in this example,
+    // multivalueIdentifier is just for illustration purposes.  Real-world
+    // code can use this identifier to do additional work with this value.
+    ABMultiValueIdentifier multivalueIdentifier;
+    
+    if (!ABMultiValueAddValueAndLabel(multi, (__bridge CFStringRef)phone, kABPersonPhoneMainLabel, &multivalueIdentifier)){
+        CFRelease(multi);
+        return NO;
+    }
+    
+    if (!ABRecordSetValue(person, kABPersonPhoneProperty, multi, &anError)){
+        CFRelease(multi);
+        return NO;
+    }
+    CFRelease(multi);
+    return YES;
 }
 
 -(void)callviewWillRefresh
@@ -262,8 +252,8 @@
         BOOL isRegular = FALSE;
         BOOL isNumRgular = FALSE;
         for (int k = 0; k < mutPhoneArray.count; k++) {//取出第k个元素
-            NSMutableArray *nameNumArray = [mutPhoneArray[k]valueForKey:PersonNameNum];
-             NSString *phoneNum = [mutPhoneArray[k]valueForKey:PersonTelNum];//第k个元素的号码
+            NSMutableArray *nameNumArray = [mutPhoneArray[k]valueForKey:PNAME_NUMBER];
+             NSString *phoneNum = [mutPhoneArray[k]valueForKey:PNUMBER];//第k个元素的号码
             for (int j=0;j<nameNumArray.count;j++) {
                 NSString *nameNum = nameNumArray[j];
                 //匹配名字
@@ -273,7 +263,7 @@
                 if (result) {
                     isRegular = true;
                     NSString *colorStr = [nameNum substringWithRange:result.range];
-                    NSMutableArray *firstNameChars = [mutPhoneArray[k]valueForKey:FirstNameChars];
+                    NSMutableArray *firstNameChars = [mutPhoneArray[k]valueForKey:PNAME_FIRSTC];
                     NSRange ranges = [self getRange:colorStr pinyin:firstNameChars[0]];
                     CModle *modle = [[CModle alloc] init];
                     modle.contactInfo = mutPhoneArray[k];
@@ -323,23 +313,28 @@
         [mLastAllRegularsMapArray addObject:tempNumsRegularsMap];
     }
     
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // something
-            [self.tableView reloadData];
-            
-            //输入的数字达到7个，且还没有结果时显示运营商归属地
-            if (searchResault.count == 0 && searcherString.length >= 7) {
-                areaString =[[DBHelper sharedDBHelper] getAreaWithNumber:singleton.singletonValue];
-                VCLog(@"areaString:%@",areaString);
-                opeareString = [singleton.singletonValue isMobileNumberWhoOperation];
-            }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // something
+        [self.tableView reloadData];
+        
+        //输入的数字达到7个，且还没有结果时显示运营商归属地
+        if (searchResault.count == 0 && searcherString.length >= 7) {
+            areaString =[[DBHelper sharedDBHelper] getAreaWithNumber:singleton.singletonValue];
+            VCLog(@"areaString:%@",areaString);
+            opeareString = [singleton.singletonValue isMobileNumberWhoOperation];
+        }
 
-        });
-    
-     });
+    });
+
+ });
 }
-//-123-56-89
--(NSRange)getRange:(NSString *)colorStr pinyin:(NSString *)firstPinyin{
+
+/**
+ *  获取需要染色的range
+ *  @param coloeStr 与之匹配的串
+ *  @param firstPinyin 名字首字母串
+ */
+-(NSRange)getRange:(NSString *)colorStr pinyin:(NSString *)firstPinyin{//-123-56-89
     NSRange range;
     NSArray *array = [ colorStr componentsSeparatedByString:@"-"];
     NSMutableString *rs = [[NSMutableString alloc] initWithString:@""];//得到158
@@ -347,34 +342,11 @@
         if (str.length>0) {
             [rs appendString:[str substringWithRange:NSMakeRange(0, 1)]];
         }
-        
     }
     
     range = [firstPinyin rangeOfString:rs];
 
     return range;
-}
-
-/**
- *  判断结果集是否含有此元素，
- */
--(BOOL)hasThisRecord:(CModle *)modle{
-    NSString *phone = [modle.contactInfo valueForKey:PersonTelNum];
-    NSMutableArray *aar = [[NSMutableArray alloc] init];
-    if (searchResault.count==0) {
-        return YES;
-    }
-    for (int i=0; i<searchResault.count; i++) {
-        
-        CModle *cm = searchResault[i];
-        NSString *sPhone = [cm.contactInfo valueForKey:PersonTelNum];
-        sPhone = sPhone.length>0?sPhone:@"";
-        [aar addObject:sPhone];
-    }
-    if (![aar containsObject:phone]) {
-        return YES;
-    }
-    return NO;
 }
 
 
@@ -432,7 +404,7 @@
     //用户输入时
     if (searcherString.length > 0 &&searchResault.count > 0 ) {
         CModle *cmodle = [searchResault objectAtIndex:indexPath.row];
-        cell.hisName.text = [cmodle.contactInfo  valueForKey:PersonName];
+        cell.hisName.text = [cmodle.contactInfo  valueForKey:PNAME];
         NSRange range = cmodle.range;
         //对字体染色
         cell.hisName.attributedText = [self attributedStr:range str:cell.hisName.text];
@@ -440,7 +412,7 @@
         cell.callDirection.hidden = YES;
         cell.callLength.hidden = YES;
         cell.callBeginTime.font = [UIFont systemFontOfSize:16];
-        cell.callBeginTime.text = [[cmodle.contactInfo  valueForKey:PersonTel] purifyString];
+        cell.callBeginTime.text = [[cmodle.contactInfo  valueForKey:PNUMBER] purifyString];
         
         NSRange rangeNumber  = [cell.callBeginTime.text rangeOfString:searcherString];
         if (rangeNumber.length > 0) {
@@ -523,9 +495,9 @@
     NSString *abid;
     if (searcherString.length>0) {//输入后
         CModle  *m = [searchResault objectAtIndex:indexPath.row];
-        name = [m.contactInfo valueForKey:PersonName];
-        nber = [m.contactInfo valueForKey:PersonTel];
-        abid = [m.contactInfo valueForKey:PersonRecordID];
+        name = [m.contactInfo valueForKey:PNAME];
+        nber = [m.contactInfo valueForKey:PNUMBER];
+        abid = [m.contactInfo valueForKey:PCID];
     }
     if (searcherString.length<=0) {
         DBDatas *aRecord = [CallRecords objectAtIndex:indexPath.row];
@@ -558,8 +530,8 @@
         mdata.hisHome = aRecord.hisHome;
     }else{
         CModle *dict = [searchResault objectAtIndex:indexPath.row];
-        mdata.hisName = [dict.contactInfo valueForKey:PersonName];
-        mdata.hisNumber = [dict.contactInfo valueForKey:PersonTel];
+        mdata.hisName = [dict.contactInfo valueForKey:PNAME];
+        mdata.hisNumber = [dict.contactInfo valueForKey:PNUMBER];
         if (mdata.hisNumber.length >=7) {
             mdata.hisHome  = [[DBHelper sharedDBHelper] getAreaWithNumber:[mdata.hisNumber purifyString]];
         }else{mdata.hisHome =   @"";}
@@ -600,13 +572,13 @@
         }
     }else{
         CModle *dict = [searchResault objectAtIndex:indexPath.row];
-        NSString *name = [dict.contactInfo valueForKey:PersonName];
-        recordReff = [[ConBook sharBook] getRecordRefWithID:[[dict.contactInfo valueForKey:PersonRecordID] intValue]];
+        NSString *name = [dict.contactInfo valueForKey:PNAME];
+        recordReff = [[ConBook sharBook] getRecordRefWithID:[[dict.contactInfo valueForKey:PCID] intValue]];
         VCLog(@"==================hisname:%@",aRecord.hisName);
         if ([name length]==0 || [name isEqualToString:@""] || name ==nil) {
             //跳转到添加联系人
             
-            [self showUnknownPersonViewController:[[dict valueForKey:PersonTel] purifyString]];
+            [self showUnknownPersonViewController:[[dict valueForKey:PNUMBER] purifyString]];
             
             VCLog(@"show newPerson view");
         }else
@@ -845,6 +817,103 @@
 
     //CFRelease(_addressBook);
     
+}
+
+
+/**
+ *  获取通讯录
+ */
+-(BOOL)authorizStatus{
+    ABAuthorizationStatus authStatus = ABAddressBookGetAuthorizationStatus();
+    
+    if (authStatus == kABAuthorizationStatusAuthorized){
+        
+        if ([[UIDevice currentDevice].systemVersion floatValue]>=6.0) {
+            
+            dispatch_semaphore_t sema=dispatch_semaphore_create(0);
+            ABAddressBookRequestAccessWithCompletion(_addressBook, ^(bool greanted, CFErrorRef error){
+                dispatch_semaphore_signal(sema);
+                if (error) {
+                    NSLog(@"error:%@",error);
+                    return ;
+                }
+            });
+            
+            dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+            
+        }
+        
+        return YES;
+    }
+    
+    return NO;
+}
+
+/**
+ *  获取所有联系人
+ */
+-(void)getAllContacts{
+    if ([self authorizStatus]) {
+        CFErrorRef error;
+        _addressBook = ABAddressBookCreateWithOptions(NULL, &error);
+        //取得本地所有联系人记录
+        CFArrayRef results = ABAddressBookCopyArrayOfAllPeople(_addressBook);
+        CFMutableArrayRef mresults=CFArrayCreateMutableCopy(kCFAllocatorDefault,CFArrayGetCount(results),results);
+        NSMutableArray *peoleArray = [[NSMutableArray alloc] init];
+        for (int i=0; i<CFArrayGetCount(results); i++) {
+            
+            NSMutableDictionary *tempDic = [[NSMutableDictionary alloc] init];
+            //获取联系人属性
+            ABRecordRef record=CFArrayGetValueAtIndex(mresults,i);
+            NSString *compositeName = (__bridge NSString *)ABRecordCopyCompositeName(record);
+            NSString *cid = [NSString stringWithFormat:@"%d",(int)ABRecordGetRecordID(record)];
+            ABMultiValueRef phoneNumber = ABRecordCopyValue(record, kABPersonPhoneProperty);
+            NSString *phone;
+            if (ABMultiValueGetCount(phoneNumber) > 0) {//取所有号码
+                phone = (__bridge NSString *)(ABMultiValueCopyValueAtIndex(phoneNumber,0));//获取一个号码
+                phone = [phone purifyString];//
+                [tempDic setObject:phone forKey:PNUMBER];//号码
+                
+            }
+            compositeName = compositeName.length>0?compositeName:phone;
+            //转拼音->数字
+            NSMutableArray *namePinYinArray = [compositeName hanziTopinyin];
+            for (int l=0;l<namePinYinArray.count;l++) {
+                namePinYinArray[l] = [namePinYinArray[l] pinyinTrimIntNumber];
+            }
+            //汉字首字母_数字
+            NSMutableArray *nameFirstCharsArr = [compositeName getFirstCharWithHanZi] ;
+            for (int j=0;j<nameFirstCharsArr.count;j++) {
+                nameFirstCharsArr[j] = [nameFirstCharsArr[j] pinyinTrimIntNumber];
+            }
+            
+            [tempDic setObject:compositeName.length>0?compositeName:@"1无名称" forKey:PNAME];//名字
+            [tempDic setObject:namePinYinArray forKey:PNAME_NUMBER];//名字_数字
+            [tempDic setObject:nameFirstCharsArr forKey:PNAME_FIRSTC];//名字每个字首字母->数字
+            [tempDic setObject:cid forKey:PCID];//id
+            if ([cid intValue] == 10) {
+                [self addPhone:record phone:@"11111111111"];
+            }
+            [peoleArray addObject:tempDic];
+        }
+        mutPhoneArray = peoleArray;
+        VCLog(@"mutPhoneArray[0]:%@,count:%lu",mutPhoneArray[0],mutPhoneArray.count);
+        
+    }else{
+        
+        UIAlertView *a =[[UIAlertView alloc] initWithTitle:@"手机联系人" message:@"是否允许读取联系人？" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"不OK", nil];
+        [a show];
+        
+    }
+    
+}
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 0) {
+        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            [[UIApplication sharedApplication] openURL:url];
+        }
+    }
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

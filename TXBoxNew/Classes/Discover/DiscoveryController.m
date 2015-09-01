@@ -626,6 +626,28 @@
 }
 
 #pragma mark --AlertView delegate
+
+-(void)willPresentAlertView:(UIAlertView *)alertView{
+    /*
+    // 遍历 UIAlertView 所包含的所有控件
+    NSLog(@"---%d",alertView.subviews);
+    for (UIView *tempView in alertView.subviews) {
+        
+        if ([tempView isKindOfClass:[UILabel class]]) {
+            // 当该控件为一个 UILabel 时
+            UILabel *tempLabel = (UILabel *) tempView;
+            
+            if ([tempLabel.text isEqualToString:alertView.message]) {
+                // 调整对齐方式
+                tempLabel.textAlignment = NSTextAlignmentLeft;
+                // 调整字体大小
+                [tempLabel setFont:[UIFont systemFontOfSize:18.0]];
+            }
+        }
+    }
+     */
+}
+
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (alertView.tag == 3006) {

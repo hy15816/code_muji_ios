@@ -80,6 +80,22 @@
     return _emailArray.count>0?_emailArray[0]:@"未命名";
     
 }
+
+-(NSString *)getCompositeName:(ABRecordRef)record{
+    NSString  *compositeName = (__bridge NSString *)(ABRecordCopyCompositeName(record));
+    
+    if (compositeName.length == 0) {
+        //获取号码
+        ABMultiValueRef phoneNumber = ABRecordCopyValue(record, kABPersonPhoneProperty);
+        if (ABMultiValueGetCount(phoneNumber) > 0) {
+            NSString *phone = [NSString stringWithFormat:@"%@;",ABMultiValueCopyValueAtIndex(phoneNumber,0)];
+            NSLog(@"phone:%@",phone);
+            compositeName = phone;
+        }
+        
+    }
+    return compositeName.length>0?compositeName:@"1无名称";
+}
 /**
  *  根据一条联系人记录(recordRef)获取ID
  */
@@ -257,7 +273,48 @@
     
     return tmpSuccess;
 }
+/**
+ *  组合名字
+ */
+-(NSString *)AssemblyName:(NSString *)prefixName lastn:(NSString *)lastn middleName:(NSString *)middleName firstn:(NSString *)firstn suffixName:(NSString *)suffixName{
+    
+    NSString *fullName;
+    if (prefixName.length<=0) {
+        prefixName = @"";
+    }
+    if (lastn.length<=0) {
+        lastn = @"";
+    }
+    if (middleName.length<=0) {
+        middleName = @"";
+    }
+    if (firstn.length<=0) {
+        firstn = @"";
+    }
+    if (suffixName.length<=0) {
+        suffixName = @"";
+    }
+    
+    fullName = [NSString stringWithFormat:@"%@%@%@%@%@",prefixName,lastn,middleName,firstn,suffixName];
+    return fullName.length>0?fullName:@"1无名称";
+    
+}
 
++ (NSString *)getCountryCode
+{
+    NSLocale *currentLocale = [NSLocale currentLocale];
+    
+    //    NSLog(@"Country Code is %@", [currentLocale objectForKey:NSLocaleCountryCode]);
+    return [currentLocale objectForKey:NSLocaleCountryCode];
+}
++ (NSString *)getLanguageCode
+{
+    NSLocale *currentLocale = [NSLocale currentLocale];
+    
+    NSLog(@"Language Code is %@", [currentLocale objectForKey:NSLocaleLanguageCode]);
+    
+    return [currentLocale objectForKey:NSLocaleLanguageCode];
+}
 
 @end
 

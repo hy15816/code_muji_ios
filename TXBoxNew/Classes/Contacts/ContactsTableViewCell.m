@@ -35,7 +35,9 @@
         self.clipsToBounds = YES;
         
         self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 170, 20)];
-        self.numberLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.contentView.frame.size.width-165, 10, 150, 20)];
+        UIWindow *w = [[UIApplication sharedApplication].windows objectAtIndex:0];
+        CGFloat f = w.frame.size.width;
+        self.numberLabel = [[UILabel alloc] initWithFrame:CGRectMake(f-150-20, 10, 150, 20)];
         self.numberLabel.textAlignment = NSTextAlignmentRight;
         self.numberLabel.font = [UIFont systemFontOfSize:16];
         //[self.numberLabel sizeToFit];
@@ -52,15 +54,10 @@
 #pragma mark-创建上下分割线
 - (void)drawRect:(CGRect)rect
 {
-    
-    for (int i =1; i<2; i++) {
-        self.imgView = [[UIImageView alloc]initWithFrame:CGRectMake(15, i*kCellHeight+1, self.contentView.frame.size.width-15, .1)];
-        //VCLog(@"h:%F",rect.size.height-1);
-        //VCLog(@"w:%f",self.contentView.frame.size.width);
-        //self.imgView.image = [UIImage imageNamed:@"test.png"];
-        self.imgView.backgroundColor = [UIColor greenColor];
+    for (int i =0; i<2; i++) {
+        self.imgView = [[UIImageView alloc]initWithFrame:CGRectMake(10, -0.5+i*rect.size.height, self.contentView.frame.size.width, .5)];
+        self.imgView.image = [UIImage imageNamed:@"grayBG"];
     }
-    
     
     [self.contentView addSubview:self.imgView];
     

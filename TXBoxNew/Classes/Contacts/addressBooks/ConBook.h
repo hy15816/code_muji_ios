@@ -32,6 +32,7 @@
  */
 -(NSString *)AssemblyName;
 
+-(NSString *)getCompositeName:(ABRecordRef)recordRef;
 
 //==========================================\\
 \\                通讯录相关                  \\
@@ -91,7 +92,13 @@
  *  添加联系人到通讯录
  */
 -(BOOL)addPerson:(ConBook *)conbook;
+/**
+ *  国家码
+ */
++ (NSString *)getCountryCode;
 
-
-
+/**
+ *  语言设定
+ */
++ (NSString *)getLanguageCode;
 @end

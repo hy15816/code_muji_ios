@@ -172,7 +172,6 @@
     [userDefaults setValue:@"" forKey:RIDRecord];
     isSend = NO;
     
-    self.title = @"新信息";
     self.disMissBtn.enabled = YES;
     mutIDArray = [[NSMutableArray alloc] init];
     
