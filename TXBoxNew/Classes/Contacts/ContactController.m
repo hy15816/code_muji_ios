@@ -22,8 +22,9 @@
 #import "pinyin.h"
 #import "Cellview.h"
 #import "ConBook.h"
+#import "BATableViewKit/BATableView.h"
 
-@interface ContactController ()<UISearchResultsUpdating,UISearchControllerDelegate,ABNewPersonViewControllerDelegate,ABPersonViewControllerDelegate,CellViewDelegate>
+@interface ContactController ()<UISearchResultsUpdating,UISearchControllerDelegate,ABNewPersonViewControllerDelegate,ABPersonViewControllerDelegate,CellViewDelegate,BATableViewDelegate>
 {
     
     UIView *hudview;
@@ -43,6 +44,7 @@
 @property (strong,nonatomic) NSIndexPath *currentIndexPath;
 @property (strong,nonatomic) NSArray *sortedArray;
 
+@property (strong,nonatomic) BATableView *baTableView;
 
 -(IBAction)addNewContacts:(UIBarButtonItem *)sender;
 @end
@@ -75,11 +77,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    CGFloat width = self.view.frame.size.width;
     [self initll];
     showIcon = NO;
     
     [self authorizStatus];
+    
+    //self.tableView = (UITableView *)[[BATableView alloc] initWithFrame:self.view.frame];
+    //self.tableView.delegate = self;
+    //[self.view addSubview:self.baTableView];
     
     [userDefaults setBool:NO forKey:IsUpdateContacts];
     self.navigationItem.backBarButtonItem =[[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
@@ -387,6 +392,7 @@
 
 
 //索引
+
 -(NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView{
     if (self.searchController.active) {
         return nil;
@@ -394,8 +400,15 @@
     
     return _sortedArray;
 }
-
-
+ /*
+- (NSArray *) sectionIndexTitlesForABELTableView:(BATableView *)tableView {
+    if (self.searchController.active) {
+        return nil;
+    }
+    
+    return _sortedArray;
+}
+*/
 -(NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index{
     
     [self.view.window addSubview:[self hudView:title]];

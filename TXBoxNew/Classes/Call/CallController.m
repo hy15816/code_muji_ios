@@ -16,7 +16,6 @@
 #import "NSString+helper.h"
 #import "MsgDetailController.h"
 #import "TXTelNumSingleton.h"
-#import "Records.h"
 #import "DiscoveryController.h"
 #import "CallAndDivert.h"
 #import <CoreText/CoreText.h>
@@ -134,30 +133,6 @@
     singleton = [TXTelNumSingleton sharedInstance];
     searchResault = [[NSMutableArray alloc] init];
     
-}
-
-- (BOOL)addPhone:(ABRecordRef)person phone:(NSString*)phone
-{
-    ABMutableMultiValueRef multi = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-    
-    CFErrorRef anError = NULL;
-    
-    // The multivalue identifier of the new value isn't used in this example,
-    // multivalueIdentifier is just for illustration purposes.  Real-world
-    // code can use this identifier to do additional work with this value.
-    ABMultiValueIdentifier multivalueIdentifier;
-    
-    if (!ABMultiValueAddValueAndLabel(multi, (__bridge CFStringRef)phone, kABPersonPhoneMainLabel, &multivalueIdentifier)){
-        CFRelease(multi);
-        return NO;
-    }
-    
-    if (!ABRecordSetValue(person, kABPersonPhoneProperty, multi, &anError)){
-        CFRelease(multi);
-        return NO;
-    }
-    CFRelease(multi);
-    return YES;
 }
 
 -(void)callviewWillRefresh
@@ -891,9 +866,7 @@
             [tempDic setObject:namePinYinArray forKey:PNAME_NUMBER];//名字_数字
             [tempDic setObject:nameFirstCharsArr forKey:PNAME_FIRSTC];//名字每个字首字母->数字
             [tempDic setObject:cid forKey:PCID];//id
-            if ([cid intValue] == 10) {
-                [self addPhone:record phone:@"11111111111"];
-            }
+            
             [peoleArray addObject:tempDic];
         }
         mutPhoneArray = peoleArray;
